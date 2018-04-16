@@ -1,0 +1,39 @@
+<div class="login-page">
+  <div class="container-fluid text-center">
+    <h3>Member Login</h3>
+    <div class="line"></div>
+  </div>
+
+  <section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="login-container text-center">
+          <div ng-show="$ctrl.error" class="error-message afade text-left">
+            <span>ERROR: </span>The username or password you entered is incorrect
+          </div>
+          <form>
+            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.username" placeholder="EMAIL ADDRESS" name="email"
+                   id="email" type="text">
+            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password"
+                   id="password" type="password">
+            <div class="remember-checkbox">
+              <p>
+                <input type="checkbox" id="rememberMe" ng-model="$ctrl.isRemembered"/>
+                <label for="rememberMe">Remember Me</label>
+              </p>
+            </div>
+            <div class="button login-btn">
+              <button ng-click="$ctrl.login()" class="btn">MEMBER LOGIN</button>
+            </div>
+          </form>
+
+          <div class="additional-links text-left">
+            <a ui-shref="">Forgot your password</a>
+            <p>Not a Huegroup member? Learn more about Huegroup Membership</p>
+            <a ui-shref="">Huegroup Staff - Login here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

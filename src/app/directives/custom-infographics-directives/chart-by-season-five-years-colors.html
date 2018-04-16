@@ -1,0 +1,25 @@
+<div class="chart c-by-season-colors">
+  <div>
+    <div class="main-season">
+      <div class="colors">
+        <label>FW2015</label>
+        <div ng-repeat="row in mainColumns">
+          <div class="color-brick" ng-repeat="color in row.colors" ng-class="{ empty: color.isEmpty }">
+            <span style="background: {{ color.color }}"></span>
+          </div>
+        </div>
+      </div>
+      <div chart-type="groups"></div>
+    </div>
+  </div>
+  <div>
+    <div ng-repeat="season in seasons" class="season">
+      <label>{{ season.title }}</label>
+      <div>
+        <div class="color-brick" ng-repeat="color in season.colors" ng-class="{ empty: color.isEmpty }">
+          <span style="background: {{ color.color }}"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

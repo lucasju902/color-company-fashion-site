@@ -1,0 +1,177 @@
+<h4 class="text-left membership-product">HUEGROUP MEMBERSHIP PRODUCT</h4>
+
+<section>
+  <div class="container-fluid  text-center title">
+    <div class="row">
+      <div class="col-lg-4 col-md-12 col-lg-offset-4">
+        <h3>Branding Dashboard</h3>
+        <div class="line"></div>
+      </div>
+      <div class="col-lg-4 col-md-12 text-right buttons-group">
+        <div class="button membership">
+          <button ui-sref="membership({scrollTo: true})" class="btn">MEMBERSHIP</button>
+        </div>
+        <div class="button membership white">
+          <button ui-sref="productInquiry" class="btn">PRODUCT INQUIRY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div ng-controller="brandingController">
+  <div class="body-container">
+    <div class="dashboard dashboard-default dashboard-branding">
+
+      <div class="dashboard-controls">
+        <div class="select-style custom-select">
+          <ui-select
+            ng-model="menus.brand"
+            theme="selectize"
+            ng-disabled="disabledControls['brand'] || isLoadingControls"
+            title="Choose a brand"
+            on-select="handleChangeControl('brand')"
+          >
+
+            <ui-select-match placeholder="BRAND">{{$select.selected.title}}</ui-select-match>
+
+            <ui-select-choices repeat="brand.id as brand in controlsData.companies | filter: {title: $select.search}">
+              <span ng-bind-html="brand.title | highlight: $select.search"></span>
+            </ui-select-choices>
+
+          </ui-select>
+
+          <!--<select-->
+            <!--name="brand"-->
+            <!--ng-disabled="disabledControls['brand'] || isLoadingControls"-->
+            <!--ng-model="brand"-->
+            <!--ng-change="handleChangeControl('brand')"-->
+          <!--&gt;-->
+            <!--<option ng-selected="true" label="BRAND" value="">BRAND</option>-->
+            <!--<option ng-repeat="(key, item) in controlsData.companies" value="{{item.id}}">-->
+              <!--{{item.title}}-->
+            <!--</option>-->
+          <!--</select>-->
+        </div>
+
+        <div class="select-style custom-select">
+          <ui-select
+            ng-model="menus.industry"
+            theme="selectize"
+            ng-disabled="disabledControls['industry'] || isLoadingControls"
+            title="Choose a industry"
+            on-select="handleChangeControl('industry')"
+          >
+            <ui-select-match placeholder="INDUSTRY">{{$select.selected.title}}</ui-select-match>
+            <ui-select-choices repeat="industry.id as industry in controlsData.industries | filter: {title: $select.search}">
+              <span ng-bind-html="industry.title | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
+
+          <!--<select-->
+            <!--name="industry"-->
+            <!--ng-disabled="disabledControls['industry'] || isLoadingControls"-->
+            <!--ng-model="industry"-->
+            <!--ng-change="handleChangeControl('industry')"-->
+          <!--&gt;-->
+            <!--<option ng-selected="true" label="INDUSTRY" value="">INDUSTRY</option>-->
+            <!--<option ng-repeat="(key, item) in controlsData.industries" value="{{item.id}}">-->
+              <!--{{item.title}}-->
+            <!--</option>-->
+          <!--</select>-->
+        </div>
+
+        <div class="select-style custom-select">
+          <ui-select
+            ng-model="menus.color"
+            theme="selectize"
+            ng-disabled="disabledControls['color'] || isLoadingControls"
+            title="Choose a color"
+            on-select="handleChangeControl('color')"
+          >
+            <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>
+            <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">
+              <span ng-bind-html="color.title | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
+
+          <!--<select-->
+            <!--name="color"-->
+            <!--ng-disabled="disabledControls['color'] || isLoadingControls"-->
+            <!--ng-model="color"-->
+            <!--ng-change="handleChangeControl('color')"-->
+          <!--&gt;-->
+            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->
+            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->
+              <!--{{item.title}}-->
+            <!--</option>-->
+          <!--</select>-->
+        </div>
+
+        <div class="select-style custom-select">
+          <ui-select
+            ng-model="menus.attribute"
+            theme="selectize"
+            ng-disabled="disabledControls['attribute'] || isLoadingControls"
+            title="Choose a attribute"
+            on-select="handleChangeControl('attribute')"
+          >
+            <ui-select-match placeholder="ATTRIBUTE">{{$select.selected.title}}</ui-select-match>
+            <ui-select-choices repeat="attribute.id as attribute in controlsData.attributes | filter: {title: $select.search}">
+              <span ng-bind-html="attribute.title | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
+
+          <!--<select-->
+            <!--name="attribute"-->
+            <!--ng-disabled="disabledControls['attribute'] || isLoadingControls"-->
+            <!--ng-model="attribute"-->
+            <!--ng-change="handleChangeControl('attribute')"-->
+          <!--&gt;-->
+            <!--<option ng-selected="true" value="" label="ATTRIBUTE">ATTRIBUTE</option>-->
+            <!--<option ng-repeat="(key, item) in controlsData.attributes" value="{{item.id}}">-->
+              <!--{{item.title}}-->
+            <!--</option>-->
+          <!--</select>-->
+        </div>
+
+        <div class="select-style custom-select">
+          <ui-select
+            ng-model="menus.country"
+            theme="selectize"
+            ng-disabled="disabledControls['country'] || isLoadingControls"
+            title="Choose a country"
+            on-select="handleChangeControl('country')"
+          >
+            <ui-select-match placeholder="COUNTRY">{{$select.selected.title}}</ui-select-match>
+            <ui-select-choices repeat="country.id as country in controlsData.countries | filter: {title: $select.search}">
+              <span ng-bind-html="country.title | highlight: $select.search"></span>
+            </ui-select-choices>
+          </ui-select>
+
+          <!--<select-->
+            <!--name="country"-->
+            <!--ng-disabled="disabledControls['country'] || isLoadingControls"-->
+            <!--ng-model="country"-->
+            <!--ng-change="handleChangeControl('country')"-->
+          <!--&gt;-->
+            <!--<option ng-selected="true" value="" label="COUNTRY">COUNTRY</option>-->
+            <!--<option ng-repeat="(key, item) in controlsData.countries" value="{{item.id}}">-->
+              <!--{{item.title}}-->
+            <!--</option>-->
+          <!--</select>-->
+        </div>
+
+        <button class="btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>
+      </div>
+
+      <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>
+
+      <div class="dashboard-content" ui-view>
+        <!--VIEW FOR DASHBOARDS-->
+      </div>
+    </div>
+    <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>
+  </div>
+</div>
+

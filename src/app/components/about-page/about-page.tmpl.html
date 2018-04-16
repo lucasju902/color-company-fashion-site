@@ -1,0 +1,121 @@
+<div class="container-fluid header text-center" ng-init="$ctrl.init()">
+  <div class="text-header">
+    <h1>The World’s Color Intelligence Platform</h1>
+    <img id="show-video-popup" ng-click="$ctrl.showVideoPopup()" class="play-btn" src="../assets/images/play-icon.png"
+         alt="play">
+    <div class="button">
+      <button ng-click="$ctrl.scrollToFooter()" class="btn">STAY CONNECTED</button>
+    </div>
+    <div class="popup full-screen video" id="video-popup">
+      <header>
+        <button ng-click="$ctrl.hideVideoPopup()" type="button" class="btn close-btn">X</button>
+      </header>
+      <main>
+        <iframe src="https://player.vimeo.com/video/130147624"
+                id="companyVimeoVideo"
+                frameborder="0" webkitallowfullscreen mozallowfullscreen
+                allowfullscreen></iframe>
+      </main>
+    </div>
+  </div>
+</div>
+
+<div class="clear"></div>
+
+<section>
+  <div class="container-fluid  text-center">
+    <h3>{{$ctrl.pageData.title}}</h3>
+    <div class="line"></div>
+  </div>
+
+  <div class="container-fluid bg-3">
+    <div class="row">
+      <div class="col-lg-6 col-md-6">
+        <img src="{{$ctrl.pageData.image_url}}" class="img-responsive shadow img50" alt="Image">
+      </div>
+      <div ng-bind-html="$ctrl.pageData.editor"></div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-lg-3 col-md-6">
+
+        <div class="offer shadow"><img src="../assets/images/search.png" alt="Image" style="padding-top:30px">
+          <h5>SEARCH</h5>
+          <div class="short-line"></div>
+          <p>Find what are the new colors
+            showing on runways around the
+            world, view the colors used by
+            leading designers, or perhaps
+            take a look at the colors of
+            logos for the world’s 50,000
+            global companies. Basically,
+            search for any color data point
+            you need!</p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+
+        <div class="offer shadow"><img src="../assets/images/discover.png" alt="Image" style="padding-top:30px">
+          <h5>DISCOVER</h5>
+          <div class="short-line"></div>
+          <p>Discover the value of real time
+            color analytics. What are the
+            new colors that are showing in
+            market? Which industries use
+            yellow the most? What is the
+            color community searching now
+            on the HUEGROUP platform.
+            Discover how color is used
+            across all product applications,
+            geographies, industries and
+            over time!
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+
+        <div class="offer shadow"><img src="../assets/images/analyze.png" alt="Image" style="padding-top:30px">
+          <h5>ANALYZE</h5>
+          <div class="short-line"></div>
+          <p>Analyze the frequency ,
+            uniqueness, relevance &
+            timeliness of color. Track global
+            and local color trends, analyze
+            the color portfolio of specific
+            designers over time, compare
+            and contrastthecolors
+            launched in different markets,
+            identify universal and regional
+            colors... in short, tap the
+            analytics that best support your
+            color decision needs.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+
+        <div class="offer shadow"><img src="../assets/images/Leverage.png" alt="Image" style="padding-top:30px">
+          <h5>LEVERAGE</h5>
+          <div class="short-line"></div>
+          <p>Leverage huegroup color
+            intelligence to Inform your color
+            choices, minimize color risks,
+            enhance color efficiencies and
+            identify substantiated creative
+            choices, Rationalize your color
+            decisions using data and
+            insights and communicate with
+            other peers, decision makers
+            and collaborators to gain their
+            support. Enjoy the confidence
+            that analytics and insights can
+            bring to your decision process.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

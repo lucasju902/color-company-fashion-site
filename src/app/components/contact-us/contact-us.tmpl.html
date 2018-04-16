@@ -1,0 +1,63 @@
+<section>
+  <div class="container-fluid text-center">
+    <div class="row">
+      <div class="col-lg-4 col-md-12 col-lg-offset-4">
+        <h3>Contact Us</h3>
+        <div class="line"></div>
+      </div>
+      <div class="col-lg-4 col-md-12 text-right">
+        <div class="button membership">
+          <button class="btn" ui-sref="membershipv">MEMBERSHIP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-us-page">
+  <form name="contact">
+    <div class="container-fluid text-center">
+      <div class="row">
+        <div class="contact-us-form membership-form">
+          <div class="form-item">
+            <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
+                   ng-class="'ng-dirty' && contact.firstName.$invalid ?  'error' :''" required>
+            <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
+          </div>
+          <div class="form-item">
+            <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
+                   ng-class="'ng-dirty' && contact.lastName.$invalid ?  'error' :''" required>
+            <label for="lastName">LAST NAME <span class="red-text">*</span></label>
+          </div>
+          <div class="form-item">
+            <input ng-model="$ctrl.title" ng-value="$ctrl.title" type="text" id="title" name="title">
+            <label for="title">TITLE</label>
+          </div>
+          <div class="form-item">
+            <input ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="company" name="company">
+            <label for="company">COMPANY</label>
+          </div>
+          <div class="form-item">
+            <input ng-model="$ctrl.phone" ng-value="$ctrl.phone" type="text" id="phone" name="phone">
+            <label for="phone">PHONE</label>
+          </div>
+
+          <div class="form-item">
+            <input ng-model="$ctrl.companyEmail" ng-value="$ctrl.companyEmail" type="text" id="companyEmail"
+                   name="companyEmail"  ng-class="'ng-dirty' && contact.companyEmail.$invalid ?  'error' :''"  required>
+            <label for="companyEmail">COMPANY EMAIL<span class="red-text">*</span></label>
+          </div>
+
+          <div class="form-item">
+          <textarea ng-model="$ctrl.comments" ng-value="$ctrl.comments" type="text" id="comments"
+                    name="comments"></textarea>
+            <label for="comments">COMMENTS</label>
+          </div>
+          <div class="button">
+            <button class="btn" ng-click="$ctrl.contactUs()" ng-disabled="contact.$invalid">SUBMIT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>

@@ -1,0 +1,37 @@
+.dashboard-row.dashboard-brand-row-second {
+	width: 100%;
+	display: table;
+	min-height: 440px;
+
+	.dashboard-cell {
+		display: table-cell;
+		float: none;
+	}
+
+	.dashboard-cell.cell-right {
+		padding: 0;
+	}
+
+	.cell-color-frequency {
+		height: 220px;
+		padding: 0 15px;
+		border-bottom: 1px solid #ccc;
+	}
+
+	.cell-color-palette {
+		padding: 0 15px;
+	}
+
+	.db-color-count-by-model {
+		.color-count-row {
+			height: 41px;
+		}
+
+		.color-count {
+			font-size: 15px;
+			text-transform: uppercase;
+			line-height: 36px;
+			vertical-align: top;
+		}
+	}
+}

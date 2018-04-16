@@ -1,0 +1,75 @@
+<section>
+  <div class="container-fluid  text-center title " ng-init="$ctrl.init()">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2"><h3>HUEGROUP Infographic</h3>
+        <div class="line"></div>
+      </div>
+      <div class="col-lg-2 buttons-group">
+        <div class="button membership">
+          <button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid  text-left">
+    <div class="row search-fields">
+      <div class="col-lg-2 col-lg-offset-4 search-fields">
+        <div class="select-style">
+          <select>
+            <option>VERTICAL</option>
+            <option selected>Fashion</option>
+            <option disabled>All</option>
+            <option disabled>Auto</option>
+            <option disabled>Brand</option>
+            <option disabled>Fragrance</option>
+            <option disabled>Interior</option>
+            <option disabled>Fragrance</option>
+            <option disabled>Legal</option>
+            <option disabled>Paint</option>
+            <option disabled>Pharmaceuticals</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-lg-2">
+        <div class="select-style">
+          <select ng-model="$ctrl.yearModel" ng-change="$ctrl.select()">
+            <option>YEAR</option>
+            <option ng-repeat="time in $ctrl.year">{{time}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid  text-left course">
+    <div class="row">
+      <a style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in  $ctrl.items">
+        <div class="category huebeauty text-center"><p>{{item.hue}}</p></div>
+        <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item.image_url)"
+             style="background: {{'url(' + item.image_url +') top center'}};
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    padding-bottom: 56%;
+                    background-color: #e1e1e126;"
+        >
+        </div>
+        <h5>{{item.header + ' // '+ item.date}}</h5>
+        <div style="height: 100px; overflow: hidden">
+          <p ng-bind-html="item.description"></p>
+        </div>
+        <!--<span ng-bind-html="item.description || '<p>Measuring more than 1,250 data points across four dimensions of digital, providing actionable insights to</p>'"></span>-->
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12 text-center">
+      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
+    </div>
+  </div>
+</section>

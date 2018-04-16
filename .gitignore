@@ -1,0 +1,19 @@
+.tmp/
+.idea/*
+coverage/
+dist/
+node_modules/
+bower_components/
+package-lock.json
+
+# Node build artifacts
+npm-debug.log
+
+# Local development
+*.env
+*.dev
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml

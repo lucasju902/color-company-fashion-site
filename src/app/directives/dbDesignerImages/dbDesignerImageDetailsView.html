@@ -1,0 +1,39 @@
+<div class="db-designer-images-details">
+  <div class="image-details-dialog">
+    <div class="image-container">
+      <a ng-href="{{data.image_src}}" title="Open full size image"><img ng-src="{{data.image_src}}"/></a>
+    </div>
+    <div class="image-details">
+      <div class="button-close" ng-click="closeClickHandler()"></div>
+      <div class="designer-name" ng-bind="designer"></div>
+      <div>{{season + ' ' + year}}</div>
+      <div ng-bind="category"></div>
+      <div>{{(city ? city + ', ' : '') + region}}</div>
+      <div class="image-source">Image Source: {{source}}</div>
+
+      <div class="dominant-color">
+        <div class="details-title">Dominant color</div>
+        <div class="details-color">
+          <div class="color-bar" ng-style="{'background-color': colorActual}"></div>
+          <div class="color-title">Actual</div>
+        </div>
+        <div class="details-color">
+          <div class="color-bar" ng-style="{'background-color': colorNcs}"></div>
+          <div class="color-title">NCS {{colorNcsTitle}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <div class="footer-container" ng-show="isFooterMode(0)">
+        <button ng-click="exportImageCard()">Save</button>
+      </div>
+      <div class="footer-container" ng-show="isFooterMode(1)">
+        <input type="text" ng-model="imageName"/>
+        <button ng-click="saveImage()">OK</button>
+      </div>
+      <div class="footer-container" ng-show="isFooterMode(2)">
+        <span>Image saved</span>
+      </div>
+    </div>
+  </div>
+</div>

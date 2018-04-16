@@ -1,0 +1,216 @@
+<section>
+  <div class="staffs-container container-fluid" ng-init="$ctrl.init()">
+    <div class="row">
+      <div class="col-lg-4 col-md-4 text-center staff-item" ng-repeat="item in $ctrl.pageData">
+        <div class="img-responsive background-image"
+             style="background: {{'url(' + item.image_url +') top center'}};
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    height: 170px;
+                    width: 170px;
+                    border-radius: 50%;
+                    background-color: #000;
+                    margin: auto"
+        >
+        </div>
+        <div class="speaking_item" style="padding-top: 15px">
+          <a href="" >{{item.first_name}} {{item.last_name}} </a>
+          <span ng-bind-html="item.bio"></span>
+          <div class="line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="speaking_engagements">
+  <div class="container-fluid  text-center">
+    <h3>{{$ctrl.pageData.title}}</h3>
+    <div class="line"></div>
+  </div>
+
+
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-3 col-md-3 justify" ng-bind-html="$ctrl.pageData.editor">
+      </div>
+      <form name="speaking">
+        <div class="col-lg-6 col-md-6 membership-form">
+          <div class="forms">
+            <input type="text" name="FirstName" ng-model="$ctrl.firstName" placeholder="FIRST NAME"
+                   ng-class="'ng-dirty' && speaking.FirstName.$invalid ?  'error' :''" required>
+            <input type="text" name="Email" ng-model="$ctrl.email" placeholder="EMAIL"
+                   ng-class="'ng-dirty' && speaking.Email.$invalid ?  'error' :''" required>
+            <input type="text" name="jobtitle" ng-model="$ctrl.jobtitle" placeholder="JOB TITLE"
+                   ng-class="'ng-dirty' && speaking.jobtitle.$invalid ?  'error' :''" required>
+          </div>
+
+          <div class="forms-right">
+            <input type="text" name="LastName" ng-model="$ctrl.lastName" placeholder="LAST NAME"
+                   ng-class="'ng-dirty' && speaking.LastName.$invalid ?  'error' :''" required>
+            <input type="text" name="company" ng-model="$ctrl.company" placeholder="COMPANY"
+                   ng-class="'ng-dirty' && speaking.company.$invalid ?  'error' :''" required>
+            <input type="text" name="REQUEST" ng-model="$ctrl.request" placeholder="REQUEST A SPECIFIC SPEAKER"
+                   ng-class="'ng-dirty' && speaking.REQUEST.$invalid ?  'error' :''" required>
+          </div>
+
+          <div style="width:100%; float:left">
+            <textarea rows="20" cols="1" placeholder="MESSAGE"  name="message" ng-model="$ctrl.message"
+                      ng-class="'ng-dirty' && speaking.message.$invalid ?  'error' :''" required></textarea>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+          <div class="button membership white" style="float:left; margin-right:10px">
+            <button class="btn" ng-click="$ctrl.speaking()" ng-disabled="speaking.$invalid">SUBMIT</button>
+          </div>
+          <div class="button membership" style="float:left; ">
+            <button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<!--<section>-->
+  <!--<div class="staffs-container container-fluid">-->
+    <!--<div class="row">-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+    <!--<div class="row">-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+    <!--<div class="row">-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="col-lg-4 col-md-4 text-center staff-item">-->
+        <!--<img src="../assets/images/hue_saturation.png" alt="">-->
+        <!--<div>-->
+          <!--<a href="">Arushi Khosia</a>-->
+          <!--<span>Research Associate, Blogger and Content Creator</span>-->
+          <!--<div class="line"></div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</section>-->
+
+<!--<section class="speaking_engagements">-->
+  <!--<div class="container-fluid  text-center">-->
+    <!--<h3>Speaking Engagements</h3>-->
+    <!--<div class="line"></div>-->
+  <!--</div>-->
+
+
+
+  <!--<div class="container-fluid">-->
+    <!--<div class="row">-->
+      <!--<div class="col-lg-3 col-md-3 justify">-->
+        <!--<p>We are experts on everything-->
+          <!--color, from color strategy, to color-->
+          <!--research, psychology and-->
+          <!--marketing, and so much more!-->
+          <!--Over our three decades of work in-->
+          <!--the field, we delivered hundreds of-->
+          <!--conference presentations, keynote-->
+          <!--addresses, corporate-->
+          <!--presentations, and senior mngt-->
+          <!--teams talks.-->
+          <!--For more information about rates,-->
+          <!--topics, and availability for a-->
+          <!--speaking engagement, please-->
+          <!--complete the following form-->
+        <!--</p>-->
+      <!--</div>-->
+
+      <!--<div class="col-lg-6 col-md-6 membership-form">-->
+        <!--<div class="forms">-->
+          <!--<input type="text" name="FirstName" placeholder="FIRST NAME">-->
+          <!--<input type="text" name="Email" placeholder="EMAIL">-->
+          <!--<input type="text" name="jobtitle" placeholder="JOB TITLE">-->
+        <!--</div>-->
+
+        <!--<div class="forms-right">-->
+          <!--<input type="text" name="LastName" placeholder="LAST NAME">-->
+          <!--<input type="text" name="FirstName" placeholder="COMPANY">-->
+          <!--<input type="text" name="REQUEST" placeholder="REQUEST A SPECIFIC SPEAKER">-->
+        <!--</div>-->
+
+        <!--<div style="width:100%; float:left">-->
+          <!--<textarea rows="20" cols="1" placeholder="MESSAGE"></textarea>-->
+        <!--</div>-->
+      <!--</div>-->
+
+      <!--<div class="col-lg-3 col-md-3">-->
+        <!--<div class="button membership white" style="float:left; margin-right:10px">-->
+          <!--<button class="btn">SUBMIT</button>-->
+        <!--</div>-->
+        <!--<div class="button membership" style="float:left; ">-->
+          <!--<button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</section>-->
+

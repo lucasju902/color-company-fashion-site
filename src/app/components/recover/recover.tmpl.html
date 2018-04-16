@@ -1,0 +1,65 @@
+<div class="recover-page">
+  <section>
+    <div class="container-fluid text-center title">
+      <div class="row">
+        <div class="col-lg-12">
+          <h3>Recover the Email on Your HUEGROUP Account</h3>
+          <div class="line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container-fluid text-center recover-content">
+      <div class="row black-text">
+        <div class="success afade" ng-show="$ctrl.successRequest">
+          <div class="col-lg-12">
+            <b class="black-text">We found a HUEGROUP account that matches the information you provided.
+              The account is associated with following email address:</b>
+          </div>
+          <div class="col-lg-12">
+            <b class="red-text">
+              anat@huegroup.com
+            </b>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+          <div class="initial" ng-hide="$ctrl.successRequest">
+            <div class="rec-item">
+              <b class="black-text">Enter your email</b>
+            </div>
+            <div class="membership-form">
+              <input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email" placeholder="EMAIL">
+              <div ng-show="$ctrl.error" class="error-message afade text-left" style="bottom: -20px; top: auto">
+                <span>ERROR: </span>{{$ctrl.error}}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="button login-btn">
+              <button ng-click="$ctrl.onSendLoginClick()" class="btn">
+                {{$ctrl.successRequest ? 'LOGIN' : 'SEND'}}
+              </button>
+            </div>
+          </div>
+
+          <div class="rec-item">
+            <span class="get-help">
+              Get help with something else
+            </span>
+          </div>
+
+          <div class="rec-item">
+            <span>
+              Don't remember the password for this account?
+              <a>Reset your password</a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

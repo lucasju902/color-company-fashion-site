@@ -1,0 +1,63 @@
+<section ng-class="{'hide': $ctrl.hidePrefooter()}" class="prefooter" id="prefooter">
+  <div class="container-fluid ">
+    <div class="row">
+      <div class="col-lg-6 col-md-12 ">
+        <div class="box">
+          <h4>Stay Connected</h4>
+          <form name="subscriber">
+            <div id="stay-connected">
+              <input placeholder="Email Address" name="email" id="email" type="text" ng-model="$ctrl.email"
+                     ng-class="'ng-dirty' && subscriber.email.$invalid ?  'error' :''" required>
+            </div>
+            <div class="button submit" style="">
+              <button class="btn" ng-click="$ctrl.submitEmail()" ng-disabled="subscriber.$invalid">Submit</button>
+            </div>
+            <div class="stay-connected-checkboxes">
+              <p>
+                <input type="checkbox" id="test1" ng-model="$ctrl.permissions['Daily Insights']"/>
+                <label for="test1">Daily Insight</label>
+              </p>
+              <p><input type="checkbox" id="test2" ng-model="$ctrl.permissions['Research Partner']"/>
+                <label for="test2">Research Reports</label>
+              </p>
+              <p>
+                <input type="checkbox" id="test3" ng-model="$ctrl.permissions['Education Offerings']"/>
+                <label for="test3">Education Offerings</label>
+              </p>
+              <p>
+                <input type="checkbox" id="test4" ng-model="$ctrl.relationship['Expert Panelist']"/>
+                <label for="test4">Join Expert Panel</label>
+              </p></div>
+          </form>
+          <div style="clear:both;margin-top:10px"></div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-12">
+        <div class="box" id="qwe"><h4>Become a Member</h4>
+          <p>Members use our color analytics and insights to benchmark their color decisions and
+            prioritize opportunities to maximize the business impact of color in their offerings</p>
+          <div class="button learn-more submit">
+            <button class="btn" ui-sref="membership({scrollTo: true})" ng-click="$ctrl.scroll()">Learn more</button>
+          </div>
+          <div style="clear:both;margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="container-fluid">
+  <div class="row">
+    <div class="col-lg-2 col-md-12 text-center">
+      <img src="../assets/images/logo-black.png" id="logo" alt="logo">
+    </div>
+
+    <div class="col-lg-10 col-md-12  text-center">
+      <p id="copyrights">© 2017 HUEGROUP. All Rights Reserved</p>
+      <ul>
+        <li><a ui-sref="terms">Terms of Use</a></li>
+        <li><a ui-sref="privacy">Privacy Policy</a></li>
+        <li><a ui-sref="contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,26 @@
+<section>
+  <div class="container-fluid  text-center title" ng-init="$ctrl.init()">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2"><h3>Publication Schedule</h3>
+        <div class="line"></div>
+      </div>
+      <div class="col-lg-2">
+        <div class="button membership">
+          <button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid  text-center schedule">
+    <div class="row">
+      <div class="col-lg-6 col-md-6" ng-repeat="item in $ctrl.result">
+        <h3><b style="color:#bb0076">Q{{item.q}}</b> {{item.year}}</h3>
+        <div ng-bind-html="item.list">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

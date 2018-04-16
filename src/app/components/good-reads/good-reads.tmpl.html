@@ -1,0 +1,38 @@
+<section>
+  <div class="container-fluid  text-center title" ng-init="$ctrl.init()">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <h3>Goods Reads</h3>
+        <div class="line"></div>
+      </div>
+      <div class="col-lg-2">
+        <div class="button membership">
+          <button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid text-left course">
+    <div class="row" ng-repeat="group in $ctrl.groups">
+      <div class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in group">
+        <a ng-href="#!/good-reads/{{item.id}}">
+          <div class="img-responsive background-image"
+               style="background: {{'url(' + item.image_url +') top center'}};
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-color: #e1e1e126;
+                    padding-bottom: 56%;"
+          >
+          </div>
+        </a>
+        <h5>{{item.header}}</h5>
+        <div style="height: 100px; overflow: hidden">
+          <p ng-bind-html="item.description"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

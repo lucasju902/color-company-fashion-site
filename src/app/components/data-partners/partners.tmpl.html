@@ -1,0 +1,21 @@
+<div class="container-fluid header data-partners-header text-center" ng-init="$ctrl.init()">
+  <div class="text-header">
+    <h1>Our Data Partners</h1>
+    <div class="button">
+      <button class="btn" ui-sref="partnershipInquire">Inquire about Data Partnership</button>
+    </div>
+  </div>
+</div>
+<section>
+
+  <div class="container-fluid text-left partners">
+    <div class="row" ng-repeat="group in $ctrl.pageData">
+      <div class="col-lg-4 col-md-4 partner" ng-repeat="item in group">
+        <img ng-if="item.image_url" ng-src="{{item.image_url}}">
+        <h5>{{item.partner_name}}</h5>
+        <p ng-bind-html="item.description"></p>
+        <a>Learn more</a>
+      </div>
+    </div>
+  </div>
+</section>
