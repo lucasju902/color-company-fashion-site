@@ -65,6 +65,14 @@ ui-view {
 .m-b-10 {
   margin-bottom: 10px !important;
 }
+.cutted-text {
+  height: 70px;
+  overflow: hidden;
+
+  p {
+    line-height: 18pt !important;
+  }
+}
 
 .red-text {
   color: #bb0076;
@@ -222,8 +230,6 @@ ui-view {
     .img-responsive {
       width: 100%;
     }
-
-
 
     .text {
       color: black;
@@ -1394,6 +1400,7 @@ input.search {
 .graphic-modal {
   .modal-dialog {
     width: 1000px;
+    max-width: 95%;
   }
 
   .modal-content {

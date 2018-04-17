@@ -1,0 +1,35 @@
+<section>
+  <div class="container-fluid  text-left">
+    <div class="row">
+      <div class="col-lg-6">
+        <h1 style="padding-bottom:0px; margin-top:0px; color:#bb0076"><strong style="color:black;">DAILY </strong>{{item.header}}
+        </h1>
+      </div>
+
+    </div>
+    <div class="dailyinsights"></div>
+
+    <div class="row " style="margin-bottom:50px;">
+      <div class="col-lg-6">
+        <h4 style="padding-top:0px; margin-top:0px">{{item.date}}</h4>
+      </div>
+      <div class="col-lg-6 social-icons">
+        <a><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>
+        <a><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>
+        <a><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid " style="padding-bottom: 50px">
+    <div class="row">
+      <div class="col-lg-5 col-md-5" ng-bind-html="item.description">
+      </div>
+      <div class="col-lg-7 col-md-7 ">
+        <img src="{{item.image_url || '../assets/images/infographic2.jpg'}}" class="img-responsive shadow " style="width:100%" alt="Image">
+      </div>
+    </div>
+  </div>
+</section>

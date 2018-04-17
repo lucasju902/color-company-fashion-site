@@ -1,5 +1,5 @@
 angular.module('app').service('modalService', function ($rootScope, $uibModal) {
-  this.showModal = function (number, img) {
+  this.showModal = function (number, img, item) {
     var arr = [
       {
         tmpl: 'app/components/modal/modal.tmpl.html',
@@ -11,6 +11,10 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
       },
       {
         tmpl: 'app/components/modal/graphic-modal.tmpl.html',
+        class: 'graphic-modal'
+      },
+      {
+        tmpl: 'app/components/modal/dailyModal.tmpl.html',
         class: 'graphic-modal'
       }];
 
@@ -25,6 +29,9 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
           $uibModalInstance.dismiss('cancel');
         };
         $scope.img = img;
+        if (item) {
+          $scope.item = item;
+        }
       },
       windowTopClass: arr[number].class,
       resolve: {}

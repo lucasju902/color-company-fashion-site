@@ -845,6 +845,42 @@ input.search {
   background-color: #fab612;
 }
 
+.hueauto {
+  background-color: dodgerblue;
+}
+
+.huefragrance {
+  background-color: seagreen;
+}
+
+.hueinterior {
+  background-color: indianred;
+}
+
+.huelegal {
+  background-color: khaki;
+}
+
+.huepaint {
+  background-color: mediumspringgreen;
+}
+
+.huepharmaceuticals {
+  background-color: tomato;
+}
+
+.huecourse {
+  background-color: chocolate;
+}
+
+.hueteaching {
+  background-color: darkolivegreen;
+}
+
+.huematerial {
+  background-color: midnightblue;
+}
+
 .dailyinsights {
   border-bottom: 5px solid #bb0076;
   margin-left: 18px;
