@@ -41,5 +41,8 @@ angular
           .then(function (res) {
           });
       };
+      vm.makeDate = function (item) {
+        return moment(item.data.published_year+'-'+item.data.published_month+'-'+item.data.published_day).format('MMMM D, YYYY')
+      }
     }
   });

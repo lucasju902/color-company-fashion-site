@@ -1,28 +1,16 @@
-<section id="daily-insight" ng-init="$ctrl.init()" ng-if="$ctrl.emptyData">
+<section id="daily-insight" ng-if="$ctrl.emptyData">
   <div class="container-fluid  text-left">
     <div class="row">
       <div class="col-lg-6">
         <h1 style="padding-bottom:0px; margin-top:0px; color:#bb0076"><strong style="color:black;">DAILY </strong>{{$ctrl.pageData.header}}
         </h1>
       </div>
-
-      <!--
-              <div class="col-lg-6 dailyinsights_menu">
-                            <ul>
-                                   <li><a href="#">Top Articles</a></li>
-                                   <li><a href="#">What We're Reading</a></li>
-                                   <li><a href="#">No Mercy / No Malice</a></li>
-                                   <li><a href="#">Winners & Losers</a></li>
-                              </ul>
-                          </div>
-      -->
-
     </div>
     <div class="dailyinsights"></div>
 
     <div class="row " style="margin-bottom:50px;">
       <div class="col-lg-6">
-        <h4 style="padding-top:0px; margin-top:0px">{{$ctrl.pageData.date}}</h4>
+        <h4 style="padding-top:0; margin-top:0">{{$ctrl.pageData.date}}</h4>
       </div>
       <div class="col-lg-6 social-icons">
         <a><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>
@@ -34,7 +22,9 @@
 </section>
 
 <section ng-if="$ctrl.emptyData">
-  <div class="container-fluid ">
+  <div class="container-fluid " style="border-bottom: solid 2px;
+    border-color: #bb0076;
+    padding-bottom: 50px;">
     <div class="row">
 
       <div class="col-lg-5 col-md-5" ng-bind-html="$ctrl.pageData.description">
@@ -42,7 +32,8 @@
       </div>
 
       <div class="col-lg-7 col-md-7 ">
-        <img src="{{$ctrl.pageData.image_url || '../assets/images/infographic2.jpg'}}" class="img-responsive shadow " style="width:100%" alt="Image">
+        <img ng-src="{{$ctrl.pageData.image_url || '../assets/images/insights.jpg'}}" class="img-responsive shadow "
+             style="width:100%" alt="Image">
       </div>
     </div>
   </div>
@@ -55,18 +46,6 @@
         <h1 style="padding-bottom:0px; margin-top:0px; color:#bb0076"><strong style="color:black;">DAILY </strong>
         </h1>
       </div>
-
-      <!--
-              <div class="col-lg-6 dailyinsights_menu">
-                            <ul>
-                                   <li><a href="#">Top Articles</a></li>
-                                   <li><a href="#">What We're Reading</a></li>
-                                   <li><a href="#">No Mercy / No Malice</a></li>
-                                   <li><a href="#">Winners & Losers</a></li>
-                              </ul>
-                          </div>
-      -->
-
     </div>
     <div class="dailyinsights"></div>
 
@@ -74,6 +53,32 @@
       <div class="col-lg-6">
         <h4 style="padding-top:0px; margin-top:0px"><em>Nothing found. Please try later</em></h4>
       </div>
+    </div>
+  </div>
+</section>
+
+<section ng-if="$ctrl.emptyData">
+  <div class="container-fluid  text-left course">
+    <div class="row">
+      <a style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in  $ctrl.items">
+        <div class="category {{'hue' + item.hue.toLowerCase()}} text-center"><p>{{item.hue}}</p></div>
+        <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item)"
+             style="background: {{'url(' + item.image_url +') top center'}};
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    padding-bottom: 56%;
+                    background-color: #e1e1e126;"
+        >
+        </div>
+        <h5>{{item.header}}</h5>
+        <div class="cutted-text" ng-bind-html="item.description"></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="row" ng-if="$ctrl.allDailies.length > $ctrl.items.length">
+    <div class="col-lg-12 text-center">
+      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
     </div>
   </div>
 </section>

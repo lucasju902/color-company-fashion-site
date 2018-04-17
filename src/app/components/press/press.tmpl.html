@@ -89,7 +89,7 @@
           <div class="list-item" ng-repeat="item in $ctrl.pageData.data">
             <div>
               <span class="list-category">{{item.data.publication}}</span>
-              <span class="list-date">{{item.data.published_day + '.' + item.data.published_month + '.' + item.data.published_year}}</span>
+              <span class="list-date">{{$ctrl.makeDate(item)}}</span>
             </div>
             <div class="list-text">{{item.data.header}}</div>
           </div>
