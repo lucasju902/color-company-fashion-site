@@ -833,6 +833,42 @@ input.search {
   top: 5px;
 }
 
+.Brand {
+  background-color: #fc0514;
+}
+
+.Fashion {
+  background-color: #24e9e2;
+}
+
+.Beauty {
+  background-color: #fc23fc;
+}
+
+.Teaching {
+  background-color: #5d5d5d;
+}
+
+.Auto {
+  background-color: #fd8d20;
+}
+
+.Interior {
+  background-color: #964a07;
+}
+
+.Legal {
+  background-color: #031ffb;
+}
+
+.Course {
+  background-color: #8b098a;
+}
+
+.Material {
+  background-color: #fedf2e;
+}
+
 .dailyinsights {
   border-bottom: 5px solid #bb0076;
   margin-left: 18px;
