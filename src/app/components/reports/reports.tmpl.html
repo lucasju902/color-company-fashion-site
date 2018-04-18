@@ -26,14 +26,7 @@
         <div class="select-style">
           <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select()">
             <option>VERTICALS</option>
-            <option>Fashion</option>
-            <option disabled>Auto</option>
-            <option disabled>Brand</option>
-            <option disabled>Fragrance</option>
-            <option disabled>Interior</option>
-            <option disabled>Legal</option>
-            <option disabled>Paint</option>
-            <!--<option ng-repeat="item in $ctrl.hue">{{item}}</option>-->
+            <option ng-repeat="item in $ctrl.hue">{{item}}</option>
           </select>
         </div>
       </div>
@@ -61,7 +54,7 @@
   <div class="container-fluid  text-left report">
     <div class="row" ng-repeat="group in $ctrl.groups">
       <div style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in group">
-        <div class="category {{'hue' + item.hue.toLowerCase()}} text-center"><p>{{item.hue}}</p></div>
+        <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
         <div class="img-responsive background-image"
              style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;
