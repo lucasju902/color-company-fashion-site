@@ -1,9 +1,11 @@
 # Frontend insctructions:
+```
 npm install -g generator-fountain-angular1
 npm i
 bower i => choose angular v1.6.2
 RUN: npm run serve
 BUILD: npm run build
+```
 
 
 # node-js-getting-started
