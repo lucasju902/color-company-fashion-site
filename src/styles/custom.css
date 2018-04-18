@@ -833,52 +833,40 @@ input.search {
   top: 5px;
 }
 
-.huebeauty {
-  background-color: #bb0076;
+.Brand {
+  background-color: #fc0514;
 }
 
-.huefashion {
-  background-color: #58de33;
+.Fashion {
+  background-color: #24e9e2;
 }
 
-.huebrand {
-  background-color: #fab612;
+.Beauty {
+  background-color: #fc23fc;
 }
 
-.hueauto {
-  background-color: dodgerblue;
+.Teaching {
+  background-color: #5d5d5d;
 }
 
-.huefragrance {
-  background-color: seagreen;
+.Auto {
+  background-color: #fd8d20;
 }
 
-.hueinterior {
-  background-color: indianred;
+.Interior {
+  background-color: #964a07;
 }
 
-.huelegal {
-  background-color: khaki;
+.Legal {
+  background-color: #031ffb;
 }
 
-.huepaint {
-  background-color: mediumspringgreen;
+.Course {
+  background-color: #8b098a;
 }
 
-.huepharmaceuticals {
-  background-color: tomato;
-}
-
-.huecourse {
-  background-color: chocolate;
-}
-
-.hueteaching {
-  background-color: darkolivegreen;
-}
-
-.huematerial {
-  background-color: midnightblue;
+.Material {
+  background-color: #fedf2e;
 }
 
 .dailyinsights {

@@ -61,7 +61,7 @@
   <div class="container-fluid  text-left course">
     <div class="row">
       <a style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in  $ctrl.items">
-        <div class="category {{'hue' + item.hue.toLowerCase()}} text-center"><p>{{item.hue}}</p></div>
+        <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
         <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item)"
              style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;

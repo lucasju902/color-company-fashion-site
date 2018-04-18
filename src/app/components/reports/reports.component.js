@@ -10,7 +10,8 @@ angular
       vm.yearModel = 'YEAR';
       vm.pageData = {};
       vm.cacheItems = [];
-      vm.hue = ['Auto', 'Brand', 'Fashion', 'Fragrance', 'Interior', 'Legal', 'Paint'];
+      vm.hue = ['Auto', 'Beauty', 'Legal', 'Course', 'Teaching', 'Material'];
+
       vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
       vm.year = [];
       var lastYear = moment().year();

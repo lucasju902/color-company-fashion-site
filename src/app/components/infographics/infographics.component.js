@@ -35,7 +35,7 @@ angular
                 }
               });
               vm.year = _.range(lastYear, moment().year() + 1);
-              vm.hue = ['Fashion', 'Brand', 'Auto', 'Fragrance', 'Interior', 'Legal', 'Paint', 'Pharmaceuticals'];
+              vm.hue = ['Auto', 'Beauty', 'Legal', 'Course', 'Teaching', 'Material'];
               vm.select();
             }
           });
