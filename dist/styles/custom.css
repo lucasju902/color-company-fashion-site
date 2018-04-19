@@ -845,10 +845,6 @@ input.search {
   background-color: #fc23fc;
 }
 
-.Teaching {
-  background-color: #5d5d5d;
-}
-
 .Auto {
   background-color: #fd8d20;
 }
@@ -858,7 +854,11 @@ input.search {
 }
 
 .Legal {
-  background-color: #031ffb;
+  background-color: #0f7f11;
+}
+
+.Teaching {
+  background-color: #8b098a;
 }
 
 .Course {
@@ -866,7 +866,7 @@ input.search {
 }
 
 .Material {
-  background-color: #fedf2e;
+  background-color: #8b098a;
 }
 
 .dailyinsights {
