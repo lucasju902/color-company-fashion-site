@@ -52,8 +52,8 @@
 
 <section>
   <div class="container-fluid  text-left report">
-    <div class="row" ng-repeat="group in $ctrl.groups">
-      <div style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in group">
+    <div class="row">
+      <div style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in $ctrl.items">
         <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
         <div class="img-responsive background-image"
              style="background: {{'url(' + item.image_url +') top center'}};
@@ -71,7 +71,7 @@
       </div>
     </div>
   </div>
-  <div class="row" ng-if="$ctrl.pageData.length > 3">
+  <div class="row" ng-if="$ctrl.filterData.length > $ctrl.items.length">
     <div class="col-lg-12 text-center">
       <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
     </div>

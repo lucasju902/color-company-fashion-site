@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" ng-if="$ctrl.allDailies.length > $ctrl.items.length">
     <div class="col-lg-12 text-center">
       <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
     </div>
