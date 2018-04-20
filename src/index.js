@@ -44,10 +44,10 @@ angular.module('app').constant('appConfig', {
   autoServiceUrl: 'https://hueauto.herokuapp.com/api/',
   brandingServiceUrl: 'https://huebrand.herokuapp.com/api/',
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
-  authServiceUrl: 'http://localhost:5000',
-  // authServiceUrl: '',
-  dashboardServiceUrl: 'http://localhost:3000/',
-  // dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  // authServiceUrl: 'http://localhost:5000',
+  authServiceUrl: '',
+  // dashboardServiceUrl: 'http://localhost:3000/',
+  dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
 
   repositories: {
     mainParams: ['region_id', 'designer_id', 'category_id', 'season_id', 'year', 'city_id']
