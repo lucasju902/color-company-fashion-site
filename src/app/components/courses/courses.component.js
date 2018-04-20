@@ -13,6 +13,7 @@ angular
       vm.topicModel = 'TOPIC';
       vm.providerModel = 'PROVIDER';
       vm.levelModel = 'LEVEL';
+      vm.items = [];
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'courses.json')
@@ -37,12 +38,12 @@ angular
       };
 
       vm.more = function () {
-        vm.groups = _.chunk(angular.copy(vm.filterDate), 3);
+        vm.items = angular.copy(vm.filterData.slice(0, vm.items.length + 3));
       };
 
       vm.select = function () {
         if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.level.includes(vm.levelModel)) {
-          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
+          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
             if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.course_topic) &&
               (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.course_provider) &&
               (!vm.level.includes(vm.levelModel) || vm.levelModel === t.course_level)) {
@@ -50,10 +51,9 @@ angular
             }
           });
         } else {
-          vm.filterDate = angular.copy(vm.cacheItems);
+          vm.filterData = angular.copy(vm.cacheItems);
         }
-        vm.groups = [];
-        vm.groups = _.chunk(angular.copy(vm.filterDate).slice(0, 3), 3);
+        vm.more();
       };
     }
   });

@@ -74,11 +74,11 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
 
   $stateProvider
-  .state('reportsDetails', {
-    url: '/reports/:id',
-    component: 'reportsDetailsComponent',
-    protected: true
-  });
+    .state('reportsDetails', {
+      url: '/reports/:id',
+      component: 'reportsDetailsComponent',
+      protected: true
+    });
 
   $stateProvider
     .state('dailyInsights', {
@@ -93,10 +93,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
 
   $stateProvider
-  .state('infographicsDetails', {
-    url: '/infographics/:id',
-    component: 'infographicsDetailsComponent'
-  });
+    .state('infographicsDetails', {
+      url: '/infographics/:id',
+      component: 'infographicsDetailsComponent'
+    });
 
   $stateProvider
     .state('customizedInfographics', {
@@ -124,10 +124,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
 
   $stateProvider
-  .state('goodReadsDetails', {
-    url: '/good-reads/:id',
-    component: 'goodReadsDetailsComponent'
-  });
+    .state('goodReadsDetails', {
+      url: '/good-reads/:id',
+      component: 'goodReadsDetailsComponent'
+    });
 
   $stateProvider
     .state('teachingMaterials', {
@@ -136,10 +136,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
 
   $stateProvider
-  .state('teachingDetailsMaterials', {
-    url: '/teaching-materials/:id',
-    component: 'teachingMaterialsDetailsComponent'
-  });
+    .state('teachingDetailsMaterials', {
+      url: '/teaching-materials/:id',
+      component: 'teachingMaterialsDetailsComponent'
+    });
 
   $stateProvider
     .state('courses', {
@@ -148,10 +148,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
 
   $stateProvider
-  .state('coursesDetails', {
-    url: '/courses/:id',
-    component: 'coursesDetailsComponent'
-  });
+    .state('coursesDetails', {
+      url: '/courses/:id',
+      component: 'coursesDetailsComponent'
+    });
 
   $stateProvider
     .state('privacy', {
@@ -194,7 +194,6 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/education-inquire',
       component: 'inquiriesComponent'
     });
-
 
   $stateProvider
     .state('detailedPage', {
@@ -379,6 +378,12 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       parent: 'branding',
       url: '/country',
       templateUrl: 'app/components/dashboards/branding/country/country.tmpl.html'
+    });
+
+  $stateProvider
+    .state('thank-you', {
+      url: '/thank-you:parFrom',
+      component: 'thankYouComponent'
     });
 }
 

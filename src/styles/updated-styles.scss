@@ -302,7 +302,7 @@ ui-view {
     font-weight: normal;
     margin: 0;
     position: absolute;
-    top: 16px;
+    top: 22%;
     left: 10px;
 
     span {
@@ -311,6 +311,24 @@ ui-view {
       vertical-align: middle;
     }
   }
+}
+
+.thanksBtn {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 14px 20px 14px 20px;
+  background-color: white;
+  color: #bb0076;
+  border: solid 2px #bb0076;
+  transition: background-color 0.2s ease;
+  min-width: 134px;
+}
+
+.thanksBtn:hover {
+  background-color: #bb0076;
+  color: white;
+  border: solid 2px #bb0076;
+  min-width: 134px;
 }
 
 .recover-page {

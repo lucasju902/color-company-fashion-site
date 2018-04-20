@@ -41,7 +41,7 @@ angular
           });
       };
       vm.more = function () {
-        vm.items = angular.copy(vm.filterDate.slice(0, vm.items.length + 3));
+        vm.items = angular.copy(vm.filterData.slice(0, vm.items.length + 3));
       };
 
       vm.onGraphicClick = function (event) {
@@ -52,14 +52,14 @@ angular
 
       vm.select = function () {
         if (vm.hue.includes(vm.hueModel) || vm.year.includes(vm.yearModel)) {
-          vm.filterDate = angular.copy(vm.pageData.filter(function (t) {
+          vm.filterData = angular.copy(vm.pageData.filter(function (t) {
             if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
               (!vm.year.includes(vm.yearModel) || vm.yearModel === t.published_year)) {
               return t;
             }
           }));
         } else {
-          vm.filterDate = angular.copy(vm.pageData);
+          vm.filterData = angular.copy(vm.pageData);
         }
         vm.items = [];
         vm.more();

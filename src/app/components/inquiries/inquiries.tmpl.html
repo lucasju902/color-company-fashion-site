@@ -3,10 +3,8 @@
     <h3>{{$ctrl.caption}}</h3>
     <div class="line"></div>
   </div>
-
-  <div class="container-fluid">
-    <form name="inquiries">
-    <div class="row">
+  <div class="row">
+    <div class="container-fluid">
       <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 justify">
         <p>Huegroup color intelligence helps you benchmark your color performance relative to trends and competitors,
           inspires your color innovation, optimizes color decisions for your customer segment and supports rationalizing
@@ -30,111 +28,124 @@
           to customize color training programs and teching materials leveraging Huegroup rich color
           datasets, analytics and insights</p>
       </div>
-      <div class="col-lg-4 col-md-4 membership-form">
+      <form name="inquiries">
+        <div class="col-lg-4 col-md-4 membership-form">
 
-        <div class="membr-block">
-          <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
-                 ng-class="'ng-dirty' && inquiries.FirstName.$invalid ?  'error' :''" required>
-          <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
+          <div class="membr-block">
+            <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
+                   ng-class="'ng-dirty' && inquiries.FirstName.$invalid ?  'error' :''" required>
+            <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
+          </div>
+
+          <div class="membr-block">
+            <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
+                   ng-class="'ng-dirty' && inquiries.LastName.$invalid ?  'error' :''" required>
+            <label for="lastName">LAST NAME <span class="red-text">*</span></label>
+          </div>
+
+          <div class="membr-block">
+            <input ng-model="$ctrl.email" ng-value="$ctrl.email" type="text" id="email" name="email"
+                   ng-class="'ng-dirty' && inquiries.Email.$invalid ?  'error' :''" required>
+            <label for="email">EMAIL <span class="red-text">*</span></label>
+          </div>
+
+          <div class="membr-block">
+            <input ng-if="$ctrl.inquire3" ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="institute"
+                   name="institute"
+                   ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" required>
+            <label for="institute">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>
+          </div>
+
+          <div class="membr-block">
+            <input ng-if="$ctrl.inquire1 || $ctrl.inquire2" ng-model="$ctrl.company" ng-value="$ctrl.company"
+                   type="text" id="Company" name="Company"
+                   ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" required>
+            <label for="Company">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>
+          </div>
+
+          <div class="membr-block">
+            <input ng-model="$ctrl.jobTitle" ng-value="$ctrl.jobTitle" type="text" id="jobtitle" name="jobtitle"
+                   ng-class="'ng-dirty' && inquiries.jobtitle.$invalid ?  'error' :''" required>
+            <label for="jobtitle">JOB TITLE <span class="red-text">*</span></label>
+          </div>
+
+          <div class="select-style">
+            <select ng-model="$ctrl.data.jobFunction" required>
+              <option value="">PLEASE SELECT JOB FUNCTION*</option>
+              <option ng-repeat="job in $ctrl.jobs" value="{{job}}">{{job}}</option>
+            </select>
+          </div>
+
+
+          <div class="select-style">
+            <select ng-model="$ctrl.data.compamySize" required>
+              <option value="">PLEASE SELECT COMPANY SIZE*</option>
+              <option ng-repeat="size in $ctrl.companySizes" value="{{size}}">{{size}}</option>
+            </select>
+          </div>
+
+          <div class="select-style">
+            <select ng-model="$ctrl.data.industry" required>
+              <option value="" required>PLEASE SELECT INDUSTRY*</option>
+              <option ng-repeat="ind in $ctrl.industries" value="{{ind}}">{{ind}}</option>
+            </select>
+          </div>
+
+          <div class="select-style">
+            <select ng-model="$ctrl.data.country" required>
+              <option value="">PLEASE SELECT COUNTRY*</option>
+              <option ng-repeat="cntry in $ctrl.countries" value="{{cntry}}">{{cntry}}</option>
+            </select>
+          </div>
+
+          <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.tellUsColorData" ng-value="$ctrl.data.tellUsColorData"
+                    placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS"></textarea>
+          <textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.tellUsEduInt" ng-value="$ctrl.data.tellUsEduInt"
+                    placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS"></textarea>
+
+          <div ng-if="$ctrl.inquire2" class="button">
+            <button ng-click="$ctrl.send('data')" class="btn pull-right">
+              SUBMIT INQUIRY
+            </button>
+          </div>
+          <div ng-if="$ctrl.inquire3" class="button">
+            <button ng-click="$ctrl.send('edu')" class="btn pull-right">
+              SUBMIT INQUIRY
+            </button>
+          </div>
+
         </div>
 
-        <div class="membr-block">
-          <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
-                 ng-class="'ng-dirty' && inquiries.LastName.$invalid ?  'error' :''" required>
-          <label for="lastName">LAST NAME <span class="red-text">*</span></label>
+        <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 membership-form">
+          <h4>Join our Email list</h4>
+          <div>
+            <p style="float: none">
+              <input ng-model="$ctrl.data.permissions['Daily Insights']" type="checkbox" id="dailyInsight"/>
+              <label for="dailyInsight">Daily Insight</label>
+            </p>
+            <p style="float: none">
+              <input ng-model="$ctrl.data.permissions['Research Partner']" type="checkbox" id="researchReport"/>
+              <label for="researchReport">Research Reports</label>
+            </p>
+            <p style="float: none">
+              <input ng-model="$ctrl.data.permissions['Education Offerings']" ng-value="$ctrl.educationOfferings"
+                     type="checkbox"
+                     id="educationOfferings"/>
+              <label for="educationOfferings">Education Offerings</label>
+            </p>
+            <p style="float: none">
+              <input ng-model="$ctrl.data.relationship['Expert Panelist']" type="checkbox" id="joinPanel"/>
+              <label for="joinPanel">Join Expert Panel</label>
+            </p>
+          </div>
+
+          <div class="button">
+            <button ng-if="$ctrl.inquire1" ng-click="$ctrl.send('inquire')" class="btn">
+              SUBMIT INQUIRY
+            </button>
+          </div>
+
         </div>
-
-        <div class="membr-block">
-          <input ng-model="$ctrl.email" ng-value="$ctrl.email" type="text" id="email" name="email"
-                 ng-class="'ng-dirty' && inquiries.Email.$invalid ?  'error' :''" required>
-          <label for="email">EMAIL <span class="red-text">*</span></label>
-        </div>
-
-        <div class="membr-block">
-          <input ng-if="$ctrl.inquire3" ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="institute" name="institute"
-                 ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" required>
-          <label for="institute">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>
-        </div>
-
-        <div class="membr-block">
-          <input ng-if="$ctrl.inquire1 || $ctrl.inquire2" ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="Company" name="Company"
-                 ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" required>
-          <label for="Company">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>
-        </div>
-
-        <div class="membr-block">
-          <input ng-model="$ctrl.jobTitle" ng-value="$ctrl.jobTitle" type="text" id="jobtitle" name="jobtitle"
-                 ng-class="'ng-dirty' && inquiries.jobtitle.$invalid ?  'error' :''" required>
-          <label for="jobtitle">JOB TITLE <span class="red-text">*</span></label>
-        </div>
-
-        <div class="select-style">
-          <select ng-model="$ctrl.data.jobFunction" required>
-            <option value="">PLEASE SELECT JOB FUNCTION*</option>
-            <option ng-repeat="job in $ctrl.jobs" value="{{job}}">{{job}}</option>
-          </select>
-        </div>
-
-
-        <div class="select-style">
-          <select ng-model="$ctrl.data.compamySize" required>
-            <option value="">PLEASE SELECT COMPANY SIZE*</option>
-            <option ng-repeat="size in $ctrl.companySizes" value="{{size}}">{{size}}</option>
-          </select>
-        </div>
-
-        <div class="select-style">
-          <select ng-model="$ctrl.data.industry" required>
-            <option value="" required>PLEASE SELECT INDUSTRY*</option>
-            <option ng-repeat="ind in $ctrl.industries" value="{{ind}}">{{ind}}</option>
-          </select>
-        </div>
-
-        <div class="select-style">
-          <select ng-model="$ctrl.data.country" required>
-            <option value="">PLEASE SELECT COUNTRY*</option>
-            <option ng-repeat="cntry in $ctrl.countries" value="{{cntry}}">{{cntry}}</option>>
-          </select>
-        </div>
-
-        <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.tellUsColorData" ng-value="$ctrl.data.tellUsColorData"
-                  placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" ></textarea>
-        <textarea  ng-if="$ctrl.inquire3" ng-model="$ctrl.data.tellUsEduInt" ng-value="$ctrl.data.tellUsEduInt"
-                  placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" ></textarea>
-
-        <div ng-if="$ctrl.inquire2 ||$ctrl.inquire3" class="button">
-          <button ng-click="$ctrl.send()" class="btn pull-right" ng-disabled="inquiries.$invalid">SUBMIT INQUIRY</button>
-        </div>
-
-      </div>
-
-      <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 membership-form">
-        <h4>Join our Email list</h4>
-        <div>
-          <p style="float: none">
-            <input ng-model="$ctrl.data.permissions['Daily Insights']" type="checkbox" id="dailyInsight"/>
-            <label for="dailyInsight">Daily Insight</label>
-          </p>
-          <p style="float: none">
-            <input ng-model="$ctrl.data.permissions['Research Partner']" type="checkbox" id="researchReport"/>
-            <label for="researchReport">Research Reports</label>
-          </p>
-          <p style="float: none">
-            <input ng-model="$ctrl.data.permissions['Education Offerings']" ng-value="$ctrl.educationOfferings" type="checkbox"
-                   id="educationOfferings"/>
-            <label for="educationOfferings">Education Offerings</label>
-          </p>
-          <p style="float: none">
-            <input ng-model="$ctrl.data.relationship['Expert Panelist']" type="checkbox" id="joinPanel"/>
-            <label for="joinPanel">Join Expert Panel</label>
-          </p>
-        </div>
-
-        <div class="button">
-          <button ng-if="$ctrl.inquire1" ng-click="$ctrl.send()" class="btn" ng-disabled="inquiries.$invalid">SUBMIT INQUIRY</button>
-        </div>
-
-      </div>
 
     </div>
     </form>

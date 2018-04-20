@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('contactUsComponent', {
     templateUrl: 'app/components/contact-us/contact-us.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($window, $http, appConfig) {
       this.firstName = '';
       this.lastName = '';
       this.title = '';
@@ -24,7 +24,10 @@ angular
         $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
           params: user
         }).then(function (res) {
-          });
+          if (res.data.status === 'ok') {
+            $window.location.href = '#!/thank-youcontact';
+          }
+        });
       };
     }
   });

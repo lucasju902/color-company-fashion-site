@@ -168,7 +168,6 @@
 
   <div class="container-fluid">
     <div class="row">
-      <form name="membership">
       <div class="col-lg-4 col-md-4 justify">
         <p>Huegroup color intelligence helps you benchmark your color
           performance relative to trends and competitors, inspires your color
@@ -182,6 +181,7 @@
           materials<br>
         </p>
       </div>
+      <form name="membership">
       <div class="col-lg-4 col-md-4 membership-form">
         <div class="membr-block">
           <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
@@ -269,7 +269,7 @@
         </div>
 
         <div class="button">
-          <buton class="btn" ng-click="$ctrl.submitInquiry()" ng-disabled="membership.$invalid">SUBMIT INQUIRY</buton>
+          <buton class="btn" ng-click="$ctrl.submitInquiry()">SUBMIT INQUIRY</buton>
         </div>
       </div>
       </form>

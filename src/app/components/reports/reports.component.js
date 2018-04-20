@@ -14,6 +14,7 @@ angular
 
       vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
       vm.year = [];
+      vm.items = [];
       var lastYear = moment().year();
 
       vm.init = function () {
@@ -42,13 +43,12 @@ angular
       };
 
       vm.more = function () {
-        vm.groups = _.chunk(angular.copy(vm.filterDate), 3);
+        vm.items = angular.copy(vm.filterData.slice(0, vm.items.length + 3));
       };
 
       vm.select = function () {
-        vm.groups = [];
         if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
-          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
+          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
             if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
               (!vm.report.includes(vm.reportModel) || vm.reportModel === t.report_style) &&
               (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
@@ -56,9 +56,9 @@ angular
             }
           });
         } else {
-          vm.filterDate = angular.copy(vm.cacheItems);
+          vm.filterData = angular.copy(vm.cacheItems);
         }
-        vm.groups = _.chunk(angular.copy(vm.filterDate).slice(0, 3), 3);
+        vm.more();
       };
     }
   });

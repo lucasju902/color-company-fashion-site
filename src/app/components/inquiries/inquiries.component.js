@@ -2,8 +2,12 @@ angular
   .module('app')
   .component('inquiriesComponent', {
     templateUrl: 'app/components/inquiries/inquiries.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues) {
+    controller: function ($window, $state, $http, appConfig, categoryValues) {
       var currentName = $state.current.name;
+
+      var vlidationRules = {
+        company: {}
+      }
 
       this.jobs = categoryValues('job function');
       this.companySizes = categoryValues('company size');
@@ -15,40 +19,6 @@ angular
       this.email = '';
       this.lastName = '';
       this.firstName = '';
-
-      this.send = function () {
-        var data = {
-          first_name: this.firstName,
-          last_name: this.lastName,
-          email: this.email,
-          company: this.company,
-          job_title: this.jobTitle,
-          job_function: this.data.jobFunction,
-          company_size: this.data.compamySize,
-          industry: this.data.industry,
-          country: this.data.country,
-          description: this.data.tellUsColorData || this.data.tellUsEduInt || ''
-        };
-
-        if (this.data.permissions) {
-          data.permissions = [];
-          for (var i in this.data.permissions) {
-            if (this.data.permissions[i]) {
-              data.permissions.push(i);
-            }
-          }
-          data.permissions = JSON.stringify(data.permissions);
-        }
-        if (this.data.permissions) {
-          if (this.data.relationship['Expert Panelist']) {
-            data.relationship = 'Expert Panelist';
-          }
-        }
-        $http.get(appConfig.dashboardServiceUrl + this.url, {
-          params: data
-        }).then(function () {
-        });
-      };
 
       switch (currentName) {
         case 'productInquiry':
@@ -79,7 +49,44 @@ angular
           this.inquire3 = true;
           break;
       }
+
+      this.send = function (inquiryType) {
+        var data = {
+          first_name: this.firstName,
+          last_name: this.lastName,
+          email: this.email,
+          company: this.company,
+          job_title: this.jobTitle,
+          job_function: this.data.jobFunction,
+          company_size: this.data.compamySize,
+          industry: this.data.industry,
+          country: this.data.country,
+          description: this.data.tellUsColorData || this.data.tellUsEduInt || ''
+        };
+
+        if (this.data.permissions) {
+          data.permissions = [];
+          for (var i in this.data.permissions) {
+            if (this.data.permissions[i]) {
+              data.permissions.push(i);
+            }
+          }
+          data.permissions = JSON.stringify(data.permissions);
+        }
+        if (this.data.permissions) {
+          if (this.data.relationship['Expert Panelist']) {
+            data.relationship = 'Expert Panelist';
+          }
+        }
+        $http.get(appConfig.dashboardServiceUrl + this.url, {
+          params: data
+        }).then(function (res) {
+          if (res.data.status === 'ok') {
+            $window.location.href = '#!/thank-you' + inquiryType;
+          }
+        });
+      }
+      ;
     }
-  });
-
-
+  })
+;
