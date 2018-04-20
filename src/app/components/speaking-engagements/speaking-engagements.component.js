@@ -4,6 +4,13 @@ angular
     templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
     controller: function ($http, appConfig) {
       var vm = this;
+      vm.lastName = '';
+      vm.firstName = '';
+      vm.jobTitle = '';
+      vm.email = '';
+      vm.company = '';
+      vm.request = '';
+      vm.message = '';
       vm.pageData = {};
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
@@ -25,7 +32,7 @@ angular
           firstName: vm.firstName,
           lastName: vm.lastName,
           email: vm.email,
-          jobtitle: vm.jobtitle,
+          jobtitle: vm.jobTitle,
           company: vm.company,
           request: vm.request,
           message: vm.message
@@ -34,6 +41,9 @@ angular
           params: forSend
         })
           .then(function (res) {
+            if (res.data.status === 'ok') {
+              $window.location.href = '#!/thank-youspeaking';
+            }
           });
       };
     }

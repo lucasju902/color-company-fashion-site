@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('pressComponent', {
     templateUrl: 'app/components/press/press.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($window, $http, appConfig) {
       var vm = this;
       vm.firstName = '';
       vm.lastName = '';
@@ -39,6 +39,9 @@ angular
           params: user
         })
           .then(function (res) {
+            if (res.data.status === 'ok') {
+              $window.location.href = '#!/thank-youpress';
+            }
           });
       };
       vm.makeDate = function (item) {

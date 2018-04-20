@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('membershipComponent', {
     templateUrl: 'app/components/membership/membership.tmpl.html',
-    controller: function ($stateParams,$state,scrollService, categoryValues, $http, appConfig) {
+    controller: function ($window, $stateParams, $state, scrollService, categoryValues, $http, appConfig) {
       scrollService.scrollMember()
       this.permissions = {
         'Daily Insights': false,
@@ -50,17 +50,20 @@ angular
         data.permissions = JSON.stringify(data.permissions);
         $http.get(appConfig.dashboardServiceUrl + 'new_member', {
           params: data
-        }).then(function () {
-          this.email = '';
-          this.country = '';
-          this.industry = '';
-          this.compamySize = '';
-          this.jobTitle = '';
-          this.jobFunction = '';
-          this.company = '';
-          this.email = '';
-          this.lastName = '';
-          this.firstName = '';
+        }).then(function (res) {
+          if (res.data.status === 'ok') {
+            this.email = '';
+            this.country = '';
+            this.industry = '';
+            this.compamySize = '';
+            this.jobTitle = '';
+            this.jobFunction = '';
+            this.company = '';
+            this.email = '';
+            this.lastName = '';
+            this.firstName = '';
+            $window.location.href = '#!/thank-youmembership';
+          }
         });
       };
     }
