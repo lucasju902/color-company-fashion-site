@@ -5,10 +5,6 @@ angular
     controller: function ($window, $state, $http, appConfig, categoryValues) {
       var currentName = $state.current.name;
 
-      var vlidationRules = {
-        company: {}
-      }
-
       this.jobs = categoryValues('job function');
       this.companySizes = categoryValues('company size');
       this.industries = categoryValues('industry');
@@ -78,15 +74,27 @@ angular
             data.relationship = 'Expert Panelist';
           }
         }
-        $http.get(appConfig.dashboardServiceUrl + this.url, {
-          params: data
-        }).then(function (res) {
-          if (res.data.status === 'ok') {
-            $window.location.href = '#!/thank-you' + inquiryType;
+        var checker = true;
+        if (this.inquire1) {
+          for (item in data) {
+            if (item !== 'description') {
+              if (data[item] === undefined) {
+                checker = false;
+              } else if (data[item] === '') {
+                checker = false;
+              }
+            }
           }
-        });
-      }
-      ;
+        }
+        if (checker) {
+          $http.get(appConfig.dashboardServiceUrl + this.url, {
+            params: data
+          }).then(function (res) {
+            if (res.data.status === 'ok') {
+              $window.location.href = '#!/thank-you' + inquiryType;
+            }
+          });
+        }
+      };
     }
-  })
-;
+  });

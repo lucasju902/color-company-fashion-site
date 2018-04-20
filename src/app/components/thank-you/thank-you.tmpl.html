@@ -13,11 +13,19 @@
   <div class="container-fluid text-left">
     <h3 ng-if="!$ctrl.membership">Thank you for contacting HUEGROUP. Your {{$ctrl.text}} has been received.</h3>
     <h3 ng-if="$ctrl.membership">{{$ctrl.text}}</h3>
-    <h6>Not a member? Learn more about HUEGROUP Membership.</h6>
-    <button class="thanksBtn" ui-sref="membership({scrollTo: true})">
-      Learn More
-    </button>
-    <h6 style="padding-top: 30px">Stay current on HUEGROUP news and insights.</h6>
-    <button class="btn" style="font-size: 13px; padding: 15px 20px 15px 20px; min-width: 134px;">Email Sign Up</button>
-  </div>
+    <div class="thanksText">
+      <strong>Not a member? Learn more about HUEGROUP Membership.</strong>
+    </div>
+    <div>
+      <button class="thanksBtn" ui-sref="membership({scrollTo: true})">
+        Learn More
+      </button>
+      <div class="thanksText">
+        <strong>Stay current on HUEGROUP news and insights.</strong>
+      </div>
+      <div>
+        <button class="btn" style="font-size: 13px; padding: 15px 20px 15px 20px; min-width: 134px;">Email Sign Up
+        </button>
+      </div>
+    </div>
 </section>

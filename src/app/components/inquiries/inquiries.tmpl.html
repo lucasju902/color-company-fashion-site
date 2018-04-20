@@ -5,12 +5,12 @@
   </div>
   <div class="row">
     <div class="container-fluid">
-      <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 justify">
+      <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 justify" style="font-size: 17px">
         <p>Huegroup color intelligence helps you benchmark your color performance relative to trends and competitors,
           inspires your color innovation, optimizes color decisions for your customer segment and supports rationalizing
           your color decisions.</p>
       </div>
-      <div ng-if="$ctrl.inquire2" class="col-lg-4 col-md-4 ">
+      <div ng-if="$ctrl.inquire2" class="col-lg-4 col-md-4 " style="font-size: 17px">
         <p>Typical ways in which Data partners collaborate with Hue-group include:</p>
         <ol>
           <li>Seeking help structuring company color data</li>
@@ -22,7 +22,7 @@
         </ol>
       </div>
 
-      <div ng-if="$ctrl.inquire3" class="col-lg-4 col-md-4 justify">
+      <div ng-if="$ctrl.inquire3" class="col-lg-4 col-md-4 justify" style="font-size: 17px">
         <p>Huegroup collaborates with Academic Partners (Institutions and Faculty)
           to develop accredit host and/or deliver educational offerings from various online color courses
           to customize color training programs and teching materials leveraging Huegroup rich color
@@ -33,44 +33,44 @@
 
           <div class="membr-block">
             <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
-                   ng-class="'ng-dirty' && inquiries.FirstName.$invalid ?  'error' :''" required>
+                   ng-class="'ng-dirty' && inquiries.FirstName.$invalid ?  'error' :''" style="border: 0px" required>
             <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
           </div>
 
           <div class="membr-block">
             <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
-                   ng-class="'ng-dirty' && inquiries.LastName.$invalid ?  'error' :''" required>
+                   ng-class="'ng-dirty' && inquiries.LastName.$invalid ?  'error' :''" style="border: 0px" required>
             <label for="lastName">LAST NAME <span class="red-text">*</span></label>
           </div>
 
           <div class="membr-block">
             <input ng-model="$ctrl.email" ng-value="$ctrl.email" type="text" id="email" name="email"
-                   ng-class="'ng-dirty' && inquiries.Email.$invalid ?  'error' :''" required>
+                   ng-class="'ng-dirty' && inquiries.Email.$invalid ?  'error' :''" style="border: 0px" required>
             <label for="email">EMAIL <span class="red-text">*</span></label>
           </div>
 
           <div class="membr-block">
             <input ng-if="$ctrl.inquire3" ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="institute"
                    name="institute"
-                   ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" required>
+                   ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" style="border: 0px" required>
             <label for="institute">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>
           </div>
 
           <div class="membr-block">
             <input ng-if="$ctrl.inquire1 || $ctrl.inquire2" ng-model="$ctrl.company" ng-value="$ctrl.company"
                    type="text" id="Company" name="Company"
-                   ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" required>
+                   ng-class="'ng-dirty' && inquiries.institute.$invalid ?  'error' :''" style="border: 0px" required>
             <label for="Company">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>
           </div>
 
           <div class="membr-block">
             <input ng-model="$ctrl.jobTitle" ng-value="$ctrl.jobTitle" type="text" id="jobtitle" name="jobtitle"
-                   ng-class="'ng-dirty' && inquiries.jobtitle.$invalid ?  'error' :''" required>
+                   ng-class="'ng-dirty' && inquiries.jobtitle.$invalid ?  'error' :''" style="border: 0px" required>
             <label for="jobtitle">JOB TITLE <span class="red-text">*</span></label>
           </div>
 
           <div class="select-style">
-            <select ng-model="$ctrl.data.jobFunction" required>
+            <select ng-model="$ctrl.data.jobFunction" style="border: 0px" required>
               <option value="">PLEASE SELECT JOB FUNCTION*</option>
               <option ng-repeat="job in $ctrl.jobs" value="{{job}}">{{job}}</option>
             </select>
@@ -78,30 +78,30 @@
 
 
           <div class="select-style">
-            <select ng-model="$ctrl.data.compamySize" required>
+            <select ng-model="$ctrl.data.compamySize" style="border: 0px" required>
               <option value="">PLEASE SELECT COMPANY SIZE*</option>
               <option ng-repeat="size in $ctrl.companySizes" value="{{size}}">{{size}}</option>
             </select>
           </div>
 
           <div class="select-style">
-            <select ng-model="$ctrl.data.industry" required>
+            <select ng-model="$ctrl.data.industry" style="border: 0px" required>
               <option value="" required>PLEASE SELECT INDUSTRY*</option>
               <option ng-repeat="ind in $ctrl.industries" value="{{ind}}">{{ind}}</option>
             </select>
           </div>
 
           <div class="select-style">
-            <select ng-model="$ctrl.data.country" required>
+            <select ng-model="$ctrl.data.country" style="border: 0px" required>
               <option value="">PLEASE SELECT COUNTRY*</option>
               <option ng-repeat="cntry in $ctrl.countries" value="{{cntry}}">{{cntry}}</option>
             </select>
           </div>
 
           <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.tellUsColorData" ng-value="$ctrl.data.tellUsColorData"
-                    placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS"></textarea>
+                    placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>
           <textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.tellUsEduInt" ng-value="$ctrl.data.tellUsEduInt"
-                    placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS"></textarea>
+                    placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" style="border: 0px"></textarea>
 
           <div ng-if="$ctrl.inquire2" class="button">
             <button ng-click="$ctrl.send('data')" class="btn pull-right">
@@ -113,7 +113,6 @@
               SUBMIT INQUIRY
             </button>
           </div>
-
         </div>
 
         <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 membership-form">
@@ -139,16 +138,14 @@
             </p>
           </div>
 
-          <div class="button">
-            <button ng-if="$ctrl.inquire1" ng-click="$ctrl.send('inquire')" class="btn">
+          <div ng-if="$ctrl.inquire1" class="button">
+            <button ng-click="$ctrl.send('inquire')" class="btn">
               SUBMIT INQUIRY
             </button>
           </div>
-
         </div>
-
+      </form>
     </div>
-    </form>
   </div>
 </section>
 

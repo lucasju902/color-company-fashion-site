@@ -313,6 +313,11 @@ ui-view {
   }
 }
 
+.thanksText {
+  padding-top:10px;
+  padding-bottom: 10px;
+}
+
 .thanksBtn {
   font-size: 13px;
   font-weight: 700;
@@ -414,6 +419,9 @@ ui-view {
 }
 
 .inquiries {
+  background-color: #f1f1f1;
+  margin-top: -50px;
+  padding-top: 30px;
   padding-bottom: 60px;
 
   textarea {
@@ -421,7 +429,7 @@ ui-view {
   }
 
   p {
-    font-size: 10pt;
+    font-size: 17px;
   }
 
   ol {
@@ -477,7 +485,7 @@ ui-view {
     }
 
     textarea {
-      min-height: 100px;
+      min-height: 130px;
     }
 
     .button {
