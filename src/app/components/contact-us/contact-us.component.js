@@ -21,13 +21,23 @@ angular
           companyEmail: this.companyEmail,
           comments: this.comments
         };
-        $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
-          params: user
-        }).then(function (res) {
-          if (res.data.status === 'ok') {
-            $window.location.href = '#!/thank-youcontact';
-          }
-        });
+        var checker = true;
+        for (item in user) {
+          if (user[item] === '') {
+            checker = false;
+          } else if (user[item] === undefined) {
+            checker = false;
+            }
+        }
+        if (checker) {
+          $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
+            params: user
+          }).then(function (res) {
+            if (res.data.status === 'ok') {
+              $window.location.href = '#!/thank-youcontact';
+            }
+          });
+        }
       };
     }
   });

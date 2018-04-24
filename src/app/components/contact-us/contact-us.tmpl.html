@@ -30,28 +30,31 @@
             <label for="lastName">LAST NAME <span class="red-text">*</span></label>
           </div>
           <div class="form-item">
-            <input ng-model="$ctrl.title" ng-value="$ctrl.title" type="text" id="title" name="title">
-            <label for="title">TITLE</label>
+            <input ng-model="$ctrl.title" ng-value="$ctrl.title" type="text" id="title" name="title"
+                   ng-class="'ng-dirty' && contact.title.$invalid ?  'error' :''" required>
+            <label for="title">TITLE <span class="red-text">*</span></label>
           </div>
           <div class="form-item">
-            <input ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="company" name="company">
-            <label for="company">COMPANY</label>
+            <input ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="company" name="company"
+                   ng-class="'ng-dirty' && contact.company.$invalid ?  'error' :''" required>
+            <label for="company">COMPANY <span class="red-text">*</span></label>
           </div>
           <div class="form-item">
-            <input ng-model="$ctrl.phone" ng-value="$ctrl.phone" type="text" id="phone" name="phone">
-            <label for="phone">PHONE</label>
+            <input ng-model="$ctrl.phone" ng-value="$ctrl.phone" type="text" id="phone" name="phone"
+                   ng-class="'ng-dirty' && contact.phone.$invalid ?  'error' :''" required>
+            <label for="phone">PHONE <span class="red-text">*</span></label>
           </div>
 
           <div class="form-item">
             <input ng-model="$ctrl.companyEmail" ng-value="$ctrl.companyEmail" type="text" id="companyEmail"
                    name="companyEmail"  ng-class="'ng-dirty' && contact.companyEmail.$invalid ?  'error' :''"  required>
-            <label for="companyEmail">COMPANY EMAIL<span class="red-text">*</span></label>
+            <label for="companyEmail">COMPANY EMAIL <span class="red-text">*</span></label>
           </div>
 
           <div class="form-item">
           <textarea ng-model="$ctrl.comments" ng-value="$ctrl.comments" type="text" id="comments"
-                    name="comments"></textarea>
-            <label for="comments">COMMENTS</label>
+                    name="comments" ng-class="'ng-dirty' && contact.comments.$invalid ?  'error' :''" required></textarea>
+            <label for="comments">COMMENTS <span class="red-text">*</span></label>
           </div>
           <div class="button">
             <button class="btn" ng-click="$ctrl.contactUs()">SUBMIT</button>

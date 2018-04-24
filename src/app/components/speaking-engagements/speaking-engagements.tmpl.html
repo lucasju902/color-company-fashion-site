@@ -14,8 +14,10 @@
         >
         </div>
         <div class="speaking_item" style="padding-top: 15px">
-          <a href="">{{item.first_name}} {{item.last_name}} </a>
-          <span ng-bind-html="item.bio"></span>
+          <div><a href="">{{item.first_name}} {{item.last_name}}</a>
+            <p> — {{item.title}}</p>
+          </div>
+          <div class="cutted-text-speaker"><p ng-bind-html="item.bio"></p></div>
           <div class="line"></div>
         </div>
       </div>

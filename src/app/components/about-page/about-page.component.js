@@ -43,7 +43,9 @@ angular
       };
 
       vm.scrollToFooter = function () {
-        angular.element("html, body").animate({scrollTop: 1000}, 200);
+        $location.hash('prefooter');
+        $anchorScroll();
+        $location.hash('');
       };
     }
-  });
+  })

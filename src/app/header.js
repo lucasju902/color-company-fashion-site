@@ -33,7 +33,7 @@ angular
             {name: 'Huegroup Reports', state: 'reports'},
             {name: 'Huegroup Infographics', state: 'infographics'},
             {name: 'Huegroup Customized Infographics', state: 'customizedInfographics'},
-            {name: 'Huegroup members analytics', state: 'membersAnalytics'},
+
             {name: 'Publication Schedule', state: 'publicationSchedule'},
             {name: 'Good Reads', state: 'goodReads'}
           ]
@@ -49,7 +49,11 @@ angular
             {name: 'Daily Insights', state: 'dailyInsights'},
           ]
         }, {
-          name: 'Membership', state: 'membership'
+          name: 'Membership',
+          subNavs: [
+            {name: 'Become a Member', state: 'membership'},
+            {name: 'Members Analytics', state: 'membersAnalytics'},
+          ]
         }];
       this.selectedTab = false;
       this.selectedSubTab = [];
