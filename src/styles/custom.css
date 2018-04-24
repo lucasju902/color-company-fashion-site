@@ -85,7 +85,7 @@ body {
   background-size: cover;
   background-position: center;
   margin-bottom: 50px;
-  margin-top: -50px;
+  margin-top: -49px;
 }
 
 .member-header {
@@ -999,5 +999,5 @@ footer #copyrights {
 }
 
 .speaking_item a {
-  font-size: 14px;
+  font-size: 18px;
 }

@@ -74,6 +74,15 @@ ui-view {
   }
 }
 
+.cutted-text-speaker {
+  max-height: 70px;
+  overflow: hidden;
+
+  p {
+    line-height: 18pt !important;
+  }
+}
+
 .red-text {
   color: #bb0076;
 }

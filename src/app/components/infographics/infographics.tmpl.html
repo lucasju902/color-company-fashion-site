@@ -50,10 +50,7 @@
         >
         </div>
         <h5>{{item.header + ' // '+ item.date}}</h5>
-        <div style="height: 100px; overflow: hidden">
-          <p ng-bind-html="item.description"></p>
-        </div>
-        <!--<span ng-bind-html="item.description || '<p>Measuring more than 1,250 data points across four dimensions of digital, providing actionable insights to</p>'"></span>-->
+        <div class="cutted-text" ng-bind-html="item.description"></div>
       </a>
     </div>
   </div>
