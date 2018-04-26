@@ -14,10 +14,10 @@
         >
         </div>
         <div class="speaking_item" style="padding-top: 15px">
-          <div><a href="">{{item.first_name}} {{item.last_name}}</a>
-            <p> — {{item.title}}</p>
+          <div class="speaking_item_header"><a href="">{{item.first_name}} {{item.last_name}}</a>
+            <span style="color: black"> — {{item.title}}</span>
           </div>
-          <div class="cutted-text-speaker"><p ng-bind-html="item.bio"></p></div>
+          <div class="justify"><p ng-bind-html="item.bio"></p></div>
           <div class="line"></div>
         </div>
       </div>

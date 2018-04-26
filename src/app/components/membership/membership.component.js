@@ -5,12 +5,12 @@ angular
     controller: function ($window, $stateParams, $state, scrollService, categoryValues, $http, appConfig) {
       scrollService.scrollMember()
       this.permissions = {
-        'Daily Insights': false,
-        'Research Partner': false,
-        'Education Offerings': false
+        'Daily Insights': true,
+        'Research Partner': true,
+        'Education Offerings': true
       };
       this.relationship = {
-        'Expert Panelist': false
+        'Expert Panelist': true
       };
       this.jobs = categoryValues('job function');
       this.countries = categoryValues('country');

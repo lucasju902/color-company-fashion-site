@@ -6,17 +6,19 @@ angular
       var vm = this;
       vm.searchModel = '';
       vm.all = [];
+      vm.items = [];
+      vm.pageData = [];
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json')
           .then(function (res) {
             vm.pageData = angular.copy(res.data.data);
             vm.all = angular.copy(res.data.data);
-            vm.groups = _.chunk(angular.copy(vm.pageData).slice(0, 6), 6);
+            vm.more();
           });
       };
       vm.more = function () {
-        vm.groups = _.chunk(angular.copy(vm.pageData), 6);
+        vm.items = angular.copy(vm.pageData.slice(0, vm.items.length + 6));
       };
 
       vm.search = function () {
@@ -30,7 +32,8 @@ angular
         } else {
           vm.pageData = angular.copy(vm.all);
         }
-        vm.groups = _.chunk(angular.copy(vm.pageData).slice(0, 6), 6);
+        vm.items = [];
+        vm.more();
       };
     }
   });

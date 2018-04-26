@@ -5,7 +5,7 @@ angular
     controller: function ($window, $state, $http, appConfig, categoryValues) {
       var currentName = $state.current.name;
 
-      this.jobs = categoryValues('job function');
+      this.jobs =categoryValues('job function');
       this.companySizes = categoryValues('company size');
       this.industries = categoryValues('industry');
       this.countries = categoryValues('country');
@@ -43,6 +43,7 @@ angular
           this.caption = 'Inquire about Education Partnership';
           this.url = 'new_education_partners';
           this.inquire3 = true;
+          this.jobs.unshift('Educator')
           break;
       }
 
