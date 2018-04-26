@@ -52,11 +52,9 @@
               <label for="company">COMPANY <span class="red-text">*</span></label>
             </div>
             <div class="form-item">
-
-        <textarea ng-model="$ctrl.message" ng-value="$ctrl.message" id="message" name="message"
-                  ng-class="'ng-dirty' && press.message.$invalid ?  'error' :''">
-        </textarea>
-              <label for="message">MESSAGE</label>
+            <textarea ng-value="$ctrl.message" name="message" id="message" ng-model="$ctrl.message"
+                      ng-class="'ng-dirty' && press.message.$invalid ?  'error' :''" required></textarea>
+              <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>
             </div>
           </div>
 

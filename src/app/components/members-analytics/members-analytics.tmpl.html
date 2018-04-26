@@ -35,68 +35,23 @@
 
 <section class="gray member">
   <div class="container-fluid report ">
-      <div ng-repeat="group in $ctrl.groups" class="row">
-        <div ng-show="group[0] !== undefined" class="col-lg-2 col-md-6 col-sm-6 item">
-          <div class="img-responsive background-image orange-line"
-               style="background: {{'url(' + group[0].logo_url +') top center'}};
+      <div class="row">
+        <div ng-repeat="item in $ctrl.items" class="col-lg-2 col-md-6 col-sm-6 item">
+          <div class="img-responsive background-image pink-line"
+               style="background: {{'url(' + item.logo_url +') top center'}};
                     background-repeat: no-repeat;
                     background-size: cover;
                     background-color: #e1e1e126;
                     padding-bottom: 100%;"></div>
-          <h6>{{group[0].member_name}}</h6>
-        </div>
-        <div ng-show="group[1] !== undefined" class="col-lg-2 col-md-6 col-sm-6 item">
-          <div class="img-responsive background-image blue-line"
-               style="background: {{'url(' + group[1].logo_url +') top center'}};
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: #e1e1e126;
-                    padding-bottom: 100%;"></div>
-          <h6>{{group[1].member_name}}</h6>
-        </div>
-        <div ng-show="group[2] !== undefined" class="col-lg-2 col-md-6 col-sm-6 item">
-          <div class="img-responsive background-image green-line"
-               style="background: {{'url(' + group[2].logo_url +') top center'}};
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: #e1e1e126;
-                    padding-bottom: 100%;"></div>
-          <h6>{{group[2].member_name}}</h6>
-        </div>
-        <div ng-show="group[3] !== undefined" class="col-lg-2 col-md-6 col-sm-6 item">
-          <div class="img-responsive background-image orange-line"
-               style="background: {{'url(' + group[3].logo_url +') top center'}};
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: #e1e1e126;
-                    padding-bottom: 100%;"></div>
-          <h6>{{group[3].member_name}}</h6>
-        </div>
-        <div ng-show="group[4] !== undefined" class="col-lg-2 col-md-6 col-sm-6 item">
-          <div class="img-responsive background-image green-line"
-               style="background: {{'url(' + group[4].logo_url +') top center'}};
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: #e1e1e126;
-                    padding-bottom: 100%;"></div>
-          <h6>{{group[4].member_name}}</h6>
-        </div>
-        <div ng-show="group[5] !== undefined" class="col-lg-2 col-md-6 col-sm-6 item">
-          <div class="img-responsive background-image orange-line"
-               style="background: {{'url(' + group[5].logo_url +') top center'}};
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: #e1e1e126;
-                    padding-bottom: 100%;"></div>
-          <h6>{{group[5].member_name}}</h6>
+          <h6>{{item.member_name.toUpperCase()}}</h6>
         </div>
       </div>
-      <div ng-show="!$ctrl.groups.length" style="padding-left: 30px;">
+      <div ng-show="!$ctrl.items.length" style="padding-left: 30px;">
         <h4 style="padding-top:0px; margin-top:0px"><em>Nothing found. Please try later</em></h4>
       </div>
   </div>
 
-  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.groups.length * 6">
+  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.items.length">
     <div class="col-lg-12 text-center" >
       <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
     </div>

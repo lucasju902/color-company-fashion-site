@@ -652,6 +652,9 @@ hr {
 .partners img {
   max-width: 190px;
   max-height: 50px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .white .btn {
@@ -715,10 +718,12 @@ hr {
 
 .partners p {
   color: #9c9c9c;
+  text-align: justify;
 }
 
 .partners h5 {
   margin-bottom: 15px;
+  text-align: center;
 }
 
 .partners a {
@@ -809,7 +814,6 @@ input.search {
   background: #bb0076;
   display: inline-block;
   height: 30px;
-  margin-left: 20px;
   margin-top: 55px;
   position: relative;
   width: 150px;
@@ -913,6 +917,10 @@ input.search {
   border: solid 1px #ccc;
 }
 
+.pink-line {
+    border-top: solid 4px #bb0076 !important;
+}
+
 .orange-line {
   border-top: solid 4px #ff6d00 !important;
 }
@@ -926,9 +934,7 @@ input.search {
 }
 
 .member h6 {
-  position: absolute;
-  bottom: 5px;
-  left: 50px;
+  text-align: center;
 }
 
 .schedule li:before {
@@ -992,12 +998,18 @@ footer #copyrights {
 .text-dn{
   text-decoration: none;
 }
+
+.speaking_item_header {
+  font-size: 22px;
+  padding-bottom: 10px;
+}
+
 .speaking_item p {
   display: inline;
   font-size: 14px;
   font-weight: 700;
+  line-height: 18pt;
 }
-
-.speaking_item a {
-  font-size: 18px;
+.speaking_item_height {
+  max-height: 70px;
 }

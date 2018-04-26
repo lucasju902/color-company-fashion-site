@@ -16,7 +16,7 @@ angular
         }, {
           name: 'Data',
           subNavs: [
-            // {name: 'Huegroup Color Emotion Index', state: 'colorEmotion'},
+            {name: 'Huegroup Color Emotion Index', state: 'colorEmotion'},
             {name: 'Data Partners', state: 'partners'},
             // {name: 'Detailed Page', state: 'detailedPage'},
             {

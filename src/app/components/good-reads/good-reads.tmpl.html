@@ -16,8 +16,8 @@
 
 <section>
   <div class="container-fluid text-left course">
-    <div class="row" ng-repeat="group in $ctrl.groups">
-      <div class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in group">
+    <div class="row">
+      <div class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in $ctrl.items">
         <a ng-href="#!/good-reads/{{item.id}}">
           <div class="img-responsive background-image"
                style="background: {{'url(' + item.image_url +') top center'}};
@@ -32,6 +32,11 @@
         <div style="height: 100px; overflow: hidden">
           <p ng-bind-html="item.description"></p>
         </div>
+      </div>
+    </div>
+    <div class="row" ng-if="$ctrl.pageData.length > $ctrl.items.length">
+      <div class="col-lg-12 text-center">
+        <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
       </div>
     </div>
   </div>

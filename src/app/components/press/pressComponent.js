@@ -35,14 +35,24 @@ angular
           message: vm.message,
           research: vm.research
         };
-        $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
-          params: user
-        })
-          .then(function (res) {
-            if (res.data.status === 'ok') {
-              $window.location.href = '#!/thank-youpress';
-            }
-          });
+        var checker = true;
+        for (item in user) {
+          if (user[item] === '') {
+            checker = false;
+          } else if (user[item] === undefined) {
+            checker = false;
+          }
+        }
+        if (checker) {
+          $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
+            params: user
+          })
+            .then(function (res) {
+              if (res.data.status === 'ok') {
+                $window.location.href = '#!/thank-youpress';
+              }
+            });
+        }
       };
       vm.makeDate = function (item) {
         return moment(item.data.published_year+'-'+item.data.published_month+'-'+item.data.published_day).format('MMMM D, YYYY')
