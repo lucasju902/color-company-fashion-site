@@ -1008,4 +1008,8 @@ footer #copyrights {
   display: inline;
   font-size: 14px;
   font-weight: 700;
+  line-height: 18pt;
+}
+.speaking_item_height {
+  max-height: 70px;
 }

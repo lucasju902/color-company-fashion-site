@@ -39,12 +39,11 @@ angular
         };
         $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
           params: forSend
-        })
-          .then(function (res) {
-            if (res.data.status === 'ok') {
-              $window.location.href = '#!/thank-youspeaking';
-            }
-          });
+        }).then(function (res) {
+          if (res.data.status === 'ok') {
+            $window.location.href = '#!/thank-youspeaking';
+          }
+        });
       };
     }
   });

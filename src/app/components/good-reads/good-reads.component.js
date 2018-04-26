@@ -4,6 +4,7 @@ angular
     templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
     controller: function ($http, appConfig) {
       var vm = this;
+      vm.items =  [];
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
@@ -14,8 +15,12 @@ angular
                 return item.data;
               });
             }
-            vm.groups = _.chunk(angular.copy(vm.pageData), 3);
+            vm.more();
           });
+      };
+
+      vm.more = function () {
+        vm.items = angular.copy(vm.pageData.slice(0, vm.items.length + 6));
       };
     }
   });
