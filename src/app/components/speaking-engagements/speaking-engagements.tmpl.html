@@ -1,7 +1,7 @@
 <section>
   <div class="staffs-container container-fluid" ng-init="$ctrl.init()">
-    <div class="row">
-      <div class="col-lg-4 col-md-4 text-center staff-item" ng-repeat="item in $ctrl.pageData">
+    <div class="row" ng-repeat="group in $ctrl.groups">
+      <div class="col-lg-4 col-md-4 text-center staff-item" ng-repeat="item in group">
         <div class="img-responsive background-image"
              style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;
@@ -18,7 +18,7 @@
             <span style="color: black"> — {{item.title}}</span>
           </div>
           <div class="justify">
-            <p class="speaking_item_height" style="display: block" data-ng-bind-html="item.bio" data-ellipsis
+            <p class="three_line_height" style="display: block" data-ng-bind-html="item.bio" data-ellipsis
                data-ellipsis-symbol="... "
                data-ellipsis-append="<a>Read more</a>"
                data-ellipsis-append-click="$ctrl.toggleTextHeight"

@@ -13,7 +13,7 @@ angular
       vm.topic = [];
       vm.provider = [];
       vm.type = [];
-      vm.items = [];
+      var count = 0;
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'teaching_materials.json')
@@ -38,12 +38,13 @@ angular
       };
 
       vm.more = function () {
-        vm.items = angular.copy(vm.filterData.slice(0, vm.items.length + 3));
+        vm.groups.push(vm.all[count++]);
       };
 
       vm.select = function () {
+        vm.groups = [];
         if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.type.includes(vm.typeModel)) {
-          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
+          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
             if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.teaching_material_topic) &&
               (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.teaching_material_provider) &&
               (!vm.type.includes(vm.typeModel) || vm.typeModel === t.teaching_material_type)) {
@@ -51,8 +52,10 @@ angular
             }
           });
         } else {
-          vm.filterData = angular.copy(vm.cacheItems);
+          vm.filterDate = angular.copy(vm.cacheItems);
         }
+        vm.all = _.chunk(angular.copy(vm.filterDate), 3);
+        count = 0;
         vm.more();
       };
     }

@@ -18,6 +18,7 @@ angular
             if (res && res.data) {
               vm.pageData = angular.copy(res.data);
             }
+            vm.groups = _.chunk(angular.copy(vm.pageData), 3);
           });
         $http.get(appConfig.dashboardServiceUrl + 'about_speaking_engagements.json')
           .then(function (res) {

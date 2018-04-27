@@ -16,6 +16,7 @@ angular
       vm.year = [];
       vm.items = [];
       var lastYear = moment().year();
+      var count = 0;
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'reports.json')
@@ -43,10 +44,11 @@ angular
       };
 
       vm.more = function () {
-        vm.items = angular.copy(vm.filterData.slice(0, vm.items.length + 3));
+        vm.groups.push(vm.all[count++]);
       };
 
       vm.select = function () {
+        vm.groups = [];
         if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
           vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
             if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
@@ -58,6 +60,8 @@ angular
         } else {
           vm.filterData = angular.copy(vm.cacheItems);
         }
+        vm.all = _.chunk(angular.copy(vm.filterData), 3);
+        count = 0;
         vm.more();
       };
     }
