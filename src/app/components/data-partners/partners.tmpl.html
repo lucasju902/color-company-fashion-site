@@ -13,8 +13,13 @@
       <div class="col-lg-4 col-md-4 partner" ng-repeat="item in group">
         <img ng-if="item.image_url" ng-src="{{item.image_url}}">
         <h5>{{item.partner_name}}</h5>
-        <p ng-bind-html="item.description"></p>
-        <a>Learn more</a>
+        <div class="justify">
+          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis
+             data-ellipsis-symbol="... "
+             data-ellipsis-append="<a>Read more</a>"
+             data-ellipsis-append-click="$ctrl.toggleTextHeight"
+          ></p>
+        </div>
       </div>
     </div>
   </div>

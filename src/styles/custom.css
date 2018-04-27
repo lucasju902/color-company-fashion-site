@@ -650,11 +650,9 @@ hr {
 }
 
 .partners img {
-  max-width: 190px;
   max-height: 50px;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
 
 .white .btn {
@@ -719,6 +717,8 @@ hr {
 .partners p {
   color: #9c9c9c;
   text-align: justify;
+  margin: 0;
+  line-height: 18pt;
 }
 
 .partners h5 {
@@ -741,6 +741,12 @@ hr {
 
 .course p, .report p {
   color: #9c9c9c;
+  margin: 0;
+  line-height: 18pt;
+}
+
+.course a {
+  color: #bb0076;
 }
 
 .course h5, .report h5 {
@@ -749,7 +755,6 @@ hr {
 
 .course {
   margin-top: 30px;
-  margin-bottom: 50px;
 }
 
 .title .btn {
@@ -1010,6 +1015,15 @@ footer #copyrights {
   font-weight: 700;
   line-height: 18pt;
 }
-.speaking_item_height {
-  max-height: 70px;
+
+.two_line_height {
+  max-height: 50px;
+}
+
+.three_line_height {
+  max-height: 80px;
+}
+
+.four_line_height {
+  max-height: 100px;
 }

@@ -8,8 +8,8 @@ angular
       vm.yearModel = 'YEAR';
       vm.year = [];
       vm.hue = [];
-      vm.items = [];
       vm.pageData = {};
+      var count = 0;
       var lastYear = moment().year();
 
       vm.init = function () {
@@ -41,7 +41,7 @@ angular
           });
       };
       vm.more = function () {
-        vm.items = angular.copy(vm.filterData.slice(0, vm.items.length + 3));
+        vm.groups.push(vm.all[count++]);
       };
 
       vm.onGraphicClick = function (event) {
@@ -51,6 +51,7 @@ angular
       };
 
       vm.select = function () {
+        vm.groups = [];
         if (vm.hue.includes(vm.hueModel) || vm.year.includes(vm.yearModel)) {
           vm.filterData = angular.copy(vm.pageData.filter(function (t) {
             if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
@@ -61,7 +62,8 @@ angular
         } else {
           vm.filterData = angular.copy(vm.pageData);
         }
-        vm.items = [];
+        vm.all = _.chunk(angular.copy(vm.filterData), 3);
+        count = 0;
         vm.more();
       };
     }
