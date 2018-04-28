@@ -103,7 +103,7 @@ angular.module('app')
                 ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
                 ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
                 ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
-                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append' style='cursor:pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
+                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
                 bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
 
               attributes.isTruncated = false;
@@ -162,7 +162,7 @@ angular.module('app')
                 }
               } else if (scope.onceOverFlowed) {
                 element.attr('data-overflowed', 'false');
-                var tempAppend = "<span class='angular-ellipsis-append'><a>Less</a></span>"
+                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
 
                 if (isHtml) {
                   element.html(binding + tempAppend);

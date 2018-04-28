@@ -14,7 +14,7 @@
         >
         </div>
         <div class="speaking_item" style="padding-top: 15px">
-          <div class="speaking_item_header"><a href="">{{item.first_name}} {{item.last_name}}</a>
+          <div class="speaking_item_header"><a>{{item.first_name}} {{item.last_name}}</a>
             <span style="color: black"> — {{item.title}}</span>
           </div>
           <div class="justify">
@@ -46,17 +46,17 @@
         <div class="col-lg-6 col-md-6 membership-form">
           <div class="forms">
             <div class="membr-block">
-              <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
+              <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName"
                      ng-class="'ng-dirty' && speaking.FirstName.$invalid ?  'error' :''" required>
               <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
             </div>
             <div class="membr-block">
-              <input ng-model="$ctrl.email" ng-value="$ctrl.email" type="text" id="email" name="email"
+              <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email"
                      ng-class="'ng-dirty' && speaking.Email.$invalid ?  'error' :''" required>
               <label for="email">EMAIL <span class="red-text">*</span></label>
             </div>
             <div class="membr-block">
-              <input ng-model="$ctrl.jobTitle" ng-value="$ctrl.jobTitle" type="text" id="jobTitle" name="jobTitle"
+              <input ng-model="$ctrl.data.jobTitle.value" ng-value="$ctrl.data.jobTitle.value" type="text" id="jobTitle" name="jobTitle"
                      ng-class="'ng-dirty' && speaking.jobTitle.$invalid ?  'error' :''" required>
               <label for="jobTitle">JOB TITLE <span class="red-text">*</span></label>
             </div>
@@ -64,24 +64,24 @@
 
           <div class="forms-right">
             <div class="membr-block">
-              <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
+              <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName"
                      ng-class="'ng-dirty' && speaking.LastName.$invalid ?  'error' :''" required>
               <label for="lastName">LAST NAME <span class="red-text">*</span></label>
             </div>
             <div class="membr-block">
-              <input ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="company" name="company"
+              <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company"
                      ng-class="'ng-dirty' && speaking.company.$invalid ?  'error' :''" required>
               <label for="company">COMPANY <span class="red-text">*</span></label>
             </div>
             <div class="membr-block">
-              <input ng-model="$ctrl.request" ng-value="$ctrl.request" type="text" id="request" name="request"
+              <input ng-model="$ctrl.data.request.value" ng-value="$ctrl.data.request.value" type="text" id="request" name="request"
                      ng-class="'ng-dirty' && speaking.request.$invalid ?  'error' :''" required>
               <label for="request">REQUEST A SPECIFIC SPEAKER <span class="red-text">*</span></label>
             </div>
           </div>
 
           <div class="membr-block" style="width:100%; float:left">
-            <textarea rows="20" cols="1" ng-value="$ctrl.message" name="message" id="message" ng-model="$ctrl.message"
+            <textarea rows="20" cols="1" ng-value="$ctrl.data.message.value" name="message" id="message" ng-model="$ctrl.data.message.value"
                       ng-class="'ng-dirty' && speaking.message.$invalid ?  'error' :''" required></textarea>
             <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>
           </div>

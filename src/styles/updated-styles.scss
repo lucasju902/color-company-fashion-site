@@ -1401,24 +1401,37 @@ input.search {
 
 .modal-err {
   * {
-    padding-top: 10px;
     font-weight: bold;
   }
 
+  p {
+    font-size: 14pt;
+    padding: 10px 0 20px 0;
+  }
+
   li {
+    font-size: 13pt;
     list-style: none;
     padding: 0px;
   }
 
+  ul {
+    min-height: 150px;
+    margin-bottom: 20px;
+    padding-left: 25px;
+  }
+
   button {
-    float: right;
     width: 150px;
+  }
+
+  .div-but {
+    text-align: right;
   }
 
   .modal-content {
     transform: translate(0, 30%);
-    width: 450px;
-    height: 420px;
+    width: 550px;
     margin: auto;
     .row {
       div:first-child > button {
@@ -1428,11 +1441,8 @@ input.search {
         height: 130px;
       }
     }
-    button {
-      margin-top: 50px;
-    }
     border-radius: 0px;
-    padding: 40px;
+    padding: 60px;
   }
 
 }

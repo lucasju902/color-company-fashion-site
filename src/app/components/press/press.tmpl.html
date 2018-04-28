@@ -32,27 +32,27 @@
         <form name="press">
           <div class="col-lg-4 col-md-4 press-form form membership-form">
             <div class="form-item">
-              <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
+              <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName"
                      ng-class="'ng-dirty' && press.firstName.$invalid ?  'error' :''" required>
               <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
             </div>
             <div class="form-item">
-              <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
+              <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName"
                      ng-class="'ng-dirty' && press.lastName.$invalid ?  'error' :''" required>
               <label for="lastName">LAST NAME <span class="red-text">*</span></label>
             </div>
             <div class="form-item">
-              <input ng-model="$ctrl.email" ng-value="$ctrl.email" type="text" id="email" name="email"
+              <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email"
                      ng-class="'ng-dirty' && press.email.$invalid ?  'error' :''" required>
               <label for="email">EMAIL <span class="red-text">*</span></label>
             </div>
             <div class="form-item">
-              <input ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="company" name="company"
+              <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company"
                      ng-class="'ng-dirty' && press.company.$invalid ?  'error' :''" required>
               <label for="company">COMPANY <span class="red-text">*</span></label>
             </div>
             <div class="form-item">
-            <textarea ng-value="$ctrl.message" name="message" id="message" ng-model="$ctrl.message"
+            <textarea ng-value="$ctrl.data.message.value" name="message" id="message" ng-model="$ctrl.data.message.value"
                       ng-class="'ng-dirty' && press.message.$invalid ?  'error' :''" required></textarea>
               <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>
             </div>
