@@ -2,11 +2,9 @@
   <h4>www.hue-group.com.says:</h4>
   <p>Please correct the following problem(s):</p>
   <ul>
-    <li>*Please provide your first name</li>
-    <li>*Please provide your last name</li>
-    <li>*Please provide a valid buisness email address</li>
-    <li>*Please enter the name of your company</li>
-    <li>*Please enter your job title</li>
+    <li ng-repeat="str in item">{{str}}</li>
   </ul>
-  <button class="btn " style="outline: none;">OK</button>
+</div>
+<div class="div-but">
+  <button class="btn " style="outline: none;" ng-click="cancel()">OK</button>
 </div>

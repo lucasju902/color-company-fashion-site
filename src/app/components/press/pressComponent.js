@@ -2,15 +2,17 @@ angular
   .module('app')
   .component('pressComponent', {
     templateUrl: 'app/components/press/press.tmpl.html',
-    controller: function ($window, $http, appConfig) {
+    controller: function ($window, $http, appConfig, dataValidate) {
       var vm = this;
-      vm.firstName = '';
-      vm.lastName = '';
-      vm.email = '';
-      vm.company = '';
-      vm.message = '';
       vm.research = '-';
       vm.pageData = {};
+      vm.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        message: {value: '', required: true, name: 'message', type: 'enter'}
+      };
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'presses.json')
@@ -27,25 +29,10 @@ angular
           });
       };
       vm.press = function () {
-        const user = {
-          firstName: vm.firstName,
-          lastName: vm.lastName,
-          company: vm.company,
-          email: vm.email,
-          message: vm.message,
-          research: vm.research
-        };
-        var checker = true;
-        for (item in user) {
-          if (user[item] === '') {
-            checker = false;
-          } else if (user[item] === undefined) {
-            checker = false;
-          }
-        }
-        if (checker) {
+        if (dataValidate.validate(vm.data)) {
+          vm.data.research = vm.research;
           $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
-            params: user
+            params: vm.data
           })
             .then(function (res) {
               if (res.data.status === 'ok') {

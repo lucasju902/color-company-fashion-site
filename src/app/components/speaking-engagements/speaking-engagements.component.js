@@ -2,16 +2,20 @@ angular
   .module('app')
   .component('speakingEngagementsComponent', {
     templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($window, $http, appConfig, dataValidate) {
       var vm = this;
-      vm.lastName = '';
-      vm.firstName = '';
-      vm.jobTitle = '';
-      vm.email = '';
-      vm.company = '';
-      vm.request = '';
-      vm.message = '';
       vm.pageData = {};
+
+      vm.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        jobTitle: {value: '', required: true, name: 'job title', type: 'provide'},
+        request: {value: '', required: true, name: 'request', type: 'enter'},
+        message: {value: '', required: true, name: 'message', type: 'enter'}
+      };
+
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
           .then(function (res) {
@@ -29,22 +33,15 @@ angular
           });
       };
       vm.speaking = function () {
-        var forSend = {
-          firstName: vm.firstName,
-          lastName: vm.lastName,
-          email: vm.email,
-          jobtitle: vm.jobTitle,
-          company: vm.company,
-          request: vm.request,
-          message: vm.message
-        };
-        $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
-          params: forSend
-        }).then(function (res) {
-          if (res.data.status === 'ok') {
-            $window.location.href = '#!/thank-youspeaking';
-          }
-        });
+        if (dataValidate.validate(vm.data)) {
+          $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
+            params: vm.data
+          }).then(function (res) {
+            if (res.data.status === 'ok') {
+              $window.location.href = '#!/thank-youspeaking';
+            }
+          });
+        }
       };
     }
   });

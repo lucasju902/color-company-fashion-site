@@ -184,37 +184,37 @@
       <form name="membership">
       <div class="col-lg-4 col-md-4 membership-form">
         <div class="membr-block">
-          <input ng-model="$ctrl.firstName" ng-value="$ctrl.firstName" type="text" id="firstName" name="firstName"
+          <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName"
                  ng-class="'ng-dirty' && membership.FirstName.$invalid ?  'error' :''" required>
           <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.lastName" ng-value="$ctrl.lastName" type="text" id="lastName" name="lastName"
+          <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName"
                  ng-class="'ng-dirty' && membership.LastName.$invalid ?  'error' :''" required>
           <label for="lastName">LAST NAME <span class="red-text">*</span></label>
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.email" ng-value="$ctrl.email" type="text" id="email" name="email"
+          <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email"
                  ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>
           <label for="email">EMAIL <span class="red-text">*</span></label>
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.company" ng-value="$ctrl.company" type="text" id="company" name="company"
+          <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company"
                  ng-class="'ng-dirty' && membership.company.$invalid ?  'error' :''" required>
           <label for="company">COMPANY <span class="red-text">*</span></label>
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.jobTitle" ng-value="$ctrl.jobTitle" type="text" id="jobTitle" name="jobTitle"
+          <input ng-model="$ctrl.data.jobTitle.value" ng-value="$ctrl.data.jobTitle.value" type="text" id="jobTitle" name="jobTitle"
                  ng-class="'ng-dirty' && membership.jobTitle.$invalid ?  'error' :''" required>
           <label for="jobTitle">JOB TITLE <span class="red-text">*</span></label>
         </div>
 
         <div class="select-style">
-          <select ng-model="$ctrl.jobFunction" name="jobFunction"
+          <select ng-model="$ctrl.data.jobFunction.value" name="jobFunction"
                   ng-class="'ng-dirty' && membership.jobFunction.$invalid ?  'error' :''" required>
             <option value="">PLEASE SELECT JOB FUNCTION*</option>
             <option ng-repeat="job in $ctrl.jobs" value="{{job}}">{{job}}</option>
@@ -222,7 +222,7 @@
         </div>
 
         <div class="select-style">
-          <select ng-model="$ctrl.compamySize" name="compamySize"
+          <select ng-model="$ctrl.data.compamySize.value" name="compamySize"
                   ng-class="'ng-dirty' && membership.compamySize.$invalid ?  'error' :''" required>
             <option value="" selected>PLEASE SELECT COMPANY SIZE*</option>
             <option ng-repeat="size in $ctrl.compamySizes" value="{{size}}">{{size}}</option>
@@ -230,7 +230,7 @@
         </div>
 
         <div class="select-style">
-          <select ng-model="$ctrl.industry" name="industry"
+          <select ng-model="$ctrl.data.industry.value" name="industry"
                   ng-class="'ng-dirty' && membership.industry.$invalid ?  'error' :''" required>
             <option value="">PLEASE SELECT INDUSTRY*</option>
             <option ng-repeat="ind in $ctrl.industries" value="{{ind}}">{{ind}}</option>
@@ -238,7 +238,7 @@
         </div>
 
         <div class="select-style">
-          <select ng-model="$ctrl.country" name="country"
+          <select ng-model="$ctrl.data.country.value" name="country"
                   ng-class="'ng-dirty' && membership.country.$invalid ?  'error' :''" required>
             <option value="">PLEASE SELECT COUNTRY*</option>
             <option ng-repeat="cntry in $ctrl.countries" value="{{cntry}}">{{cntry}}</option>

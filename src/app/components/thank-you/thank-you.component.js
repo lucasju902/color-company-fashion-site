@@ -30,7 +30,7 @@ angular
           break;
         }
         case 'membership': {
-          this.text = 'We received your request for more information on HEUGROUP membership. Thank you for reaching out.';
+          this.text = 'We received your membership request. Thank you for reaching out.';
           break;
         }
         default: {
