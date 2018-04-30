@@ -63,6 +63,18 @@ angular
               data[item] = this.data[item].value;
             }
           }
+
+          data.job_title = data.jobTitle;
+          delete data.jobTitle;
+          data.job_function = data.jobFunction;
+          delete data.jobFunction;
+          data.last_name = data.lastName;
+          delete data.lastName;
+          data.first_name = data.firstName;
+          delete data.firstName;
+          data.company_size = data.compamySize;
+          delete data.compamySize;
+
           if (this.data.permissions) {
             var permissions = [];
             for (var i in this.data.permissions) {
