@@ -30,9 +30,13 @@ angular
       };
       vm.press = function () {
         if (dataValidate.validate(vm.data)) {
-          vm.data.research = vm.research;
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          data.research = vm.research;
           $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
-            params: vm.data
+            params: data
           })
             .then(function (res) {
               if (res.data.status === 'ok') {
@@ -42,7 +46,7 @@ angular
         }
       };
       vm.makeDate = function (item) {
-        return moment(item.data.published_year+'-'+item.data.published_month+'-'+item.data.published_day).format('MMMM D, YYYY')
-      }
+        return moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day).format('MMMM D, YYYY');
+      };
     }
   });

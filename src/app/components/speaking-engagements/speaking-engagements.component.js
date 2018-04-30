@@ -34,8 +34,14 @@ angular
       };
       vm.speaking = function () {
         if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          data.jobtitle = data.jobTitle;
+          delete data.jobTitle;
           $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
-            params: vm.data
+            params: data
           }).then(function (res) {
             if (res.data.status === 'ok') {
               $window.location.href = '#!/thank-youspeaking';
