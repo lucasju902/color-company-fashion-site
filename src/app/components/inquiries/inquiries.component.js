@@ -9,12 +9,6 @@ angular
       this.companySizes = categoryValues('company size');
       this.industries = categoryValues('industry');
       this.countries = categoryValues('country');
-      this.data = {};
-      this.jobTitle = '';
-      this.company = '';
-      this.email = '';
-      this.lastName = '';
-      this.firstName = '';
 
       this.data = {
         firstName: {value: '', required: true, name: 'first name', type: 'provide'},
@@ -25,8 +19,7 @@ angular
         jobFunction: {value: '', required: true, name: 'job function', type: 'select'},
         compamySize: {value: '', required: true, name: 'company size', type: 'select'},
         industry: {value: '', required: true, name: 'industry', type: 'select'},
-        country: {value: '', required: true, name: 'country', type: 'select'},
-        description: {value: '', required: false, name: 'description', type: 'enter'}
+        country: {value: '', required: true, name: 'country', type: 'select'}
       };
 
       switch (currentName) {
@@ -50,6 +43,7 @@ angular
           this.caption = 'Inquire about Data Partnership';
           this.inquire2 = true;
           this.url = 'new_data_partners';
+          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
           break;
 
         default:
@@ -57,11 +51,18 @@ angular
           this.url = 'new_education_partners';
           this.inquire3 = true;
           this.jobs.unshift('Educator');
+          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
           break;
       }
 
       this.send = function (inquiryType) {
         if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            if (item !== 'permissions' && item !== 'relationship') {
+              data[item] = this.data[item].value;
+            }
+          }
           if (this.data.permissions) {
             var permissions = [];
             for (var i in this.data.permissions) {
@@ -69,15 +70,15 @@ angular
                 permissions.push(i);
               }
             }
-            this.data.permissions = JSON.stringify(permissions);
+            data.permissions = JSON.stringify(permissions);
           }
           if (this.data.permissions) {
             if (this.data.relationship['Expert Panelist']) {
-              this.data.relationship = 'Expert Panelist';
+              data.relationship = 'Expert Panelist';
             }
           }
           $http.get(appConfig.dashboardServiceUrl + this.url, {
-            params: this.data
+            params: data
           }).then(function (res) {
             if (res.data.status === 'ok') {
               $window.location.href = '#!/thank-you' + inquiryType;
