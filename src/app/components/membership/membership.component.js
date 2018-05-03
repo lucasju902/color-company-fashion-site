@@ -26,11 +26,28 @@ angular
         jobFunction: {value: '', required: true, name: 'job function', type: 'select'},
         compamySize: {value: '', required: true, name: 'company size', type: 'select'},
         industry: {value: '', required: true, name: 'industry', type: 'select'},
-        country: {value: '', required: true, name: 'country'}
+        country: {value: '', required: true, name: 'country', type: 'select'}
       };
 
       this.submitInquiry = function () {
         if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            if (item !== 'permissions' && item !== 'relationship') {
+              data[item] = this.data[item].value;
+            }
+          }
+          data.job_title = data.jobTitle;
+          delete data.jobTitle;
+          data.job_function = data.jobFunction;
+          delete data.jobFunction;
+          data.last_name = data.lastName;
+          delete data.lastName;
+          data.first_name = data.firstName;
+          delete data.firstName;
+          data.company_size = data.compamySize;
+          delete data.compamySize;
+
           this.data.permissions = [];
           for (var i in this.permissions) {
             if (this.permissions[i]) {
@@ -38,11 +55,11 @@ angular
             }
           }
           if (this.relationship['Expert Panelist']) {
-            this.data.relationship = 'Expert Panelist';
+            data.relationship = 'Expert Panelist';
           }
-          this.data.permissions = JSON.stringify(this.data.permissions);
+          data.permissions = JSON.stringify(this.data.permissions);
           $http.get(appConfig.dashboardServiceUrl + 'new_member', {
-            params: this.data
+            params: data
           }).then(function (res) {
             if (res.data.status === 'ok') {
               $window.location.href = '#!/thank-youmembership';

@@ -15,8 +15,12 @@ angular
 
       this.contactUs = function () {
         if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
           $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
-            params: this.data
+            params: data
           }).then(function (res) {
             if (res.data.status === 'ok') {
               $window.location.href = '#!/thank-youcontact';
