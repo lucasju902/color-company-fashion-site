@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('contactUsComponent', {
     templateUrl: 'app/components/contact-us/contact-us.tmpl.html',
-    controller: function ($window, $http, appConfig, dataValidate) {
+    controller: function ($state, $http, appConfig, dataValidate) {
       this.data = {
         firstName: {value: '', required: true, name: 'first name', type: 'provide'},
         lastName: {value: '', required: true, name: 'last name', type: 'provide'},
@@ -22,8 +22,8 @@ angular
           $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
             params: data
           }).then(function (res) {
-            if (res.data.status === 'ok') {
-              $window.location.href = '#!/thank-youcontact';
+            if (res.status === 200) {
+              $state.go('thank-you', {parFrom: 'contact'});
             }
           });
         }

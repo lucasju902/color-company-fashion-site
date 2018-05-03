@@ -62,7 +62,7 @@
             <div>
               <p>Looking for specific research? Select below:</p>
               <div class="select-style">
-                <select ng-model="$ctrl.research" name="research"
+                <select ng-model="$ctrl.data.research.value" name="research"
                         ng-class="'ng-dirty' && press.email.$invalid ?  'error' :''" required>
                   <option value="-">SEARCH RESEARCH REPORT</option>
                   <option ng-repeat="report in $ctrl.pageData.reports" value="{{report.data.header}}">{{report.data.header}}</option>

@@ -37,6 +37,7 @@ angular
               vm.year = _.range(lastYear, moment().year() + 1);
               vm.hue = ['Auto', 'Beauty', 'Legal', 'Course', 'Teaching', 'Material'];
               vm.select();
+              vm.year = vm.year.reverse();
             }
           });
       };

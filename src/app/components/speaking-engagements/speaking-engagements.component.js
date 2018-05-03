@@ -2,16 +2,17 @@ angular
   .module('app')
   .component('speakingEngagementsComponent', {
     templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
-    controller: function ($window, $http, appConfig, dataValidate) {
+    controller: function ($state, $http, appConfig, dataValidate) {
       var vm = this;
       vm.pageData = {};
+      vm.speakers = [];
 
       vm.data = {
         firstName: {value: '', required: true, name: 'first name', type: 'provide'},
         lastName: {value: '', required: true, name: 'last name', type: 'provide'},
         email: {value: '', required: true, name: 'email', type: 'provide'},
         company: {value: '', required: true, name: 'company name', type: 'provide'},
-        jobTitle: {value: '', required: true, name: 'job title', type: 'provide'},
+        jobtitle: {value: '', required: true, name: 'job title', type: 'provide'},
         request: {value: '', required: true, name: 'request', type: 'enter'},
         message: {value: '', required: true, name: 'message', type: 'enter'}
       };
@@ -20,9 +21,9 @@ angular
         $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
           .then(function (res) {
             if (res && res.data) {
-              vm.pageData = angular.copy(res.data);
+              vm.speakers = angular.copy(res.data);
             }
-            vm.groups = _.chunk(angular.copy(vm.pageData), 3);
+            vm.groups = _.chunk(angular.copy(vm.speakers), 3);
           });
         $http.get(appConfig.dashboardServiceUrl + 'about_speaking_engagements.json')
           .then(function (res) {
@@ -32,19 +33,18 @@ angular
             }
           });
       };
-      vm.speaking = function () {
+
+      vm.send = function () {
         if (dataValidate.validate(vm.data)) {
           var data = {};
           for (var item in this.data) {
             data[item] = this.data[item].value;
           }
-          data.jobtitle = data.jobTitle;
-          delete data.jobTitle;
           $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
             params: data
           }).then(function (res) {
-            if (res.data.status === 'ok') {
-              $window.location.href = '#!/thank-youspeaking';
+            if (res.status === 200) {
+              $state.go('thank-you', {parFrom: 'speaking'});
             }
           });
         }

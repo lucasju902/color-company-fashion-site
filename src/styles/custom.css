@@ -608,7 +608,7 @@ hr {
 }
 
 .become-member p {
-  font-size: 10pt;
+  font-size: 17px;
 }
 
 .membership-form input, select {
@@ -651,6 +651,14 @@ hr {
   max-height: 50px;
   display: block;
   margin: 0 auto;
+}
+
+.mrg-btm-zero {
+  margin-bottom: 0;
+}
+
+.min-h {
+  min-height: 350px;
 }
 
 .white .btn {
@@ -722,6 +730,7 @@ hr {
 .partners h5 {
   margin-bottom: 15px;
   text-align: center;
+  text-transform: uppercase
 }
 
 .partners a {
@@ -938,6 +947,8 @@ input.search {
 
 .member h6 {
   text-align: center;
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .schedule li:before {
@@ -1016,6 +1027,14 @@ footer #copyrights {
   font-size: 14px;
   font-weight: 700;
   line-height: 18pt;
+}
+
+.speaking-text p {
+  font-size: 17px;
+}
+
+.analytic-item {
+  padding: 0 43px 0 43px;
 }
 
 .two_line_height {

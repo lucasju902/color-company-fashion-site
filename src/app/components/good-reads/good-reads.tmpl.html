@@ -18,7 +18,7 @@
   <div class="container-fluid text-left course">
     <div class="row" ng-repeat="group in $ctrl.groups">
       <div class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in group">
-        <a ng-href="#!/good-reads/{{item.id}}">
+        <a ng-href="{{item.link}}">
           <div class="img-responsive background-image"
                style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;

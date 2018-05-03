@@ -2,16 +2,16 @@ angular
   .module('app')
   .component('pressComponent', {
     templateUrl: 'app/components/press/press.tmpl.html',
-    controller: function ($window, $http, appConfig, dataValidate) {
+    controller: function ($state, $http, appConfig, dataValidate) {
       var vm = this;
-      vm.research = '-';
       vm.pageData = {};
       vm.data = {
         firstName: {value: '', required: true, name: 'first name', type: 'provide'},
         lastName: {value: '', required: true, name: 'last name', type: 'provide'},
         email: {value: '', required: true, name: 'email', type: 'provide'},
         company: {value: '', required: true, name: 'company name', type: 'provide'},
-        message: {value: '', required: true, name: 'message', type: 'enter'}
+        message: {value: '', required: true, name: 'message', type: 'enter'},
+        research: {value: '-', required: false}
       };
 
       vm.init = function () {
@@ -34,13 +34,12 @@ angular
           for (var item in this.data) {
             data[item] = this.data[item].value;
           }
-          data.research = vm.research;
           $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
             params: data
           })
             .then(function (res) {
-              if (res.data.status === 'ok') {
-                $window.location.href = '#!/thank-youpress';
+              if (res.status === 200) {
+                $state.go('thank-you', {parFrom: 'press'});
               }
             });
         }

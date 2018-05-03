@@ -184,15 +184,15 @@
       <form name="membership">
       <div class="col-lg-4 col-md-4 membership-form">
         <div class="membr-block">
-          <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName"
-                 ng-class="'ng-dirty' && membership.FirstName.$invalid ?  'error' :''" required>
-          <label for="firstName">FIRST NAME <span class="red-text">*</span></label>
+          <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name"
+                 ng-class="'ng-dirty' && membership.first_name.$invalid ?  'error' :''" required>
+          <label for="first_name">FIRST NAME <span class="red-text">*</span></label>
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName"
-                 ng-class="'ng-dirty' && membership.LastName.$invalid ?  'error' :''" required>
-          <label for="lastName">LAST NAME <span class="red-text">*</span></label>
+          <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name"
+                 ng-class="'ng-dirty' && membership.last_name.$invalid ?  'error' :''" required>
+          <label for="last_name">LAST NAME <span class="red-text">*</span></label>
         </div>
 
         <div class="membr-block">
@@ -208,23 +208,23 @@
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.data.jobTitle.value" ng-value="$ctrl.data.jobTitle.value" type="text" id="jobTitle" name="jobTitle"
-                 ng-class="'ng-dirty' && membership.jobTitle.$invalid ?  'error' :''" required>
-          <label for="jobTitle">JOB TITLE <span class="red-text">*</span></label>
+          <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title"
+                 ng-class="'ng-dirty' && membership.job_title.$invalid ?  'error' :''" required>
+          <label for="job_title">JOB TITLE <span class="red-text">*</span></label>
         </div>
 
         <div class="select-style">
-          <select ng-model="$ctrl.data.jobFunction.value" name="jobFunction"
-                  ng-class="'ng-dirty' && membership.jobFunction.$invalid ?  'error' :''" required>
+          <select ng-model="$ctrl.data.job_function.value" name="jobFunction"
+                  ng-class="'ng-dirty' && membership.job_function.$invalid ?  'error' :''" required>
             <option value="">PLEASE SELECT JOB FUNCTION*</option>
             <option ng-repeat="job in $ctrl.jobs" value="{{job}}">{{job}}</option>
           </select>
         </div>
 
         <div class="select-style">
-          <select ng-model="$ctrl.data.compamySize.value" name="compamySize"
-                  ng-class="'ng-dirty' && membership.compamySize.$invalid ?  'error' :''" required>
-            <option value="" selected>PLEASE SELECT COMPANY SIZE*</option>
+          <select ng-model="$ctrl.data.company_size.value" name="compamySize"
+                  ng-class="'ng-dirty' && membership.company_size.$invalid ?  'error' :''" required>
+            <option value="" selected>PLEASE SELECT COMPANY SIZE <span class="red-text">*</span></option>
             <option ng-repeat="size in $ctrl.compamySizes" value="{{size}}">{{size}}</option>
           </select>
         </div>
@@ -251,19 +251,19 @@
 
         <div>
           <p style="float: none">
-            <input type="checkbox" id="test5" ng-model="$ctrl.permissions['Daily Insights']"/>
+            <input type="checkbox" id="test5" ng-model="$ctrl.data.permissions.daily"/>
             <label for="test5">Daily Insight</label>
           </p>
           <p style="float: none">
-            <input type="checkbox" id="test6" ng-model="$ctrl.permissions['Research Partner']"/>
+            <input type="checkbox" id="test6" ng-model="$ctrl.data.permissions.research"/>
             <label for="test6">Research Reports</label>
           </p>
           <p style="float: none">
-            <input type="checkbox" id="test7" ng-model="$ctrl.permissions['Education Offerings']"/>
+            <input type="checkbox" id="test7" ng-model="$ctrl.data.permissions.edu"/>
             <label for="test7">Education Offerings</label>
           </p>
           <p style="float: none">
-            <input type="checkbox" id="test8" ng-model="$ctrl.relationship['Expert Panelist']"/>
+            <input type="checkbox" id="test8" ng-model="$ctrl.data.relationship.expert"/>
             <label for="test8">Join Expert Panel</label>
           </p>
         </div>

@@ -13,13 +13,17 @@
   <div class="container-fluid text-left">
     <h3 ng-if="!$ctrl.membership">Thank you for contacting HUEGROUP. Your {{$ctrl.text}} has been received.</h3>
     <h3 ng-if="$ctrl.membership">{{$ctrl.text}}</h3>
-    <div class="thanksText">
-      <strong>Not a member? Learn more about HUEGROUP Membership.</strong>
+    <div class="thanksDiv">
+      <div class="thanksText">
+        <strong>Not a member? Learn more about HUEGROUP Membership.</strong>
+      </div>
+      <div>
+        <button class="thanksBtn" ui-sref="membership({scrollTo: true})">
+          Learn More
+        </button>
+      </div>
     </div>
     <div>
-      <button class="thanksBtn" ui-sref="membership({scrollTo: true})">
-        Learn More
-      </button>
       <div class="thanksText">
         <strong>Stay current on HUEGROUP news and insights.</strong>
       </div>
