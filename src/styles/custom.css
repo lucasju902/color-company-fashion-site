@@ -9,7 +9,6 @@
 }
 
 body {
-  /*    font-family: 'Open Sans', sans-serif;*/
   font-family: 'Gotham-Book';
 }
 
@@ -20,7 +19,6 @@ body {
   min-height: 64px;
   color: white;
   margin-bottom: 40px;
-
 }
 
 #logo {
@@ -101,8 +99,7 @@ body {
 }
 
 .dropdown-menu {
-  border-bottom: 3px solid rgb(187, 0, 118);
-
+  top: 105%;
 }
 
 .dropdown-menu:before {
@@ -115,7 +112,10 @@ body {
   position: absolute;
   top: -10px;
   width: 0;
-
+  -moz-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
 }
 
 .dropdown:hover .dropdown-menu {
@@ -138,7 +138,6 @@ body {
 
 .submenu:hover .dropdown-submenu {
   display: block;
-
 }
 
 h1 {
@@ -152,7 +151,6 @@ h1 {
 }
 
 h3 {
-
   font-size: 25pt;
   font-weight: 700;
   color: black;
