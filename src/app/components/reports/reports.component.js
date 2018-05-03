@@ -39,6 +39,7 @@ angular
               });
               vm.year = _.range(lastYear, moment().year() + 1);
               vm.select();
+              vm.year = vm.year.reverse();
             }
           });
       };

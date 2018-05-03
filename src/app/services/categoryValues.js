@@ -49,6 +49,13 @@ angular.module('app')
             "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"
           ];
         }
+        case 'permissions': {
+          return {
+            daily: 'Daily Insights',
+            research: 'Research Partner',
+            edu: 'Education Offerings'
+          };
+        }
         default: {
           return [];
         }

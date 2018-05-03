@@ -40,7 +40,7 @@
 
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-3 col-md-3 justify" ng-bind-html="$ctrl.pageData.editor">
+      <div class="col-lg-3 col-md-3 justify speaking-text" ng-bind-html="$ctrl.pageData.editor">
       </div>
       <form name="speaking">
         <div class="col-lg-6 col-md-6 membership-form">
@@ -56,9 +56,9 @@
               <label for="email">EMAIL <span class="red-text">*</span></label>
             </div>
             <div class="membr-block">
-              <input ng-model="$ctrl.data.jobTitle.value" ng-value="$ctrl.data.jobTitle.value" type="text" id="jobTitle" name="jobTitle"
-                     ng-class="'ng-dirty' && speaking.jobTitle.$invalid ?  'error' :''" required>
-              <label for="jobTitle">JOB TITLE <span class="red-text">*</span></label>
+              <input ng-model="$ctrl.data.jobtitle.value" ng-value="$ctrl.data.jobtitle.value" type="text" id="jobtitle" name="jobtitle"
+                     ng-class="'ng-dirty' && speaking.jobtitle.$invalid ?  'error' :''" required>
+              <label for="jobtitle">JOB TITLE <span class="red-text">*</span></label>
             </div>
           </div>
 
@@ -89,7 +89,7 @@
 
         <div class="col-lg-3 col-md-3">
           <div class="button membership white" style="float:left; margin-right:10px; margin-bottom: 10px">
-            <button class="btn" ng-click="$ctrl.speaking()">
+            <button class="btn" ng-click="$ctrl.send()">
               SUBMIT
             </button>
           </div>

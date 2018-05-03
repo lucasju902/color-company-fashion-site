@@ -2,31 +2,25 @@ angular
   .module('app')
   .component('membershipComponent', {
     templateUrl: 'app/components/membership/membership.tmpl.html',
-    controller: function ($window, $stateParams, $state, scrollService, categoryValues, $http, appConfig, modalService, dataValidate) {
+    controller: function ($stateParams, $state, scrollService, categoryValues, $http, appConfig, modalService, dataValidate) {
       scrollService.scrollMember();
-      this.permissions = {
-        'Daily Insights': true,
-        'Research Partner': true,
-        'Education Offerings': true
-      };
-      this.relationship = {
-        'Expert Panelist': true
-      };
       this.jobs = categoryValues('job function');
       this.countries = categoryValues('country');
       this.industries = categoryValues('industry');
       this.compamySizes = categoryValues('company size');
 
       this.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
         email: {value: '', required: true, name: 'email', type: 'provide'},
         company: {value: '', required: true, name: 'company name', type: 'provide'},
-        jobTitle: {value: '', required: true, name: 'job title', type: 'provide'},
-        jobFunction: {value: '', required: true, name: 'job function', type: 'select'},
-        compamySize: {value: '', required: true, name: 'company size', type: 'select'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: '', required: true, name: 'job function', type: 'select'},
+        company_size: {value: '', required: true, name: 'company size', type: 'select'},
         industry: {value: '', required: true, name: 'industry', type: 'select'},
-        country: {value: '', required: true, name: 'country', type: 'select'}
+        country: {value: '', required: true, name: 'country', type: 'select'},
+        permissions: {daily: true, research: true, edu: true, required: false},
+        relationship: {expert: true, required: false}
       };
 
       this.submitInquiry = function () {
@@ -35,34 +29,23 @@ angular
           for (var item in this.data) {
             if (item !== 'permissions' && item !== 'relationship') {
               data[item] = this.data[item].value;
+            } else if (item === 'permissions') {
+              data.permissions = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.permissions.push(categoryValues('permissions')[k]);
+                }
+              });
+              data.permissions = JSON.stringify(data.permissions);
+            } else if (item === 'relationship' && this.data.relationship.expert) {
+              data.relationship = 'Expert Panelist';
             }
           }
-          data.job_title = data.jobTitle;
-          delete data.jobTitle;
-          data.job_function = data.jobFunction;
-          delete data.jobFunction;
-          data.last_name = data.lastName;
-          delete data.lastName;
-          data.first_name = data.firstName;
-          delete data.firstName;
-          data.company_size = data.compamySize;
-          delete data.compamySize;
-
-          this.data.permissions = [];
-          for (var i in this.permissions) {
-            if (this.permissions[i]) {
-              this.data.permissions.push(i);
-            }
-          }
-          if (this.relationship['Expert Panelist']) {
-            data.relationship = 'Expert Panelist';
-          }
-          data.permissions = JSON.stringify(this.data.permissions);
           $http.get(appConfig.dashboardServiceUrl + 'new_member', {
             params: data
           }).then(function (res) {
-            if (res.data.status === 'ok') {
-              $window.location.href = '#!/thank-youmembership';
+            if (res.status === 200) {
+              $state.go('thank-you', {parFrom: 'membership'});
             }
           });
         }
