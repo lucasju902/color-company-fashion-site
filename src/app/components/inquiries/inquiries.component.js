@@ -5,6 +5,7 @@ angular
     controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
       var currentName = $state.current.name;
 
+      var self = this;
       this.jobs = categoryValues('job function');
       this.companySizes = categoryValues('company size');
       this.industries = categoryValues('industry');
@@ -16,16 +17,16 @@ angular
         email: {value: '', required: true, name: 'email', type: 'provide'},
         company: {value: '', required: true, name: 'company name', type: 'provide'},
         job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: '', required: true, name: 'job function', type: 'select'},
-        company_size: {value: '', required: true, name: 'company size', type: 'select'},
-        industry: {value: '', required: true, name: 'industry', type: 'select'},
-        country: {value: '', required: true, name: 'country', type: 'select'}
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'}
       };
 
       switch (currentName) {
         case 'productInquiry':
-          this.data.permissions = {daily: true, research: true, edu: true, required: false};
-          this.data.relationship = {expert: true, required: false};
+          this.data.permissions = {daily: true, research: true, edu: true};
+          this.data.relationship = {expert: true};
           this.caption = 'Product Inquiry';
           this.inquire1 = true;
           this.url = 'product_partner';
@@ -42,7 +43,7 @@ angular
           this.caption = 'Inquire about Education Partnership';
           this.url = 'new_education_partners';
           this.inquire3 = true;
-          this.jobs.unshift('Educator');
+          this.jobs.splice(1, 0, {id: 7, title: 'Educator'});
           this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
           break;
       }
@@ -52,7 +53,11 @@ angular
           var data = {};
           for (var item in this.data) {
             if (item !== 'permissions' && item !== 'relationship') {
-              data[item] = this.data[item].value;
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
             } else if (item === 'permissions') {
               data.permissions = [];
               _.forEach(this.data[item], function (i, k) {
