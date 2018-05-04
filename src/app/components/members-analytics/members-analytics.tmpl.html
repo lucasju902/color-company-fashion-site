@@ -38,10 +38,10 @@
       <div class="row">
         <div ng-repeat="item in $ctrl.items" class="col-lg-2 col-md-6 col-sm-6 item analytic-item">
           <div class="img-responsive background-image pink-line"
-               style="background: {{'url(' + item.logo_url +') top center'}};
+               style="background: {{'url(' + item.logo_url +') center'}};
                     background-repeat: no-repeat;
-                    background-size: cover;
-                    background-color: #e1e1e126;
+                    background-size: contain;
+                    background-color: #ffffff;
                     padding-bottom: 100%;"></div>
           <h6>{{item.member_name.toUpperCase()}}</h6>
         </div>

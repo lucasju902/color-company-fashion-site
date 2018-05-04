@@ -2,12 +2,12 @@ angular
   .module('app')
   .component('infographicsComponent', {
     templateUrl: 'app/components/infographics/infographics.tmpl.html',
-    controller: function ($http, appConfig, modalService) {
+    controller: function ($http, appConfig, modalService, categoryValues) {
       var vm = this;
       vm.hueModel = 'VERTICAL';
       vm.yearModel = 'YEAR';
       vm.year = [];
-      vm.hue = [];
+      vm.hue = categoryValues('hue');
       vm.pageData = {};
       var count = 0;
       var lastYear = moment().year();
@@ -35,7 +35,6 @@ angular
                 }
               });
               vm.year = _.range(lastYear, moment().year() + 1);
-              vm.hue = ['Auto', 'Beauty', 'Legal', 'Course', 'Teaching', 'Material'];
               vm.select();
               vm.year = vm.year.reverse();
             }

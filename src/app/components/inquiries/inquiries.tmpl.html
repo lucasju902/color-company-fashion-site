@@ -28,7 +28,7 @@
           to customize color training programs and teching materials leveraging Huegroup rich color
           datasets, analytics and insights</p>
       </div>
-      <form name="inquiries">
+      <form name="inquiries" class="inq">
         <div class="col-lg-4 col-md-4 membership-form">
 
           <div class="membr-block">
@@ -69,33 +69,56 @@
             <label for="job_title">JOB TITLE <span class="red-text">*</span></label>
           </div>
 
-          <div class="select-style">
-            <select ng-model="$ctrl.data.job_function.value" style="border: 0px" required>
-              <option value="">PLEASE SELECT JOB FUNCTION*</option>
-              <option ng-repeat="job in $ctrl.jobs" value="{{job}}">{{job}}</option>
-            </select>
+          <div class="select-style select-mrg">
+            <ui-select
+              ng-model="$ctrl.data.job_function.value"
+              theme="selectize"
+              search-enabled="false"
+            >
+              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+              <ui-select-choices repeat="job in $ctrl.jobs">
+                <span ng-bind-html="job.title"></span>
+              </ui-select-choices>
+            </ui-select>
           </div>
 
-
-          <div class="select-style">
-            <select ng-model="$ctrl.data.company_size.value" style="border: 0px" required>
-              <option value="">PLEASE SELECT COMPANY SIZE*</option>
-              <option ng-repeat="size in $ctrl.companySizes" value="{{size}}">{{size}}</option>
-            </select>
+          <div class="select-style select-mrg">
+            <ui-select
+              ng-model="$ctrl.data.company_size.value"
+              theme="selectize"
+              search-enabled="false"
+            >
+              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+              <ui-select-choices repeat="companySize in $ctrl.companySizes">
+                <span ng-bind-html="companySize.title"></span>
+              </ui-select-choices>
+            </ui-select>
           </div>
 
-          <div class="select-style">
-            <select ng-model="$ctrl.data.industry.value" style="border: 0px" required>
-              <option value="" required>PLEASE SELECT INDUSTRY*</option>
-              <option ng-repeat="ind in $ctrl.industries" value="{{ind}}">{{ind}}</option>
-            </select>
+          <div class="select-style select-mrg">
+            <ui-select
+              ng-model="$ctrl.data.industry.value"
+              theme="selectize"
+              search-enabled="false"
+            >
+              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+              <ui-select-choices repeat="ind in $ctrl.industries">
+                <span ng-bind-html="ind.title"></span>
+              </ui-select-choices>
+            </ui-select>
           </div>
 
-          <div class="select-style">
-            <select ng-model="$ctrl.data.country.value" style="border: 0px" required>
-              <option value="">PLEASE SELECT COUNTRY*</option>
-              <option ng-repeat="cntry in $ctrl.countries" value="{{cntry}}">{{cntry}}</option>
-            </select>
+          <div class="select-style select-mrg">
+            <ui-select
+              ng-model="$ctrl.data.country.value"
+              theme="selectize"
+              search-enabled="false"
+            >
+              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+              <ui-select-choices repeat="cntry in $ctrl.countries">
+                <span ng-bind-html="cntry.title"></span>
+              </ui-select-choices>
+            </ui-select>
           </div>
 
           <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value"

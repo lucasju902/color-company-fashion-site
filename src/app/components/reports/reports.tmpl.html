@@ -24,7 +24,7 @@
     <div class="row search-fields">
       <div class="col-lg-2 col-lg-offset-3 ">
         <div class="select-style">
-          <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select()">
+          <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select(this)">
             <option>VERTICALS</option>
             <option ng-repeat="item in $ctrl.hue">{{item}}</option>
           </select>
@@ -32,7 +32,7 @@
       </div>
       <div class="col-lg-2 ">
         <div class="select-style">
-          <select ng-model="$ctrl.reportModel" ng-change="$ctrl.select()">
+          <select ng-model="$ctrl.reportModel" ng-change="$ctrl.select()" ng-disabled="$ctrl.dis">
             <option>ALL</option>
             <option ng-repeat="item in $ctrl.report">{{item}}</option>
           </select>

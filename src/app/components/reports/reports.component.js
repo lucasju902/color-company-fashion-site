@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('reportsComponent', {
     templateUrl: 'app/components/reports/reports.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($http, appConfig, categoryValues) {
       var vm = this;
       vm.filters = {};
       vm.hueModel = 'VERTICALS';
@@ -10,11 +10,12 @@ angular
       vm.yearModel = 'YEAR';
       vm.pageData = {};
       vm.cacheItems = [];
-      vm.hue = ['Auto', 'Beauty', 'Legal', 'Course', 'Teaching', 'Material'];
+      vm.hue = categoryValues('hue');
 
       vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
       vm.year = [];
       vm.items = [];
+      vm.dis = true;
       var lastYear = moment().year();
       var count = 0;
 
@@ -48,7 +49,14 @@ angular
         vm.groups.push(vm.all[count++]);
       };
 
-      vm.select = function () {
+      vm.select = function (obj) {
+        if (obj) {
+          if (obj.$ctrl.hueModel === 'Fashion') {
+            vm.dis = false;
+          } else {
+            vm.dis = true;
+          }
+        }
         vm.groups = [];
         if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
           vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {

@@ -11,7 +11,7 @@ angular
         email: {value: '', required: true, name: 'email', type: 'provide'},
         company: {value: '', required: true, name: 'company name', type: 'provide'},
         message: {value: '', required: true, name: 'message', type: 'enter'},
-        research: {value: '-', required: false}
+        research: {value: '-'}
       };
 
       vm.init = function () {

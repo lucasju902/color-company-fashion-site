@@ -8,9 +8,11 @@ angular.module('app').service('dataValidate', function (modalService) {
     };
 
     for (var item in data) {
-      if (data[item].required && data[item].value === '') {
-        var type = types[data[item].type] || '*Please enter ';
-        errorMessage.push(type + data[item].name);
+      if (data[item].required) {
+        if (data[item].value === '' || (data[item].type === 'select' && data[item].value.id === null)) {
+          var type = types[data[item].type] || '*Please enter ';
+          errorMessage.push(type + data[item].name);
+        }
       }
     }
     if (errorMessage.length !== 0) {
