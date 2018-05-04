@@ -99,7 +99,7 @@ body {
 }
 
 .dropdown-menu {
-  top: 105%;
+  border-bottom: 3px solid rgb(187, 0, 118);
 }
 
 .dropdown-menu:before {
@@ -539,6 +539,12 @@ form p {
   background-repeat: no-repeat;
   background-position: 95% 50%;
 }
+.select-style select:disabled {
+  color: #808080;
+  cursor: default;
+  background-image: url(../assets/images/arrow-gray.png);
+  background-repeat: no-repeat;
+}
 
 .search-fields .col-lg-2 {
   padding-left: 10px;
@@ -861,7 +867,11 @@ input.search {
   background-color: #fc23fc;
 }
 
-.Auto {
+.Tech {
+  background-color: #5d5d5d;
+}
+
+.Automotive {
   background-color: #fd8d20;
 }
 
@@ -869,20 +879,20 @@ input.search {
   background-color: #964a07;
 }
 
+.Home {
+  background-color: #0000ff;
+}
+
+.Package {
+  background-color: #8b008b;
+}
+
+.Products {
+  background-color: #ffe000;
+}
+
 .Legal {
   background-color: #0f7f11;
-}
-
-.Teaching {
-  background-color: #8b098a;
-}
-
-.Course {
-  background-color: #8b098a;
-}
-
-.Material {
-  background-color: #8b098a;
 }
 
 .dailyinsights {
