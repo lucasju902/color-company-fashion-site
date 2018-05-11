@@ -12,7 +12,7 @@
             <span>ERROR: </span><a>The username or password you entered is incorrect</a>
           </div>
           <form>
-            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.username" placeholder="EMAIL ADDRESS" name="email"
+            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email"
                    id="email" type="text">
             <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password"
                    id="password" type="password">
@@ -28,8 +28,8 @@
           </form>
 
           <div class="additional-links text-left">
-            <a ui-shref="">Forgot your password</a>
-            <p>Not a Huegroup member? Learn more about Huegroup Membership</p>
+            <a ng-href="#!/recover">Forgot your password</a>
+            <p>Not a Huegroup member? <a ui-sref="membership({scrollTo: true})">Learn more about Huegroup Membership</a></p>
             <a ui-shref="">Huegroup Staff - Login here</a>
           </div>
         </div>

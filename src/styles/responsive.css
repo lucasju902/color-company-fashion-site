@@ -53,6 +53,12 @@
 
 }
 
+@media (min-width: 1200px) {
+  .analytic-item {
+    width: 20%;
+  }
+}
+
 @media (max-width: 1200px) {
 
   html body {

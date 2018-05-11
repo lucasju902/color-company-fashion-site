@@ -1026,6 +1026,9 @@ footer #copyrights {
 .speaking_item_header {
   font-size: 22px;
   padding-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .speaking_item_header a {
@@ -1044,7 +1047,7 @@ footer #copyrights {
 }
 
 .analytic-item {
-  padding: 0 43px 0 43px;
+  padding: 0 45px;
 }
 
 .two_line_height {
