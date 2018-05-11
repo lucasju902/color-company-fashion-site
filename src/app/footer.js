@@ -49,6 +49,7 @@ angular
           $state.current.name === 'contact' ||
           $state.current.name === 'terms' ||
           $state.current.name === 'recover' ||
+          $state.current.name === 'password-recover' ||
           $state.current.name === 'press';
       };
     }

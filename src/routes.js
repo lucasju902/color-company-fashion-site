@@ -382,8 +382,14 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('thank-you', {
-      url: '/thank-you:parFrom',
+      url: '/thank-you/:parFrom',
       component: 'thankYouComponent'
+    });
+
+  $stateProvider
+    .state('password-recover', {
+      url: '/password-recover/:token',
+      component: 'passwordRecoverComponent'
     });
 }
 

@@ -4,16 +4,15 @@ angular.module('app')
       var self = this;
       this.token = $cookies.get('hg_session');
 
-      this.login = function (username, password) {
-        return $http.get(appConfig.authServiceUrl + '/api/login', {
+      this.login = function (email, password, isRemembered) {
+        return $http.get(appConfig.dashboardServiceUrl + 'sessions/login.json', {
           params: {
-            username: username,
-            password: password,
-            app: 'huefashion'
+            email: email,
+            password: password
           }
         }).then(function (res) {
           if (res.data && res.data.success) {
-            self.setToken(res.data.token);
+            self.setToken(res.data.token, isRemembered);
             self.currentUser = res.data.user;
             self.token = res.data.token;
             $rootScope.currentUser = res.data.user;
@@ -23,7 +22,7 @@ angular.module('app')
       };
 
       this.logOut = function () {
-        $http.get(appConfig.authServiceUrl + '/api/logout', {params: {token: self.token}})
+        $http.get(appConfig.dashboardServiceUrl + 'sessions/logout.json', {params: {token: self.token}})
           .then(function (res) {
             if (res.data && res.data.success) {
               $cookies.remove('hg_session');
@@ -36,8 +35,8 @@ angular.module('app')
       };
 
       this.loadCurrentUser = function () {
-        return $http.get(appConfig.authServiceUrl + '/api/user',
-          {params: {app: appConfig.appName, token: self.token}})
+        return $http.get(appConfig.dashboardServiceUrl + 'sessions/user.json',
+          {params: {token: self.token}})
           .then(function (data) {
             if (data.data.success) {
               self.currentUser = data.data.user;
@@ -53,9 +52,13 @@ angular.module('app')
         return self.currentUser || {}
       };
 
-      this.setToken = function (token) {
+      this.setToken = function (token, isRemembered) {
         var date = new Date();
-        date.setFullYear(date.getFullYear() + 1);
+        if (isRemembered) {
+          date.setFullYear(date.getFullYear() + 1);
+        } else {
+          date.setDate(date.getDate() + 1);
+        }
         $cookies.put('hg_session', token, {expires: date});
         this.token = token;
       };
