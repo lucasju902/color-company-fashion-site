@@ -37,12 +37,9 @@
   <div class="container-fluid report ">
       <div class="row" ng-repeat="group in $ctrl.groups">
         <div ng-repeat="item in group" class="col-lg-2 col-md-4 col-sm-12 item analytic-item">
-          <div class="img-responsive background-image pink-line"
-               style="background: {{'url(' + item.logo_url +') center'}};
-                    background-repeat: no-repeat;
-                    background-size: contain;
-                    background-color: #ffffff;
-                    padding-bottom: 100%;"></div>
+          <div class="pink-line analytic-block">
+            <img src="{{item.logo_url}}" class="analytic-img">
+          </div>
           <h6>{{item.member_name.toUpperCase()}}</h6>
         </div>
       </div>

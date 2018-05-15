@@ -1046,8 +1046,21 @@ footer #copyrights {
   font-size: 17px;
 }
 
-.analytic-item {
-  padding: 0 45px;
+.analytic-block {
+  padding-bottom: 75%;
+  position: relative;
+  background-color: #ffffff;
+}
+
+.analytic-img {
+  position: absolute;
+  width: 100%;
+  padding: 30px 50px;
+  border: none !important;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  max-height: 100%
 }
 
 .two_line_height {
