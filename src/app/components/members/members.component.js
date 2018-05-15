@@ -6,7 +6,7 @@ angular
       var vm = this;
       vm.filter = '';
       vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'members.json')
+        $http.get(appConfig.dashboardServiceUrl + 'members/names.json')
           .then(function (res) {
             if (res && res.data) {
               var rows = res.data.length > 0 ? Math.ceil(res.data.length / 4) : 1;
