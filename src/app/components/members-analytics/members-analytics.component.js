@@ -7,7 +7,7 @@ angular
       vm.searchModel = '';
       vm.all = [];
       vm.pageData = [];
-      vm.groups = [];
+      vm.items = [];
       var count = 0;
 
       vm.init = function () {
@@ -19,7 +19,9 @@ angular
           });
       };
       vm.more = function () {
-        vm.groups.push(vm.all[count++]);
+        vm.all[count++].forEach(function (i) {
+          vm.items.push(i);
+        });
       };
 
       vm.search = function () {
@@ -33,7 +35,7 @@ angular
         } else {
           vm.filterData = angular.copy(vm.pageData);
         }
-        vm.groups = [];
+        vm.items = [];
         vm.all = _.chunk(angular.copy(vm.filterData), 5);
         count = 0;
         vm.more();

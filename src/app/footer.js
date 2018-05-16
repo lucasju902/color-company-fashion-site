@@ -45,6 +45,7 @@ angular
 
       this.hidePrefooter = function () {
         return $state.current.name === 'login' ||
+          $state.current.name === 'staffLogin' ||
           $state.current.name === 'privacy' ||
           $state.current.name === 'contact' ||
           $state.current.name === 'terms' ||
