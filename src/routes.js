@@ -391,5 +391,11 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/password-recover/:token',
       component: 'passwordRecoverComponent'
     });
+
+  $stateProvider
+    .state('staffLogin', {
+      url: '/staff-login',
+      component: 'staffLoginComponent'
+    });
 }
 

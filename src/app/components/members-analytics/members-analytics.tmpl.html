@@ -33,25 +33,23 @@
   </div>
 </section>
 
-<section class="gray member mrg-btm-zero min-h">
-  <div class="container-fluid report ">
-      <div class="row" ng-repeat="group in $ctrl.groups">
-        <div ng-repeat="item in group" class="col-lg-2 col-md-4 col-sm-12 item analytic-item">
-          <div class="pink-line analytic-block">
-            <img src="{{item.logo_url}}" class="analytic-img">
-          </div>
-          <h6>{{item.member_name.toUpperCase()}}</h6>
+<section class="analytics-section min-h">
+  <div class="group">
+    <div class="item" ng-repeat="item in $ctrl.items">
+      <div class="img-container">
+        <div class="img" style="background: {{'url(' + item.logo_url +') center center'}};
+                    background-repeat: no-repeat;
+                    background-size: contain;"
+        >
         </div>
       </div>
-      <div ng-show="!$ctrl.groups.length" style="padding-left: 30px;">
-        <h4 style="padding-top:0px; margin-top:0px"><em>Nothing found. Please try later</em></h4>
-      </div>
-  </div>
-
-  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.groups.length * 5">
-    <div class="col-lg-12 text-center" >
-      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
+      <h6 class="analytic-title">{{item.member_name}}</h6>
     </div>
   </div>
 
+  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.items.length">
+    <div class="col-lg-12 text-center">
+      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
+    </div>
+  </div>
 </section>

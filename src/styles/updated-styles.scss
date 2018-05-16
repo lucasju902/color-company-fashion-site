@@ -525,6 +525,23 @@ ui-view {
     padding-top: 20px;
   }
 
+  a{
+    text-decoration: none
+  }
+  .google-auth-button {
+    padding: 15px;
+    background-color: gray;
+    margin-bottom: 15px;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .google-auth-button:hover {
+    background-color: #909090;
+  }
+
   input {
     width: 100% !important;
     margin: 15px 0;
@@ -601,6 +618,20 @@ input.search {
   }
 }
 
+.error-message-staff {
+  position: absolute;
+  top: -10px;
+
+  span {
+    color: red;
+    font-weight: 700;
+  }
+  a {
+    color: black;
+    font-weight: 700;
+  }
+}
+
 #show-video-popup {
   cursor: pointer;
 }
@@ -658,6 +689,47 @@ input.search {
         outline: none;
         background: none;
         color: #333;
+      }
+    }
+  }
+}
+
+.analytics-section {
+  padding-top: 60px;
+  background-color: #f7f7f7;
+}
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  .analytic-title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #7b7b7b;
+    text-transform: uppercase;
+  }
+
+  .item {
+    width: 16%;
+    margin: 0 2% 110px;
+    border-top: 4px solid #bb0076;
+    text-align: center;
+    height: 180px;
+
+    .img-container {
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 25px;
+      height: 100%;
+
+      .img {
+        width: 150px;
+        height: 100%;
       }
     }
   }
