@@ -65,6 +65,7 @@ function chartGraphLinearHorizontal(settings) {
 //            self.isArray(el.value) ? d.push.apply(d, el.value) : d.push(el.value);
         });
         self.maxValue = d3.max(d);
+        console.log(self.maxValue, 'self.maxValue')
         if (_opts.bars.maxValue && _opts.bars.maxValue > self.maxValue) {
             self.maxValue = _opts.bars.maxValue;
         }
@@ -141,7 +142,7 @@ function chartGraphLinearHorizontal(settings) {
                         .attr('transform', self.formatTranslate(_opts.axis.y.width + yAxisMargin
                             + contentWidth + yAxisMargin, dy * (j + .5)))
                         .text(data.title);
-                    
+
                 }
             }
         }

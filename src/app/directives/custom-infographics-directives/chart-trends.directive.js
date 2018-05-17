@@ -30,7 +30,7 @@
             };
 
             _.each(scope.data, function (period) {
-              _.each(_.sortBy(period.data, 'value'), function (d, i) {
+              _.each(_.sortBy(period.data, 'value').reverse(), function (d, i) {
                 var bar = _.find(bars, {name: d.name});
                 if (!bar) {
                   bar = {
