@@ -76,7 +76,7 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-              <ui-select-choices repeat="job in $ctrl.jobs">
+              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">
                 <span ng-bind-html="job.title"></span>
               </ui-select-choices>
             </ui-select>
@@ -89,7 +89,7 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-              <ui-select-choices repeat="companySize in $ctrl.companySizes">
+              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">
                 <span ng-bind-html="companySize.title"></span>
               </ui-select-choices>
             </ui-select>
@@ -102,7 +102,7 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-              <ui-select-choices repeat="ind in $ctrl.industries">
+              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">
                 <span ng-bind-html="ind.title"></span>
               </ui-select-choices>
             </ui-select>
@@ -115,7 +115,7 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-              <ui-select-choices repeat="cntry in $ctrl.countries">
+              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">
                 <span ng-bind-html="cntry.title"></span>
               </ui-select-choices>
             </ui-select>

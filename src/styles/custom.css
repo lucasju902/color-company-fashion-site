@@ -181,26 +181,6 @@ p {
   line-height: 18pt;
 }
 
-.btn {
-  color: #ffffff;
-  font-size: 13px;
-  background: #bb0076;
-  padding: 15px 20px 15px 20px;
-  text-decoration: none;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0px;
-  font-weight: 700;
-  transition: background 0.2s ease;
-  border: solid 2px #bb0076;
-}
-
-.btn:hover {
-  background: #ce0b86;
-  color: white;
-  text-decoration: none;
-}
-
 .button {
   padding-top: 30px;
 
@@ -407,23 +387,6 @@ textarea {
 input:not([type="checkbox"]):not([type="radio"]), textarea, select, button.button {
   padding-left: 10px;
   margin-bottom: 22px;
-}
-
-.submit .btn {
-  background-color: #bb0076;
-  transition: background 0.2s ease;
-  height: 49px;
-  text-align: center;
-  width: 100%;
-
-}
-
-.submit .btn:hover {
-  background-color: white;
-  transition: background 0.2s ease;
-  height: 49px;
-  color: #bb0076;
-
 }
 
 .submit {
@@ -667,21 +630,6 @@ hr {
   min-height: 350px;
 }
 
-.white .btn {
-  background-color: white;
-  color: #bb0076;
-  border: solid 2px #bb0076;
-  transition: background-color 0.2s ease;
-  min-width: 134px;
-}
-
-.white .btn:hover {
-  background-color: #bb0076;
-  color: white;
-  border: solid 2px #bb0076;
-  min-width: 134px;
-}
-
 #education {
   padding-top: 60px;
   padding-bottom: 40px;
@@ -768,11 +716,6 @@ hr {
 
 .course {
   margin-top: 30px;
-}
-
-.title .btn {
-  margin-top: 10px;
-  margin-left: 10px;
 }
 
 .become-member h3 {
