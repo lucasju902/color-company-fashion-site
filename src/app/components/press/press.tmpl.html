@@ -89,7 +89,9 @@
               <span class="list-category">{{item.data.publication}}</span>
               <span class="list-date">{{$ctrl.makeDate(item)}}</span>
             </div>
-            <div class="list-text">{{item.data.header}}</div>
+            <a href="{{item.data.url}}" class="link-for-list-items">
+            <div class="list-text purple-hover">{{item.data.header}}</div>
+            </a>
           </div>
         </div>
       </div>
