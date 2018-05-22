@@ -2,10 +2,10 @@
   <div>
     <div class="main-season">
       <div class="colors">
-        <label>FW2015</label>
-        <div ng-repeat="row in mainColumns">
-          <div class="color-brick" ng-repeat="color in row.colors" ng-class="{ empty: color.isEmpty }">
-            <span style="background: {{ color.color }}"></span>
+        <label>{{mainTitle}}</label>
+        <div ng-repeat="row in [0,1,2,3,4,5]">
+          <div class="color-brick" ng-repeat="color in mainSeason[row]" >
+            <span style="background: {{ color.colorHex }}"></span>
           </div>
         </div>
       </div>
@@ -13,11 +13,11 @@
     </div>
   </div>
   <div>
-    <div ng-repeat="season in seasons" class="season">
-      <label>{{ season.title }}</label>
+    <div ng-repeat="(key, palette) in palettes" class="season">
+      <label>{{ key }}</label>
       <div>
-        <div class="color-brick" ng-repeat="color in season.colors" ng-class="{ empty: color.isEmpty }">
-          <span style="background: {{ color.color }}"></span>
+        <div class="color-brick" ng-repeat="color in palette" ng-if="$index < 21">
+          <span style="background: {{ color.colorHex }}"></span>
         </div>
       </div>
     </div>

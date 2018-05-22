@@ -19,6 +19,9 @@
               return;
             }
 
+            scope.palettes1 = _.chunk(scope.data[2].data, 5);
+            scope.palettes2 = _.chunk(scope.data[3].data, 5);
+
             var containers = element.find('[chart-block]');
 
             _.each(containers, function (c, i) {

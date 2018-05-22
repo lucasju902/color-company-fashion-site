@@ -5,9 +5,9 @@
       <div chart-type="bagel" class="c-for-designer-bagel" ng-if="!mode.extraView"></div>
       <div class="colors" ng-if="mode.extraView">
         <label>{{ year1 }} pallette</label>
-        <div ng-repeat="row in rows1">
-          <div class="color-brick" ng-repeat="color in row.colors" ng-class="{ empty: color.isEmpty }">
-            <span style="background: {{ color.color }}"></span>
+        <div ng-repeat="row in [0,1,2,3,4]">
+          <div class="color-brick" ng-repeat="color in palettes1[row]" ng-class="{ empty: color.color.isEmpty }">
+            <span style="background: {{ color.color.color.hex }}"></span>
           </div>
         </div>
       </div>
@@ -21,9 +21,9 @@
       <div chart-type="bagel" class="c-for-designer-bagel" ng-if="!mode.extraView"></div>
       <div class="colors" ng-if="mode.extraView">
         <label>{{ year2 }} pallette</label>
-        <div ng-repeat="row in rows2">
-          <div class="color-brick" ng-repeat="color in row.colors" ng-class="{ empty: color.isEmpty }">
-            <span style="background: {{ color.color }}"></span>
+        <div ng-repeat="row in [0,1,2,3,4]">
+          <div class="color-brick" ng-repeat="color in palettes2[row]" ng-class="{ empty: color.color.isEmpty }">
+            <span style="background: {{ color.color.color.hex }}"></span>
           </div>
         </div>
       </div>

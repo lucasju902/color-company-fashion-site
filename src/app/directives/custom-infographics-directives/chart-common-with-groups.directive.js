@@ -19,32 +19,8 @@
               return;
             }
 
-            if (scope.mode && scope.mode.extraView) {
-              var rowsAmount = 5, columnsAmount = 5;
-              var allColors = [];
-              _.each(scope.data.groups, function (gr) {
-                _.each(gr.colors, function (c) {
-                  allColors.push({color: c.color});
-                });
-              });
+            scope.palettes = _.chunk(scope.data['palettes'], 5);
 
-              scope.rows = [];
-              for (var i = 0; i < rowsAmount; i++) {
-                var row = {colors: []};
-                scope.rows.push(row);
-                for (var j = 0; j < columnsAmount; j++) {
-                  var column = {};
-                  row.colors.push(column);
-
-                  var color = allColors[i * columnsAmount + j];
-                  if (!color) {
-                    column.isEmpty = true;
-                  } else {
-                    column.color = color.color;
-                  }
-                }
-              }
-            }
             var containerBagel = element.find('[chart-type="bagel"]').html('');
             var containerBrief = element.find('[chart-type="brief"]').html('');
             var containerGroups = element.find('[chart-type="groups"]').html('');
