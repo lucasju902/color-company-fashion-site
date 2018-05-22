@@ -2,7 +2,7 @@
   'use strict';
   var controllerName = 'CustomInfographicsController';
   angular.module('app').controller(controllerName, ['common', 'repo.common', '$interpolate', '$scope', 'charts',
-    '$q', 'repo.meta', 'repo.designers', '$timeout', '$anchorScroll', '$location', 'dashboardOverlayService', 'authService','dashboardRepository',
+    '$q', 'repo.meta', 'repo.designers', '$timeout', '$anchorScroll', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository',
     function (common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $anchorScroll, $location, dashboardOverlayService, authService, dashboardRepository) {
       var vm = this;
 
@@ -89,7 +89,7 @@
       vm.scrollToLetter = function (anchor) {
         $location.hash(anchor);
         $anchorScroll();
-        $location.hash('')
+        $location.hash('');
       };
 
       vm.alphabet = [
@@ -305,35 +305,37 @@
         if (type === 'category') {
           value = vm.filter.category.title;
           if (value === 'Couture') {
-            return 'CT'
+            return 'CT';
           } else if (value === 'Menswear') {
-            return 'MW'
+            return 'MW';
           } else {
-            return value
+            return value;
           }
         } else if (type === 'season') {
           value = vm.filter.season.title;
           if (value === 'Fall') {
-            return 'FW'
+            return 'FW';
           } else if (value === 'Pre-Fall') {
-            return 'PF'
+            return 'PF';
           } else if (value === 'Spring') {
-            return 'SS'
+            return 'SS';
           } else if (value === 'Resort') {
-            return 'RS'
+            return 'RS';
+          } else if (value === 'ALL SEASONS') {
+            return 'ALL';
           } else {
-            return value
+            return value;
           }
         } else if (type === 'city') {
           value = vm.filter.city.title.replace(/\s/g, '').toLowerCase();
           return _.find(citiesAbbrevs, function (item, key) {
             return value == key.toLowerCase();
-          })
+          });
         } else if (type === 'region') {
           value = vm.filter.region.title.replace(/\s/g, '').toLowerCase();
           return _.find(regionsAbbrevs, function (item, key) {
             return value == key.toLowerCase();
-          })
+          });
         }
       };
 
@@ -577,40 +579,41 @@
           title: 'SE2b - ACTUAL COLORS',
           chartTitle: 'ACTUAL COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
+            if (vm.filter.year.all) {
+              vm.filter.year.id = 2018;
+            }
+            var param = vm.prepareColors();
+            var palettes = {};
             return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
               .then(function (results) {
-                _.each(results, function (colorGroup) {
-                  var rnd = Math.random();
-                  colorGroup.value = Math.round(100 * rnd);
-                  colorGroup.colors1 = _.map(_.range(Math.round(rnd * 5)), function (i) {
-                    return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
+                var years = [];
+                for (var i = 0; i < 5; i++) {
+                  years.push(vm.filter.year.id - i);
+                }
+                return $q.all(years.map(function (d) {
+                  return dashboardRepository['year'].getColorPalette(d, vm.prepareColorsParams(), 250);
+                }))
+                  .then(function (data) {
+                    _.each(data, function (r, i) {
+                      _.each(r, function (a) {
+                        a.colorHex = a.color.color.hex;
+                      });
+                      _.sortBy(r, 'percentage');
+                      palettes[vm.getAbbrv('season') + years[i]] = r;
+                    });
+                    results.push(palettes)
+                    return results;
                   });
-                  colorGroup.colors2 = _.map(_.range(Math.round(rnd * 5)), function (i) {
-                    return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
-                  });
-                  colorGroup.colors3 = _.map(_.range(Math.round(rnd * 5)), function (i) {
-                    return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
-                  });
-                  colorGroup.colors4 = _.map(_.range(Math.round(rnd * 5)), function (i) {
-                    return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
-                  });
-                  colorGroup.colors5 = _.map(_.range(Math.round(rnd * 5)), function (i) {
-                    return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
-                  });
-                });
-                return results;
               });
           },
           filters: {
             category: true,
-            region: true,
             city: true,
             season: true,
             year: true
           },
           titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
+            ['category', 'season', 'year']
           ],
           options: {
             extraView: true
@@ -977,16 +980,16 @@
           title: 'DE1b - COLOR PALETTE',
           chartTitle: 'COLOR PALETTE {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
+            if (vm.filter.year.all) {
+              vm.filter.year.id = 2018;
+            }
             return charts.colorsGroupsCommon(vm.prepareRequestParams())
               .then(function (results) {
-                _.each(results.groups, function (colorGroup) {
-                  var rnd = Math.random();
-                  colorGroup.value = Math.round(100 * rnd);
-                  colorGroup.colors = _.map(_.range(Math.round(rnd * 6)), function (i) {
-                    return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
+                return dashboardRepository['year'].getColorPalette(vm.filter.year.id, vm.prepareColorsParams(), 250)
+                  .then(function (data) {
+                    results['palettes'] = data;
+                    return results;
                   });
-                });
-                return results;
               });
           },
           filters: {
@@ -1058,30 +1061,24 @@
           api: function () {
             var years = [vm.filter.year.id - 1, vm.filter.year.id];
             if (vm.filter.year.all) {
-              years = [2017, 2018]
+              years = [2017, 2018];
             }
             return $q.all([
               charts.colorsWithGroups(vm.prepareRequestParams(), years[0])
                 .then(function (results) {
-                  _.each(results.groups, function (colorGroup) {
-                    var rnd = Math.random();
-                    colorGroup.value = Math.round(100 * rnd);
-                    colorGroup.colors = _.map(_.range(Math.round(rnd * 6)), function (i) {
-                      return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
-                    });
-                  });
                   return results;
                 }),
               charts.colorsWithGroups(vm.prepareRequestParams(), years[1])
                 .then(function (results) {
-                  _.each(results.groups, function (colorGroup) {
-                    var rnd = Math.random();
-                    colorGroup.value = Math.round(100 * rnd);
-                    colorGroup.colors = _.map(_.range(Math.round(rnd * 6)), function (i) {
-                      return {color: generateRandomGroupColorByGroupTitle(colorGroup.title)};
-                    });
-                  });
                   return results;
+                }),
+              dashboardRepository['year'].getColorPalette(years[0], vm.prepareColorsParams(), 250)
+                .then(function (data) {
+                  return data;
+                }),
+              dashboardRepository['year'].getColorPalette(years[1], vm.prepareColorsParams(), 250)
+                .then(function (data) {
+                  return data;
                 })
             ]).then(function (results) {
               return _.map(results,
@@ -1151,7 +1148,7 @@
          */
       ];
 
-      vm.currentChart = vm.charts[0];
+      vm.currentChart = vm.charts[19];
       vm.chartsCurrentViewType = null;
 
       $scope.$watch('[vm.currentChart, vm.filter]', loadData, true);
@@ -1197,9 +1194,18 @@
           if (newV[0].qNumber !== oldV[0].qNumber) {
             vm.filter.designer = vm.meta.designers[0];
 
+            if (newV[0].qNumber === 'SE2b') {
+              vm.meta.years = _.filter(vm.meta.years, function (item) {
+                if (item.id === 'all' || item.id === 2000 || item.id === 2001 || item.id === 2002 || item.id === 2003) {
+                  return false;
+                }
+                return true;
+              });
+              vm.filter.year = vm.meta.years[0];
+            }
             if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
               vm.meta.regions = _.filter(vm.meta.regions, function (item) {
-                return !item.all
+                return !item.all;
               });
               vm.filter.region = vm.meta.regions[0];
             } else if (!_.find(vm.meta.regions, 'all')) {
@@ -1214,6 +1220,7 @@
 
           (function (currentRequestId) {
             vm.currentChart.api().then(function (result) {
+
               if (currentRequestId !== loading.currentRequestId || !result) {
                 return;
               }
@@ -1331,5 +1338,7 @@
           return Math.round(Math.random() * 15).toString(16);
         }
       }
-    }]);
+    }
+
+  ]);
 }(angular));

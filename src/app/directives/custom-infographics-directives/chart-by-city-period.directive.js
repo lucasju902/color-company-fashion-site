@@ -72,50 +72,12 @@
       function (common, config, chartsHelper) {
 
         function link(scope, element, attributes) {
-//                scope.value = '';
           scope.$watch('data', bindData);
-
-//                bindData();
-
           function bindData() {
-
             if (!scope.data) {
               return;
             }
-            /*      var maxValue = _.max(_.map(scope.data, function(d) { return d.value; }));
-             var options = {
-             //                        bars: {
-             //                            maxValue: maxValue
-             //                        }
-             };
-             options.layout = {
-             mode: scope.mode && scope.mode.extraView ? 'colors' : 'default',
-             padding: {
-             left: 10,
-             right: 10,
-             top: 75,
-             bottom: 0
-             }
-             };
-
-             _.each(scope.data,
-             function(d) {
-             d.color = d.name;
-             //                            d.value = d.value / maxValue * 100;
-             });
-
-             var container = chartsHelper.initContainer(element);
-
-             var ch = new chartBubbledLines({
-             data: scope.data || {},
-             container: container[0],
-             options: options
-             });
-
-
-             */
             var colorsAmount = 15;
-
             scope.groups = _.map(scope.data, function (d) {
               if (d.colors.length < 15) {
                 for (var i = d.colors.length - 1; i <= 15; i++) {
@@ -135,7 +97,8 @@
                     color: color
                   };
                 })
-          }});
+              };
+            });
 
             var container = $(element.find('[chart-type="bottom"]'));
             container.html('');

@@ -6,9 +6,9 @@
   </div>
   <div class="colors" ng-if="mode.extraView">
     <label>The pallette</label>
-    <div ng-repeat="row in rows">
-      <div class="color-brick" ng-repeat="color in row.colors" ng-class="{ empty: color.isEmpty }">
-        <span style="background: {{ color.color }}"></span>
+    <div ng-repeat="row in [0,1,2,3,4]">
+      <div class="color-brick" ng-repeat="color in palettes[row]" ng-class="{ empty: color.color.isEmpty }">
+        <span style="background: {{ color.color.color.hex }}"></span>
       </div>
     </div>
   </div>
