@@ -1148,7 +1148,7 @@
          */
       ];
 
-      vm.currentChart = vm.charts[19];
+      vm.currentChart = vm.charts[0];
       vm.chartsCurrentViewType = null;
 
       $scope.$watch('[vm.currentChart, vm.filter]', loadData, true);
@@ -1193,16 +1193,26 @@
         if (newV && oldV) {
           if (newV[0].qNumber !== oldV[0].qNumber) {
             vm.filter.designer = vm.meta.designers[0];
-
-            if (newV[0].qNumber === 'SE2b') {
-              vm.meta.years = _.filter(vm.meta.years, function (item) {
-                if (item.id === 'all' || item.id === 2000 || item.id === 2001 || item.id === 2002 || item.id === 2003) {
-                  return false;
-                }
-                return true;
-              });
-              vm.filter.year = vm.meta.years[0];
-            }
+            
+            // if (newV[0].qNumber === 'SE2b') {
+            //   vm.allYears = copy(vm.meta.years)
+            //   vm.meta.years = _.filter(vm.meta.years, function (item) {
+            //     if (item.id === 'all' || item.id === 2000 || item.id === 2001 || item.id === 2002 || item.id === 2003) {
+            //       return false;
+            //     }
+            //     return true;
+            //   });
+            //   vm.filter.year = vm.meta.years[0];
+            // }
+            // if (newV[0].qNumber === 'DE2b') {
+            //   vm.meta.years = _.filter(vm.meta.years, function (item) {
+            //     if (item.id === 2000) {
+            //       return false;
+            //     }
+            //     return true;
+            //   });
+            //   vm.filter.year = vm.meta.years[0];
+            // }
             if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
               vm.meta.regions = _.filter(vm.meta.regions, function (item) {
                 return !item.all;
