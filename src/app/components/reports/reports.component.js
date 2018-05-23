@@ -16,8 +16,10 @@ angular
       vm.year = [];
       vm.items = [];
       vm.dis = true;
+      vm.flag = false;
       var lastYear = moment().year();
-      var count = 0;
+      var count = 1;
+      var numberOfElements = 3;
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'reports.json')
@@ -45,8 +47,23 @@ angular
           });
       };
 
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
       vm.more = function () {
-        vm.groups.push(vm.all[count++]);
+        vm.items = [];
+        count++;
+        vm.sortItems();
       };
 
       vm.select = function (obj) {
@@ -57,7 +74,6 @@ angular
             vm.dis = true;
           }
         }
-        vm.groups = [];
         if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
           vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
             if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
@@ -69,9 +85,9 @@ angular
         } else {
           vm.filterData = angular.copy(vm.cacheItems);
         }
-        vm.all = _.chunk(angular.copy(vm.filterData), 3);
-        count = 0;
-        vm.more();
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
       };
     }
   });

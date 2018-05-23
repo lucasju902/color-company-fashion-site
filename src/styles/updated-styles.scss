@@ -1637,4 +1637,30 @@ form .ui-select-container.selectize-control {
   }
 }
 
+/*-----the alignment of all columns is the maximum height of the row-----*/
+
+.equal {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+}
+.equal > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+/*------------styles for partners and items-----------*/
+
+@media(max-width: 991px) and (min-width: 768px) {
+  .item {
+    padding:0 15px;
+  }
+
+  .partner {
+    padding:0 15px;
+  }
+}
+
 // Customized Infographics END

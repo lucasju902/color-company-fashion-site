@@ -10,7 +10,6 @@ angular
           .then(function (res) {
             if (res && res.data) {
               vm.pageData = res.data;
-              vm.pageData = _.chunk(vm.pageData, 3)
             }
           });
       };
