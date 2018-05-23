@@ -1256,7 +1256,6 @@
         vm.description = vm.description || (vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
           vm.filter.city.title + ' | REGIONS-' + vm.filter.region.title + ' | DESIGNER-' + vm.filter.designer.title +
           ' | SEASONS-' + vm.filter.season.title);
-        console.log(vm);
 
         var regionId = null;
         switch (vm.filter.region.id) {
@@ -1285,7 +1284,7 @@
         }
 
         $http({
-          url: (appConfig.dashboardServiceUrl + 'api/stats'),
+          url: (appConfig.webServiceUrl + 'stats'),
           method: 'GET',
           params: {
             fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
