@@ -40,7 +40,6 @@
             });
 
             data.data = _.map(scope.data[0].data, function (d0, i) {
-              console.log(d0)
               var dResult = [];
               for (var j = 0; j < scope.data.length; j++) {
                 var d = scope.data[j];

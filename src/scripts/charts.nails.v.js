@@ -14,7 +14,6 @@ function chartNailsLinearVertical(settings) {
 
     var _opts = self.mergeDefaults(settings.options);
     var _charts = null;
-    console.log(self.data);
 
     function initialize() {
         self.getDefaults = function() {

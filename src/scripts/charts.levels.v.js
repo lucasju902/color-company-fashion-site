@@ -268,7 +268,6 @@ function chartLevelsVertical(settings) {
                             di = 9.5;
                         }
                         var functionDelay = barDuration - easeOutExpoReverse((di) / 10) / 10;
-                        console.log(i, functionDelay);
                         trans
                             .duration(barDuration / 10)
                             .delay(functionDelay + i0 * barsDelay)

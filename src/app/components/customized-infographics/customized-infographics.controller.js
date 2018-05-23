@@ -1,9 +1,9 @@
 ﻿(function (angular) {
   'use strict';
   var controllerName = 'CustomInfographicsController';
-  angular.module('app').controller(controllerName, ['common', 'repo.common', '$interpolate', '$scope', 'charts',
+  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
     '$q', 'repo.meta', 'repo.designers', '$timeout', '$anchorScroll', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository',
-    function (common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $anchorScroll, $location, dashboardOverlayService, authService, dashboardRepository) {
+    function ($http, appConfig, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $anchorScroll, $location, dashboardOverlayService, authService, dashboardRepository) {
       var vm = this;
 
       vm.meta = {};
@@ -613,7 +613,8 @@
             year: true
           },
           titleGroups: [
-            ['category', 'season', 'year']
+            ['category', 'season', 'year'],
+            ['region']
           ],
           options: {
             extraView: true
@@ -1239,7 +1240,7 @@
                 vm.currentChart.apiAfter(vm.model, result);
               }
               vm.title = prepareTitle(vm.currentChart.chartTitle);
-              vm.description = prepareDescription();
+              prepareDescription();
             });
             // dashboardOverlayService.loadingCompleted();
           })(loading.currentRequestId);
@@ -1252,10 +1253,56 @@
       }
 
       function prepareDescription() {
-        var defaultDescription = vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
+        vm.description = vm.description || (vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
           vm.filter.city.title + ' | REGIONS-' + vm.filter.region.title + ' | DESIGNER-' + vm.filter.designer.title +
-          ' | SEASONS-' + vm.filter.season.title;
-        return defaultDescription;
+          ' | SEASONS-' + vm.filter.season.title);
+        console.log(vm);
+
+        var regionId = null;
+        switch (vm.filter.region.id) {
+          case 'europe':
+            regionId = 2;
+            break;
+          case 'north_america':
+            regionId = 3;
+            break;
+          case 'latin_america':
+            regionId = 4;
+            break;
+          case 'asia_pacific':
+            regionId = 1;
+            break;
+        }
+
+        var yearFrom = null;
+        var yearTo = vm.filter.year.id === 'all' ? vm.meta.years[1].title : vm.filter.year.id;
+        if (vm.currentChart.qNumber === 'CO3a' || vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b') {
+          yearFrom = yearTo - 4;
+        } else if (vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b') {
+          yearFrom = yearTo - 2;
+        } else if (vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b') {
+          yearFrom = yearTo - 1;
+        }
+
+        $http({
+          url: (appConfig.dashboardServiceUrl + 'api/stats'),
+          method: 'GET',
+          params: {
+            fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
+            fashionDesigner: vm.filter.designer.id === 'all' ? null : vm.filter.designer.id,
+            fashionRegion: regionId || null,
+            fashionCity: vm.filter.city.id === 'all' ? null : vm.filter.city.id,
+            fashionCategory: vm.filter.category.id === 'all' ? null : vm.filter.category.id,
+            fashionYear: yearFrom || vm.filter.year.id === 'all' ? null : vm.filter.year.id,
+            yearFrom: yearFrom || null,
+            yearTo: yearFrom ? yearTo : null
+            // 'fashion_color': vm.filter.color.id === 'all' ? null : vm.filter.color.id
+          }
+        }).then(function (res) {
+            vm.description = 'YEARS-' + res.data.years + ' | COLORS-' + res.data.colors +
+              ' | CITIES-' + res.data.cities + ' | REGIONS-' + res.data.regions +
+              ' | DESIGNER-' + res.data.designers + ' | SEASONS-' + res.data.seasons;
+          });
       }
 
       vm.isFilterVisible = function (filterId) {

@@ -65,7 +65,6 @@ function chartGraphLinearHorizontal(settings) {
 //            self.isArray(el.value) ? d.push.apply(d, el.value) : d.push(el.value);
         });
         self.maxValue = d3.max(d);
-        console.log(self.maxValue, 'self.maxValue')
         if (_opts.bars.maxValue && _opts.bars.maxValue > self.maxValue) {
             self.maxValue = _opts.bars.maxValue;
         }

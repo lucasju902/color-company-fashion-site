@@ -205,7 +205,6 @@ function chartComplexRegion(settings) {
       String.format(' translate({0}px,{1}px)',
         (noCitiesData ? -75 * (self.proportion / 1.5) : 80 * (self.proportion / 1.5)),
         (noCitiesData ? -50 * (self.proportion / 1.5) : -35 * (self.proportion / 1.5))));
-    console.log(imgTransformFormat);
     $(self._m.image[0][0]).css('transform', imgTransformFormat);
     $(self._m.image[0][0]).css('transform-origin', 'top left');
 
