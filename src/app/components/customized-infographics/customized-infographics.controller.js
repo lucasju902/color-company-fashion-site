@@ -453,7 +453,9 @@
             var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
             var customParams = vm.prepareRequestParams();
             if (vm.filter.year.all) {
-              yearsRange = _.range(2019 - 5, 2019);
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
             }
 
             return $q.all(_.map(yearsRange, function (year) {
@@ -553,7 +555,9 @@
           api: function () {
             var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
-              yearsRange = _.range(2019 - 5, 2019);
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
             }
             return charts.colorsByPeriodYearsRange(vm.prepareRequestParams(), yearsRange);
           },
@@ -579,18 +583,17 @@
           title: 'SE2b - ACTUAL COLORS',
           chartTitle: 'ACTUAL COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
-              vm.filter.year.id = 2018;
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
             }
             var param = vm.prepareColors();
             var palettes = {};
             return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
               .then(function (results) {
-                var years = [];
-                for (var i = 0; i < 5; i++) {
-                  years.push(vm.filter.year.id - i);
-                }
-                return $q.all(years.map(function (d) {
+                return $q.all(yearsRange.map(function (d) {
                   return dashboardRepository['year'].getColorPalette(d, vm.prepareColorsParams(), 250);
                 }))
                   .then(function (data) {
@@ -599,7 +602,7 @@
                         a.colorHex = a.color.color.hex;
                       });
                       _.sortBy(r, 'percentage');
-                      palettes[vm.getAbbrv('season') + years[i]] = r;
+                      palettes[vm.getAbbrv('season') + yearsRange[i]] = r;
                     });
                     results.push(palettes)
                     return results;
@@ -610,7 +613,8 @@
             category: true,
             city: true,
             season: true,
-            year: true
+            year: true,
+            region: true
           },
           titleGroups: [
             ['category', 'season', 'year'],
@@ -799,7 +803,9 @@
             var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
             var customParams = vm.prepareRequestParams();
             if (vm.filter.year.all) {
-              yearsRange = _.range(2018, 2018 - 3);
+              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
+            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
             }
 
             return $q.all(_.map(yearsRange, function (dy) {
@@ -845,7 +851,9 @@
             var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
             var customParams = vm.prepareRequestParams();
             if (vm.filter.year.all) {
-              yearsRange = _.range(2018, 2018 - 3);
+              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
+            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
             }
             return $q(function (resolve) {
               charts.colorGroupsByCityPeriod(customParams).then(function (group) {
@@ -1014,23 +1022,26 @@
           title: 'DE2a - 2 YEAR COMPARISON OF COLOR FAMILIES',
           chartTitle: '2 YEAR COMPARISON OF COLOR FAMILIES {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
-            var years = [vm.filter.year.id - 1, vm.filter.year.id];
+            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
-              years = [2017, 2018]
+              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
             }
+
             return $q.all([
-              charts.colorsWithGroups(vm.prepareRequestParams(), years[0])
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
                 .then(function (results) {
                   return results;
                 }),
-              charts.colorsWithGroups(vm.prepareRequestParams(), years[1])
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
                 .then(function (results) {
                   return results;
                 })
             ]).then(function (results) {
               return _.map(results, function (result, i) {
                 return {
-                  title: years[i],
+                  title: yearsRange[i],
                   data: result
                 };
               });
@@ -1060,24 +1071,26 @@
           title: 'DE2b - 2 YEAR COMPARISON OF COLOR PALETTE',
           chartTitle: '2 YEAR COMPARISON OF COLOR PALETTES {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
-            var years = [vm.filter.year.id - 1, vm.filter.year.id];
+            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
-              years = [2017, 2018];
+              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
             }
             return $q.all([
-              charts.colorsWithGroups(vm.prepareRequestParams(), years[0])
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
                 .then(function (results) {
                   return results;
                 }),
-              charts.colorsWithGroups(vm.prepareRequestParams(), years[1])
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
                 .then(function (results) {
                   return results;
                 }),
-              dashboardRepository['year'].getColorPalette(years[0], vm.prepareColorsParams(), 250)
+              dashboardRepository['year'].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
                 .then(function (data) {
                   return data;
                 }),
-              dashboardRepository['year'].getColorPalette(years[1], vm.prepareColorsParams(), 250)
+              dashboardRepository['year'].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
                 .then(function (data) {
                   return data;
                 })
@@ -1085,7 +1098,7 @@
               return _.map(results,
                 function (result, i) {
                   return {
-                    title: years[i],
+                    title: yearsRange[i],
                     data: result
                   };
                 });

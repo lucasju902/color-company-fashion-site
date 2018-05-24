@@ -31,8 +31,8 @@
             totalAchr = Math.round((totalAchr / (totalAchr + totalChr)) * 100) || 0;
             totalChr = totalAchr ? 100 - totalAchr : 0;
             var data = {
-              groups: [{title: totalChr + '% CHROMATIC COLORS', name: 'chr'},
-                {title: totalAchr + '% ACHROMATIC COLORS', name: 'achr'}]
+              groups: [{title: totalChr + '% ACHROMATIC COLORS', name: 'chr'},
+                {title: totalAchr + '% CHROMATIC COLORS', name: 'achr'}]
             };
 
             data.periods = _.map(scope.data, function (d) {

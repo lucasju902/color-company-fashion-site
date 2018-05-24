@@ -22,16 +22,11 @@ angular.module('app')
       };
 
       this.logOut = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'sessions/logout.json', {params: {token: self.token}})
-          .then(function (res) {
-            if (res.data && res.data.success) {
-              $cookies.remove('hg_session');
-              self.token = null;
-              self.currentUser = {};
-              $rootScope.currentUser = {};
-              $state.go('aboutPage');
-            }
-          });
+        $cookies.remove('hg_session');
+        self.token = null;
+        self.currentUser = {};
+        $rootScope.currentUser = {};
+        $state.go('aboutPage');
       };
 
       this.loadCurrentUser = function () {

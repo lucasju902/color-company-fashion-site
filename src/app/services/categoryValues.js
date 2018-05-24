@@ -921,7 +921,7 @@ angular.module('app')
             'Brand',
             'Beauty',
             'Tech',
-            'Automotive',
+            'Auto',
             'Interior',
             'Home',
             'Package',
