@@ -68,8 +68,8 @@
 
   angular.module('app').directive('hueChartByCityPeriodColors',
     [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
+      'common', 'config', 'chartsHelper', 'reduceValue',
+      function (common, config, chartsHelper, reduceValue) {
 
         function link(scope, element, attributes) {
           scope.$watch('data', bindData);
@@ -107,9 +107,9 @@
               function (d) {
                 var value = Math.round(d.percentage * 100);
                 return {
-                  value: value,
+                  value: reduceValue.reduce(d.value),
                   valueTitle: Math.round(value) + '%',
-                  value2: Math.round(d.percentage * 100),
+                  value2: reduceValue.reduce(d.value),
                   valueTitle2: Math.round(d.percentage * 100),
                   title: d.title,
                   color: d.color

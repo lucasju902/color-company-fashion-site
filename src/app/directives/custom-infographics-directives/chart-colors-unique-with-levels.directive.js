@@ -3,8 +3,8 @@
 
   angular.module('app').directive('hueChartColorsUniqueWithLevels',
     [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
+      'common', 'config', 'chartsHelper', 'reduceValue',
+      function (common, config, chartsHelper, reduceValue) {
         var _colors = [
           {
             "value": 220,
@@ -154,7 +154,7 @@
                   value: value,
                   valueTitle: Math.round(value) + '%',
                   value2: Math.round(d.percentage * 100),
-                  valueTitle2: Math.round(d.percentage * 100),
+                  valueTitle2: d.value,
                   title: d.title,
                   color: d.color
                 }

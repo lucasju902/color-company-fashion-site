@@ -31,8 +31,8 @@
             totalAchr = Math.round(totalAchr / (totalAchr + totalChr) * 100);
             totalChr = 100 - totalAchr;
             var data = {
-              groups: [{title: totalChr + '% CHROMATIC COLORS', name: 'chr'},
-                {title: totalAchr + '% ACHROMATIC COLORS', name: 'achr'}]
+              groups: [{title: totalChr + '% ACHROMATIC COLORS', name: 'chr'},
+                {title: totalAchr + '% CHROMATIC COLORS', name: 'achr'}]
             };
 
             data.data = scope.data;

@@ -18,7 +18,7 @@
               }
               c = $(c);
 
-              c.find('h3').text('Fall' + data.year);
+              c.find('h3').text(getAbbr(data.season) + data.year);
 
               var containerUnique = c.find('[chart-type="unique"]').html('');
               var ch = new chartSpheric({
@@ -82,6 +82,22 @@
             });
 
           }
+
+          function getAbbr(value) {
+            if (value === 'Fall') {
+              return 'FW';
+            } else if (value === 'Pre-Fall') {
+              return 'PF';
+            } else if (value === 'Spring') {
+              return 'SS';
+            } else if (value === 'Resort') {
+              return 'RS';
+            } else if (value === 'ALL SEASONS') {
+              return 'ALL';
+            } else {
+              return value;
+            }
+          }
         }
 
         var directive = {
@@ -101,8 +117,8 @@
 
   angular.module('app').directive('hueChartBySeasonFiveYearsColors',
     [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
+      'common', 'config', 'chartsHelper', 'reduceValue',
+      function (common, config, chartsHelper, reduceValue) {
         function link(scope, element, attributes) {
           scope.$watch('data', bindData);
 
@@ -124,9 +140,9 @@
             var colors = _.map(scope.data, function (d) {
               var value = Math.round(d.percentage * 100);
               return {
-                value: value,
+                value: reduceValue.reduce(d.value, '1'),
                 valueTitle: Math.round(d.percentage * 100) + '%',
-                value2: value,
+                value2: reduceValue.reduce(d.value, '1'),
                 valueTitle2: Math.round(d.percentage * 100),
                 title: d.title,
                 color: d.color
