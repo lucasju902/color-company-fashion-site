@@ -1655,6 +1655,11 @@ form .ui-select-container.selectize-control {
   margin: 0 ;
 }
 
+.btn:active,
+.btn:focus {
+  outline: none;
+}
+
 .btn:hover {
   background: #ce0b86;
   color: white;
@@ -1689,11 +1694,6 @@ form .ui-select-container.selectize-control {
 .submit-btn {
   height: 49px;
   width: 100%;
-}
-.customized-infographics-controls-btn,
-.dashboard-controls-btn {
-  margin-left: 0;
-  margin-bottom: 10px;
 }
 
 .btn-space-left {
@@ -1736,4 +1736,7 @@ form .ui-select-container.selectize-control {
   }
 }
 
+.membership-form input.ui-select-search {
+  display: none
+}
 // Customized Infographics END
