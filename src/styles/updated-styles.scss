@@ -152,6 +152,17 @@ ui-view {
       padding: 20px 0;
       border-bottom: 1px solid #b5b5b5;
 
+      a:hover {
+        text-decoration: none;
+        color: #bb0076;
+      }
+
+      a:focus {
+        text-decoration: none;
+        outline: none;
+        color: #000000;
+      }
+
       .list-category {
         color: #bb0076;
         font-size: 16px;
@@ -1636,5 +1647,6 @@ form .ui-select-container.selectize-control {
     padding-right: 0;
   }
 }
+
 
 // Customized Infographics END
