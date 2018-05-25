@@ -1651,16 +1651,91 @@ form .ui-select-container.selectize-control {
   flex-direction: column;
 }
 
-/*------------styles for partners and items-----------*/
+/*------------styles for items width:768-992px -----------*/
 
-@media(max-width: 991px) and (min-width: 768px) {
-  .item {
-    padding:0 15px;
-  }
-
-  .partner {
+@media(max-width: 992px) and (min-width: 768px) {
+  .item,
+  .partner,
+  .about-item,
+  .verticals-item,
+  .membership-item {
     padding:0 15px;
   }
 }
+
+/*------------styles for page elements "vertical-coverage"-----------*/
+
+@media (min-width: 1200px) {
+  .test-title {
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .short-line {
+      width: 100%;
+      border-bottom: 2px solid rgb(187, 0, 118);
+    }
+  }
+
+  .test-img {
+    width: 74%;
+    display: inline-block;
+    margin-right: 15px;
+    div {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 768px) {
+  .test-title {
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .short-line {
+      width: 100%;
+      border-bottom: 2px solid rgb(187, 0, 118);
+      text-align: left;
+    }
+  }
+
+  .test-img {
+    width: 100%;
+    display: inline-block;
+    margin-right: 15px;
+    div {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .test-title {
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .short-line {
+      width: 100%;
+      border-bottom: 2px solid rgb(187, 0, 118);
+      text-align: left;
+    }
+  }
+}
+
+
 
 // Customized Infographics END
