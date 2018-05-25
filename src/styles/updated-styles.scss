@@ -396,6 +396,10 @@ ui-view {
 .membership {
   margin: 0;
 
+  @media (min-width: 992px) {
+    padding-top: 0;
+    //float: right;
+  }
   //&.membership.white {
   //  margin-right: 10px;
   //}
@@ -1655,6 +1659,16 @@ form .ui-select-container.selectize-control {
   margin: 0 ;
 }
 
+.speaking_engagements .btn {
+  @media (max-width: 1199px) {
+    min-width: 134px;
+  }
+
+  @media (min-width: 1301px) {
+    min-width: 134px;
+  }
+}
+
 .btn:active,
 .btn:focus {
   outline: none;
@@ -1734,6 +1748,26 @@ form .ui-select-container.selectize-control {
   .white-btn {
     margin-right: 10px;
   }
+}
+
+@media (min-width: 1200px) {
+  .membership {
+    padding-top: 0;
+    float: right;
+  }
+}
+
+//@media (min-width: 1199px) {
+//  .membership {
+//    padding-top: 0;
+//    text-align: center;
+//  }
+//}
+
+.customized-infographics-controls .btn,
+.dashboard-controls .btn {
+  margin-left: 0;
+  margin-bottom: 10px;
 }
 
 .membership-form input.ui-select-search {
