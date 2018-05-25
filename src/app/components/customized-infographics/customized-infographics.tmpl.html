@@ -33,14 +33,14 @@
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('designer')">
-        <select
+        <select id="designers"
           ng-options="option.title for option in vm.meta.designers track by option.id"
           ng-model="vm.filter.designer">
         </select>
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('color')">
-        <select
+        <select id="color"
           class="colors"
           ng-options="option.title for option in vm.meta.colorGroups track by option.id"
           ng-model="vm.filter.color">
@@ -48,7 +48,7 @@
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('category')">
-        <select
+        <select id="categories"
           class="categories"
           ng-options="option.title for option in vm.meta.categories track by option.id"
           ng-model="vm.filter.category">
@@ -56,7 +56,7 @@
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('season')">
-        <select
+        <select id="seasons"
           class="seasons"
           ng-options="option.title for option in vm.meta.seasons track by option.id"
           ng-model="vm.filter.season">
@@ -64,7 +64,7 @@
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('year')">
-        <select
+        <select id="years"
           class="years"
           ng-options="option.title for option in vm.meta.years track by option.id"
           ng-model="vm.filter.year">
@@ -72,7 +72,7 @@
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('region')">
-        <select
+        <select id="regions"
           class="regions"
           ng-options="option.title for option in vm.meta.regions track by option.id"
           ng-model="vm.filter.region">
@@ -80,7 +80,7 @@
       </div>
 
       <div class="select-style" ng-if="vm.isFilterVisible('city')">
-        <select
+        <select id="cities"
           class="cities"
           ng-options="option.title for option in vm.meta.cities track by option.id"
           ng-model="vm.filter.city">

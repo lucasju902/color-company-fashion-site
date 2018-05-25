@@ -1207,26 +1207,7 @@
         if (newV && oldV) {
           if (newV[0].qNumber !== oldV[0].qNumber) {
             vm.filter.designer = vm.meta.designers[0];
-            
-            // if (newV[0].qNumber === 'SE2b') {
-            //   vm.allYears = copy(vm.meta.years)
-            //   vm.meta.years = _.filter(vm.meta.years, function (item) {
-            //     if (item.id === 'all' || item.id === 2000 || item.id === 2001 || item.id === 2002 || item.id === 2003) {
-            //       return false;
-            //     }
-            //     return true;
-            //   });
-            //   vm.filter.year = vm.meta.years[0];
-            // }
-            // if (newV[0].qNumber === 'DE2b') {
-            //   vm.meta.years = _.filter(vm.meta.years, function (item) {
-            //     if (item.id === 2000) {
-            //       return false;
-            //     }
-            //     return true;
-            //   });
-            //   vm.filter.year = vm.meta.years[0];
-            // }
+
             if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
               vm.meta.regions = _.filter(vm.meta.regions, function (item) {
                 return !item.all;
@@ -1297,7 +1278,8 @@
         }
 
         $http({
-          url: (appConfig.webServiceUrl + 'stats'),
+          // url: (appConfig.webServiceUrl + 'stats'),
+          url: ('http://localhost:3002/api/' + 'stats'),
           method: 'GET',
           params: {
             fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
@@ -1308,14 +1290,47 @@
             fashionYear: yearFrom || vm.filter.year.id === 'all' ? null : vm.filter.year.id,
             yearFrom: yearFrom || null,
             yearTo: yearFrom ? yearTo : null
-            // 'fashion_color': vm.filter.color.id === 'all' ? null : vm.filter.color.id
           }
         }).then(function (res) {
-            vm.description = 'YEARS-' + res.data.years + ' | COLORS-' + res.data.colors +
-              ' | CITIES-' + res.data.cities + ' | REGIONS-' + res.data.regions +
-              ' | DESIGNER-' + res.data.designers + ' | SEASONS-' + res.data.seasons;
-          });
+          vm.labelToGray(res.data.data.designers, vm.meta.designers, 'designers');
+          vm.labelToGray(res.data.data.categories, vm.meta.categories, 'categories');
+          vm.labelToGray(res.data.data.seasons, vm.meta.seasons, 'seasons');
+          vm.labelToGray(res.data.data.years, vm.meta.years, 'years');
+          vm.labelToGray(res.data.data.regions, vm.meta.regions.length === 5 ?
+            [{id: 'all'}, {id: 2}, {id: 3}, {id: 4}, {id: 1}] : [{id: 2}, {id: 3}, {id: 4}, {id: 1}], 'regions');
+          vm.labelToGray(res.data.data.cities, vm.meta.cities, 'cities');
+
+          vm.description = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
+            ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
+            ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
+        });
       }
+
+      vm.labelToGray = function (res, meta, id) {
+        var elem = angular.element(document.querySelectorAll('#' + id));
+        if (elem && elem.length !== 0) {
+          var indices = [];
+          _.forEach(res, function (item) {
+            var index = _.findIndex(meta, {id: item.id});
+            if (index !== -1) {
+              indices.push(index);
+            }
+          });
+
+          for (var i = meta[0].id === 'all' ? 1 : 0; i < meta.length; i++) {
+            if (_.findIndex(indices, function (item) {
+                return item === i;
+              }) === -1) {
+              elem[0][i].classList.add('gray');
+            }
+            else {
+              elem[0][i].classList.remove('gray');
+            }
+          }
+        }
+      }
+
+
 
       vm.isFilterVisible = function (filterId) {
         var filterOptions = vm.currentChart.filters || {};
