@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('appFooter', {
     templateUrl: 'app/footer.html',
-    controller: function ($state, $scope, $stateParams, scrollService, modalService, $http, appConfig) {
+    controller: function ($state, $scope, $stateParams, scrollService, modalService, $http, appConfig, dataValidate) {
       this.email = '';
       this.permissions = {
         'Daily Insights': false,
@@ -23,24 +23,30 @@ angular
 
       this.submitEmail = function () {
         var data = {
-          email: this.email,
-          permissions: []
+          email: {value: '', required: true, name: 'email', type: 'provide'}
         };
+        var permissions = [];
+        data.email.value = this.email;
 
         for (var i in this.permissions) {
           if (this.permissions[i]) {
-            data.permissions.push(i);
+            permissions.push(i);
           }
         }
-        if (this.relationship['Expert Panelist']) {
-          data.relationship = 'Expert Panelist';
+
+        if (dataValidate.validate(data)) {
+          data = {
+            email: data.email.value,
+            permissions: permissions
+          }
+          if (this.relationship['Expert Panelist']) {
+            data.relationship = 'Expert Panelist';
+          }
+          data.permissions = JSON.stringify(data.permissions);
+          $http.get(appConfig.dashboardServiceUrl + 'new_member_email', {
+            params: data
+          });
         }
-        data.permissions = JSON.stringify(data.permissions);
-        $http.get(appConfig.dashboardServiceUrl + 'new_member_email', {
-          params: data
-        }).then(function () {
-          this.email = '';
-        });
       };
 
       this.hidePrefooter = function () {
