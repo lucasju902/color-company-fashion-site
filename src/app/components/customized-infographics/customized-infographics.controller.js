@@ -1278,8 +1278,7 @@
         }
 
         $http({
-          // url: (appConfig.webServiceUrl + 'stats'),
-          url: ('http://localhost:3002/api/' + 'stats'),
+          url: (appConfig.webServiceUrl + 'stats'),
           method: 'GET',
           params: {
             fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
