@@ -21,7 +21,7 @@
   </div>
 </section>
 
-<section ng-if="$ctrl.emptyData">
+<section class="daily-insights-min-h" ng-if="$ctrl.emptyData">
   <div class="container-fluid " style="border-bottom: solid 2px;
     border-color: #bb0076;
     padding-bottom: 50px;">
@@ -59,7 +59,7 @@
 
 <section ng-if="$ctrl.emptyData">
   <div class="container-fluid  text-left course">
-    <div class="row equal">
+    <div class="row equal daily-list-min-h">
       <a style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">
         <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
         <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item)"

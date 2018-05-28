@@ -7,11 +7,10 @@
   </div>
 </div>
 <section>
-
-  <div class="container-fluid text-left partners">
+  <div class="container-fluid text-left partners partners-min-h">
     <div class="row equal">
       <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 partner" ng-repeat="item in $ctrl.pageData">
-        <img ng-if="item.image_url" ng-src="{{item.image_url}}">
+        <img class="partners-logo-min-h" ng-if="item.image_url" ng-src="{{item.image_url}}">
         <h5>{{item.partner_name}}</h5>
         <div class="justify">
           <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis
