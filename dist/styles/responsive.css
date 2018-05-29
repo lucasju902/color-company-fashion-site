@@ -128,10 +128,6 @@
 
   }
 
-  .white .btn {
-    margin-right: 0px;
-  }
-
   #color-emotion-header h3 {
     text-align: center;
     margin-top: 10px;
@@ -163,9 +159,9 @@
 
   }
 
-  .title .white {
-    margin-bottom: 20px;
-  }
+  /*.title .white {*/
+    /*margin-bottom: 20px;*/
+  /*}*/
 
   #education img {
     margin-bottom: 40px;
@@ -182,9 +178,9 @@
     min-height: 290px;
   }
 
-  .white .btn {
-    margin-bottom: 10px;
-  }
+  /*.white .btn {*/
+    /*margin-bottom: 10px;*/
+  /*}*/
 }
 
 @media (max-width: 1920px) and (min-width: 1221px) {
@@ -251,9 +247,9 @@
     text-align: center;
   }
 
-  .white .btn {
-    margin-right: 10px;
-  }
+  /*.white .btn {*/
+    /*margin-right: 10px;*/
+  /*}*/
 
   .schedule h3 {
     margin-top: 60px;
@@ -343,10 +339,6 @@
     line-height: 14pt;
   }
 
-  .img50 {
-    min-height: 410px;
-  }
-
   .offer {
     min-height: 500px;
   }
@@ -395,14 +387,6 @@
     max-width: 220px;
     padding-top: 2px;
     padding-right: 10px;
-  }
-
-  .white .btn {
-    min-width: 104px;
-  }
-
-  .white button.btn:hover {
-    min-width: 104px;
   }
 
   .select-style select {
@@ -468,10 +452,10 @@
     font-size: 9pt;
   }
 
-  .membership-form input:not([type="checkbox"]):not([type="radio"]), textarea, select {
-    margin-bottom: 10px;
-    height: 41px;
-  }
+  /*.membership-form input:not([type="checkbox"]):not([type="radio"]), textarea, select {*/
+    /*margin-bottom: 10px;*/
+    /*height: 41px;*/
+  /*}*/
 
   .dropdown-menu {
     font-size: 10pt;
