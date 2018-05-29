@@ -2,9 +2,16 @@
   'use strict';
   var controllerName = 'CustomInfographicsController';
   angular.module('app').controller(controllerName, ['$http', 'appConfig', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
-    '$q', 'repo.meta', 'repo.designers', '$timeout', '$anchorScroll', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository',
-    function ($http, appConfig, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $anchorScroll, $location, dashboardOverlayService, authService, dashboardRepository) {
+    '$q', 'repo.meta', 'repo.designers', '$timeout', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository', 'anchorSmoothScroll',
+    function ($http, appConfig, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
       var vm = this;
+
+      vm.gotoElement = function (eID) {
+        console.log('111');
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
 
       vm.meta = {};
       vm.filter = {};
@@ -1328,7 +1335,6 @@
           }
         }
       }
-
 
 
       vm.isFilterVisible = function (filterId) {

@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('reportsComponent', {
     templateUrl: 'app/components/reports/reports.tmpl.html',
-    controller: function ($http, appConfig, categoryValues) {
+    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll) {
       var vm = this;
       vm.filters = {};
       vm.hueModel = 'VERTICALS';
@@ -72,6 +72,12 @@ angular
         vm.all = _.chunk(angular.copy(vm.filterData), 3);
         count = 0;
         vm.more();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });

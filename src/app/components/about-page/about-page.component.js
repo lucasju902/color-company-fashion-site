@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('aboutPage', {
     templateUrl: 'app/components/about-page/about-page.tmpl.html',
-    controller: function ($http, appConfig, $location, $anchorScroll, anchorSmoothScroll) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
       var vm = this;
       vm.pageData = {};
 

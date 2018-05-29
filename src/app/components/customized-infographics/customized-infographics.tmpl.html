@@ -9,7 +9,7 @@
       </div>
       <div class="col-lg-3 col-md-12 text-right buttons-group">
         <div class="button membership">
-          <button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>
+          <button class="btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
         </div>
         <div class="button membership white">
           <button class="btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>
@@ -92,11 +92,11 @@
           EXPORT
         </button>
       </div>
-      <div style="padding-left: 10px" ng-if="vm.isUserAdmin()">
-        <button class="btn" style="margin-top: 0" ng-click="vm.reportJpg()">
-          REPORT
-        </button>
-      </div>
+      <!--<div style="padding-left: 10px" ng-if="vm.isUserAdmin()">-->
+        <!--<button class="btn" style="margin-top: 0" ng-click="vm.reportJpg()">-->
+          <!--REPORT-->
+        <!--</button>-->
+      <!--</div>-->
 
 
       <!--<div style="display: inline-block">-->
