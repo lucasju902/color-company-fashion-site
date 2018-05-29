@@ -7,14 +7,22 @@ angular.module('app').controller('fashionController',
     'exportService',
     'searchMenuRepository',
     '$state',
+    'anchorSmoothScroll',
+    '$location',
     function (scope,
               dashboardRepository,
               dashboardOverlayService,
               dashboardService,
               exportService,
               searchMenuRepository,
-              $state) {
+              $state, anchorSmoothScroll, $location) {
       scope.tempColor = null;
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
 
       scope.menus = {
         season: '',

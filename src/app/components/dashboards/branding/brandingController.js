@@ -6,17 +6,25 @@ angular.module('app').controller('brandingController',
     'searchMenuRepository',
     '$state',
     'exportService',
+    'anchorSmoothScroll',
+    '$location',
     function (scope,
               brandingDashboardRepository,
               dashboardOverlayService,
               searchMenuRepository,
               $state,
-              exportService) {
+              exportService, anchorSmoothScroll, $location) {
       // scope.brand = '';
       // scope.industry = '';
       // scope.color = '';
       // scope.attribute = '';
       // scope.country = '';
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
 
       scope.menus = {
         brand: '',
