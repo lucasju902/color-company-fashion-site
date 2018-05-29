@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('goodReadsComponent', {
     templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
       var vm = this;
       vm.all = [];
       vm.groups = [];
@@ -25,6 +25,12 @@ angular
       vm.more = function () {
         vm.groups.push(vm.all[count++]);
         vm.groups.push(vm.all[count++]);
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });

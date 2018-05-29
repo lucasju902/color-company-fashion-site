@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('infographicsComponent', {
     templateUrl: 'app/components/infographics/infographics.tmpl.html',
-    controller: function ($http, appConfig, modalService, categoryValues) {
+    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll) {
       var vm = this;
       vm.hueModel = 'VERTICAL';
       vm.yearModel = 'YEAR';
@@ -45,9 +45,9 @@ angular
       };
 
       vm.onGraphicClick = function (event) {
-       if(event) {
-         modalService.showModal(2, event);
-       }
+        if (event) {
+          modalService.showModal(2, event);
+        }
       };
 
       vm.select = function () {
@@ -65,6 +65,12 @@ angular
         vm.all = _.chunk(angular.copy(vm.filterData), 3);
         count = 0;
         vm.more();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });

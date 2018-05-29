@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('publicationScheduleComponent', {
     templateUrl: 'app/components/publication-schedule/publication-schedule.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
       var vm = this;
       vm.result = [];
 
@@ -15,8 +15,8 @@ angular
 
               var quarters1 = [];
               var quarters2 = [];
-              for(var year1 in vm.quarter1) {
-                var test1 = vm.quarter1[year1].reduce(function(acc, nv) {
+              for (var year1 in vm.quarter1) {
+                var test1 = vm.quarter1[year1].reduce(function (acc, nv) {
                   return acc + nv.editor1;
                 }, '');
 
@@ -27,8 +27,8 @@ angular
                 });
               }
 
-              for(var year2 in vm.quarter2) {
-                var test = vm.quarter2[year2].reduce(function(acc, nv) {
+              for (var year2 in vm.quarter2) {
+                var test = vm.quarter2[year2].reduce(function (acc, nv) {
                   return acc + nv.editor2;
                 }, '');
 
@@ -41,6 +41,12 @@ angular
               vm.result = _.sortBy(quarters1.concat(quarters2), ['year', 'q']);
             }
           });
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });
