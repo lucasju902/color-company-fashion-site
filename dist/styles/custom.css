@@ -297,7 +297,7 @@ section {
 
 .membership {
   padding-top: 0px;
-  float: right;
+  /*float: right;*/
 }
 
 .membership-product {

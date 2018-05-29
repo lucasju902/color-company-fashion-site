@@ -407,13 +407,13 @@ ui-view {
 .membership {
   margin: 0;
 
-  button.btn {
-    margin: 0;
+  @media (min-width: 992px) {
+    padding-top: 0;
+    //float: right;
   }
-
-  &.membership.white {
-    margin-right: 10px;
-  }
+  //&.membership.white {
+  //  margin-right: 10px;
+  //}
 }
 
 .staffs-container {
@@ -536,7 +536,7 @@ ui-view {
     padding-top: 20px;
   }
 
-  a{
+  a {
     text-decoration: none
   }
   .google-auth-button {
@@ -601,14 +601,14 @@ ui-view {
   }
 }
 
-.white .btn {
-  border: solid 1px #bb0076;
-}
-
-.white .btn:hover {
-  border: solid 1px #bb0076;
-  min-width: 134px;
-}
+//.white .btn {
+//  border: solid 1px #bb0076;
+//}
+//
+//.white .btn:hover {
+//  border: solid 1px #bb0076;
+//  min-width: 134px;
+//}
 
 input.search {
   height: 33px !important;
@@ -709,6 +709,7 @@ input.search {
   padding-top: 60px;
   background-color: #f7f7f7;
 }
+
 .group {
   display: flex;
   flex-wrap: wrap;
@@ -751,6 +752,10 @@ input.search {
 form .ui-select-container.selectize-control {
   height: 50px;
 
+  .without-border {
+    border: 0;
+  }
+
   .selectize-input {
     border: 1px solid #ccc;
     border-radius: 0;
@@ -759,6 +764,7 @@ form .ui-select-container.selectize-control {
     color: #000;
     box-shadow: none;
     margin-bottom: -4px;
+    background-color: white;
     background-image: url(../assets/images/arrow.png);
     background-repeat: no-repeat;
     background-position: 95% 50%;
@@ -788,6 +794,10 @@ form .ui-select-container.selectize-control {
   .ui-select-container.selectize-control {
     height: 50px;
 
+    .without-border {
+      border: 0;
+    }
+
     .selectize-input {
       border: 0;
       border-radius: 0;
@@ -796,6 +806,7 @@ form .ui-select-container.selectize-control {
       color: #000;
       box-shadow: none;
       margin-bottom: -4px;
+      background-color: white;
       background-image: url(../assets/images/arrow.png);
       background-repeat: no-repeat;
       background-position: 95% 50%;
@@ -911,11 +922,6 @@ form .ui-select-container.selectize-control {
         }
       }
     }
-  }
-
-  .btn {
-    margin-left: 0;
-    margin-bottom: 10px;
   }
 }
 
@@ -1657,6 +1663,7 @@ form .ui-select-container.selectize-control {
   display: flex;
   flex-wrap: wrap;
 }
+
 .equal > [class*='col-'] {
   display: flex;
   flex-direction: column;
@@ -1670,7 +1677,7 @@ form .ui-select-container.selectize-control {
   .about-item,
   .verticals-item,
   .membership-item {
-    padding:0 15px;
+    padding: 0 15px;
   }
 }
 
@@ -2076,6 +2083,137 @@ form .ui-select-container.selectize-control {
 
   .about-us-min-h {
     min-height: 430px;
+  }
+  /*btn styles*/
+
+  .btn {
+    color: #ffffff;
+    font-size: 13px;
+    background: #bb0076;
+    padding: 15px 20px 15px 20px;
+    text-decoration: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0px;
+    font-weight: 700;
+    transition: background 0.2s ease;
+    border: solid 1px #bb0076;
+    margin: 0;
+  }
+
+  .speaking_engagements .btn {
+    @media (max-width: 1199px) {
+      min-width: 134px;
+    }
+
+    @media (min-width: 1301px) {
+      min-width: 134px;
+    }
+  }
+
+  .btn:active,
+  .btn:focus {
+    outline: none;
+  }
+
+  .btn:hover {
+    background: #ce0b86;
+    color: white;
+    text-decoration: none;
+  }
+
+  .title-btn {
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+
+  .white-hover:hover {
+    background: white;
+    transition: background 0.2s ease;
+    color: #bb0076;
+  }
+
+  .white-btn {
+    background-color: white;
+    color: #bb0076;
+    border: solid 1px #bb0076;
+    transition: background-color 0.2s ease;
+    min-width: 134px;
+    margin-right: 10px;
+  }
+  .white-btn:hover {
+    background-color: #bb0076;
+    color: white;
+    border: solid 1px #bb0076;
+  }
+
+  .submit-btn {
+    height: 49px;
+    width: 100%;
+  }
+
+  .btn-space-left {
+    margin-left: 10px !important;
+    margin-bottom: 5px;
+  }
+
+  .btn-no-space-right {
+    margin-right: 0 !important;
+  }
+
+  .without-margins {
+    margin: 0 !important;
+  }
+
+  @media (max-width: 1300px) and (min-width: 1200px) {
+    .btn {
+      font-size: 7pt;
+      padding: 10px;
+    }
+
+    .white-btn {
+      min-width: 104px;
+    }
+
+    button.white-btn:hover {
+      min-width: 104px;
+    }
+  }
+
+  @media (max-width: 1600px) and (min-width: 1221px) {
+    .white-btn {
+      margin-bottom: 10px;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .white-btn {
+      margin-right: 10px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .membership {
+      padding-top: 0;
+      float: right;
+    }
+  }
+
+  //@media (min-width: 1199px) {
+  //  .membership {
+  //    padding-top: 0;
+  //    text-align: center;
+  //  }
+  //}
+
+  .customized-infographics-controls .btn,
+  .dashboard-controls .btn {
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+
+  .membership-form input.ui-select-search {
+    display: none
   }
 }
 // Customized Infographics END

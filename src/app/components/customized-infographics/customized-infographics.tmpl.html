@@ -11,8 +11,8 @@
         <div class="button membership">
           <button class="btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
         </div>
-        <div class="button membership white">
-          <button class="btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>
+        <div class="button membership">
+          <button class="btn white-btn btn-no-space-right" ui-sref="productInquiry">PRODUCT INQUIRY</button>
         </div>
       </div>
     </div>
@@ -195,15 +195,7 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('city')">-->
-        <!--<select id="cities"-->
-          <!--class="cities"-->
-          <!--ng-options="option.title for option in vm.meta.cities track by option.id"-->
-          <!--ng-model="vm.filter.city">-->
-        <!--</select>-->
-      <!--</div>-->
-      <button class="btn" style="margin-top: 0" ng-click="vm.refresh()">LOAD</button>
+      <button class="btn customized-infographics-controls-btn" style="margin-top: 0" ng-click="vm.refresh()">LOAD</button>
       <div style="padding-left: 10px">
         <button class="btn" style="margin-top: 0" ng-click="vm.exportJpg()">
           EXPORT
