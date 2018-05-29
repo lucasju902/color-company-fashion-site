@@ -5,8 +5,10 @@ angular
     controller: function ($http, appConfig, $location, anchorSmoothScroll) {
       var vm = this;
       vm.all = [];
-      vm.groups = [];
-      var count = 0;
+      vm.items = [];
+      vm.flag = false;
+      var count = 1;
+      var numberOfElements = 6;
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
@@ -17,14 +19,27 @@ angular
                 return item.data;
               });
             }
-            vm.all = _.chunk(angular.copy(vm.pageData), 3);
-            vm.more();
+            vm.sortItems();
           });
       };
 
+      vm.sortItems = function () {
+        vm.pageData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
       vm.more = function () {
-        vm.groups.push(vm.all[count++]);
-        vm.groups.push(vm.all[count++]);
+        vm.items = [];
+        count++;
+        vm.sortItems();
       };
 
       vm.gotoElement = function (eID) {

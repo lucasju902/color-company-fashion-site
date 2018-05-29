@@ -46,12 +46,12 @@
   </div>
 </section>
 
-<section class="min-h">
+<section class="min-h course-items-min-h">
   <div class="container-fluid  text-left course">
-    <div class="row" ng-repeat="group in $ctrl.groups">
-      <div style="text-decoration: none" class="col-lg-4 col-md-6 col-sm-12 item text-dn"
-           ng-repeat="item in group">
-        <a ng-href="#!/courses/{{item.id}}">
+    <div class="row equal">
+      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item text-dn"
+           ng-repeat="item in $ctrl.items">
+        <a style="text-decoration: none" ng-href="#!/courses/{{item.id}}">
           <div class="img-responsive background-image"
                style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;
@@ -72,7 +72,7 @@
       </div>
     </div>
   </div>
-  <div class="row" ng-if="$ctrl.filterData.length > $ctrl.groups.length * 3">
+  <div class="row" ng-if="!$ctrl.flag">
     <div class="col-lg-12 text-center">
       <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
     </div>

@@ -13,11 +13,10 @@
     </div>
   </div>
 </section>
-
 <section>
-  <div class="container-fluid text-left course">
-    <div class="row" ng-repeat="group in $ctrl.groups">
-      <div class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in group">
+  <div class="container-fluid text-left course goods-reads-min-h">
+    <div class="row equal">
+      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">
         <a ng-href="{{item.link}}"
            target="_blank"
            rel="nofollow">
@@ -40,7 +39,7 @@
         </div>
       </div>
     </div>
-    <div class="row" ng-if="$ctrl.pageData.length > $ctrl.groups.length * 3">
+    <div class="row" ng-if="!$ctrl.flag">
       <div class="col-lg-12 text-center">
         <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
       </div>

@@ -1648,5 +1648,434 @@ form .ui-select-container.selectize-control {
   }
 }
 
+/*-----the alignment of all columns is the maximum height of the row-----*/
 
+.equal {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+}
+.equal > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+/*------------styles for items width:768-992px -----------*/
+
+@media(max-width: 992px) and (min-width: 768px) {
+  .item,
+  .partner,
+  .about-item,
+  .verticals-item,
+  .membership-item {
+    padding:0 15px;
+  }
+}
+
+/*------------styles for page elements "vertical-coverage"-----------*/
+
+@media (min-width: 1200px) {
+  .test-title {
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .short-line {
+      width: 100%;
+      border-bottom: 2px solid rgb(187, 0, 118);
+    }
+  }
+
+  .test-img {
+    width: 74%;
+    display: inline-block;
+    margin-right: 15px;
+    div {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 768px) {
+  .test-title {
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .short-line {
+      width: 100%;
+      border-bottom: 2px solid rgb(187, 0, 118);
+      text-align: left;
+    }
+  }
+
+  .test-img {
+    width: 100%;
+    display: inline-block;
+    margin-right: 15px;
+    div {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .test-title {
+    width: auto;
+    vertical-align: top;
+    display: inline-block;
+    h5 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .short-line {
+      width: 100%;
+      border-bottom: 2px solid rgb(187, 0, 118);
+      text-align: left;
+    }
+  }
+}
+
+/*---------------The minimum height of the elements-------------------*/
+
+@media (min-width: 1300px) {
+  .verticals-min-h {
+    min-height: 350px;
+  }
+
+  .members-list-min-h {
+    min-height: 90px;
+  }
+
+  .partners-logo-min-h {
+    min-height: 50px;
+  }
+
+  .partners-min-h {
+    min-height: 455px;
+  }
+
+  .reports-min-h {
+    min-height: 540px;
+  }
+
+  .infographics-min-h {
+    min-height: 540px;
+  }
+
+  .schedule-min-h {
+    min-height: 550px;
+  }
+
+  .goods-reads-min-h {
+    min-height: 370px;
+  }
+
+  .course-items-min-h {
+    min-height: 460px;
+  }
+
+  .teaching-materials-min-h {
+    min-height: 555px;
+  }
+
+  .daily-insights-min-h {
+    min-height: 455px;
+  }
+
+  .daily-list-min-h {
+    min-height: 325px;
+  }
+
+  .analytics-min-h {
+    min-height: 410px;
+  }
+
+  .detailed-bottom-content-min-h {
+    min-height: 300px;
+  }
+
+  .detailed-content-min-h {
+    min-height: 340px;
+  }
+
+  .about-us-min-h {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 1300px) and (min-width: 1200px) {
+  .verticals-min-h {
+    min-height: 300px;
+  }
+
+  .members-list-min-h {
+    min-height: 90px;
+  }
+
+  .partners-logo-min-h {
+    min-height: 50px;
+  }
+
+  .partners-min-h {
+    min-height: 425px;
+  }
+
+  .reports-min-h {
+    min-height: 450px;
+  }
+
+  .infographics-min-h {
+    min-height: 435px;
+  }
+
+  .schedule-min-h {
+    min-height: 530px;
+  }
+
+  .goods-reads-min-h {
+    min-height: 300px;
+  }
+
+  .course-items-min-h {
+    min-height: 400px;
+  }
+
+  .teaching-materials-min-h {
+    min-height: 395px;
+  }
+
+  .daily-insights-min-h {
+    min-height: 415px;
+  }
+
+  .daily-list-min-h {
+    min-height: 260px;
+  }
+
+  .analytics-min-h {
+    min-height: 410px;
+  }
+
+  .detailed-bottom-content-min-h {
+    min-height: 270px;
+  }
+
+  .detailed-content-min-h {
+    min-height: 315px;
+  }
+
+  .about-us-min-h {
+    min-height: 410px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  .verticals-min-h {
+    min-height: 430px;
+  }
+
+  .members-list-min-h {
+    min-height: 120px;
+  }
+
+  .partners-logo-min-h {
+    min-height: 50px;
+  }
+
+  .partners-min-h {
+    min-height: 288px;
+  }
+
+  .reports-min-h {
+    min-height: 450px;
+  }
+
+  .infographics-min-h {
+    min-height: 400px;
+  }
+
+  .schedule-min-h {
+    min-height: 530px;
+  }
+
+  .goods-reads-min-h {
+    min-height: 375px;
+  }
+
+  .course-items-min-h {
+    min-height: 480px;
+  }
+
+  .teaching-materials-min-h {
+    min-height: 520px;
+  }
+
+  .daily-insights-min-h {
+    min-height: 350px;
+  }
+
+  .daily-list-min-h {
+    min-height: 350px;
+  }
+
+  .analytics-min-h {
+    min-height: 410px;
+  }
+
+  .detailed-bottom-content-min-h {
+    min-height: 260px;
+  }
+
+  .detailed-content-min-h {
+    min-height: 400px;
+  }
+  .about-us-min-h {
+    min-height: 300px;
+  }
+
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+  .verticals-min-h {
+    min-height: 420px;
+  }
+
+  .members-list-min-h {
+    min-height: 120px;
+  }
+
+  .partners-logo-min-h {
+    min-height: 50px;
+  }
+
+  .partners-min-h {
+    min-height: 288px;
+  }
+
+  .reports-min-h {
+    min-height: 550px;
+  }
+
+  .infographics-min-h {
+    min-height: 540px;
+  }
+
+  .schedule-min-h {
+    min-height: 530px;
+  }
+
+  .goods-reads-min-h {
+    min-height: 370px;
+  }
+
+  .course-items-min-h {
+    min-height: 455px;
+  }
+
+  .teaching-materials-min-h {
+    min-height: 455px;
+  }
+
+  .daily-insights-min-h {
+    min-height: 585px;
+  }
+
+  .daily-list-min-h {
+    min-height: 325px;
+  }
+
+  .analytics-min-h {
+    min-height: 410px;
+  }
+
+  .detailed-bottom-content-min-h {
+    min-height: 470px;
+  }
+
+  .detailed-content-min-h {
+    min-height: 660px;
+  }
+
+  .about-us-min-h {
+    min-height: 570px;
+  }
+}
+
+@media (max-width: 767px) and (min-width: 576px) {
+  .verticals-min-h {
+    min-height: 540px;
+  }
+
+  .members-list-min-h {
+    min-height: 300px;
+  }
+
+  .partners-logo-min-h {
+    min-height: 50px;
+  }
+
+  .partners-min-h {
+    min-height: 288px;
+  }
+
+  .reports-min-h {
+    min-height: 540px;
+  }
+
+  .infographics-min-h {
+    min-height: 435px;
+  }
+
+  .schedule-min-h {
+    min-height: 530px;
+  }
+
+  .goods-reads-min-h {
+    min-height: 460px;
+  }
+
+  .course-items-min-h {
+    min-height: 560px;
+  }
+
+  .teaching-materials-min-h {
+    min-height: 565px;
+  }
+
+  .daily-insights-min-h {
+    min-height: 460px;
+  }
+
+  .daily-list-min-h {
+    min-height: 435px;
+  }
+
+  .analytics-min-h {
+    min-height: 410px;
+  }
+
+  .detailed-bottom-content-min-h {
+    min-height: 365px;
+  }
+
+  .detailed-content-min-h {
+    min-height: 550px;
+  }
+
+  .about-us-min-h {
+    min-height: 430px;
+  }
+}
 // Customized Infographics END

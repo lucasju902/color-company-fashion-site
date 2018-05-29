@@ -13,7 +13,10 @@ angular
       vm.topic = [];
       vm.provider = [];
       vm.type = [];
-      var count = 0;
+      vm.items = [];
+      vm.flag = false;
+      var numberOfElements = 3;
+      var count = 1;
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'teaching_materials.json')
@@ -37,12 +40,26 @@ angular
           });
       };
 
-      vm.more = function () {
-        vm.groups.push(vm.all[count++]);
+      vm.sortItems = function () {
+        vm.filterDate.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.showMore = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
       };
 
       vm.select = function () {
-        vm.groups = [];
         if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.type.includes(vm.typeModel)) {
           vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
             if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.teaching_material_topic) &&
@@ -54,9 +71,9 @@ angular
         } else {
           vm.filterDate = angular.copy(vm.cacheItems);
         }
-        vm.all = _.chunk(angular.copy(vm.filterDate), 3);
-        count = 0;
-        vm.more();
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
       };
     }
   });

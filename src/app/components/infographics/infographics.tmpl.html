@@ -36,10 +36,10 @@
   </div>
 </section>
 
-<section class="min-h">
+<section class="min-h infographics-min-h">
   <div class="container-fluid  text-left course" style="margin-bottom: 0px">
-    <div class="row" ng-repeat="group in  $ctrl.groups">
-      <a style="text-decoration: none;" class="col-lg-4 col-md-6 col-sm-12 item" ng-repeat="item in  group">
+    <div class="row equal">
+      <a style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">
         <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
         <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item.image_url)"
              style="background: {{'url(' + item.image_url +') top center'}};
@@ -61,7 +61,7 @@
     </div>
   </div>
 
-  <div class="row" ng-if="$ctrl.filterData.length > $ctrl.groups.length * 3">
+  <div class="row" ng-if="!$ctrl.flag">
     <div class="col-lg-12 text-center">
       <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>
     </div>

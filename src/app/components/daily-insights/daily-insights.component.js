@@ -7,8 +7,10 @@ angular
       vm.pageData = {};
       vm.items = [];
       vm.allDailies = [];
-      vm.groups = [];
-      var count = 0;
+      vm.items = [];
+      vm.flag = false;
+      var count = 1;
+      var numberOfElements = 3;
 
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'dailies.json')
@@ -19,16 +21,30 @@ angular
                 item.published_date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('YYYY-MM-DD');
               });
               vm.allDailies = _.sortBy(res.data, 'published_date').reverse();
-              vm.emptyData = Boolean(vm.allDailies[0])
+              vm.emptyData = Boolean(vm.allDailies[0]);
               vm.pageData = vm.allDailies.shift();
-              vm.all = _.chunk(angular.copy(vm.allDailies), 3);
-              vm.more();
+              vm.sortItems();
             }
           });
       };
 
+      vm.sortItems = function () {
+        vm.allDailies.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
       vm.more = function () {
-        vm.groups.push(vm.all[count++]);
+        vm.items = [];
+        count++;
+        vm.sortItems();
       };
 
       vm.onGraphicClick = function (item) {
