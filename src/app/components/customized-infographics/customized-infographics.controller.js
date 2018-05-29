@@ -5,7 +5,7 @@
     '$q', 'repo.meta', 'repo.designers', '$timeout', '$anchorScroll', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository',
     function ($http, appConfig, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $anchorScroll, $location, dashboardOverlayService, authService, dashboardRepository) {
       var vm = this;
-
+      vm.grayList = {};
       vm.meta = {};
       vm.filter = {};
       vm.showDashboardOverlay = false;
@@ -1306,30 +1306,50 @@
       }
 
       vm.labelToGray = function (res, meta, id) {
+        vm.grayList[id] = {};
         var elem = angular.element(document.querySelectorAll('#' + id));
         if (elem && elem.length !== 0) {
-          var indices = [];
-          _.forEach(res, function (item) {
-            var index = _.findIndex(meta, {id: item.id});
-            if (index !== -1) {
-              indices.push(index);
+          meta.forEach(function (item) {
+            if (id === 'years' && (vm.currentChart.qNumber === 'CO3a' ||
+                vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
+                vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
+                vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
+              vm.grayList[id] = {};
+              return;
             }
+
+            if (id === 'regions') {
+              var found = res.find(function (element) {
+                return element.id === item.id;
+              });
+              if (!found && !~String(item.id).toLowerCase().indexOf('all')) {
+                vm.grayList[id][item.id] = 'gray';
+              }else{
+                delete vm.grayList[id][item.id];
+              }
+            }else{
+              var found = res.find(function (element) {
+                return element.title === String(item.title);
+              });
+              if (!found && !~String(item.title).toLowerCase().indexOf('all')) {
+                vm.grayList[id][item.title] = 'gray';
+              }else{
+                delete vm.grayList[id][item.title];
+              }
+            }
+
           });
-
-          for (var i = meta[0].id === 'all' ? 1 : 0; i < meta.length; i++) {
-            if (_.findIndex(indices, function (item) {
-                return item === i;
-              }) === -1) {
-              elem[0][i].classList.add('gray');
-            }
-            else {
-              elem[0][i].classList.remove('gray');
-            }
-          }
         }
-      }
+      };
 
-
+      vm.isFilterItems = function (id, name) {
+        var arr = Object.keys(vm.grayList[id]);
+        if (!!~arr.indexOf(name)) {
+          return true;
+        }else{
+          return false;
+        }
+      };
 
       vm.isFilterVisible = function (filterId) {
         var filterOptions = vm.currentChart.filters || {};
