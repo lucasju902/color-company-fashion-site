@@ -55,8 +55,7 @@
 
         <div class="col-lg-6 col-md-6 col-sm-12">
           <span ng-bind-html="$ctrl.pageData.description"></span>
-          <a ng-if="$ctrl.pageData.file" target="_self" href="{{$ctrl.pageData.file.image_url}}" download="foo.pdf">Download
-            Excerpt</a>
+          <a ng-if="$ctrl.pageData.file" target="_blank" href="{{$ctrl.pageData.file.image_url}}">Download Excerpt</a>
         </div>
       </div>
     </div>
