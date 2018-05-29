@@ -6,8 +6,7 @@
     function ($http, appConfig, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
       var vm = this;
 
-      vm.gotoElement = function (eID) {
-        console.log('111');
+      $scope.gotoElement = function (eID) {
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');

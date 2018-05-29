@@ -1,15 +1,15 @@
 <h4 class="text-left membership-product">HUEGROUP MEMBERSHIP PRODUCT</h4>
 
-<section>
+<section ng-controller="CustomInfographicsController as vm">
   <div class="container-fluid infographics text-center title customized-infographics-top-container">
     <div class="row">
       <div class="col-lg-6 col-md-12 col-lg-offset-3">
         <h3>HUEGROUP Customized Infographics</h3>
         <div class="line"></div>
       </div>
-      <div class="col-lg-3 col-md-12 text-right buttons-group">
+      <div class="col-lg-3 col-md-12 text-right buttons-group" >
         <div class="button membership btn-space-left">
-          <button class="btn join-btn " ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
+          <button class="btn join-btn " ng-click="gotoElement('prefooter')">JOIN</button>
         </div>
         <div class="button membership">
           <button class="btn white-btn btn-no-space-right" ui-sref="productInquiry">PRODUCT INQUIRY</button>
@@ -17,10 +17,8 @@
       </div>
     </div>
   </div>
-</section>
 
-<section>
-  <div class="container-fluid  text-left title" ng-controller="CustomInfographicsController as vm">
+  <div class="container-fluid  text-left title" >
     <!--<div class="dashboard-overlay" hue-dashboard-overlay ng-if="vm.showDashboardOverlay"></div>-->
     <div class="customized-infographics-controls">
       <div style="max-width: none" class="select-style custom-select">

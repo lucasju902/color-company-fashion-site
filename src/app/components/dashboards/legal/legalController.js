@@ -5,16 +5,24 @@ angular.module('app').controller('legalController',
     'dashboardOverlayService',
     'searchMenuRepository',
     '$state',
+    'anchorSmoothScroll',
+    '$location',
     function (scope,
               legalDashboardRepository,
               dashboardOverlayService,
               searchMenuRepository,
-              $state) {
+              $state, anchorSmoothScroll, $location) {
 
       // scope.owner = '';
       // scope.year = '';
       // scope.color = '';
       // scope.product = '';
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
 
       scope.menus = {
         owner: '',

@@ -5,15 +5,23 @@ angular.module('app').controller('autoController',
     'dashboardOverlayService',
     'searchMenuRepository',
     '$state',
+    'anchorSmoothScroll',
+    '$location',
     function (scope,
               autoDashboardRepository,
               dashboardOverlayService,
               searchMenuRepository,
-              $state) {
+              $state, anchorSmoothScroll, $location) {
       // scope.brand = '';
       // scope.year = '';
       // scope.model = '';
       // scope.color = '';
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
 
       scope.menus = {
         brand: '',
