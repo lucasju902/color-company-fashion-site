@@ -2103,6 +2103,16 @@ form .ui-select-container.selectize-control {
   margin: 0;
 }
 
+.daily-btn {
+  float: right;
+  margin-right: 1px;
+  margin-bottom: 15px;
+  min-width: 130px;
+  @media (max-width: 1300px) and (min-width: 1200px) {
+    min-width: 85px;
+  }
+}
+
 .speaking_engagements .btn {
   @media (max-width: 1199px) {
     min-width: 134px;
@@ -2143,6 +2153,7 @@ form .ui-select-container.selectize-control {
   min-width: 134px;
   margin-right: 10px;
 }
+
 .white-btn:hover {
   background-color: #bb0076;
   color: white;

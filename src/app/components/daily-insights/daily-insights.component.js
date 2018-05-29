@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('dailyInsightsComponent', {
     templateUrl: 'app/components/daily-insights/daily-insights.tmpl.html',
-    controller: function ($http, appConfig, modalService) {
+    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll) {
       var vm = this;
       vm.pageData = {};
       vm.items = [];
@@ -33,7 +33,7 @@ angular
           if (index > numberOfElements * count - 1) {
             elem.style = 'display: none';
             vm.flag = false;
-          }else{
+          } else {
             elem.style = '';
             vm.flag = true;
           }
@@ -52,5 +52,11 @@ angular
           modalService.showModal(3, null, item);
         }
       };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      }
     }
   });
