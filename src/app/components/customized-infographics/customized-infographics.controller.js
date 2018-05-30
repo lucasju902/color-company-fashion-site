@@ -1340,7 +1340,7 @@
 
         if (vm.grayList[selector] === undefined) {
           result = false;
-        } else if (selector === 'years' && vm.filter.year.title === "ALL YEARS" && (vm.currentChart.qNumber === 'CO3a' ||
+        } else if (selector === 'years' && vm.filter.year.title === 'ALL YEARS' && (vm.currentChart.qNumber === 'CO3a' ||
             vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
             vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
             vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
