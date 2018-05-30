@@ -6,53 +6,44 @@ angular
       var self = this;
       this.navigations = [
         {
-          name: 'About',
+          name: 'ABOUT',
           subNavs: [
             {name: 'About', state: 'aboutPage'},
-            {name: 'HUE Group Vertical Coverage', state: 'verticalCoverage'},
+            {name: 'Huegroup Vertical Coverage', state: 'verticalCoverage'},
             {name: 'Huegroup Members', state: 'members'},
-            {name: 'Speaking Engagements', state: 'speakingEngagements'}
+            {name: 'Speaking Engagements', state: 'speakingEngagements'},
+            {name: 'Publication Schedule', state: 'publicationSchedule'}
           ]
         }, {
-          name: 'Data',
+          name: 'COLOR TRENDS',
           subNavs: [
-            {name: 'Huegroup Color Emotion Index', state: 'colorEmotion'},
-            {name: 'Data Partners', state: 'partners'},
-            // {name: 'Detailed Page', state: 'detailedPage'},
-            {
-              name: 'Dashboard', state: 'dashboards',
-              subNavs: [
-                {name: 'Fashion', state: 'fashion'},
-                {name: 'Auto', state: 'auto'}
-              ]
-            }
+            {name: 'Fashion color trends', state: 'fashion'},
+            {name: 'Auto color trends', state: 'auto'},
+            {name: 'Brand color trends', state: 'branding'},
+            {name: 'Legal color trends', state: 'legal'}
           ]
         }, {
-          name: 'Insights',
+          name: 'COLOR RESEARCH',
           subNavs: [
-            {name: 'Huegroup Reports', state: 'reports'},
-            {name: 'Huegroup Infographics', state: 'infographics'},
-            {name: 'Huegroup Customized Infographics', state: 'customizedInfographics'},
-
-            {name: 'Publication Schedule', state: 'publicationSchedule'},
+            {name: 'Color Indices', state: 'colorEmotion'},
+            {name: 'Color Reports', state: 'reports'},
+            {name: 'Color Infographics', state: 'infographics'},
+            {name: 'Color Customized Infographics', state: 'customizedInfographics'},
+            {name: 'Color Courses', state: 'courses'},
+            {name: 'Color Teaching Materials', state: 'teachingMaterials'},
             {name: 'Good Reads', state: 'goodReads'}
           ]
         }, {
-          name: 'Education',
+          name: 'COLOR DAILY',
           subNavs: [
-            {name: 'Huegroup Courses', state: 'courses'},
-            {name: 'Teaching Materials', state: 'teachingMaterials'}
-          ]
-        },{
-          name: 'Blog',
-          subNavs: [
-            {name: 'Daily Insights', state: 'dailyInsights'},
+            {name: 'Blog', state: 'dailyInsights'}
           ]
         }, {
-          name: 'Membership',
+          name: 'CONTACT',
           subNavs: [
-            {name: 'Become a Member', state: 'membership'},
+            {name: 'Membership Inquiry', state: 'membership'},
             {name: 'Members Analytics', state: 'membersAnalytics'},
+            {name: 'Data Partnership Inquiry', state: 'partners'}
           ]
         }];
       this.selectedTab = false;

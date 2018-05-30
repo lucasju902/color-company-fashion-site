@@ -1298,64 +1298,63 @@
             yearTo: yearFrom ? yearTo : null
           }
         }).then(function (res) {
-          vm.labelToGray(res.data.data.designers, vm.meta.designers, 'designers');
-          vm.labelToGray(res.data.data.categories, vm.meta.categories, 'categories');
-          vm.labelToGray(res.data.data.seasons, vm.meta.seasons, 'seasons');
-          vm.labelToGray(res.data.data.years, vm.meta.years, 'years');
-          vm.labelToGray(res.data.data.regions, vm.meta.regions.length === 5 ?
-            [{id: 'all'}, {id: 2}, {id: 3}, {id: 4}, {id: 1}] : [{id: 2}, {id: 3}, {id: 4}, {id: 1}], 'regions');
-          vm.labelToGray(res.data.data.cities, vm.meta.cities, 'cities');
-
+          vm.grayList = res.data.data;
           vm.description = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
             ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
             ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
         });
       }
 
-      vm.labelToGray = function (res, meta, id) {
-        vm.grayList[id] = {};
-        var elem = angular.element(document.querySelectorAll('#' + id));
-        if (elem && elem.length !== 0) {
-          meta.forEach(function (item) {
-            if (id === 'years' && (vm.currentChart.qNumber === 'CO3a' ||
-                vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
-                vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
-                vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
-              vm.grayList[id] = {};
-              return;
-            }
+      vm.labelToGray = function (selector, title) {
+        var result = true;
 
-            if (id === 'regions') {
-              var found = res.find(function (element) {
-                return element.id === item.id;
-              });
-              if (!found && !~String(item.id).toLowerCase().indexOf('all')) {
-                vm.grayList[id][item.id] = 'gray';
-              }else{
-                delete vm.grayList[id][item.id];
-              }
-            }else{
-              var found = res.find(function (element) {
-                return element.title === String(item.title);
-              });
-              if (!found && !~String(item.title).toLowerCase().indexOf('all')) {
-                vm.grayList[id][item.title] = 'gray';
-              }else{
-                delete vm.grayList[id][item.title];
-              }
+        if (title.indexOf('ALL ') === -1) {
+          _.forEach(vm.grayList[selector], function (item) {
+            if (item.title === title) {
+              result = false;
             }
-
           });
         }
+        return result;
       };
 
-      vm.isFilterItems = function (id, name) {
-        var arr = Object.keys(vm.grayList[id]);
-        if (!!~arr.indexOf(name)) {
-          return true;
-        }else{
-          return false;
+      vm.isFilterItems = function (selector, title) {
+        if (selector === 'regions') {
+          switch (title) {
+            case 'Europe':
+              title = 'Europe';
+              break;
+            case 'North America':
+              title = 'North America';
+              break;
+            case 'South America':
+              title = 'Latin America';
+              break;
+            case 'Asia and Pacific':
+              title = 'Asia Pacific';
+              break;
+          }
         }
+
+        var result = true;
+
+        if (vm.grayList[selector] === undefined) {
+          result = false;
+        } else if (selector === 'years' && vm.filter.year.title === "ALL YEARS" && (vm.currentChart.qNumber === 'CO3a' ||
+            vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
+            vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
+            vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
+          result = false;
+        } else if (vm.grayList === {} || title.toString().indexOf('ALL ') === -1) {
+          _.forEach(vm.grayList[selector], function (item) {
+            if (item.title === title.toString()) {
+              result = false;
+            }
+          });
+        } else {
+          result = false;
+        }
+        return result;
       };
 
       vm.isFilterVisible = function (filterId) {

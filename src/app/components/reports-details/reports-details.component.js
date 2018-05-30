@@ -2,7 +2,7 @@ angular
 .module('app')
 .component('reportsDetailsComponent', {
   templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams) {
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll) {
     var vm = this;
 
     vm.init = function () {
@@ -19,6 +19,12 @@ angular
 
     vm.more = function () {
       vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
     };
   }
 });

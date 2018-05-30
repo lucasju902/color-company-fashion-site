@@ -35,14 +35,6 @@
         </ui-select>
       </div>
 
-      <!--<div class="select-style">-->
-        <!--<select-->
-          <!--class="chart-type"-->
-          <!--ng-options="option.title for option in vm.charts track by option.id"-->
-          <!--ng-model="vm.currentChart">-->
-        <!--</select>-->
-      <!--</div>-->
-
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('designer')">
         <ui-select
                 id="designers"
@@ -52,17 +44,10 @@
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('designers', item.title)" repeat="item in vm.meta.designers track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.designers[item.title]}}"></span>
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('designer')">-->
-        <!--<select id="designers"-->
-          <!--ng-options="option.title for option in vm.meta.designers track by option.id"-->
-          <!--ng-model="vm.filter.designer">-->
-        <!--</select>-->
-      <!--</div>-->
 
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('color')">
         <ui-select
@@ -74,18 +59,10 @@
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('colorGroups', item.title)" repeat="item in vm.meta.colorGroups track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.colorGroups[item.title]}}"></span>
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('color')">-->
-        <!--<select id="color"-->
-          <!--class="colors"-->
-          <!--ng-options="option.title for option in vm.meta.colorGroups track by option.id"-->
-          <!--ng-model="vm.filter.color">-->
-        <!--</select>-->
-      <!--</div>-->
 
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('category')">
         <ui-select
@@ -97,18 +74,10 @@
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('categories', item.title)" repeat="item in vm.meta.categories track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.categories[item.title]}}"></span>
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('category')">-->
-        <!--<select id="categories"-->
-          <!--class="categories"-->
-          <!--ng-options="option.title for option in vm.meta.categories track by option.id"-->
-          <!--ng-model="vm.filter.category">-->
-        <!--</select>-->
-      <!--</div>-->
 
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('season')">
         <ui-select
@@ -120,18 +89,10 @@
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('seasons', item.title)" repeat="item in vm.meta.seasons track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.seasons[item.title]}}"></span>
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('season')">-->
-        <!--<select id="seasons"-->
-          <!--class="seasons"-->
-          <!--ng-options="option.title for option in vm.meta.seasons track by option.id"-->
-          <!--ng-model="vm.filter.season">-->
-        <!--</select>-->
-      <!--</div>-->
 
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('year')">
         <ui-select
@@ -143,18 +104,10 @@
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('years', item.title)" repeat="item in vm.meta.years track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.years[item.title]}}"></span>
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('year')">-->
-        <!--<select id="years"-->
-          <!--class="years"-->
-          <!--ng-options="option.title for option in vm.meta.years track by option.id"-->
-          <!--ng-model="vm.filter.year">-->
-        <!--</select>-->
-      <!--</div>-->
 
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('region')">
         <ui-select
@@ -165,19 +118,11 @@
                 search-enabled="false"
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-          <ui-select-choices ui-disable-choice="vm.isFilterItems('regions', item.id)" repeat="item in vm.meta.regions track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.regions[item.id]}}"></span>
+          <ui-select-choices ui-disable-choice="vm.isFilterItems('regions', item.title)" repeat="item in vm.meta.regions track by item.id">
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="select-style" ng-if="vm.isFilterVisible('region')">-->
-        <!--<select id="regions"-->
-          <!--class="regions"-->
-          <!--ng-options="option.title for option in vm.meta.regions track by option.id"-->
-          <!--ng-model="vm.filter.region">-->
-        <!--</select>-->
-      <!--</div>-->
 
       <div class="select-style custom-select" ng-if="vm.isFilterVisible('city')">
         <ui-select
@@ -189,7 +134,7 @@
         >
           <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('cities', item.title)" repeat="item in vm.meta.cities track by item.id">
-            <span ng-bind-html="item.title" style="color: {{vm.grayList.cities[item.title]}}"></span>
+            <span ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>

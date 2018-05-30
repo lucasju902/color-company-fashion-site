@@ -15,7 +15,7 @@
         </div>
         <div class="col-lg-6 col-md-12 text-right buttons-group">
           <div class="button membership">
-            <button class="btn" ui-sref="membership({scrollTo: true})">MEMBERSHIP</button>
+            <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
           </div>
           <div class="button membership white" ng-if="$ctrl.pageData.file">
             <a class="btn white-btn" target="_self" href="{{$ctrl.pageData.file.image_url}}" download="foo.pdf">DOWNLOAD

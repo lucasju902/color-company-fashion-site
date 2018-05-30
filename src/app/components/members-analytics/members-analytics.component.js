@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('membersAnalyticsComponent', {
     templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
       var vm = this;
       vm.searchModel = '';
       vm.all = [];
@@ -39,6 +39,12 @@ angular
         vm.all = _.chunk(angular.copy(vm.filterData), 5);
         count = 0;
         vm.more();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });

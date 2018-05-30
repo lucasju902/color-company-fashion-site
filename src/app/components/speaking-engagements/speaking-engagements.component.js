@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('speakingEngagementsComponent', {
     templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate) {
+    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll) {
       var vm = this;
       vm.pageData = {};
       vm.speakers = [];
@@ -48,6 +48,12 @@ angular
             }
           });
         }
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });

@@ -866,6 +866,11 @@ form .ui-select-container.selectize-control {
     min-width: 100px;
     max-width: 160px;
 
+    .disabled {
+      color: #808080;
+      background-color: #b2b2b2;
+    }
+
     .ui-select-container {
       color: #000;
 
