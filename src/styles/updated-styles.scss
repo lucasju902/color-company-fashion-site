@@ -2133,7 +2133,7 @@ form .ui-select-container.selectize-control {
 
 .btn:active,
 .btn:focus {
-  outline: none;
+  outline: none !important;
 }
 
 .btn:hover {
@@ -2160,6 +2160,10 @@ form .ui-select-container.selectize-control {
   transition: background-color 0.2s ease;
   min-width: 134px;
   margin-right: 10px;
+}
+
+.white-btn:focus {
+  color: #bb0076;
 }
 
 .white-btn:hover {
