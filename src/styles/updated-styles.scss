@@ -2252,5 +2252,10 @@ form .ui-select-container.selectize-control {
 .title-text-left {
   float: left;
 }
+/************fix selectors custom infographics**************/
+
+input.ui-select-search {
+  width: 0 !important;
+}
 
 // Customized Infographics END
