@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('verticalCoverageComponent', {
     templateUrl: 'app/components/vertical-coverage/vertical-coverage.tmpl.html',
-    controller: function ($http, appConfig) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
       var vm = this;
       vm.pageData = {};
 
@@ -19,6 +19,12 @@ angular
               });
             }
           });
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
       };
     }
   });
