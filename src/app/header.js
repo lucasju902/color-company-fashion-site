@@ -17,10 +17,10 @@ angular
         }, {
           name: 'COLOR TRENDS',
           subNavs: [
-            {name: 'Fashion color trends', state: 'fashion'},
-            {name: 'Auto color trends', state: 'auto'},
-            {name: 'Brand color trends', state: 'branding'},
-            {name: 'Legal color trends', state: 'legal'}
+            {name: 'Fashion Color Trends', state: 'fashion'},
+            {name: 'Auto Color Trends', state: 'auto'},
+            {name: 'Brand Color Trends', state: 'branding'},
+            {name: 'Legal Color Trends', state: 'legal'}
           ]
         }, {
           name: 'COLOR RESEARCH',
@@ -41,6 +41,7 @@ angular
         }, {
           name: 'CONTACT',
           subNavs: [
+            {name: 'Contact Form', state: 'contact'},
             {name: 'Membership Inquiry', state: 'membership'},
             {name: 'Members Analytics', state: 'membersAnalytics'},
             {name: 'Data Partnership Inquiry', state: 'partners'}
