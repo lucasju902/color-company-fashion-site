@@ -1345,6 +1345,8 @@
             vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
             vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
           result = false;
+        } else if (selector === 'regions' && vm.currentChart.qNumber === 'RE1a') {
+          result = false;
         } else if (vm.grayList === {} || title.toString().indexOf('ALL ') === -1) {
           _.forEach(vm.grayList[selector], function (item) {
             if (item.title === title.toString()) {

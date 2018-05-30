@@ -16,6 +16,10 @@
               return;
             }
 
+            if (model.region.name === 'europe') {
+              model.region.cities.data = model.region.cities.data.reverse();
+            }
+
             var container = chartsHelper.initContainer(element, '[chart-type="region"]');
             var containerLinear = chartsHelper.initContainer(element, '[chart-type="linear-h"]');
 
