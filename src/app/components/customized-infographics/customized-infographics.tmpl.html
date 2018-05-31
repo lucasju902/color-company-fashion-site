@@ -42,7 +42,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL DESIGNERS'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('designers', item.title)" repeat="item in vm.meta.designers track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
@@ -57,7 +57,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL COLORS'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('colorGroups', item.title)" repeat="item in vm.meta.colorGroups track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
@@ -72,7 +72,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL CATEGORIES'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('categories', item.title)" repeat="item in vm.meta.categories track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
@@ -87,7 +87,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL SEASONS'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('seasons', item.title)" repeat="item in vm.meta.seasons track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
@@ -102,7 +102,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL YEARS'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('years', item.title)" repeat="item in vm.meta.years track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
@@ -117,7 +117,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL REGIONS'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('regions', item.title)" repeat="item in vm.meta.regions track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
@@ -132,7 +132,7 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title || 'ALL CITIES'"></ui-select-match>
           <ui-select-choices ui-disable-choice="vm.isFilterItems('cities', item.title)" repeat="item in vm.meta.cities track by item.id">
             <span ng-bind-html="item.title"></span>
           </ui-select-choices>
