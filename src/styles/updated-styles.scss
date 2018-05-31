@@ -2254,8 +2254,10 @@ form .ui-select-container.selectize-control {
 }
 /************fix selectors custom infographics**************/
 
-input.ui-select-search {
-  width: 0 !important;
+.customized-infographics-controls {
+  input.ui-select-search {
+    width: 0 !important;
+  }
 }
 
 // Customized Infographics END
