@@ -3,7 +3,6 @@ angular
   .component('profileComponent', {
     templateUrl: 'app/components/profile/profile.tmpl.html',
     controller: function ($http, appConfig, $stateParams) {
-      console.log('@@@@@@@@@@ ',$stateParams);
       var vm = this;
       vm.init = function () {
         $http.get(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id + '.json')
