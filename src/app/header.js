@@ -6,7 +6,7 @@ angular
       var self = this;
       this.navigations = [
         {
-          name: 'ABOUT',
+          name: 'about',
           subNavs: [
             {name: 'About', state: 'aboutPage'},
             {name: 'Huegroup Vertical Coverage', state: 'verticalCoverage'},
@@ -15,7 +15,7 @@ angular
             {name: 'Publication Schedule', state: 'publicationSchedule'}
           ]
         }, {
-          name: 'COLOR TRENDS',
+          name: 'color trends',
           subNavs: [
             {name: 'Fashion Color Trends', state: 'fashion'},
             {name: 'Auto Color Trends', state: 'auto'},
@@ -23,7 +23,7 @@ angular
             {name: 'Legal Color Trends', state: 'legal'}
           ]
         }, {
-          name: 'COLOR RESEARCH',
+          name: 'color research',
           subNavs: [
             {name: 'Color Indices', state: 'colorEmotion'},
             {name: 'Color Reports', state: 'reports'},
@@ -34,12 +34,12 @@ angular
             {name: 'Good Reads', state: 'goodReads'}
           ]
         }, {
-          name: 'COLOR DAILY',
+          name: 'color daily',
           subNavs: [
             {name: 'Blog', state: 'dailyInsights'}
           ]
         }, {
-          name: 'CONTACT',
+          name: 'contact',
           subNavs: [
             {name: 'Contact Form', state: 'contact'},
             {name: 'Membership Inquiry', state: 'membership'},
