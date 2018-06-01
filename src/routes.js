@@ -397,5 +397,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/staff-login',
       component: 'staffLoginComponent'
     });
+  $stateProvider
+    .state('profile', {
+      url: '/profile/:id',
+      component: 'profileComponent'
+    });
 }
 

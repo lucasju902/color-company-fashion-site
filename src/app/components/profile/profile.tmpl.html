@@ -1,0 +1,63 @@
+<section>
+    <div class="staffs-container container-fluid profile-page min-h" ng-init="$ctrl.init()">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 profile_header" >
+                <h3>Member Profile</h3>
+                <br>
+            </div>
+            <div class="col-lg-2 col-md-2" ></div>
+            <div class="col-lg-4 col-md-4 text-center staff-item" >
+                <div class="img-responsive background-image"
+                     style="background: {{'url(' + $ctrl.img_url + ') top center'}};
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    height: 250px;
+                    width: 250px;
+                    border-radius: 50%;
+                    background-color: #000;
+                    margin: auto"
+                >
+                </div>
+                <div class="speaking_item" style="padding-top: 15px">
+                    <div class="speaking_item_header profile-name"><a>{{$ctrl.data.first_name}} {{$ctrl.data.last_name}}</a>
+                    </div>
+                    <div class="line"></div>
+                    <button class="btn white-btn basket-btn" style="display: inline-block" >
+                        Cart
+                        <img style="width: 30px; height: 30px; margin-bottom: 0" src="https://www.freeiconspng.com/uploads/pink-shopping-cart-icon-17.gif" >
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 text-center staff-item" >
+                <div class="profile-data-text">
+                    <p>Email: <span>{{$ctrl.data.email}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Company: <span>{{$ctrl.data.company}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Job Title: <span>{{$ctrl.data.job_title}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Job Function: <span>{{$ctrl.data.job_function}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Company Size: <span>{{$ctrl.data.company_size}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Industry: <span>{{$ctrl.data.industry}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Country: <span>{{$ctrl.data.country}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Date of accession: <span>{{$ctrl.date}}</span></p>
+                </div>
+                <div class="profile-data-text">
+                    <p>Bio/Description: <span>{{$ctrl.data.bio}}</span></p>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2" ></div>
+        </div>
+    </div>
+</section>

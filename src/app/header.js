@@ -90,6 +90,10 @@ angular
         authService.logOut();
       };
 
+      this.goProfile = function () {
+        $state.go('profile', {id: $rootScope.currentUser.id});
+      }
+
       $scope.$watch(function () {
         return $rootScope.currentUser;
       }, function (newVal) {

@@ -2238,7 +2238,6 @@ form .ui-select-container.selectize-control {
   display: none
 }
 
-
 /***************** styles for detailed display pages *******************/
 
 .test-separator {
@@ -2252,6 +2251,7 @@ form .ui-select-container.selectize-control {
 .title-text-left {
   float: left;
 }
+
 /************fix selectors custom infographics**************/
 
 .customized-infographics-controls {
@@ -2259,5 +2259,35 @@ form .ui-select-container.selectize-control {
     width: 0 !important;
   }
 }
+
+/*************profile style*******************/
+
+.profile-page {
+  margin-top: 0;
+
+  .basket-btn {
+    margin-top: 10px;
+    padding: 5px 20px;
+  }
+
+  .profile_header {
+    text-align: center;
+  }
+
+  .profile-data-text {
+    text-align: left;
+    span {
+      color: #bb0076
+    }
+
+  }
+
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+
 
 // Customized Infographics END
