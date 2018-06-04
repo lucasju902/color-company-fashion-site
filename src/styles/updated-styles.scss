@@ -2289,5 +2289,25 @@ form .ui-select-container.selectize-control {
 }
 
 
+/*******************styles for become-member*********************/
+
+.become-member {
+  ul {
+    padding-left: 20px;
+
+    li {
+      color: black;
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 18pt;
+      list-style-type: none
+    }
+
+    li:before {
+      content: "- ";
+    }
+  }
+}
+
 
 // Customized Infographics END
