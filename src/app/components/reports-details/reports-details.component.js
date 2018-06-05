@@ -29,7 +29,7 @@ angular
 
     vm.aggProduct = function () {
       // localStorageService.remove('products');
-      var {id} = vm.pageData;
+      var id = vm.pageData.id;
       var products = localStorageService.get('products');
       if (!products) {
         products = {};

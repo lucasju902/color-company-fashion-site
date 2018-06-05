@@ -25,7 +25,7 @@ angular
             },
 
             '.valid': {
-              'color': 'green'
+              color: 'green'
             }
           },
           fields: {
