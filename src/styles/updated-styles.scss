@@ -597,7 +597,7 @@ ui-view {
   }
 
   .basket-btn {
-    padding: 9px 20px;
+    padding: 10px 20px;
   }
 
   .prise {
@@ -2372,7 +2372,7 @@ form .ui-select-container.selectize-control {
     h3 {
       margin: 0;
       float: right;
-      padding: 6px 10px;
+      padding: 3px 10px;
     }
   }
 
@@ -2461,3 +2461,14 @@ form .ui-select-container.selectize-control {
 }
 
 // Customized Infographics END
+
+
+
+.cart-checkout {
+  .cart-div {
+    width: 300px;
+    height: 40px;
+    border: 1px solid black;
+    margin-bottom: 15px;
+  }
+}

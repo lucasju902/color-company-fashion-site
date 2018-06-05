@@ -407,5 +407,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/cart',
       component: 'cartPageComponent'
     });
+  $stateProvider
+    .state('cart-checkout', {
+      url: '/cart-checkout',
+      component: 'cartCheckoutComponent'
+    });
 }
 

@@ -24,10 +24,9 @@ angular
             });
         }
       };
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
+
+      vm.goCheckout = function () {
+        $state.go('cart-checkout');
       };
 
       vm.removeProduct = function (id) {
