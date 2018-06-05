@@ -13,3 +13,60 @@
         </div>
     </div>
 </section>
+<section class="products-cart products-table-min-h">
+    <div class="container-fluid  text-center title">
+        <div class="row">
+            <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 empty-cart">
+                <h3>You have nothing in the cart</h3>
+            </div>
+            <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table ">
+                <table class="product-table-header">
+                    <caption>Your purchase</caption>
+                    <tr>
+                        <th class="product-img">Picture</th>
+                        <th class="product-name">Product name</th>
+                        <th class="product-description">Product description</th>
+                        <th class="product-count">Amount of product</th>
+                        <th class="product-prise">Price</th>
+                        <th class="price-for-all">Price for all</th>
+                        <th class="basket-icon">Remove</th>
+                    </tr>
+                </table>
+                <table ng-repeat="item in $ctrl.products" >
+                    <tr class="product-row">
+                        <td class="product-img">
+                            <img src="{{item.image_url}}" width="100px">
+                        </td>
+                        <td class="product-name">
+                            <h4>{{item.header}}</h4>
+                        </td>
+                        <td class="product-description">
+                            <span ng-bind-html="item.description"></span>
+                        </td>
+                        <td class="product-count">
+                            <p>{{item.count}}</p>
+                        </td>
+                        <td class="product-prise">
+                            <h4>{{item.price}} &#36;</h4>
+                        </td>
+                        <td class="product-prise">
+                            <h4>{{item.price * item.count}} &#36;</h4>
+                        </td>
+                        <td class="basket-icon">
+                            <img ng-click="$ctrl.removeProduct(item.id)" class="pointer" src="http://s1.iconbird.com/ico/2013/6/272/w128h1281371312762PixelKit00415.png" width="30px">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--<div class="col-lg-8 col-md-1"></div>-->
+            <div class="col-lg-offset-8 col-lg-4 col-md-12 ">
+                <div ng-show="$ctrl.products.length" class="button membership">
+                    <button class="btn join-btn">CHECKOUT</button>
+                </div>
+                <div class="all-price">
+                    <h3>{{$ctrl.all}} &#36;</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

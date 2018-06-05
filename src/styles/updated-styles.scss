@@ -2301,7 +2301,6 @@ form .ui-select-container.selectize-control {
   cursor: pointer;
 }
 
-// Customized Infographics END
 
 /*******************styles for become-member*********************/
 
@@ -2323,3 +2322,100 @@ form .ui-select-container.selectize-control {
   }
 }
 
+/****************cart page styles***********************/
+
+.products-cart {
+
+  .all-price {
+    h3 {
+      margin: 0;
+      float: right;
+      padding: 6px 10px;
+    }
+  }
+
+  .products-table-min-h {
+    min-height: 210px;
+  }
+
+  .empty-cart {
+    text-align: center;
+
+    h3 {
+      color: #bb0076;
+    }
+  }
+
+  .products-table {
+    margin-bottom: 30px;
+
+    .product-table-header {
+      border-top: #3f3f3f 1px solid;
+
+      caption {
+        font-size: 24px;
+        color: #bb0076;
+      }
+
+      th {
+        padding: 5px;
+        vertical-align: middle;
+        text-align: center;
+        border-right: #3f3f3f 1px solid;
+      }
+    }
+
+    table {
+      width: 100%;
+      border-bottom: #3f3f3f 1px solid;
+      border-left: #3f3f3f 1px solid;
+
+      td {
+        padding: 5px;
+        vertical-align: middle;
+        text-align: center;
+        border-right: #3f3f3f 1px solid;
+      }
+      .product-img {
+        width: 20%;
+      }
+
+      .product-name {
+        width: 15%;
+        h4 {
+          margin: 0;
+        }
+      }
+
+      .product-description {
+        width: 25%;
+      }
+
+      .product-count {
+        width: 8%;
+      }
+
+      .product-prise {
+        width: 12%;
+
+        h4 {
+          margin: 0;
+        }
+      }
+
+      .price-for-all {
+        width: 12%;
+
+        h4 {
+          margin: 0;
+        }
+      }
+
+      .basket-icon {
+        width: 8%;
+      }
+    }
+  }
+}
+
+// Customized Infographics END

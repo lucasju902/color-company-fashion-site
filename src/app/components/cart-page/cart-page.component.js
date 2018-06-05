@@ -4,10 +4,11 @@ angular
     templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
     controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
-      vm.products = [];
 
       vm.init = function () {
-        vm.IDs = localStorageService.get("products");
+        vm.products = [];
+        vm.all = 0;
+        vm.IDs = localStorageService.get('products');
 
         for(var key in vm.IDs) {
           $http.get(appConfig.dashboardServiceUrl + 'reports/' + key + '.json')
@@ -17,7 +18,8 @@ angular
               vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
               vm.pageData.file = res.data.data.files && res.data.data.files[0];
               vm.pageData.analitics = angular.copy(res.data.data.analytics);
-              vm.pageData.count = vm.IDs[key];
+              vm.pageData.count = vm.IDs[vm.pageData.id];
+              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
               vm.products.push(vm.pageData);
             });
         }
@@ -26,6 +28,12 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+
+      vm.removeProduct = function (id) {
+        delete vm.IDs[id];
+        localStorageService.set('products', vm.IDs);
+        vm.init();
       };
     }
   });
