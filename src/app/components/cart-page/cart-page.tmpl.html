@@ -5,11 +5,6 @@
                 <h3>Cart</h3>
                 <div class="line"></div>
             </div>
-            <div class="col-lg-4 col-md-12">
-                <div class="button membership">
-                    <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -60,7 +55,7 @@
             </div>
             <!--<div class="col-lg-8 col-md-1"></div>-->
             <div class="col-lg-offset-8 col-lg-4 col-md-12 ">
-                <div ng-show="$ctrl.products.length" class="button membership">
+                <div ng-show="$ctrl.products.length" class="button membership" ng-click="$ctrl.goCheckout()">
                     <button class="btn join-btn">CHECKOUT</button>
                 </div>
                 <div class="all-price">
