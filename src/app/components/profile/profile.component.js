@@ -39,6 +39,7 @@ angular
 
       vm.goCart = function () {
         $state.go('cart-page');
+      }
 
       vm.cancel = function () {
         vm.editFlag = false;
@@ -46,23 +47,23 @@ angular
 
       vm.save = function () {
         // if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in vm.data) {
-            if (vm.data[item].type === 'select') {
-              data[item] =
-                (!~vm.data[item].value.title.indexOf('PLEASE SELECT')) ? vm.data[item].value.title : vm.userData[item];
-            } else {
-              data[item] = vm.data[item].value || vm.userData[item];
-            }
+        var data = {};
+        for (var item in vm.data) {
+          if (vm.data[item].type === 'select') {
+            data[item] =
+              (!~vm.data[item].value.title.indexOf('PLEASE SELECT')) ? vm.data[item].value.title : vm.userData[item];
+          } else {
+            data[item] = vm.data[item].value || vm.userData[item];
           }
-          $http.put(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id + '.json', {
-            data: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              console.log('ok ');
-            }
-          });
-          vm.editFlag = false;
+        }
+        $http.put(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id + '.json', {
+          data: data
+        }).then(function (res) {
+          if (res.status === 200) {
+            console.log('ok ');
+          }
+        });
+        vm.editFlag = false;
         // }
       };
 
