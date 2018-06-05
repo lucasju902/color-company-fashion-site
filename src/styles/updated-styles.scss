@@ -471,7 +471,7 @@ ui-view {
   }
 }
 
-.contact-us-page, .press-page-wrapper {
+.contact-us-page, .press-page-wrapper, .edit-profile-page {
   .contact-us-form, .press-form {
     max-width: 450px;
     margin: auto;
@@ -2278,6 +2278,48 @@ form .ui-select-container.selectize-control {
     text-align: left;
     span {
       color: #bb0076
+    }
+
+    .selectize-dropdown-content {
+      font-size: 12px;
+
+      span {
+        color: #3f3f3f;
+      }
+    }
+
+    .select-mrg {
+      display: inline-block;
+      margin-bottom: 0;
+      width: 60%;
+      font-size: 12px;
+
+      .selectize-input {
+        padding: 2px 5px;
+        vertical-align: middle;
+      }
+
+      .ui-select-match {
+        font-size: 10px;
+      }
+    }
+
+    p {
+      display: inline-block;
+
+      input {
+        margin-bottom: 0;
+        width: auto;
+        height: 24px;
+      }
+
+      trxtarea {
+        color: #3f3f3f;
+      }
+
+      .electize-dropdown {
+        color: black;
+      }
     }
 
   }
