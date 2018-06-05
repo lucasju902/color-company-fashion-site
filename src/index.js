@@ -6,7 +6,8 @@ var app = angular.module('app', [
   'angular-extend-promises',
   'ui.router',
   'ui.select',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'LocalStorageModule'
 ]);
 
 var config = {

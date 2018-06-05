@@ -21,6 +21,14 @@
           <div class="button membership white" ng-if="$ctrl.pageData.file">
             <a class="btn white-btn" target="_self" href="{{$ctrl.pageData.file.image_url}}" download="foo.pdf">DOWNLOAD EXCERPT</a>
           </div>
+          <div class="button membership">
+            <button class="btn white-btn basket-btn" style="display: inline-block" ng-click="$ctrl.aggProduct()">ADD CART
+              <img style="width: 30px; height: 30px; margin-bottom: 0" src="https://www.freeiconspng.com/uploads/pink-shopping-cart-icon-17.gif" >
+            </button>
+          </div>
+          <div class="prise">
+            <h3>{{$ctrl.pageData.price}} &#36;</h3>
+          </div>
         </div>
       </div>
       <div class="row">

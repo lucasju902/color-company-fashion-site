@@ -595,6 +595,19 @@ ui-view {
   .button {
     margin-right: 0;
   }
+
+  .basket-btn {
+    padding: 9px 20px;
+  }
+
+  .prise {
+    float: right;
+    h3 {
+      color: #bb0076;
+      margin: 0;
+      padding: 5px 10px;
+    }
+  }
 }
 
 .btn {

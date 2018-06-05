@@ -402,5 +402,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/profile/:id',
       component: 'profileComponent'
     });
+  $stateProvider
+    .state('cart-page', {
+      url: '/cart',
+      component: 'cartPageComponent'
+    });
 }
 
