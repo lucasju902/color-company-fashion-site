@@ -2,7 +2,7 @@ angular
 .module('app')
 .component('reportsDetailsComponent', {
   templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService) {
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
     var vm = this;
 
     vm.init = function () {
@@ -36,6 +36,7 @@ angular
       }
       products[id] = products[id] ? products[id] + 1 : 1;
       localStorageService.set('products', products);
+      $state.go('cart-page');
     };
   }
 });

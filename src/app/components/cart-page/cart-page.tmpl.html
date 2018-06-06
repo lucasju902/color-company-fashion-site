@@ -1,67 +1,79 @@
 <section ng-init="$ctrl.init()">
-    <div class="container-fluid  text-center title">
-        <div class="row">
-            <div class="col-lg-4 col-md-12 col-lg-offset-4">
-                <h3>Cart</h3>
-                <div class="line"></div>
-            </div>
-        </div>
+  <div class="container-fluid  text-center title">
+    <div class="row">
+      <div class="col-lg-4 col-md-12 col-lg-offset-4">
+        <h3>Cart</h3>
+        <div class="line"></div>
+      </div>
     </div>
+  </div>
 </section>
 <section class="products-cart products-table-min-h">
-    <div class="container-fluid  text-center title">
-        <div class="row">
-            <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 empty-cart">
-                <h3>You have nothing in the cart</h3>
-            </div>
-            <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table ">
-                <table class="product-table-header">
-                    <caption>Your purchase</caption>
-                    <tr>
-                        <th class="product-img">Picture</th>
-                        <th class="product-name">Product name</th>
-                        <th class="product-description">Product description</th>
-                        <th class="product-count">Amount of product</th>
-                        <th class="product-prise">Price</th>
-                        <th class="price-for-all">Price for all</th>
-                        <th class="basket-icon">Remove</th>
-                    </tr>
-                </table>
-                <table ng-repeat="item in $ctrl.products" >
-                    <tr class="product-row">
-                        <td class="product-img">
-                            <img src="{{item.image_url}}" width="100px">
-                        </td>
-                        <td class="product-name">
-                            <h4>{{item.header}}</h4>
-                        </td>
-                        <td class="product-description">
-                            <span ng-bind-html="item.description"></span>
-                        </td>
-                        <td class="product-count">
-                            <p>{{item.count}}</p>
-                        </td>
-                        <td class="product-prise">
-                            <h4>{{item.price}} &#36;</h4>
-                        </td>
-                        <td class="product-prise">
-                            <h4>{{item.price * item.count}} &#36;</h4>
-                        </td>
-                        <td class="basket-icon">
-                            <img ng-click="$ctrl.removeProduct(item.id)" class="pointer" src="http://s1.iconbird.com/ico/2013/6/272/w128h1281371312762PixelKit00415.png" width="30px">
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <!--<div class="col-lg-8 col-md-1"></div>-->
-            <div class="col-lg-offset-8 col-lg-4 col-md-12 ">
-                <div ng-show="$ctrl.products.length" class="button membership" ng-click="$ctrl.goCheckout()">
-                    <button class="btn join-btn">CHECKOUT</button>
-                </div>
-                <div class="all-price">
-                    <h3>{{$ctrl.all}} &#36;</h3>
-                </div>
-            </div>
+  <div class="container-fluid  text-center title">
+    <div class="row">
+      <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 empty-cart">
+        <h3>You have nothing in the cart</h3>
+      </div>
+      <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table ">
+        <table>
+          <caption>Your purchase</caption>
+          <tr class="product-table-header">
+            <th class="product-img">Picture</th>
+            <th class="product-name">Product name</th>
+            <th class="product-description">Product description</th>
+            <th class="product-count">Amount of product</th>
+            <th class="product-prise">Price</th>
+            <th class="price-for-all">Price for all</th>
+            <th class="basket-icon">Remove</th>
+          </tr>
+          <tr class="product-row" ng-repeat="item in $ctrl.products">
+            <td class="product-img">
+              <img src="{{item.image_url}}">
+            </td>
+            <td class="product-name">
+              <h4>{{item.header}}</h4>
+            </td>
+            <td class="product-description">
+              <span ng-bind-html="item.description"></span>
+            </td>
+            <td class="product-count">
+              <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
+              <div style="display: inline-block">
+                <i ng-click="$ctrl.editCount(item.id, $index, -1)" class="fa fa-arrow-circle-left fa-1x pointer"
+                   aria-hidden="true"></i>
+              </div>
+              <h4 style="display: inline-block">{{item.count}}</h4>
+              <div style="display: inline-block">
+                <i ng-click="$ctrl.editCount(item.id, $index, 1)" class="fa fa-arrow-circle-right fa-1x pointer"
+                   aria-hidden="true"></i>
+              </div>
+            </td>
+            <td class="product-prise">
+              <h4>{{item.price}} &#36;</h4>
+            </td>
+            <td class="product-prise">
+              <h4>{{item.price * item.count}} &#36;</h4>
+            </td>
+            <td class="basket-icon">
+              <i ng-click="$ctrl.removeProduct(item.id)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-lg-4 col-md-12 ">
+        <div ng-click="$ctrl.goReports()" class="go-to-reports pointer">
+          <i class="fa fa-arrow-left fa-1x " aria-hidden="true"></i>
+          <p>&emsp;Back to Color Reports</p>
         </div>
+      </div>
+      <div class="col-lg-offset-4 col-lg-4 col-md-12 ">
+        <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
+          <button style="margin-top: 0" class="btn">CHECKOUT</button>
+        </div>
+        <div class="all-price">
+          <h3>{{$ctrl.all}} &#36;</h3>
+        </div>
+      </div>
     </div>
+  </div>
 </section>

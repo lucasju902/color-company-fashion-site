@@ -18,7 +18,7 @@ angular
               vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
               vm.pageData.file = res.data.data.files && res.data.data.files[0];
               vm.pageData.analitics = angular.copy(res.data.data.analytics);
-              vm.pageData.count = vm.IDs[vm.pageData.id];
+              vm.pageData.count =vm.IDs[vm.pageData.id];
               vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
               vm.products.push(vm.pageData);
             });
@@ -33,6 +33,21 @@ angular
         delete vm.IDs[id];
         localStorageService.set('products', vm.IDs);
         vm.init();
+      };
+
+      vm.goReports = function () {
+        $state.go('reports');
+      };
+
+      vm.editCount = function (id, index, value) {
+        console.log('@@@@@@@@@@ ',id, index, value);
+        if (vm.products[index].count + value >= 0) {
+          vm.products[index].count = vm.products[index].count + value;
+          vm.IDs[id] = vm.IDs[id] + value;
+          localStorageService.set('products', vm.IDs);
+          vm.all = vm.all + vm.products[index].price * value
+        }
+
       };
     }
   });
