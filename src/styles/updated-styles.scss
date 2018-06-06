@@ -248,6 +248,35 @@ ui-view {
   .detailed-content {
     padding-bottom: 70px;
 
+    .prise {
+      margin-top: 30px;
+      margin-bottom: 5px;
+
+      p {
+        font-size: 18px;
+        color: black;
+
+        span {
+          font-size: 18px;
+          color: #bb0076;
+        }
+      }
+    }
+
+    @media (max-width: 1300px) and (min-width: 1200px) {
+      .prise {
+        p {
+          font-size: 14px;
+          color: black;
+
+          span {
+            font-size: 14px;
+            color: #bb0076;
+          }
+        }
+      }
+    }
+
     .category {
       left: auto;
     }
@@ -2125,6 +2154,11 @@ form .ui-select-container.selectize-control {
   margin: 0;
 }
 
+.bay-btn {
+  font-size: 18px;
+  padding: 10px 40px;
+}
+
 .daily-btn {
   float: right;
   margin-right: 1px;
@@ -2219,6 +2253,11 @@ form .ui-select-container.selectize-control {
 
   button.white-btn:hover {
     min-width: 104px;
+  }
+
+  .bay-btn {
+    font-size: 14px;
+    padding: 7px 30px;
   }
 }
 
@@ -2368,11 +2407,35 @@ form .ui-select-container.selectize-control {
 
 .products-cart {
 
+  .checkout-button {
+    display: inline-block;
+    float: right;
+
+    button {
+      margin-top: 0;
+    }
+  }
+
   .all-price {
+    display: inline-block;
+    float: right;
+    height: 50px;
+    vertical-align: middle;
+
     h3 {
+      //height: 100%;
       margin: 0;
       float: right;
-      padding: 3px 10px;
+      padding: 7px 10px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1300px) and (min-width: 1200px) {
+      height: 35px;
+
+      h3 {
+        padding: 1px 10px;
+      }
     }
   }
 
@@ -2391,13 +2454,65 @@ form .ui-select-container.selectize-control {
   .products-table {
     margin-bottom: 30px;
 
+    @media (max-width: 1300px) and (min-width: 992px) {
+      .product-row {
+        h4 {
+          font-size: 14px;
+        }
+
+        p {
+          font-size: 12px;
+          margin: 0;
+        }
+      }
+
+      .product-table-header {
+        th {
+          font-size: 14px;
+        }
+      }
+    }
+
+    @media (max-width: 991px) and (min-width: 768px) {
+      .product-row {
+        h4 {
+          font-size: 12px;
+        }
+
+        p {
+          font-size: 10px;
+          margin: 0;
+        }
+      }
+
+      .product-table-header {
+        th {
+          font-size: 12px;
+        }
+      }
+    }
+
+    @media (max-width: 767px) {
+      .product-row {
+        h4 {
+          font-size: 11px;
+        }
+
+        p {
+          font-size: 9px;
+          margin: 0;
+        }
+      }
+
+      .product-table-header {
+        th {
+          font-size: 11px;
+        }
+      }
+    }
+
     .product-table-header {
       border-top: #3f3f3f 1px solid;
-
-      caption {
-        font-size: 24px;
-        color: #bb0076;
-      }
 
       th {
         padding: 5px;
@@ -2405,6 +2520,11 @@ form .ui-select-container.selectize-control {
         text-align: center;
         border-right: #3f3f3f 1px solid;
       }
+
+      tr {
+        border-bottom: #3f3f3f 1px solid;
+      }
+
     }
 
     table {
@@ -2412,14 +2532,28 @@ form .ui-select-container.selectize-control {
       border-bottom: #3f3f3f 1px solid;
       border-left: #3f3f3f 1px solid;
 
+      caption {
+        font-size: 24px;
+        color: #bb0076;
+      }
+
       td {
         padding: 5px;
         vertical-align: middle;
         text-align: center;
         border-right: #3f3f3f 1px solid;
       }
+
+      tr {
+        border-bottom: #3f3f3f 1px solid;
+      }
+
       .product-img {
         width: 20%;
+
+        img {
+          max-height: 100px;
+        }
       }
 
       .product-name {
@@ -2435,6 +2569,14 @@ form .ui-select-container.selectize-control {
 
       .product-count {
         width: 8%;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        h4 {
+          margin: 0;
+        }
       }
 
       .product-prise {
@@ -2454,8 +2596,31 @@ form .ui-select-container.selectize-control {
       }
 
       .basket-icon {
+        i {
+          color: #bb0076;
+        }
         width: 8%;
       }
+    }
+  }
+
+  .go-to-reports {
+    max-width: 215px;
+    color: #bb0076;
+
+    i {
+      display: inline-block;
+      margin-bottom: auto;
+      margin-top: auto;
+    }
+
+    p {
+      color: #bb0076;
+      font-size: 16px;
+      display: inline-block;
+      height: 20px;
+      margin-bottom: auto;
+      margin-top: auto;
     }
   }
 }

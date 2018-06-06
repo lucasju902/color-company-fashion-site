@@ -39,7 +39,7 @@ angular
 
       vm.goCart = function () {
         $state.go('cart-page');
-      }
+      };
 
       vm.cancel = function () {
         vm.editFlag = false;
