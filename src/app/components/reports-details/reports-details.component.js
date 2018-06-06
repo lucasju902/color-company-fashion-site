@@ -33,8 +33,8 @@ angular
       var products = localStorageService.get('products');
       if (!products) {
         products = {};
-      };
-      products[id] = products[id] ? products[id]+1 : 1;
+      }
+      products[id] = products[id] ? products[id] + 1 : 1;
       localStorageService.set('products', products);
     };
   }
