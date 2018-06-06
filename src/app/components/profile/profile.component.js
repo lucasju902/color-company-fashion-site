@@ -64,7 +64,7 @@ angular
               data[item] = vm.data[item].value;
             }
           }
-          $http.put(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id + '.json', {
+          $http.put(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id, {
             data: data
           }).then(function (res) {
             if (res.status === 200) {
