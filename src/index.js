@@ -6,7 +6,8 @@ var app = angular.module('app', [
   'angular-extend-promises',
   'ui.router',
   'ui.select',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'LocalStorageModule'
 ]);
 
 var config = {
@@ -14,16 +15,15 @@ var config = {
 };
 
 app.value('config', config);
-var run = ['$rootScope', 'authService', '$state', '$transitions', 'modalService', '$anchorScroll',
-  function ($rootScope, authService, $state, $transitions, modalService, $anchorScroll) {
-    $rootScope.currentUser = {};
+var run = ['localStorageService', 'authService', '$state', '$transitions', 'modalService', '$anchorScroll', '$rootScope',
+  function (localStorageService, authService, $state, $transitions, modalService, $anchorScroll, $rootScope) {
+    localStorageService.set('currentUser', {});
     authService.loadCurrentUser().then(function (res) {
-
-      if ($state.$current.self.protected && !$rootScope.currentUser.is_member) {
+      if ($state.$current.self.protected && !localStorageService.get('currentUser').is_member) {
         $state.go('aboutPage');
       }
       $transitions.onStart({}, function (transition) {
-        if (transition.to().protected && !$rootScope.currentUser.is_member) {
+        if (transition.to().protected && !localStorageService.get('currentUser').is_member) {
           modalService.showModal(1);
           return false;
         }

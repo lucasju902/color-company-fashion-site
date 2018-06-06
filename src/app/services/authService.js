@@ -1,6 +1,6 @@
 angular.module('app')
-  .service('authService', ['$http', '$cookies', '$window', 'appConfig', '$rootScope', '$state',
-    function ($http, $cookies, $window, appConfig, $rootScope, $state) {
+  .service('authService', ['$http', '$cookies', '$window', 'appConfig', '$state', 'localStorageService',
+    function ($http, $cookies, $window, appConfig, $state, localStorageService) {
       var self = this;
       this.token = $cookies.get('hg_session');
 
@@ -15,7 +15,7 @@ angular.module('app')
             self.setToken(res.data.token, isRemembered);
             self.currentUser = res.data.user;
             self.token = res.data.token;
-            $rootScope.currentUser = res.data.user;
+            localStorageService.set('currentUser', res.data.user);
           }
           return res.data;
         });
@@ -25,7 +25,7 @@ angular.module('app')
         $cookies.remove('hg_session');
         self.token = null;
         self.currentUser = {};
-        $rootScope.currentUser = {};
+        localStorageService.set('currentUser', {});
         $state.go('aboutPage');
       };
 
@@ -35,16 +35,16 @@ angular.module('app')
           .then(function (data) {
             if (data.data.success) {
               self.currentUser = data.data.user;
-              $rootScope.currentUser = data.data.user;
+              localStorageService.set('currentUser', data.data.user);
             } else {
-              $rootScope.currentUser = {};
+              localStorageService.set('currentUser', {});
             }
             return data;
           });
       };
 
       this.getCurrentUser = function () {
-        return self.currentUser || {}
+        return self.currentUser || {};
       };
 
       this.setToken = function (token, isRemembered) {

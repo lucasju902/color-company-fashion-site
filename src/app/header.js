@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('appHeader', {
     templateUrl: 'app/header.html',
-    controller: function ($state, authService, $rootScope, $scope) {
+    controller: function ($state, authService, $rootScope, $scope, localStorageService) {
       var self = this;
       this.navigations = [
         {
@@ -91,13 +91,13 @@ angular
       };
 
       this.goProfile = function () {
-        $state.go('profile', {id: $rootScope.currentUser.id});
-      }
+        $state.go('profile', {id: localStorageService.get('currentUser').id});
+      };
 
       $scope.$watch(function () {
-        return $rootScope.currentUser;
+        return authService.currentUser;
       }, function (newVal) {
-        self.user = $rootScope.currentUser;
+        self.user = localStorageService.get('currentUser');
       });
     }
   });

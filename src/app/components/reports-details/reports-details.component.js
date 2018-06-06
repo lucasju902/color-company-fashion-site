@@ -2,7 +2,7 @@ angular
 .module('app')
 .component('reportsDetailsComponent', {
   templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll) {
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
     var vm = this;
 
     vm.init = function () {
@@ -25,6 +25,18 @@ angular
       $location.hash('prefooter');
       anchorSmoothScroll.scrollTo(eID);
       $location.hash('');
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      products[id] = products[id] ? products[id] + 1 : 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page');
     };
   }
 });
