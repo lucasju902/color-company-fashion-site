@@ -37,10 +37,10 @@ angular
         $state.go('cart-checkout');
       };
 
-      vm.removeProduct = function (id) {
-        delete vm.IDs[id];
+      vm.removeProduct = function (id, type, index) {
+        delete vm.IDs[type][id];
+        vm.products.splice(index, 1);
         localStorageService.set('products', vm.IDs);
-        vm.init();
       };
 
       vm.goReports = function () {

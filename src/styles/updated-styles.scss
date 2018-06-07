@@ -2406,6 +2406,10 @@ form .ui-select-container.selectize-control {
 
 /****************cart page styles***********************/
 
+.products-table-min-h {
+  min-height: 400px;
+}
+
 .products-cart {
 
   .checkout-button {
@@ -2446,6 +2450,7 @@ form .ui-select-container.selectize-control {
 
   .empty-cart {
     text-align: center;
+    min-height: 300px;
 
     h3 {
       color: #bb0076;

@@ -55,7 +55,7 @@
               <h4>{{item.price * item.count}} &#36;</h4>
             </td>
             <td class="basket-icon">
-              <i ng-click="$ctrl.removeProduct(item.id)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>
+              <i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>
             </td>
           </tr>
         </table>
@@ -70,7 +70,7 @@
         <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
           <button style="margin-top: 0" class="btn">CHECKOUT</button>
         </div>
-        <div class="all-price">
+        <div ng-show="$ctrl.products.length" class="all-price">
           <h3>{{$ctrl.all}} &#36;</h3>
         </div>
       </div>
