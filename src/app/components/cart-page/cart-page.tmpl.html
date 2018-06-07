@@ -39,12 +39,12 @@
             <td class="product-count">
               <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
               <div style="display: inline-block">
-                <i ng-click="$ctrl.editCount(item.id, $index, -1)" class="fa fa-arrow-circle-left fa-1x pointer"
+                <i ng-click="$ctrl.editCount(item.id, $index, -1, item.type)" class="fa fa-arrow-circle-left fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
               <h4 style="display: inline-block">{{item.count}}</h4>
               <div style="display: inline-block">
-                <i ng-click="$ctrl.editCount(item.id, $index, 1)" class="fa fa-arrow-circle-right fa-1x pointer"
+                <i ng-click="$ctrl.editCount(item.id, $index, 1, item.type)" class="fa fa-arrow-circle-right fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
             </td>
@@ -63,7 +63,7 @@
       <div class="col-lg-4 col-md-12 ">
         <div ng-click="$ctrl.goReports()" class="go-to-reports pointer">
           <i class="fa fa-arrow-left fa-1x " aria-hidden="true"></i>
-          <p>&emsp;Back to Color Reports</p>
+          <p>&emsp;Back to {{$ctrl.whichPage.name}}</p>
         </div>
       </div>
       <div class="col-lg-offset-4 col-lg-4 col-md-12 ">

@@ -42,8 +42,6 @@
     <div class="container-fluid text-left report detailed-content">
       <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12">
-          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>HUE{{$ctrl.pageData.hue}}</p>
-          </div>
           <div class="img-responsive background-image"
                style="background: {{'url(' + $ctrl.pageData.image_url + ') top center'}};
                       background-repeat: no-repeat;
@@ -57,6 +55,10 @@
         <div class="col-lg-6 col-md-6 col-sm-12">
           <span ng-bind-html="$ctrl.pageData.description"></span>
           <a ng-if="$ctrl.pageData.file" target="_blank" href="{{$ctrl.pageData.file.image_url}}">Download Excerpt</a>
+          <div class="prise">
+            <p><span>Priсe: </span>${{$ctrl.pageData.price}}</p>
+          </div>
+          <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>
         </div>
       </div>
     </div>
