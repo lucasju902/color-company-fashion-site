@@ -19,8 +19,8 @@
         >
         </div>
         <div class="speaking_item" style="padding-top: 15px">
-          <div class="speaking_item_header profile-name"><a>{{$ctrl.userData.first_name}}
-            {{$ctrl.userData.last_name}}</a>
+          <div class="speaking_item_header profile-name"><a>{{$ctrl.data.first_name.value}}
+            {{$ctrl.data.last_name.value}}</a>
           </div>
           <div class="line"></div>
           <button class="btn white-btn basket-btn" style="display: inline-block" ng-click="$ctrl.goCart()">
@@ -43,11 +43,11 @@
         </div>
 
         <div class="profile-data-text">
-          <p>Email: <span>{{$ctrl.userData.email}}</span></p>
+          <p>Email: <span>{{$ctrl.data.email.value}}</span></p>
         </div>
         <div class="profile-data-text">
           <p>
-            Company: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.company}}</span>
+            Company: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.company.value}}</span>
             <input ng-show="$ctrl.editFlag" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value"
                    type="text"
                    name="company"
@@ -56,7 +56,7 @@
         </div>
         <div class="profile-data-text">
           <p>
-            Job Title: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.job_title}}</span>
+            Job Title: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.job_title.value}}</span>
             <input ng-show="$ctrl.editFlag" ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value"
                    type="text"
                    id="job_title" name="job_title"
@@ -65,7 +65,7 @@
         </div>
         <div class="profile-data-text">
           <p>
-            Job Function: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.job_function}}</span>
+            Job Function: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.job_function.value.title || $ctrl.data.job_function.value}}</span>
           <div ng-show="$ctrl.editFlag" class="select-style select-mrg">
             <ui-select
                     ng-model="$ctrl.data.job_function.value"
@@ -81,7 +81,7 @@
           </p>
         </div>
         <div class="profile-data-text">
-          <p>Company Size: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.company_size}}</span>
+          <p>Company Size: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.company_size.value.title}}</span>
           <div ng-show="$ctrl.editFlag" class="select-style select-mrg">
             <ui-select
                     ng-model="$ctrl.data.company_size.value"
@@ -97,7 +97,7 @@
           </p>
         </div>
         <div class="profile-data-text">
-          <p>Industry: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.industry}}</span>
+          <p>Industry: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.industry.value.title}}</span>
           <div ng-show="$ctrl.editFlag" class="select-style select-mrg">
             <ui-select
                     ng-model="$ctrl.data.industry.value"
@@ -113,7 +113,7 @@
           </p>
         </div>
         <div class="profile-data-text">
-          <p>Country: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.country}}</span>
+          <p>Country: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.country.value.title}}</span>
           <div ng-show="$ctrl.editFlag" class="select-style select-mrg">
             <ui-select
                     ng-model="$ctrl.data.country.value"
@@ -132,7 +132,7 @@
           <p>Date of accession: <span>{{$ctrl.date}}</span></p>
         </div>
         <div class="profile-data-text">
-          <p>Bio/Description: <span ng-show="!$ctrl.editFlag">{{$ctrl.userData.bio}}</span>
+          <p>Bio/Description: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.bio.value}}</span>
             <textarea ng-show="$ctrl.editFlag" ng-model="$ctrl.data.bio.value" ng-value="$ctrl.data.bio.value"
                       placeholder="Bio/Description"></textarea>
           </p>

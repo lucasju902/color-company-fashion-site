@@ -2366,7 +2366,9 @@ form .ui-select-container.selectize-control {
         height: 24px;
       }
 
-      trxtarea {
+      textarea {
+        min-height: 90px;
+        margin-bottom: 0;
         color: #3f3f3f;
       }
 
