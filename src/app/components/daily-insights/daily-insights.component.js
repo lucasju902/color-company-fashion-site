@@ -8,7 +8,7 @@ angular
       vm.items = [];
       vm.allDailies = [];
       vm.items = [];
-      vm.flag = false;
+      vm.flag = true;
       var count = 1;
       var numberOfElements = 3;
 

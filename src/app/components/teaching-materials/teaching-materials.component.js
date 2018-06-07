@@ -14,7 +14,7 @@ angular
       vm.provider = [];
       vm.type = [];
       vm.items = [];
-      vm.flag = false;
+      vm.flag = true;
       var numberOfElements = 3;
       var count = 1;
 
