@@ -10,7 +10,7 @@ angular
       vm.hue = categoryValues('hue');
       vm.pageData = {};
       vm.items = [];
-      vm.flag = false;
+      vm.flag = true;
       var numberOfElements = 3;
       var count = 1;
       var lastYear = moment().year();

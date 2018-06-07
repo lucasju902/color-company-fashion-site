@@ -6,7 +6,7 @@ angular
       var vm = this;
       vm.all = [];
       vm.items = [];
-      vm.flag = false;
+      vm.flag = true;
       var count = 1;
       var numberOfElements = 6;
 

@@ -16,7 +16,7 @@ angular
       vm.year = [];
       vm.items = [];
       vm.dis = true;
-      vm.flag = false;
+      vm.flag = true;
       var lastYear = moment().year();
       var count = 1;
       var numberOfElements = 3;

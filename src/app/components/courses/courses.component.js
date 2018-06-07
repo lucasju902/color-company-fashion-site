@@ -14,7 +14,7 @@ angular
       vm.providerModel = 'PROVIDER';
       vm.levelModel = 'LEVEL';
       vm.items = [];
-      vm.flag = false;
+      vm.flag = true;
       var numberOfElements = 3;
       var count = 1;
 
