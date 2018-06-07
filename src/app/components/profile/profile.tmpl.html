@@ -65,7 +65,7 @@
         </div>
         <div class="profile-data-text">
           <p>
-            Job Function: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.job_function.value.title}}</span>
+            Job Function: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.job_function.value.title || $ctrl.data.job_function.value}}</span>
           <div ng-show="$ctrl.editFlag" class="select-style select-mrg">
             <ui-select
                     ng-model="$ctrl.data.job_function.value"
