@@ -15,14 +15,17 @@ var config = {
 };
 
 app.value('config', config);
-var run = ['localStorageService', 'authService', '$state', '$transitions', 'modalService', '$anchorScroll', '$rootScope',
-  function (localStorageService, authService, $state, $transitions, modalService, $anchorScroll, $rootScope) {
+var run = ['localStorageService', 'authService', '$state', '$transitions', 'modalService', '$anchorScroll', '$rootScope', 'statsService',
+  function (localStorageService, authService, $state, $transitions, modalService, $anchorScroll, $rootScope, statsService) {
+    statsService.pageCounter();
     localStorageService.set('currentUser', {});
     authService.loadCurrentUser().then(function (res) {
       if ($state.$current.self.protected && !localStorageService.get('currentUser').is_member) {
         $state.go('aboutPage');
       }
       $transitions.onStart({}, function (transition) {
+        console.log('index');
+        statsService.pageCounter();
         if (transition.to().protected && !localStorageService.get('currentUser').is_member) {
           modalService.showModal(1);
           return false;
@@ -46,7 +49,7 @@ angular.module('app').constant('appConfig', {
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
   // authServiceUrl: 'http://localhost:5000',
   authServiceUrl: '',
-  // dashboardServiceUrl: 'http://localhost:3000/',
+  // dashboardServiceUrl: 'http://localhost:3002/',
   dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
 
   repositories: {
