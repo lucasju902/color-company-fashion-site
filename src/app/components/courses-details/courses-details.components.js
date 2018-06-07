@@ -2,7 +2,7 @@ angular
 .module('app')
 .component('coursesDetailsComponent', {
   templateUrl: 'app/components/courses-details/courses-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll) {
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, $state, localStorageService) {
     var vm = this;
 
     vm.init = function () {
@@ -24,6 +24,16 @@ angular
       $location.hash('prefooter');
       anchorSmoothScroll.scrollTo(eID);
       $location.hash('');
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      products.courses[id] = products.courses[id] ? products.courses[id] + 1 : 1;
+      localStorageService.set('products', products);
+      localStorageService.set('whichPage', {link: 'courses', name: 'Color Courses'});
+      $state.go('cart-page');
     };
   }
 });

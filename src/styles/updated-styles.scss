@@ -2154,7 +2154,7 @@ form .ui-select-container.selectize-control {
   margin: 0;
 }
 
-.bay-btn {
+.buy-btn {
   font-size: 18px;
   padding: 10px 40px;
 }
@@ -2255,7 +2255,7 @@ form .ui-select-container.selectize-control {
     min-width: 104px;
   }
 
-  .bay-btn {
+  .buy-btn {
     font-size: 14px;
     padding: 7px 30px;
   }
@@ -2406,6 +2406,10 @@ form .ui-select-container.selectize-control {
 
 /****************cart page styles***********************/
 
+.products-table-min-h {
+  min-height: 400px;
+}
+
 .products-cart {
 
   .checkout-button {
@@ -2446,6 +2450,7 @@ form .ui-select-container.selectize-control {
 
   .empty-cart {
     text-align: center;
+    min-height: 300px;
 
     h3 {
       color: #bb0076;
@@ -2602,7 +2607,7 @@ form .ui-select-container.selectize-control {
   }
 
   .go-to-reports {
-    max-width: 215px;
+    text-align: left;
     color: #bb0076;
 
     i {
