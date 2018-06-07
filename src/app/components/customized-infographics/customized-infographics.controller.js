@@ -1,9 +1,9 @@
 ﻿(function (angular) {
   'use strict';
   var controllerName = 'CustomInfographicsController';
-  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
+  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'statsService', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
     '$q', 'repo.meta', 'repo.designers', '$timeout', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository', 'anchorSmoothScroll',
-    function ($http, appConfig, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
+    function ($http, appConfig, statsService, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
       var vm = this;
 
       $scope.gotoElement = function (eID) {
@@ -1396,6 +1396,7 @@
       };
 
       vm.exportJpg = function () {
+        statsService.infographics();
         var captureEl = angular.element('#capture');
         var footer = angular.element('.customized-infographics-footer');
         var titles = angular.element('.graphic-titles');
