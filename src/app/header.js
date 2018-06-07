@@ -91,7 +91,7 @@ angular
       };
 
       this.goProfile = function () {
-        $state.go('profile', {id: localStorageService.get('currentUser').id});
+        $state.go('profile');
       };
 
       $scope.$watch(function () {

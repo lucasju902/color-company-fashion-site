@@ -399,7 +399,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
   $stateProvider
     .state('profile', {
-      url: '/profile/:id',
+      url: '/profile',
       component: 'profileComponent'
     });
   $stateProvider
