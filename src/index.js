@@ -24,7 +24,6 @@ var run = ['localStorageService', 'authService', '$state', '$transitions', 'moda
         $state.go('aboutPage');
       }
       $transitions.onStart({}, function (transition) {
-        console.log('index');
         statsService.pageCounter();
         if (transition.to().protected && !localStorageService.get('currentUser').is_member) {
           modalService.showModal(1);

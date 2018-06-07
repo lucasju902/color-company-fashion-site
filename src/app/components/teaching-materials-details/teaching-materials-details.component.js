@@ -30,6 +30,12 @@ angular
       // localStorageService.remove('products');
       var id = vm.pageData.id;
       var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.teaching_materials) {
+        products.teaching_materials = {};
+      }
       products.teaching_materials[id] = products.teaching_materials[id] ? products.teaching_materials[id] + 1 : 1;
       localStorageService.set('products', products);
       localStorageService.set('whichPage', {link: 'teachingMaterials', name: 'Color Teaching Materials'});

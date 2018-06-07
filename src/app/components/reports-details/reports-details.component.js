@@ -31,14 +31,17 @@ angular
       // localStorageService.remove('products');
       var id = vm.pageData.id;
       var products = localStorageService.get('products');
-      // if (!products) {
-      //   products = {};
-      // }
-      // if (!products.reports) {
-      //   products.reports = {};
-      // }
+      console.log(products);
+      if (!products) {
+        products = {};
+      }
+      if (!products.reports) {
+        products.reports = {};
+      }
       products.reports[id] = products.reports[id] ? products.reports[id] + 1 : 1;
+      console.log('ssssss');
       localStorageService.set('products', products);
+      console.log('fff');
       localStorageService.set('whichPage', {link: 'reports', name: 'Color Reports'});
       $state.go('cart-page');
     };
