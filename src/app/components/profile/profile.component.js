@@ -17,7 +17,7 @@ angular
             if (res && res.data) {
               vm.userData = res.data;
               vm.date = vm.userData.date_day + ' : ' + vm.userData.date_month + ' : ' + vm.userData.date_year;
-              vm.img_url ='http://s3.amazonaws.com/hue-storage/huegroup-website/about_vertical_coverages/image1s/000/000/001/original/HG_REPORT-V1-image.001.jpeg?1523632810';
+              vm.img_url = 'http://s3.amazonaws.com/hue-storage/huegroup-website/about_vertical_coverages/image1s/000/000/001/original/HG_REPORT-V1-image.001.jpeg?1523632810';
 
               var jobIndex = vm.searchIndex(vm.jobs, vm.userData.job_function);
               var comSizeIndex = vm.searchIndex(vm.companySizes, vm.userData.company_size);
@@ -64,11 +64,11 @@ angular
               data[item] = vm.data[item].value;
             }
           }
-          $http.put(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id, {
-            data: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              console.log('ok ');
+          data.flag = 'profile';
+          $http.put(appConfig.dashboardServiceUrl + 'members/' + $stateParams.id, data)
+            .then(function (res) {
+            if (res.status !== 200) {
+              console.log(res);
             }
           });
           vm.editFlag = false;
