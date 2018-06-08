@@ -59,8 +59,7 @@ angular
       };
 
       vm.goCart = function () {
-        localStorageService.set('whichPage', {link: 'profile', name: 'Member Profile'});
-        $state.go('cart-page');
+        $state.go('cart-page', {wayBack: 'profile'});
       };
 
       vm.cancel = function () {

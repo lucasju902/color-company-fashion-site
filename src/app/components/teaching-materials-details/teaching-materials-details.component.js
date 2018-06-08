@@ -38,8 +38,7 @@ angular
       }
       products.teaching_materials[id] = products.teaching_materials[id] ? products.teaching_materials[id] + 1 : 1;
       localStorageService.set('products', products);
-      localStorageService.set('whichPage', {link: 'teachingMaterials', name: 'Color Teaching Materials'});
-      $state.go('cart-page');
+      $state.go('cart-page', {wayBack: 'teachingMaterials'});
     };
   }
 });
