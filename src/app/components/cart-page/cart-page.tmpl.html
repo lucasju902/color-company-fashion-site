@@ -39,20 +39,20 @@
             <td class="product-count">
               <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
               <div style="display: inline-block">
-                <i ng-click="$ctrl.editCount(item.id, $index, -1, item.type)" class="fa fa-arrow-circle-left fa-1x pointer"
+                <i ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="fa fa-arrow-circle-left fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
               <h4 style="display: inline-block">{{item.count}}</h4>
               <div style="display: inline-block">
-                <i ng-click="$ctrl.editCount(item.id, $index, 1, item.type)" class="fa fa-arrow-circle-right fa-1x pointer"
+                <i ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="fa fa-arrow-circle-right fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
             </td>
             <td class="product-prise">
-              <h4>{{item.price}} &#36;</h4>
+              <h4>{{(item.price === 0) ? 'Free' : '&#36;' + item.price}}</h4>
             </td>
             <td class="product-prise">
-              <h4>{{item.price * item.count}} &#36;</h4>
+              <h4>{{(item.price === 0 && item.count > 0) ? 'Free' : '&#36;' + (item.price * item.count)}}</h4>
             </td>
             <td class="basket-icon">
               <i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>
@@ -61,9 +61,9 @@
         </table>
       </div>
       <div class="col-lg-4 col-md-12 ">
-        <div ng-click="$ctrl.goReports()" class="go-to-reports pointer">
+        <div ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">
           <i class="fa fa-arrow-left fa-1x " aria-hidden="true"></i>
-          <p>&emsp;Back to {{$ctrl.whichPage.name}}</p>
+          <p>&emsp;Back to {{$ctrl.wayBackName}}</p>
         </div>
       </div>
       <div class="col-lg-offset-4 col-lg-4 col-md-12 ">
@@ -71,7 +71,7 @@
           <button style="margin-top: 0" class="btn">CHECKOUT</button>
         </div>
         <div ng-show="$ctrl.products.length" class="all-price">
-          <h3>{{$ctrl.all}} &#36;</h3>
+          <h3>{{($ctrl.all === 0) ? 'Free' : '&#36;' + $ctrl.all}}</h3>
         </div>
       </div>
     </div>

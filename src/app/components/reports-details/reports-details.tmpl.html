@@ -56,7 +56,7 @@
           <span ng-bind-html="$ctrl.pageData.description"></span>
           <a ng-if="$ctrl.pageData.file" target="_blank" href="{{$ctrl.pageData.file.image_url}}">Download Excerpt</a>
           <div class="prise">
-            <p><span>Priсe: </span>${{$ctrl.pageData.price}}</p>
+            <p><span>Priсe: </span>{{($ctrl.pageData.price === 0) ? 'Free' : '&#36;' + $ctrl.pageData.price}}</p>
           </div>
           <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>
         </div>
