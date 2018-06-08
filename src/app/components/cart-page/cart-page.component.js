@@ -2,14 +2,29 @@ angular
   .module('app')
   .component('cartPageComponent', {
     templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
-    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams) {
       var vm = this;
 
       vm.init = function () {
+        vm.wayBack = $stateParams.wayBack || 'profile';
+
+        switch ($stateParams.wayBack) {
+          case 'reports':
+            vm.wayBackName = 'Color Reports';
+            break;
+          case 'courses':
+            vm.wayBackName = 'Color Courses';
+            break;
+          case 'teachingMaterials':
+            vm.wayBackName = 'Color Teaching Materials';
+            break;
+          default:
+            vm.wayBackName = 'Profile';
+        }
+
         vm.products = [];
         vm.all = 0;
         vm.IDs = localStorageService.get('products');
-        vm.whichPage = localStorageService.get('whichPage');
 
         vm.getProductItems(vm.IDs.reports, 'reports');
         vm.getProductItems(vm.IDs.courses, 'courses');
@@ -43,11 +58,11 @@ angular
         localStorageService.set('products', vm.IDs);
       };
 
-      vm.goReports = function () {
-        $state.go(vm.whichPage.link);
+      vm.goWayBack = function () {
+        $state.go(vm.wayBack);
       };
 
-      vm.editCount = function (id, index, value, type) {
+      vm.editCount = function (id, index, type, value) {
         if (vm.products[index].count + value >= 0) {
           vm.products[index].count = vm.products[index].count + value;
           vm.IDs[type][id] = vm.IDs[type][id] + value;

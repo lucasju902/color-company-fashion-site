@@ -39,11 +39,8 @@ angular
         products.reports = {};
       }
       products.reports[id] = products.reports[id] ? products.reports[id] + 1 : 1;
-      console.log('ssssss');
       localStorageService.set('products', products);
-      console.log('fff');
-      localStorageService.set('whichPage', {link: 'reports', name: 'Color Reports'});
-      $state.go('cart-page');
+      $state.go('cart-page', {wayBack: 'reports'});
     };
   }
 });

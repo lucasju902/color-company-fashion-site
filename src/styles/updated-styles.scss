@@ -2317,20 +2317,60 @@ form .ui-select-container.selectize-control {
 .profile-page {
   margin-top: 0;
 
+
   .basket-btn {
     margin-top: 10px;
-    padding: 5px 20px;
+    padding: 10px 25px;
     font-size: 16px;
+    width: 134px;
+  }
+
+  .profile-btn-group {
+    width: 95%;
+  }
+
+
+  .cart-button {
+    width: 150px;
+    margin-top: 10px;
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+
+    i {
+      color: #bb0076;
+    }
+    p {
+      font-size: 16px;
+      font-weight: lighter;
+    }
+  }
+
+  .user-data {
+    .basket-btn {
+      float: left;
+    }
+
+    .save-btn {
+      float: right;
+    }
   }
 
   .profile_header {
     text-align: center;
+    h3 {
+      font-weight: lighter;
+    }
   }
 
   .profile-data-text {
     text-align: left;
+
     span {
-      color: #bb0076
+      text-transform: uppercase;
+      color: black;
+      font-weight: bolder;
     }
 
     .selectize-dropdown-content {
@@ -2341,24 +2381,141 @@ form .ui-select-container.selectize-control {
       }
     }
 
+    .membr-block {
+      input {
+        //text-transform: uppercase;
+        font-weight: lighter;
+        padding: 10px 5px;
+        height: 40px;
+      }
+    }
+
+    .custom-file {
+      position: relative;
+      margin-bottom: 22px;
+
+      .custom-file-form {
+        width: 60%;
+        display: inline-block;
+        padding: 10px 5px;
+        height: 40px;
+        font-weight: lighter;
+        border: #7b7b7b 1px solid;
+      }
+
+      .button-custom-file {
+        display: inline-block;
+        max-width: 10%;
+        input {
+          margin: 0;
+        }
+
+        .fileContainer {
+          overflow: hidden;
+          position: relative;
+        }
+
+        .fileContainer [type=file] {
+          cursor: inherit;
+          display: block;
+          font-size: 999px;
+          filter: alpha(opacity=0);
+          min-height: 100%;
+          width: 100%;
+          opacity: 0;
+          position: absolute;
+          right: 0;
+          text-align: right;
+          top: 0;
+        }
+
+        /* Example stylistic flourishes */
+
+        .fileContainer {
+          background: #909090;
+          border-radius: 0;
+          float: left;
+          padding: 10px;
+        }
+
+        .fileContainer [type=file] {
+          cursor: pointer;
+        }
+      }
+
+
+      input {
+        height: 40px;
+        width: 10%;
+        display: inline-block;
+
+        //position: relative;
+        //z-index: 2;
+        //width: 100%;
+        //height: calc(2.25rem + 2px);
+        //margin: 0;
+        //opacity: 0;
+        //box-sizing: border-box;
+
+      }
+
+      label {
+        //position: absolute;
+        //top: 0;
+        //right: 0;
+        //left: 0;
+        //z-index: 1;
+        //height: calc(2.25rem + 2px);
+        //padding: .375rem .75rem;
+        //line-height: 1.5;
+        //color: #495057;
+        //background-color: #fff;
+        //border: 1px solid #ced4da;
+        //border-radius: .25rem;
+        //box-sizing: border-box;
+      }
+    }
+
+    custom-file::after {
+      display: block;
+      clear: both;
+      content: "blabla";
+    }
+
     .select-mrg {
       display: inline-block;
-      margin-bottom: 0;
-      width: 60%;
-      font-size: 12px;
+      margin-bottom: 22px;
+      width: 95%;
+      font-size: 16px;
+
+      .selectize-control {
+        //height: 50px;
+        border-radius: 0;
+        background-color: white;
+      }
 
       .selectize-input {
-        padding: 2px 5px;
+        font-weight: lighter;
+        padding: 10px 5px;
         vertical-align: middle;
+        border-radius: 0;
+        background: none;
+        text-transform: uppercase;
+
+
       }
 
       .ui-select-match {
-        font-size: 10px;
+        font-weight: lighter;
+        font-size: 16px;
+        vertical-align: middle;
+        background-color: white;
       }
     }
 
     p {
       display: inline-block;
+      font-weight: lighter;
 
       input {
         margin-bottom: 0;
@@ -2366,17 +2523,28 @@ form .ui-select-container.selectize-control {
         height: 24px;
       }
 
-      textarea {
-        min-height: 90px;
-        margin-bottom: 0;
-        color: #3f3f3f;
-      }
+
 
       .electize-dropdown {
         color: black;
       }
     }
 
+    textarea {
+      min-height: 100px;
+      margin-bottom: 0;
+      color: #3f3f3f;
+      font-weight: normal;
+    }
+
+  }
+
+  .staff-item {
+    .profile-name {
+      a {
+        color: black;
+      }
+    }
   }
 
 }

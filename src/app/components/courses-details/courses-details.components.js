@@ -38,8 +38,7 @@ angular
       }
       products.courses[id] = products.courses[id] ? products.courses[id] + 1 : 1;
       localStorageService.set('products', products);
-      localStorageService.set('whichPage', {link: 'courses', name: 'Color Courses'});
-      $state.go('cart-page');
+      $state.go('cart-page', {wayBack: 'courses'});
     };
   }
 });
