@@ -5,15 +5,15 @@ angular
     controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService) {
       var vm = this;
 
-      vm.jobs = categoryValues('job function');
-      vm.countries = categoryValues('country');
-      vm.industries = categoryValues('industry');
-      vm.companySizes = categoryValues('company size');
+      vm.job_function = categoryValues('job function');
+      vm.country = categoryValues('country');
+      vm.industry = categoryValues('industry');
+      vm.company_size = categoryValues('company size');
       vm.editFlag = false;
 
       vm.init = function () {
         authService.loadCurrentUser().then(function (res) {
-          vm.userID = res.data.user.id
+          vm.userID = res.data.user.id;
           $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json')
             .then(function (res) {
               if (res && res.data) {
@@ -21,11 +21,12 @@ angular
                 vm.date = vm.userData.date_day + ' : ' + vm.userData.date_month + ' : ' + vm.userData.date_year;
                 vm.img_url = 'http://s3.amazonaws.com/hue-storage/huegroup-website/about_vertical_coverages/image1s/000/000/001/original/HG_REPORT-V1-image.001.jpeg?1523632810';
 
-                vm.jobIndex = vm.searchIndex(vm.jobs, vm.userData.job_function);
-                vm.comSizeIndex = vm.searchIndex(vm.companySizes, vm.userData.company_size);
-                vm.countryIndex = vm.searchIndex(vm.countries, vm.userData.country);
-                vm.industryIndex = vm.searchIndex(vm.industries, vm.userData.industry);
-
+                vm.indexes = {
+                  job_function: vm.searchIndex(vm.job_function, vm.userData.job_function),
+                  company_size: vm.searchIndex(vm.company_size, vm.userData.company_size),
+                  country: vm.searchIndex(vm.country, vm.userData.country),
+                  industry: vm.searchIndex(vm.industry, vm.userData.industry)
+                };
                 vm.intEditData();
               }
             });
@@ -40,15 +41,29 @@ angular
           company: {value: vm.userData.company, required: true, name: 'company name', type: 'provide'},
           job_title: {value: vm.userData.job_title, required: true, name: 'job title', type: 'provide'},
           bio: {value: vm.userData.bio, name: 'bio', type: 'provide'},
-          job_function: {value: vm.jobs[vm.jobIndex], required: true, name: 'job function', type: 'select'},
+          job_function: {
+            value: vm.job_function[vm.indexes.job_function] || vm.userData.job_function,
+            required: true,
+            name: 'job function',
+            type: 'select'
+          },
           company_size: {
-            value: vm.companySizes[vm.comSizeIndex],
+            value: vm.company_size[vm.indexes.company_size] || vm.userData.company_size,
             required: true,
             name: 'company size',
             type: 'select'
           },
-          industry: {value: vm.industries[vm.industryIndex], required: true, name: 'industry', type: 'select'},
-          country: {value: vm.countries[vm.countryIndex], required: true, name: 'country', type: 'select'}
+          industry: {
+            value: vm.industry[vm.indexes.country] || vm.userData.industry,
+            required: true,
+            name: 'industry',
+            type: 'select'
+          },
+          country: {value: vm.country[vm.indexes.industry] || vm.userData.country,
+            required: true,
+            name: 'country',
+            type: 'select'
+          }
         };
       };
 
@@ -81,15 +96,20 @@ angular
           data.flag = 'profile';
           $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, data)
             .then(function (res) {
-            if (res.status !== 200) {
-              console.log(res);
-            }
-          });
+              if (res.status !== 200) {
+                console.log(res);
+              }
+            });
           vm.editFlag = false;
         }
       };
 
       vm.editProfile = function () {
+        for (var key in vm.indexes) {
+          if (vm.indexes[key] < 0) {
+            vm.data[key].value = vm[key][0];
+          }
+        }
         vm.editFlag = true;
       };
     }
