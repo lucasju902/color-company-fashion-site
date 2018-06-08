@@ -19,7 +19,7 @@ angular
             vm.wayBackName = 'Color Teaching Materials';
             break;
           default:
-            vm.wayBackName = 'Member Profile';
+            vm.wayBackName = 'Profile';
         }
 
         vm.products = [];
