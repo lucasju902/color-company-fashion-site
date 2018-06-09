@@ -412,5 +412,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/cart-checkout',
       component: 'cartCheckoutComponent'
     });
+  $stateProvider
+    .state('download-excerpt', {
+      url: '/download-excerpt/:type/:id',
+      component: 'downloadExcerptPageComponent'
+    });
 }
 

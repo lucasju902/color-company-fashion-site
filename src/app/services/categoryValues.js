@@ -915,6 +915,15 @@ angular.module('app')
             edu: 'Education Offerings'
           };
         }
+        case 'downloadExcerpt': {
+          return {
+            daily: 'Daily Insights',
+            newReportNotification: 'HUEGROUP new report notification',
+            emotionIndexInsights: 'Color -emotion index insights',
+            expert: 'Expert Panelist'
+
+          };
+        }
         case 'hue': {
           return [
             'Fashion',

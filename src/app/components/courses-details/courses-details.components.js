@@ -26,6 +26,11 @@ angular
       $location.hash('');
     };
 
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'courses', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.file.image_url);
+    };
+
     vm.aggProduct = function () {
       // localStorageService.remove('products');
       var id = vm.pageData.id;
