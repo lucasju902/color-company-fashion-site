@@ -48,8 +48,8 @@ angular.module('app').constant('appConfig', {
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
   // authServiceUrl: 'http://localhost:5000',
   authServiceUrl: '',
-  dashboardServiceUrl: 'http://localhost:3002/',
-  // dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  // dashboardServiceUrl: 'http://localhost:3002/',
+  dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
 
   repositories: {
     mainParams: ['region_id', 'designer_id', 'category_id', 'season_id', 'year', 'city_id']
