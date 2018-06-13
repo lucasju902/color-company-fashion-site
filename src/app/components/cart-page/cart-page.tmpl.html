@@ -1,9 +1,10 @@
 <section ng-init="$ctrl.init()">
   <div class="container-fluid  text-center title">
     <div class="row">
-      <div class="col-lg-4 col-md-12 col-lg-offset-4">
-        <h3>Cart</h3>
-        <div class="line"></div>
+      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">
+        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>
+        &emsp;<h3 style="display: inline-block">MY CART</h3>
+        <!--<div class="line"></div>-->
       </div>
     </div>
   </div>
@@ -16,47 +17,45 @@
       </div>
       <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table ">
         <table>
-          <caption>Your purchase</caption>
-          <tr class="product-table-header">
-            <th class="product-img">Picture</th>
-            <th class="product-name">Product name</th>
-            <th class="product-description">Product description</th>
-            <th class="product-count">Amount of product</th>
-            <th class="product-prise">Price</th>
-            <th class="price-for-all">Price of all</th>
-            <th class="basket-icon">Remove</th>
-          </tr>
+          <!--<caption>Your purchase</caption>-->
+          <!--<tr class="product-table-header">-->
+            <!--<th class="product-img">Picture</th>-->
+            <!--<th class="product-name">Product name</th>-->
+            <!--<th class="product-description">Product description</th>-->
+            <!--<th class="product-count">Amount of product</th>-->
+            <!--<th class="product-prise">Price</th>-->
+            <!--<th class="price-for-all">Price of all</th>-->
+            <!--<th class="basket-icon">Remove</th>-->
+          <!--</tr>-->
           <tr class="product-row" ng-repeat="item in $ctrl.products">
             <td class="product-img">
               <img src="{{item.image_url}}">
             </td>
             <td class="product-name">
               <h4>{{item.header}}</h4>
-            </td>
-            <td class="product-description">
               <span ng-bind-html="item.description"></span>
             </td>
             <td class="product-count">
               <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
-              <div style="display: inline-block">
-                <i ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="fa fa-arrow-circle-left fa-1x pointer"
+              <h4 style="display: inline-block">{{item.count}}</h4>
+              <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">
+                <i class="fa fa-plus fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
-              <h4 style="display: inline-block">{{item.count}}</h4>
-              <div style="display: inline-block">
-                <i ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="fa fa-arrow-circle-right fa-1x pointer"
+              <div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">
+                <i class="fa fa-minus fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
             </td>
             <td class="product-prise">
               <h4>{{(item.price === 0) ? 'Free' : '&#36;' + item.price}}</h4>
             </td>
-            <td class="product-prise">
+            <td class="price-for-all">
               <h4>{{(item.price === 0 && item.count > 0) ? 'Free' : '&#36;' + (item.price * item.count)}}</h4>
             </td>
-            <td class="basket-icon">
-              <i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>
-            </td>
+            <!--<td class="basket-icon">-->
+              <!--<i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>-->
+            <!--</td>-->
           </tr>
         </table>
       </div>
@@ -66,13 +65,39 @@
           <p>&emsp;Back to {{$ctrl.wayBackName}}</p>
         </div>
       </div>
-      <div class="col-lg-offset-4 col-lg-4 col-md-12 ">
+      <div style="text-align: right" class="col-lg-offset-4 col-lg-4 col-md-12 ">
+        <table class="table-prise">
+          <tr>
+            <td>
+              <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">
+                <h4>SUBTOTAL:</h4>
+              </div>
+            </td>
+            <td>
+              <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
+                <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + $ctrl.all}}</span></h4>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div ng-show="$ctrl.products.length" class="total total-text">
+                <h4>TOTAL:</h4>
+              </div>
+            </td>
+            <td>
+              <div ng-show="$ctrl.products.length" class="total total-prise">
+                <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + $ctrl.all}}</span></h4>
+              </div>
+            </td>
+          </tr>
+        </table>
         <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
           <button style="margin-top: 0" class="btn">CHECKOUT</button>
         </div>
-        <div ng-show="$ctrl.products.length" class="all-price">
-          <h3>{{($ctrl.all === 0) ? 'Free' : '&#36;' + $ctrl.all}}</h3>
-        </div>
+        <!--<div  class="all-price">-->
+          <!--<h3></h3>-->
+        <!--</div>-->
       </div>
     </div>
   </div>

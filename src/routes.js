@@ -410,7 +410,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('cart-checkout', {
       url: '/cart-checkout',
-      component: 'cartCheckoutComponent'
+      component: 'cartCheckoutMethodsComponent'
     });
   $stateProvider
     .state('download-excerpt', {

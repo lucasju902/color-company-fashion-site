@@ -1,0 +1,82 @@
+<section ng-init="$ctrl.init()">
+  <div class="container-fluid  text-center title">
+    <div class="row">
+      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">
+        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>
+        &emsp;<h3 style="display: inline-block">MY CART</h3>
+        <!--<div class="line"></div>-->
+      </div>
+    </div>
+  </div>
+</section>
+<section class="subtitle">
+  <div class="container-fluid  ">
+    <div class="row">
+      <div class="col-lg-offset-1 col-lg-10 col-md-10">
+        <div class="method-1">
+          <h4 style="color: {{$ctrl.methodStyle[0]}}">1. CHECK OUT METHOD</h4>
+          <button class="edit-btn">EDIT</button>
+        </div>
+        <div class="line"></div>
+        <div ng-show="$ctrl.maxMethod >= 2" class="method-2">
+          <h4 style="color: {{$ctrl.methodStyle[1]}}">2. BILLING INFORMATION</h4>
+          <button class="edit-btn">EDIT</button>
+        </div>
+        <div ng-show="$ctrl.maxMethod >= 2" class="line"></div>
+        <div ng-show="$ctrl.maxMethod >= 3" class="method-3">
+          <h4 style="color: {{$ctrl.methodStyle[2]}}">3. PAYMENT INFORMATION</h4>
+          <button class="edit-btn">EDIT</button>
+        </div>
+        <div ng-show="$ctrl.maxMethod >= 3" class="line"></div>
+        <div ng-show="$ctrl.maxMethod >= 4" class="method-4">
+          <h4 style="color: {{$ctrl.methodStyle[3]}}">4. ORDER REVIEW</h4>
+          <button class="edit-btn">EDIT</button>
+        </div>
+        <div ng-show="$ctrl.maxMethod >= 4" class="line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="check-out-method">
+  <div class="container-fluid  text-left">
+    <div class="row">
+      <div class="col-lg-offset-2 col-lg-4 col-md-4 login">
+        <h4>HUEGROUP MEMBERS</h4>
+        <form>
+          <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email"
+                 id="email" type="text">
+          <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password"
+                 id="password" type="password">
+          <div class="err">
+            <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>
+          </div>
+          <a class="reset-your-password pointer">RESET YOUR PASSWORD</a>
+          <div class="button login-btn">
+            <button ng-click="$ctrl.login()" class="btn">LOGIN</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-lg-4 col-md-4 guest">
+        <h4>CHECKOUT AS GUEST</h4>
+        <p>REGISTER WITH US FOR FUTURE CONVENIENCE</p>
+        <form>
+          <div class="guest-checkbox">
+            <p>
+              <input type="checkbox" id="checkoutAsGuest" ng-model="$ctrl.checkoutAsGuest"/>
+              <label for="checkoutAsGuest">CHECKOUT AS GUEST</label>
+            </p>
+          </div>
+          <div class="guest-checkbox">
+            <p>
+              <input type="checkbox" id="registerAndCheckout" ng-model="$ctrl.registerAndCheckout"/>
+              <label for="registerAndCheckout">REGISTER AND CHECKOUT</label>
+            </p>
+          </div>
+          <div class="button login-btn">
+            <button class="btn">CONTINUE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

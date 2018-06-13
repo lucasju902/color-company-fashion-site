@@ -48,7 +48,6 @@ angular
       };
 
       vm.onGraphicClick = function (item) {
-        console.log('@@@@@@@@@@ item',item);
         if (item) {
           modalService.showModal(3, null, item);
         }
