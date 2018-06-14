@@ -43,11 +43,11 @@
               <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
               <h4 style="display: inline-block">{{item.count}}</h4>
               <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">
-                <i class="fa fa-plus fa-1x pointer"
+                <i class="fa fa-minus fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
               <div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">
-                <i class="fa fa-minus fa-1x pointer"
+                <i class="fa fa-plus fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
             </td>
