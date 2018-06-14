@@ -15,22 +15,22 @@
       <div class="col-lg-offset-1 col-lg-10 col-md-10">
         <div class="method-1">
           <h4 style="color: {{$ctrl.methodStyle[0]}}">1. CHECK OUT METHOD</h4>
-          <button ng-show="$ctrl.methodNumber > 1" class="edit-btn">EDIT</button>
+          <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1" class="edit-btn">EDIT</button>
         </div>
         <div class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 2" class="method-2">
           <h4 style="color: {{$ctrl.methodStyle[1]}}">2. BILLING INFORMATION</h4>
-          <button ng-show="$ctrl.methodNumber > 2" class="edit-btn">EDIT</button>
+          <button ng-click="$ctrl.goToMethod(2)" ng-show="$ctrl.methodNumber !== 2" class="edit-btn">EDIT</button>
         </div>
         <div ng-show="$ctrl.maxMethod >= 2" class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 3" class="method-3">
           <h4 style="color: {{$ctrl.methodStyle[2]}}">3. PAYMENT INFORMATION</h4>
-          <button ng-show="!$ctrl.methodNumber > 3" class="edit-btn">EDIT</button>
+          <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3" class="edit-btn">EDIT</button>
         </div>
         <div ng-show="$ctrl.maxMethod >= 3" class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 4" class="method-4">
           <h4 style="color: {{$ctrl.methodStyle[3]}}">4. ORDER REVIEW</h4>
-          <button class="edit-btn">EDIT</button>
+          <button ng-click="$ctrl.goToMethod(4)" ng-show="$ctrl.methodNumber !== 4" class="edit-btn">EDIT</button>
         </div>
         <div ng-show="$ctrl.maxMethod >= 4" class="line"></div>
       </div>
@@ -50,7 +50,7 @@
           <div class="err">
             <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>
           </div>
-          <a class="reset-your-password pointer">RESET YOUR PASSWORD</a>
+          <a ng-click="$ctrl.passwordRecover()" class="reset-your-password pointer">RESET YOUR PASSWORD</a>
           <div class="button login-btn">
             <button ng-click="$ctrl.login()" class="btn">LOGIN</button>
           </div>
@@ -73,14 +73,14 @@
             </p>
           </div>
           <div class="button login-btn">
-            <button class="btn">CONTINUE</button>
+            <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </section>
-<section class="billing-information">
+<section ng-show="$ctrl.methodNumber === 2" class="billing-information">
   <div class="container-fluid  text-left">
     <div class="row">
       <div class="col-lg-offset-2 col-lg-4 col-md-4 billing-1">
@@ -181,7 +181,125 @@
         </div>
 
         <div class="button login-btn">
-          <button class="btn">CONTINUE</button>
+          <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section ng-show="$ctrl.methodNumber === 3">
+  <div class="cart-checkout">
+    <div class="panel panel-default bootstrap-basic">
+      <div class="panel-heading">
+        <h3 class="panel-title">CREDIT CARD</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-12">
+            <!--<label class="control-label">Card Number</label>-->
+            <!--  Hosted Fields div container -->
+            <div class="form-control" id="card-number"></div>
+            <span class="helper-text"></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <label class="control-label">EXPIRATION DATE <span class="red-text">*</span></label>
+          </div>
+          <div class="col-sm-12 date-row">
+            <!--  Hosted Fields div container -->
+            <div class="form-control" id="expiration-month"></div>
+            <!--  Hosted Fields div container -->
+            <div class="form-control" id="expiration-year"></div>
+            <!--  Hosted Fields div container -->
+            <div class="form-control" id="cvv"></div>
+          </div>
+        </div>
+
+        <!--<div class="row">-->
+        <!--<div class="form-group col-sm-6">-->
+        <!--<label class="control-label">Zipcode</label>-->
+        <!--&lt;!&ndash;  Hosted Fields div container &ndash;&gt;-->
+        <!--<div class="form-control" id="postal-code"></div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <div class="row button-group">
+          <div class="col-sm-12">
+            <button value="submit" id="submit" class="btn btn-success btn-lg center-block">Pay with <span
+              id="card-type">Card</span></button>
+            <button class="btn btn-success btn-lg center-block white-btn">GO BACK</button>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<section ng-show="$ctrl.methodNumber === 4" class="products-cart">
+  <div class="container-fluid  text-center title">
+    <div class="row">
+      <div class="col-lg-offset-1 col-lg-10 col-md-10 products-table ">
+        <table>
+          <tr class="product-row" ng-repeat="item in $ctrl.products">
+            <td class="product-img">
+              <img src="{{item.image_url}}">
+            </td>
+            <td class="product-name">
+              <h4>{{item.header}}</h4>
+              <span ng-bind-html="item.description"></span>
+            </td>
+            <td class="product-count">
+              <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
+              <h4 style="display: inline-block">{{item.count}}</h4>
+              <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">-->
+                <!--<i class="fa fa-minus fa-1x pointer"-->
+                   <!--aria-hidden="true"></i>-->
+              <!--</div>-->
+              <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">-->
+                <!--<i class="fa fa-plus fa-1x pointer"-->
+                   <!--aria-hidden="true"></i>-->
+              <!--</div>-->
+            </td>
+            <td class="product-prise">
+              <h4>{{(item.price === 0) ? 'Free' : '&#36;' + item.price}}</h4>
+            </td>
+            <td class="price-for-all">
+              <h4>{{(item.price === 0 && item.count > 0) ? 'Free' : '&#36;' + (item.price * item.count)}}</h4>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-lg-4 col-md-12 ">
+      </div>
+      <div style="text-align: right" class="col-lg-offset-3 col-lg-4 col-md-12 ">
+        <table class="table-prise">
+          <tr>
+            <td>
+              <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">
+                <h4>TAX*</h4>
+              </div>
+            </td>
+            <td>
+              <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
+                <h4><span>{{($ctrl.tax === 0) ? 'Free' : '&#36;' + $ctrl.tax}}</span></h4>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div ng-show="$ctrl.products.length" class="total total-text">
+                <h4>TOTAL:</h4>
+              </div>
+            </td>
+            <td>
+              <div ng-show="$ctrl.products.length" class="total total-prise">
+                <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + ($ctrl.all + $ctrl.tax)}}</span></h4>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
+          <button style="margin-top: 0" class="btn">CHECKOUT</button>
         </div>
       </div>
     </div>

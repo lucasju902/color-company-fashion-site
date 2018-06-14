@@ -417,5 +417,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/download-excerpt/:type/:id',
       component: 'downloadExcerptPageComponent'
     });
+  $stateProvider
+    .state('password-recover-cart', {
+      url: '/password-recover-cart',
+      component: 'passwordRecoverCartComponent'
+    });
 }
 

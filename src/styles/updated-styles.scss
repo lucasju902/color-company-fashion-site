@@ -2698,6 +2698,7 @@ form .ui-select-container.selectize-control {
     }
 
     .go-to-reports {
+      margin-top: 40px;
       text-align: center;
       color: #bb0076;
     }
@@ -3015,6 +3016,7 @@ form .ui-select-container.selectize-control {
 }
 
 .billing-information {
+  margin-bottom: 30px;
   .billing-1 {
     margin-top: 50px;
     padding-right: 50px;
@@ -3087,6 +3089,131 @@ form .ui-select-container.selectize-control {
       text-align: right;
       width: 95%;
       padding-top: 10px;
+    }
+  }
+}
+
+.cart-checkout {
+  max-width: 500px;
+  margin-right: auto;
+  margin-left: auto;
+  .panel {
+    //width: 80%;
+    margin: 2em auto;
+  }
+
+  .form-control {
+    border-radius: 0;
+  }
+  .button-group {
+    margin-top: 30px;
+
+    button {
+      display: inline-block;
+      margin-bottom: 0;
+      margin-right: 4%;
+    }
+  }
+
+  .date-row {
+    width: 100%;
+
+    #expiration-month {
+      text-align: left;
+    }
+
+    #expiration-year {
+      text-align: center;
+      margin: 0 4%;
+    }
+
+    #cvv {
+      text-align: right;
+    }
+
+    .form-control {
+      width: 30%;
+      display: inline-block;
+      text-align: justify;
+      border-radius: 0;
+    }
+  }
+
+  .bootstrap-basic {
+    background: white;
+    border: none;
+  }
+
+  .panel-heading {
+    background-color: white;
+    border: none;
+  }
+
+  .panel-body {
+    //width: 100%;
+    margin: 10px auto;
+  }
+
+  .helper-text {
+    //color: #8A6D3B;
+    font-size: 12px;
+    margin-top: 5px;
+    height: 12px;
+    display: block;
+  }
+
+  .panel-title {
+    padding: 0 17px;
+    font-style: normal;
+    color: #bb0076;
+    letter-spacing: 0;
+  }
+
+  /* Braintree Hosted Fields styling classes*/
+  .braintree-hosted-fields-focused {
+    border: 1px solid #0275d8;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+  }
+
+  .braintree-hosted-fields-focused.focused-invalid {
+    border: 1px solid #ebcccc;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(100, 100, 0, .6);
+  }
+
+  @media (max-width: 670px) {
+    .btn {
+      white-space: normal;
+    }
+  }
+}
+
+.reset-password-cart {
+  .subTitle {
+    margin-bottom: 5px;
+  }
+
+  .line {
+    margin-bottom: 15px;
+    border-bottom: #878787 2px solid;
+    width: 100%;
+
+  }
+
+  .login-container {
+    margin: 0;
+  }
+
+  .instruction {
+    margin-left: 13%;
+  }
+
+  .login-btn {
+    text-align: left;
+
+    button {
+      display: inline-block;
+      margin-bottom: 0;
+      margin-right: 4%;
     }
   }
 }
