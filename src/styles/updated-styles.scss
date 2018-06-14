@@ -2696,6 +2696,11 @@ form .ui-select-container.selectize-control {
     h3 {
       color: #bb0076;
     }
+
+    .go-to-reports {
+      text-align: center;
+      color: #bb0076;
+    }
   }
 
   .products-table {
@@ -3005,6 +3010,83 @@ form .ui-select-container.selectize-control {
           }
         }
       }
+    }
+  }
+}
+
+.billing-information {
+  .billing-1 {
+    margin-top: 50px;
+    padding-right: 50px;
+
+    .membr-block {
+      input {
+        height: 35px;
+        margin-bottom: 15px;
+      }
+
+      label {
+        position: absolute;
+        top: 15%;
+        left: 10px;
+      }
+
+    }
+  }
+
+  .billing-2 {
+    margin-top: 50px;
+    padding-left: 50px;
+
+    .membr-block {
+      input {
+        height: 35px;
+        margin-bottom: 15px;
+      }
+
+      label {
+        position: absolute;
+        top: 15%;
+        left: 10px;
+      }
+
+    }
+
+    .select-mrg {
+      display: inline-block;
+      margin-bottom: 15px;
+      width: 95%;
+      font-size: 16px;
+
+      .selectize-control {
+        //height: 50px;
+        border-radius: 0;
+        background-color: white;
+      }
+
+      .selectize-input {
+        font-weight: lighter;
+        padding: 7px 5px;
+        vertical-align: middle;
+        border-radius: 0;
+        background: none;
+        text-transform: uppercase;
+
+
+      }
+
+      .ui-select-match {
+        font-weight: lighter;
+        font-size: 14px;
+        vertical-align: middle;
+        background-color: white;
+      }
+    }
+
+    .login-btn {
+      text-align: right;
+      width: 95%;
+      padding-top: 10px;
     }
   }
 }

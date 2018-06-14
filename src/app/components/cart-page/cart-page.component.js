@@ -43,6 +43,7 @@ angular
               vm.pageData.count = obj[key];
               vm.pageData.type = name;
               vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
+              vm.tax = vm.all * 0.15;
               vm.products.push(vm.pageData);
             });
         }
@@ -88,6 +89,7 @@ angular
           vm.IDs[type][id] = vm.IDs[type][id] + value;
           localStorageService.set('products', vm.IDs);
           vm.all = vm.all + vm.products[index].price * value;
+          vm.tax = vm.all * 0.15;
         }
 
       };
