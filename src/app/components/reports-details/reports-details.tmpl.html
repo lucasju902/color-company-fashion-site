@@ -19,7 +19,7 @@
             <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
           </div>
           <div class="button membership white" ng-if="$ctrl.pageData.file">
-            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD EXCERPT</a> <!--target="_self" href="{{$ctrl.pageData.file.image_url}}"-->
+            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD EXCERPT</a>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@
 
         <div class="col-lg-6 col-md-6 col-sm-12">
           <span ng-bind-html="$ctrl.pageData.description"></span>
-          <a ng-if="$ctrl.pageData.file" target="_blank" href="{{$ctrl.pageData.file.image_url}}">Download Excerpt</a>
+          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>
           <div class="prise">
             <p><span>Priсe: </span>{{($ctrl.pageData.price === 0) ? 'Free' : '&#36;' + $ctrl.pageData.price}}</p>
           </div>
