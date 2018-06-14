@@ -2,9 +2,10 @@ angular
   .module('app')
   .component('cartCheckoutComponent', {
     templateUrl: 'app/components/cart-checkout/cart-checkout.tmpl.html',
-    controller: function ($state, $http, appConfig, localStorageService) {
+    controller: function ($state, $http, appConfig, localStorageService, modalService) {
       var submitBtn = document.getElementById('my-submit');
       var form = document.getElementById('my-sample-form');
+      var purchase =  localStorageService.get('purchase');
 
       braintree.client.create({
         authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
@@ -48,6 +49,7 @@ angular
       }
 
       function submitHandler(hostedFields, event) {
+        modalService.showModal(4, null, purchase.products);
         event.preventDefault();
         submitBtn.setAttribute('disabled', 'disabled');
 
@@ -56,16 +58,18 @@ angular
             submitBtn.removeAttribute('disabled');
             console.error(err);
           } else {
-            $http({
-              url: appConfig.dashboardServiceUrl + 'checkouts.json',
-              method: 'GET',
-              params: {
-                amount: 10.00,
-                payment_method_nonce: payload.nonce}
-            }).then(function (res) {
-              alert(res.data.info);
-              $state.go('cart-page');
-            });
+            // $http({
+            //   url: appConfig.dashboardServiceUrl + 'checkouts.json',
+            //   method: 'GET',
+            //   params: {
+            //     amount: 10.00,
+            //     payment_method_nonce: payload.nonce}
+            // }).then(function (res) {
+            //   alert(res.data.info);
+            //   console.log('@@@@@@@@@@ ',res);
+            //   modalService.showModal(5, null, purchase.products);
+            //   // $state.go('cart-page');
+            // });
             // form.submit();
           }
         });

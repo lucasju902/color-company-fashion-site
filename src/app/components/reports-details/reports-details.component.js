@@ -36,7 +36,6 @@ angular
       // localStorageService.remove('products');
       var id = vm.pageData.id;
       var products = localStorageService.get('products');
-      console.log(products);
       if (!products) {
         products = {};
       }

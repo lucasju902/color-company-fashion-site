@@ -16,6 +16,9 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
       {
         tmpl: 'app/components/modal/dailyModal.tmpl.html',
         class: 'graphic-modal'
+      },{
+        tmpl: 'app/components/modal/checkout-modal.tmpl.html',
+        class: 'graphic-modal'
       }];
 
     $uibModal.open({

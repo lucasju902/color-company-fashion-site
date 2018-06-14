@@ -43,12 +43,33 @@ angular
               vm.pageData.count = obj[key];
               vm.pageData.type = name;
               vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
+              vm.tax = vm.all * 0.15;
               vm.products.push(vm.pageData);
             });
         }
       };
 
       vm.goCheckout = function () {
+        var purchase = {IDs: {}, products: []};
+        purchase.amount = vm.all;
+        for ( var type in vm.IDs) {
+          purchase.IDs[type] = {};
+          for (var id in vm.IDs[type]) {
+            if (vm.IDs[type][id] < 1) {
+              return;
+            }else{
+              purchase.IDs[type][id] = vm.IDs[type][id];
+
+            }
+          }
+        }
+        vm.products.forEach(function (item) {
+          if (item.count > 0) {
+            purchase.products.push({name: item.header, link: item.file.image_url});
+          }
+        });
+
+        localStorageService.set('purchase', purchase);
         $state.go('cart-checkout');
       };
 
@@ -68,6 +89,7 @@ angular
           vm.IDs[type][id] = vm.IDs[type][id] + value;
           localStorageService.set('products', vm.IDs);
           vm.all = vm.all + vm.products[index].price * value;
+          vm.tax = vm.all * 0.15;
         }
 
       };

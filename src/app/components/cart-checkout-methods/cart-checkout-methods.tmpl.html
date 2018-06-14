@@ -1,0 +1,189 @@
+<section ng-init="$ctrl.init()">
+  <div class="container-fluid  text-center title">
+    <div class="row">
+      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">
+        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>
+        &emsp;<h3 style="display: inline-block">MY CART</h3>
+        <!--<div class="line"></div>-->
+      </div>
+    </div>
+  </div>
+</section>
+<section class="subtitle">
+  <div class="container-fluid  ">
+    <div class="row">
+      <div class="col-lg-offset-1 col-lg-10 col-md-10">
+        <div class="method-1">
+          <h4 style="color: {{$ctrl.methodStyle[0]}}">1. CHECK OUT METHOD</h4>
+          <button ng-show="$ctrl.methodNumber > 1" class="edit-btn">EDIT</button>
+        </div>
+        <div class="line"></div>
+        <div ng-show="$ctrl.maxMethod >= 2" class="method-2">
+          <h4 style="color: {{$ctrl.methodStyle[1]}}">2. BILLING INFORMATION</h4>
+          <button ng-show="$ctrl.methodNumber > 2" class="edit-btn">EDIT</button>
+        </div>
+        <div ng-show="$ctrl.maxMethod >= 2" class="line"></div>
+        <div ng-show="$ctrl.maxMethod >= 3" class="method-3">
+          <h4 style="color: {{$ctrl.methodStyle[2]}}">3. PAYMENT INFORMATION</h4>
+          <button ng-show="!$ctrl.methodNumber > 3" class="edit-btn">EDIT</button>
+        </div>
+        <div ng-show="$ctrl.maxMethod >= 3" class="line"></div>
+        <div ng-show="$ctrl.maxMethod >= 4" class="method-4">
+          <h4 style="color: {{$ctrl.methodStyle[3]}}">4. ORDER REVIEW</h4>
+          <button class="edit-btn">EDIT</button>
+        </div>
+        <div ng-show="$ctrl.maxMethod >= 4" class="line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section ng-show="$ctrl.methodNumber === 1" class="check-out-method">
+  <div class="container-fluid  text-left">
+    <div class="row">
+      <div class="col-lg-offset-2 col-lg-4 col-md-4 login">
+        <h4>HUEGROUP MEMBERS</h4>
+        <form>
+          <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email"
+                 id="email" type="text">
+          <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password"
+                 id="password" type="password">
+          <div class="err">
+            <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>
+          </div>
+          <a class="reset-your-password pointer">RESET YOUR PASSWORD</a>
+          <div class="button login-btn">
+            <button ng-click="$ctrl.login()" class="btn">LOGIN</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-lg-4 col-md-4 guest">
+        <h4>CHECKOUT AS GUEST</h4>
+        <p>REGISTER WITH US FOR FUTURE CONVENIENCE</p>
+        <form>
+          <div class="guest-checkbox">
+            <p>
+              <input type="checkbox" id="checkoutAsGuest" ng-model="$ctrl.checkoutAsGuest"/>
+              <label for="checkoutAsGuest">CHECKOUT AS GUEST</label>
+            </p>
+          </div>
+          <div class="guest-checkbox">
+            <p>
+              <input type="checkbox" id="registerAndCheckout" ng-model="$ctrl.registerAndCheckout"/>
+              <label for="registerAndCheckout">REGISTER AND CHECKOUT</label>
+            </p>
+          </div>
+          <div class="button login-btn">
+            <button class="btn">CONTINUE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="billing-information">
+  <div class="container-fluid  text-left">
+    <div class="row">
+      <div class="col-lg-offset-2 col-lg-4 col-md-4 billing-1">
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text"
+                 id="first_name" name="first_name"
+                 ng-class="'ng-dirty' && membership.first_name.$invalid ?  'error' :''">
+          <label for="first_name">FIRST NAME <span class="red-text">*</span></label>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.middle_name.value"
+                 type="text"
+                 id="middle_name"
+                 name="middle_name"
+                 ng-class="'ng-dirty' && membership.middle_name.$invalid ?  'error' :''">
+          <label for="middle_name">MIDDLE NAME/INITIAL</label>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text"
+                 id="last_name" name="last_name"
+                 ng-class="'ng-dirty' && membership.last_name.$invalid ?  'error' :''">
+          <label for="last_name">LAST NAME <span class="red-text">*</span></label>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail"
+                 name="email"
+                 ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>
+          <label for="billingEmail">EMAIL <span class="red-text">*</span></label>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 billing-2">
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.address.value" ng-value="$ctrl.data.address.value" type="text"
+                 id="address" name="address"
+                 ng-class="'ng-dirty' && membership.address.$invalid ?  'error' :''">
+          <label for="address">ADDRESS <span class="red-text">*</span></label>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.second_address.value" ng-value="$ctrl.data.second_address.value"
+                 type="text"
+                 id="second_address"
+                 name="second_address"
+                 ng-class="'ng-dirty' && membership.second_address.$invalid ?  'error' :''">
+          <label for="second_address">SECOND ADDRESS</label>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.city.value" ng-value="$ctrl.data.city.value" type="text"
+                 id="city" name="city"
+                 ng-class="'ng-dirty' && membership.city.$invalid ?  'error' :''">
+          <label for="city">CITY <span class="red-text">*</span></label>
+        </div>
+
+        <div class="select-style select-mrg">
+          <ui-select
+            ng-model="$ctrl.data.states.value"
+            theme="selectize"
+            search-enabled="false"
+          >
+            <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+            <ui-select-choices repeat="states in $ctrl.states">
+              <span ng-bind-html="states.title"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.zip.value" ng-value="$ctrl.data.zip.value"
+                 type="text"
+                 id="zip"
+                 name="zip"
+                 ng-class="'ng-dirty' && membership.zip.$invalid ?  'error' :''">
+          <label for="zip">ZIP <span class="red-text">*</span></label>
+        </div>
+
+        <div class="select-style select-mrg">
+          <ui-select
+            ng-model="$ctrl.data.country.value"
+            theme="selectize"
+            search-enabled="false"
+          >
+            <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+            <ui-select-choices repeat="country in $ctrl.country">
+              <span ng-bind-html="country.title"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        <div class="membr-block">
+          <input ng-model="$ctrl.data.telephone.value" ng-value="$ctrl.data.telephone.value" type="text"
+                 id="telephone" name="telephone"
+                 ng-class="'ng-dirty' && membership.telephone.$invalid ?  'error' :''">
+          <label for="telephone">TELEPHONE <span class="red-text">*</span></label>
+        </div>
+
+        <div class="button login-btn">
+          <button class="btn">CONTINUE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
