@@ -10,46 +10,46 @@
       <div class="col-lg-2 col-md-2"></div>
       <div class="col-lg-5 col-md-5 text-center staff-item user-data" ng-show="!$ctrl.editFlag">
         <div class="profile-data-text">
-          <p>FIRST NAME: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.first_name.value}}</span>
+          <p>FIRST NAME: <span>{{$ctrl.data.first_name.value}}</span>
         </div>
         <div class="profile-data-text">
-          <p ng-show="!$ctrl.editFlag">LAST NAME: <span>{{$ctrl.data.last_name.value}}</span>
+          <p>LAST NAME: <span>{{$ctrl.data.last_name.value}}</span>
         </div>
         <div class="profile-data-text">
           <p>Email: <span>{{$ctrl.data.email.value}}</span></p>
         </div>
         <div class="profile-data-text">
           <p>
-            COMPANY: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.company.value}}</span>
+            COMPANY: <span>{{$ctrl.data.company.value}}</span>
           </p>
         </div>
         <div class="profile-data-text">
           <p>
-            JOB TTITLE: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.job_title.value}}</span>
+            JOB TTITLE: <span>{{$ctrl.data.job_title.value}}</span>
           </p>
         </div>
         <div class="profile-data-text">
           <p>
-            JOB FUNCTION: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.job_function.value.title || $ctrl.data.job_function.value}}</span>
+            JOB FUNCTION: <span>{{$ctrl.data.job_function.value.title || $ctrl.data.job_function.value}}</span>
           </p>
         </div>
         <div class="profile-data-text">
-          <p>COMPANY SIZE: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.company_size.value.title || $ctrl.data.company_size.value}}</span>
+          <p>COMPANY SIZE: <span>{{$ctrl.data.company_size.value.title || $ctrl.data.company_size.value}}</span>
           </p>
         </div>
         <div class="profile-data-text">
-          <p>INDUSTRY: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.industry.value.title || $ctrl.data.industry.value}}</span>
+          <p>INDUSTRY: <span>{{$ctrl.data.industry.value.title || $ctrl.data.industry.value}}</span>
           </p>
         </div>
         <div class="profile-data-text">
-          <p>COUNTRY: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.country.value.title || $ctrl.data.country.value}}</span>
+          <p>COUNTRY: <span>{{$ctrl.data.country.value.title || $ctrl.data.country.value}}</span>
           </p>
         </div>
         <div class="profile-data-text">
-          <p>BIO: <span ng-show="!$ctrl.editFlag">{{$ctrl.data.bio.value}}</span>
+          <p>BIO: <span>{{$ctrl.data.bio.value}}</span>
           </p>
         </div>
-        <button ng-show="!$ctrl.editFlag" ng-click="$ctrl.editProfile()" class="btn basket-btn"
+        <button ng-click="$ctrl.editProfile()" class="btn basket-btn"
                 style="display: inline-block">
           UPDATE
         </button>
@@ -72,14 +72,14 @@
           </div>
 
           <!--<div class="membr-block">-->
-            <!--<input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email"-->
-                   <!--name="email"-->
-                   <!--ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>-->
-            <!--<label for="email">EMAIL <span class="red-text">*</span></label>-->
+          <!--<input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email"-->
+          <!--name="email"-->
+          <!--ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>-->
+          <!--<label for="email">EMAIL <span class="red-text">*</span></label>-->
           <!--</div>-->
 
           <div class="membr-block">
-            <input ng-show="$ctrl.editFlag" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value"
+            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value"
                    type="text"
                    id="company"
                    name="company"
@@ -88,7 +88,7 @@
           </div>
 
           <div class="membr-block">
-            <input ng-show="$ctrl.editFlag" ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value"
+            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value"
                    type="text"
                    id="job_title"
                    name="job_title"
@@ -103,9 +103,9 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-                <ui-select-choices repeat="job in $ctrl.job_function">
-                  <span ng-bind-html="job.title"></span>
-                </ui-select-choices>
+              <ui-select-choices repeat="job in $ctrl.job_function">
+                <span ng-bind-html="job.title"></span>
+              </ui-select-choices>
             </ui-select>
           </div>
 
@@ -116,9 +116,9 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-                <ui-select-choices repeat="companySize in $ctrl.company_size">
-                  <span ng-bind-html="companySize.title"></span>
-                </ui-select-choices>
+              <ui-select-choices repeat="companySize in $ctrl.company_size">
+                <span ng-bind-html="companySize.title"></span>
+              </ui-select-choices>
             </ui-select>
           </div>
 
@@ -129,9 +129,9 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-                <ui-select-choices repeat="ind in $ctrl.industry">
-                  <span ng-bind-html="ind.title"></span>
-                </ui-select-choices>
+              <ui-select-choices repeat="ind in $ctrl.industry">
+                <span ng-bind-html="ind.title"></span>
+              </ui-select-choices>
             </ui-select>
           </div>
 
@@ -142,25 +142,25 @@
               search-enabled="false"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-                <ui-select-choices repeat="cntry in $ctrl.country">
-                  <span ng-bind-html="cntry.title"></span>
-                </ui-select-choices>
+              <ui-select-choices repeat="cntry in $ctrl.country">
+                <span ng-bind-html="cntry.title"></span>
+              </ui-select-choices>
             </ui-select>
           </div>
           <!--<div class="custom-file">-->
-            <!--<div class="custom-file-form">-->
-              <!--File Name-->
-            <!--</div>-->
-            <!--<div class="button-custom-file">-->
-              <!--<label class="fileContainer">-->
-                <!--<i style="height: 40px;" class="fa fa-picture-o fa-3x pointer" aria-hidden="true"></i>-->
-                <!--<input type="file"/>-->
-              <!--</label>-->
-            <!--</div>-->
-            <!--<button class="btn basket-btn save-btn"-->
-                    <!--style="display: inline-block">-->
-              <!--UPLOAD-->
-            <!--</button>-->
+          <!--<div class="custom-file-form">-->
+          <!--File Name-->
+          <!--</div>-->
+          <!--<div class="button-custom-file">-->
+          <!--<label class="fileContainer">-->
+          <!--<i style="height: 40px;" class="fa fa-picture-o fa-3x pointer" aria-hidden="true"></i>-->
+          <!--<input type="file"/>-->
+          <!--</label>-->
+          <!--</div>-->
+          <!--<button class="btn basket-btn save-btn"-->
+          <!--style="display: inline-block">-->
+          <!--UPLOAD-->
+          <!--</button>-->
           <!--</div>-->
           <div class="membr-block">
             <textarea ng-show="$ctrl.editFlag" id="bio" ng-model="$ctrl.data.bio.value" ng-value="$ctrl.data.bio.value">
@@ -168,16 +168,16 @@
             <label for="bio">BIO</label>
           </div>
           <div class="profile-btn-group">
-            <button ng-show="$ctrl.editFlag" ng-click="$ctrl.cancel()" class="btn white-btn basket-btn"
+            <button ng-click="$ctrl.cancel()" class="btn white-btn basket-btn"
                     style="display: inline-block">
               CANCEL
             </button>
-            <button ng-show="$ctrl.editFlag" ng-click="$ctrl.save()" class="btn basket-btn save-btn"
+            <button ng-click="$ctrl.save()" class="btn basket-btn save-btn"
                     style="display: inline-block">
               SAVE
             </button>
+          </div>
         </div>
-      </div>
       </div>
       <div class="col-lg-3 col-md-3 text-center staff-item">
         <div class="img-responsive background-image"
@@ -195,8 +195,8 @@
           <div class="speaking_item_header profile-name"><a>{{$ctrl.data.first_name.value}} {{$ctrl.data.last_name.value}}</a>
           </div>
           <div ng-click="$ctrl.goCart()" class="cart-button">
-              <i class="fa fa-shopping-cart fa-2x pointer" aria-hidden="true"></i>
-              <p>&emsp;MY CART</p>
+            <i class="fa fa-shopping-cart fa-2x pointer" aria-hidden="true"></i>
+            <p>&emsp;MY CART</p>
           </div>
         </div>
       </div>
