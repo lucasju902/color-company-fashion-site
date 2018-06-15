@@ -15,7 +15,7 @@
       <div class="col-lg-offset-1 col-lg-10 col-md-10">
         <div class="method-1">
           <h4 style="color: {{$ctrl.methodStyle[0]}}">1. CHECK OUT METHOD</h4>
-          <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1" class="edit-btn">EDIT</button>
+          <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT</button>
         </div>
         <div class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 2" class="method-2">
@@ -59,23 +59,25 @@
       <div class="col-lg-4 col-md-4 guest">
         <h4>CHECKOUT AS GUEST</h4>
         <p>REGISTER WITH US FOR FUTURE CONVENIENCE</p>
-        <form>
-          <div class="guest-checkbox">
-            <p>
-              <input type="checkbox" id="checkoutAsGuest" ng-model="$ctrl.checkoutAsGuest"/>
-              <label for="checkoutAsGuest">CHECKOUT AS GUEST</label>
-            </p>
-          </div>
-          <div class="guest-checkbox">
-            <p>
-              <input type="checkbox" id="registerAndCheckout" ng-model="$ctrl.registerAndCheckout"/>
-              <label for="registerAndCheckout">REGISTER AND CHECKOUT</label>
-            </p>
-          </div>
-          <div class="button login-btn">
-            <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
-          </div>
-        </form>
+        <div class="form-min-h">
+          <form>
+            <div class="guest-checkbox">
+              <p>
+                <input type="checkbox" id="checkoutAsGuest" ng-model="$ctrl.checkoutAsGuest"/>
+                <label for="checkoutAsGuest">CHECKOUT AS GUEST</label>
+              </p>
+            </div>
+            <div class="guest-checkbox">
+              <p>
+                <input type="checkbox" id="registerAndCheckout" ng-model="$ctrl.registerAndCheckout"/>
+                <label for="registerAndCheckout">REGISTER AND CHECKOUT</label>
+              </p>
+            </div>
+          </form>
+        </div>
+        <div class="button login-btn">
+          <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
+        </div>
       </div>
     </div>
   </div>
@@ -187,51 +189,41 @@
     </div>
   </div>
 </section>
-<section ng-show="$ctrl.methodNumber === 3">
+<section ng-show="$ctrl.methodNumber === 3" class="payment-information">
   <div class="cart-checkout">
     <div class="panel panel-default bootstrap-basic">
       <div class="panel-heading">
-        <h3 class="panel-title">CREDIT CARD</h3>
+        <h3 class="panel-title">Enter Card Details</h3>
+        <img class="paypal-icon" src="https://www.freepnglogos.com/uploads/paypal-logo-png-1.png">
       </div>
-      <div class="panel-body">
+      <form class="panel-body">
         <div class="row">
-          <div class="col-sm-12">
+          <div class="form-group col-sm-12">
             <!--<label class="control-label">Card Number</label>-->
             <!--  Hosted Fields div container -->
             <div class="form-control" id="card-number"></div>
             <span class="helper-text"></span>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <label class="control-label">EXPIRATION DATE <span class="red-text">*</span></label>
-          </div>
-          <div class="col-sm-12 date-row">
-            <!--  Hosted Fields div container -->
-            <div class="form-control" id="expiration-month"></div>
-            <!--  Hosted Fields div container -->
-            <div class="form-control" id="expiration-year"></div>
-            <!--  Hosted Fields div container -->
-            <div class="form-control" id="cvv"></div>
-          </div>
-        </div>
-
-        <!--<div class="row">-->
-        <!--<div class="form-group col-sm-6">-->
-        <!--<label class="control-label">Zipcode</label>-->
-        <!--&lt;!&ndash;  Hosted Fields div container &ndash;&gt;-->
-        <!--<div class="form-control" id="postal-code"></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <div class="row button-group">
-          <div class="col-sm-12">
-            <button value="submit" id="submit" class="btn btn-success btn-lg center-block">Pay with <span
-              id="card-type">Card</span></button>
-            <button class="btn btn-success btn-lg center-block white-btn">GO BACK</button>
+          <div class="form-group col-sm-12">
+            <div class="row payment-item-row">
+              <label class="control-label col-xs-12 payment-item">Expiration Date</label>
+              <div class="col-xs-4 payment-item">
+                <!--  Hosted Fields div container -->
+                <div class="form-control" id="expiration-month"></div>
+              </div>
+              <div class="col-xs-4 payment-item">
+                <!--  Hosted Fields div container -->
+                <div class="form-control" id="expiration-year"></div>
+              </div>
+              <div class="col-xs-4 payment-item">
+                <div class="form-control" id="cvv"></div>
+              </div>
+            </div>
           </div>
         </div>
-        </form>
-      </div>
+        <button value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE</button>
+        <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>
+      </form>
     </div>
   </div>
 </section>
@@ -275,13 +267,20 @@
         <table class="table-prise">
           <tr>
             <td>
-              <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">
+              <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">
                 <h4>TAX*</h4>
+                <span><strong>SALES TAX - HUE-GROUP.COM</strong><br>
+                    <strong>Effect of the Internet Tax Freedom Act</strong><br>
+                        Companies selling over the Internet are subject to the
+                    same sales tax collection requirements as any other retailers.
+                    Remote sellers (including Internet retailers and catalog companies) are generally
+                    required to collect taxes where they have a physical selling presence.
+                    If they do not have any such presence, they are not required to collect sales taxes.</span>
               </div>
             </td>
             <td>
               <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
-                <h4><span>{{($ctrl.tax === 0) ? 'Free' : '&#36;' + $ctrl.tax}}</span></h4>
+                <h4><span>{{'&#36;' + $ctrl.tax}}</span></h4>
               </div>
             </td>
           </tr>
@@ -299,7 +298,7 @@
           </tr>
         </table>
         <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
-          <button style="margin-top: 0" class="btn">CHECKOUT</button>
+          <button ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">PLACE ORDER</button>
         </div>
       </div>
     </div>

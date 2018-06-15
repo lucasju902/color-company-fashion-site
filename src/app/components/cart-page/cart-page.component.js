@@ -24,6 +24,7 @@ angular
 
         vm.products = [];
         vm.all = 0;
+        vm.tax = 0;
         vm.IDs = localStorageService.get('products');
 
         vm.getProductItems(vm.IDs.reports, 'reports');
@@ -43,7 +44,6 @@ angular
               vm.pageData.count = obj[key];
               vm.pageData.type = name;
               vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
-              vm.tax = vm.all * 0.15;
               vm.products.push(vm.pageData);
             });
         }
@@ -84,14 +84,14 @@ angular
       };
 
       vm.editCount = function (id, index, type, value) {
-        if (vm.products[index].count + value >= 0) {
+        if (vm.products[index].count + value > 0) {
           vm.products[index].count = vm.products[index].count + value;
           vm.IDs[type][id] = vm.IDs[type][id] + value;
           localStorageService.set('products', vm.IDs);
           vm.all = vm.all + vm.products[index].price * value;
-          vm.tax = vm.all * 0.15;
+        }else{
+          vm.removeProduct(id, type, index);
         }
-
       };
     }
   });
