@@ -242,8 +242,8 @@ angular
               }
               // This is where you would submit payload.nonce to your server
               vm.payload = payload;
-              console.log('@@@@@@@@@@ ',payload);
-              vm.continue();
+              // console.log('@@@@@@@@@@ ',payload);
+              // vm.continue();
             });
           });
         });
