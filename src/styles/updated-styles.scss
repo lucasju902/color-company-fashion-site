@@ -2652,6 +2652,7 @@ form .ui-select-container.selectize-control {
 }
 
 .products-cart {
+  margin-bottom: 50px;
 
   .checkout-button {
     //display: inline-block;
@@ -2701,6 +2702,11 @@ form .ui-select-container.selectize-control {
       margin-top: 40px;
       text-align: center;
       color: #bb0076;
+
+      button {
+        padding: 15px 40px;
+        font-size: 16px;
+      }
     }
   }
 
@@ -2867,6 +2873,14 @@ form .ui-select-container.selectize-control {
       }
     }
   }
+  .go-back{
+    position: relative;
+
+    .go-to-reports {
+      position: absolute;
+      top: 90%;
+    }
+  }
 
   .go-to-reports {
     text-align: left;
@@ -2898,6 +2912,73 @@ form .ui-select-container.selectize-control {
   }
 }
 
+.tax
+{
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+  outline: none;
+}
+
+.tax span
+{
+  visibility: hidden;
+  color: black;
+  position: absolute;
+  text-align: justify;
+  top: 30px;
+  left: 50%;
+  z-index: 999;
+  width: 400px;
+  margin-left: -300px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  opacity: .9;
+  background-color: white;
+  background-image: -webkit-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+  background-image: -moz-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+  background-image: -ms-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+  background-image: -o-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+  background-image: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+  box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.62);
+}
+
+.tax:hover
+{
+  border: 0; /* IE6 fix */
+}
+
+.tax:hover span
+{
+  visibility: visible;
+}
+
+.tax span:after
+{
+  content: "";
+  position: absolute;
+  z-index: 1000;
+  top: -8px;
+  left: 75%;
+  margin-left: -8px;
+  border-bottom: 8px solid #ddd;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 0;
+}
+
+.tax span:before
+{
+  border-top-color: #ccc;
+  bottom: -8px;
+}
+
 /*********Checkout page styles************/
 
 .subtitle {
@@ -2908,14 +2989,16 @@ form .ui-select-container.selectize-control {
 
   .line {
     margin-bottom: 15px;
-    border-bottom: #878787 2px solid;
+    border-bottom: #d0d0d0 1px solid;
     width: 100%;
   }
 
   .edit-btn {
-    background-color: #d0d0d0;
+    font-size: 12px;
+    padding: 4px 50px;
+    background-color: #e8e8e8;
     border-radius: 0px;
-    border: #878787 2px solid;
+    border: 0;
     color: #4c4c4c;
     float: right;
     vertical-align: top;
@@ -2924,7 +3007,7 @@ form .ui-select-container.selectize-control {
 }
 
 .check-out-method {
-  padding: 30px 50px 30px 50px;
+  padding: 30px 50px 100px 50px;
 
   .login {
     padding-right: 50px;
@@ -3016,7 +3099,7 @@ form .ui-select-container.selectize-control {
 }
 
 .billing-information {
-  margin-bottom: 30px;
+  margin-bottom: 100px;
   .billing-1 {
     margin-top: 50px;
     padding-right: 50px;
@@ -3093,96 +3176,141 @@ form .ui-select-container.selectize-control {
   }
 }
 
-.cart-checkout {
-  max-width: 500px;
-  margin-right: auto;
-  margin-left: auto;
-  .panel {
-    //width: 80%;
-    margin: 2em auto;
+.payment-information {
+  margin-bottom: 100px;
+
+  .payment-item-row {
+    margin: 0 -3%;
   }
 
-  .form-control {
-    border-radius: 0;
-  }
-  .button-group {
-    margin-top: 30px;
-
-    button {
-      display: inline-block;
-      margin-bottom: 0;
-      margin-right: 4%;
-    }
+  .payment-item {
+    padding: 0 10px;
   }
 
-  .date-row {
-    width: 100%;
-
-    #expiration-month {
-      text-align: left;
-    }
-
-    #expiration-year {
-      text-align: center;
-      margin: 0 4%;
-    }
-
-    #cvv {
-      text-align: right;
+  .cart-checkout {
+    max-width: 450px;
+    margin-right: auto;
+    margin-left: auto;
+    .panel {
+      //width: 80%;
+      margin: 2em auto;
     }
 
     .form-control {
-      width: 30%;
-      display: inline-block;
-      text-align: justify;
       border-radius: 0;
     }
-  }
+    .button-group {
+      margin-top: 30px;
 
-  .bootstrap-basic {
-    background: white;
-    border: none;
-  }
+      button {
+        display: inline-block;
+        margin-bottom: 0;
+        margin-right: 4%;
+      }
 
-  .panel-heading {
-    background-color: white;
-    border: none;
-  }
+    }
 
-  .panel-body {
-    //width: 100%;
-    margin: 10px auto;
-  }
+    .date-row {
+      width: 100%;
+      margin: 0 -10px;
 
-  .helper-text {
-    //color: #8A6D3B;
-    font-size: 12px;
-    margin-top: 5px;
-    height: 12px;
-    display: block;
-  }
+      #expiration-month {
+        text-align: left;
+      }
 
-  .panel-title {
-    padding: 0 17px;
-    font-style: normal;
-    color: #bb0076;
-    letter-spacing: 0;
-  }
+      #expiration-year {
+        text-align: center;
+        margin: 0 4%;
+      }
 
-  /* Braintree Hosted Fields styling classes*/
-  .braintree-hosted-fields-focused {
-    border: 1px solid #0275d8;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
-  }
+      #cvv {
+        text-align: right;
+      }
 
-  .braintree-hosted-fields-focused.focused-invalid {
-    border: 1px solid #ebcccc;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(100, 100, 0, .6);
-  }
+      .form-control {
+        width: 30%;
+        display: inline-block;
+        text-align: justify;
+        border-radius: 0;
+      }
+    }
 
-  @media (max-width: 670px) {
-    .btn {
-      white-space: normal;
+    .bootstrap-basic {
+      background: white;
+      border: none;
+    }
+
+    .panel-heading {
+      background-color: white;
+      border: none;
+
+      .paypal-icon {
+        height: 30px;
+        float: right;
+        padding-right: 5%;
+        margin-top: -5px;
+      }
+    }
+
+    .panel-body {
+      //width: 100%;
+      margin: 10px auto;
+
+      #submit {
+        margin-left: 4%;
+      }
+
+      button {
+        vertical-align: bottom;
+        display: inline-block;
+        margin-right: 20px;
+        margin-bottom: 0px;
+        margin-top: 20px;
+        height: 50px;
+        padding: 15px 29px;
+      }
+
+      @media (max-width: 1300px) and (min-width: 1200px) {
+
+        button.btn {
+          height: 35px;
+          padding: 10px 20px;
+        }
+
+      }
+    }
+
+    .helper-text {
+      //color: #8A6D3B;
+      font-size: 12px;
+      margin-top: 5px;
+      height: 12px;
+      display: block;
+    }
+
+    .panel-title {
+      padding: 0 17px;
+      font-style: normal;
+      color: #bb0076;
+      letter-spacing: 0;
+      display: inline-block;
+    }
+
+    /* Braintree Hosted Fields styling classes*/
+    .braintree-hosted-fields-focused {
+      border: 1px solid #0275d8;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    }
+
+    .braintree-hosted-fields-focused.focused-invalid {
+      border: 1px solid #ebcccc;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(100, 100, 0, .6);
+    }
+
+    @media (max-width: 670px) {
+      .btn {
+        white-space: normal;
+      }
     }
   }
 }
@@ -3215,6 +3343,24 @@ form .ui-select-container.selectize-control {
       margin-bottom: 0;
       margin-right: 4%;
     }
+  }
+}
+
+.cart-thank-page {
+  text-align: center;
+
+  .cart-thank {
+    padding: 40px 100px;
+  }
+  h4 {
+    color: black;
+    font-weight: 700;
+    padding-bottom: 30px;
+  }
+
+  button {
+    padding: 15px 30px;
+    margin: 30px 0;
   }
 }
 

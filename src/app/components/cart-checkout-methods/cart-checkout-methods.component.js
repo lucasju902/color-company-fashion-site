@@ -52,7 +52,6 @@ angular
               vm.pageData.count = obj[key];
               vm.pageData.type = name;
               vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
-              vm.tax = vm.all * 0.15;
               vm.products.push(vm.pageData);
             });
         }
@@ -60,14 +59,35 @@ angular
 
       vm.goToMethod = function (number) {
         vm.methodNumber = number;
+        vm.editGrayList();
       };
 
       vm.passwordRecover = function () {
         $state.go('password-recover-cart');
       };
 
-      vm.methodNumber = 1;
+      vm.userIsLoggedIn = function () {
+        if (!Object.keys(vm.user).length) {
+          vm.loginFlag = false;
+          vm.methodNumber = 1;
+        }else{
+          vm.loginFlag = true;
+          vm.methodNumber = 2;
+        }
+      };
+
+      vm.stepBack = function () {
+        vm.methodNumber = vm.methodNumber - 1;
+        vm.editGrayList();
+      };
+
+      vm.goToThank = function () {
+        $state.go('cart-thank');
+      };
+
+      vm.user = localStorageService.get('currentUser');
       vm.maxMethod = 1;
+      vm.tax = 0;
       vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
       vm.registerAndCheckout = false;
       vm.checkoutAsGuest = false;
@@ -109,7 +129,7 @@ angular
       vm.getProductItems(vm.purchase.IDs.reports, 'reports');
       vm.getProductItems(vm.purchase.IDs.courses, 'courses');
       vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
-
+      vm.userIsLoggedIn();
       vm.editGrayList();
 
       braintree.client.create({
@@ -119,7 +139,6 @@ angular
           console.error(err);
           return;
         }
-
         braintree.hostedFields.create({
           client: clientInstance,
           styles: {
@@ -174,7 +193,6 @@ angular
             console.error(err);
             return;
           }
-
           hostedFieldsInstance.on('validityChange', function (event) {
             var field = event.fields[event.emittedBy];
             if (field.isValid) {
@@ -185,7 +203,6 @@ angular
               } else if (event.emittedBy === 'number') {
                 $('#card-number').next('span').text('');
               }
-
               // Remove any previously applied error or warning classes
               $(field.container).parents('.form-group').removeClass('has-warning');
               $(field.container).parents('.form-group').removeClass('has-success');
@@ -207,7 +224,6 @@ angular
               }
             }
           });
-
           hostedFieldsInstance.on('cardTypeChange', function (event) {
             // Handle a field's change, such as a change in validity or credit card type
             if (event.cards.length === 1) {
@@ -216,7 +232,6 @@ angular
               $('#card-type').text('Card');
             }
           });
-
           $('.panel-body').submit(function (event) {
             event.preventDefault();
             hostedFieldsInstance.tokenize(function (err, payload) {
@@ -224,18 +239,9 @@ angular
                 console.error(err);
                 return;
               }
-
               // This is where you would submit payload.nonce to your server
-              $http({
-                url: appConfig.dashboardServiceUrl + 'checkouts.json',
-                method: 'GET',
-                params: {
-                  amount: 10.00,
-                  payment_method_nonce: payload.nonce}
-              }).then(function (res) {
-                alert(res.data.info);
-                vm.continue();
-              });
+              vm.payload = payload;
+              vm.continue();
             });
           });
         });

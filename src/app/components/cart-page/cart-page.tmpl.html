@@ -11,26 +11,15 @@
 </section>
 <section class="products-cart products-table-min-h">
   <div class="container-fluid  text-center title">
-    <div class="row">
+    <div class="row equal">
       <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 empty-cart">
-        <h3>You have nothing in the cart</h3>
-        <div ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">
-          <i class="fa fa-arrow-left fa-1x " aria-hidden="true"></i>
-          <p>&emsp;Back to {{$ctrl.wayBackName}}</p>
+        <h3>Your cart is empty</h3>
+        <div class="go-to-reports pointer">
+          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">Back to {{$ctrl.wayBackName}}</button>
         </div>
       </div>
       <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table ">
         <table>
-          <!--<caption>Your purchase</caption>-->
-          <!--<tr class="product-table-header">-->
-            <!--<th class="product-img">Picture</th>-->
-            <!--<th class="product-name">Product name</th>-->
-            <!--<th class="product-description">Product description</th>-->
-            <!--<th class="product-count">Amount of product</th>-->
-            <!--<th class="product-prise">Price</th>-->
-            <!--<th class="price-for-all">Price of all</th>-->
-            <!--<th class="basket-icon">Remove</th>-->
-          <!--</tr>-->
           <tr class="product-row" ng-repeat="item in $ctrl.products">
             <td class="product-img">
               <img src="{{item.image_url}}">
@@ -42,11 +31,13 @@
             <td class="product-count">
               <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
               <h4 style="display: inline-block">{{item.count}}</h4>
-              <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">
+              <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer"
+                   style="display: inline-block">
                 <i class="fa fa-minus fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
-              <div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">
+              <div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer"
+                   style="display: inline-block">
                 <i class="fa fa-plus fa-1x pointer"
                    aria-hidden="true"></i>
               </div>
@@ -58,56 +49,65 @@
               <h4>{{(item.price === 0 && item.count > 0) ? 'Free' : '&#36;' + (item.price * item.count)}}</h4>
             </td>
             <!--<td class="basket-icon">-->
-              <!--<i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>-->
+            <!--<i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>-->
             <!--</td>-->
           </tr>
         </table>
       </div>
-      <div class="col-lg-4 col-md-12 ">
+      <div class="col-sm-4 col-xs-12 go-back">
         <div ng-show="$ctrl.products.length" ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">
           <i class="fa fa-arrow-left fa-1x " aria-hidden="true"></i>
           <p>&emsp;Back to {{$ctrl.wayBackName}}</p>
         </div>
       </div>
-      <div style="text-align: right" class="col-lg-offset-4 col-lg-4 col-md-12 ">
-        <table class="table-prise">
-          <tr>
-            <td>
-              <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">
-                <h4>SUBTOTAL:</h4>
-              </div>
-            </td>
-            <td>
-              <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
-                <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + $ctrl.all}}</span></h4>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">
-                <h4>TAX*</h4>
-              </div>
-            </td>
-            <td>
-              <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
-                <h4><span>{{($ctrl.tax === 0) ? 'Free' : '&#36;' + $ctrl.tax}}</span></h4>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div ng-show="$ctrl.products.length" class="total total-text">
-                <h4>TOTAL:</h4>
-              </div>
-            </td>
-            <td>
-              <div ng-show="$ctrl.products.length" class="total total-prise">
-                <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + ($ctrl.all + $ctrl.tax)}}</span></h4>
-              </div>
-            </td>
-          </tr>
-        </table>
+      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-12">
+        <div>
+          <table class="table-prise">
+            <tr>
+              <td>
+                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">
+                  <h4>SUBTOTAL:</h4>
+                </div>
+              </td>
+              <td>
+                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
+                  <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + $ctrl.all}}</span></h4>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">
+                  <h4 class="pointer">TAX*</h4>
+                  <span><strong>SALES TAX - HUE-GROUP.COM</strong><br>
+                    <strong>Effect of the Internet Tax Freedom Act</strong><br>
+                        Companies selling over the Internet are subject to the
+                    same sales tax collection requirements as any other retailers.
+                    Remote sellers (including Internet retailers and catalog companies) are generally
+                    required to collect taxes where they have a physical selling presence.
+                    If they do not have any such presence, they are not required to collect sales taxes.</span>
+                </div>
+              </td>
+              <td>
+                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">
+                  <h4><span>{{'&#36;' + $ctrl.tax}}</span></h4>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div ng-show="$ctrl.products.length" class="total total-text">
+                  <h4>TOTAL:</h4>
+                </div>
+              </td>
+              <td>
+                <div ng-show="$ctrl.products.length" class="total total-prise">
+                  <h4><span>{{($ctrl.all === 0) ? 'Free' : '&#36;' + ($ctrl.all + $ctrl.tax)}}</span></h4>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
         <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
           <button style="margin-top: 0" class="btn">CHECKOUT</button>
         </div>

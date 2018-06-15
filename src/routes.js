@@ -422,5 +422,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/password-recover-cart',
       component: 'passwordRecoverCartComponent'
     });
+  $stateProvider
+    .state('cart-thank', {
+      url: '/cart-thank',
+      component: 'cartThankPageComponent'
+    });
 }
 
