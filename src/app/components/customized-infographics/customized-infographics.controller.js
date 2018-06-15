@@ -365,8 +365,8 @@
           qNumber: 'CO1a',
           id: 'colorsByCityPeriod',
           group: 'colorsByCityPeriod',
-          title: 'CO1a - COLOR FAMILY POPULARITY',
-          chartTitle: 'COLOR POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Popularity Overview',
+          chartTitle: 'Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
               .then(function (results) {
@@ -392,8 +392,8 @@
           qNumber: 'CO1b',
           id: 'colorsByCityPeriod1',
           group: 'colorsByCityPeriod1',
-          title: 'CO1b - ACTUAL COLORS FOR COLOR FAMILY POPULARITY',
-          chartTitle: 'ACTUAL COLORS FOR COLOR FAMILIES POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Expanded Color Popularity Overview',
+          chartTitle: 'Expanded Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return $q(function (resolve) {
               charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
@@ -433,8 +433,8 @@
           qNumber: 'CO2a',
           id: 'colorsUniqueWithLevels',
           group: 'colorsUniqueWithLevels',
-          title: 'CO2a - ALL COLORS',
-          chartTitle: 'ALL COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Mosaic View With Popularity',
+          chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.colorsUniqueGroups(vm.prepareRequestParams());
           },
@@ -454,8 +454,8 @@
           qNumber: 'CO3a',
           id: 'trends',
           group: 'trends',
-          title: 'CO3a - 5 YEAR COLOR FAMILY COMPARISON',
-          chartTitle: '5 YEAR COLOR FAMILY COMPARISON {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Five Year Color Comparison',
+          chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
             var customParams = vm.prepareRequestParams();
@@ -493,8 +493,8 @@
           qNumber: 'RE1a',
           id: 'colorsByRegionPeriodNA',
           group: 'colorsByRegionPeriod',
-          title: 'RE1a - COLOR FAMILY POPULARITY WITH CITY BREAKDOWN',
-          chartTitle: 'COLOR FAMILY POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Popularity By Region With City Breakdown',
+          chartTitle: 'Color Popularity By Region With City Breakdown {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.colorsWithGroupsByRegionPeriod(vm.prepareRequestParams(), vm.filter.region.name);
           },
@@ -514,8 +514,8 @@
           qNumber: 'RE2a',
           id: 'colorsPerRegions',
           group: 'colorsPerRegions',
-          title: 'RE2a - CROSS REGION TOP 4 COLORS',
-          chartTitle: 'CROSS REGION TOP 4 COLORS {{vm.parseTitle(0)}}',
+          title: 'Cross Region Top Four Colors',
+          chartTitle: 'Cross Region Top Four Colors {{vm.parseTitle(0)}}',
           api: function () {
             return charts.colorsPerRegions(vm.prepareRequestParams());
           },
@@ -532,8 +532,8 @@
           qNumber: 'SE1a',
           id: 'colorsUniqueGroupsCommon',
           group: 'colorsUniqueGroupsCommon',
-          title: 'SE1a - SEASON\'S COLORS',
-          chartTitle: 'SEASON\'S COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Popularity By Season',
+          chartTitle: 'Color Popularity By Season {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.colorsUniqueGroupsCommon(vm.prepareRequestParams());
           },
@@ -557,8 +557,8 @@
           qNumber: 'SE2a',
           id: 'colorsUniqueByPeriodFiveYears',
           group: 'colorsUniqueByPeriodFiveYears',
-          title: 'SE2a - 5 YEAR COMPARISON OF SEASON\'S COLORS',
-          chartTitle: '5 YEAR COMPARISON OF SEASON\'S COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Five Year Comparison Of Seasons Colors',
+          chartTitle: 'Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
@@ -587,8 +587,8 @@
           qNumber: 'SE2b',
           id: 'colorsUniqueByPeriodFiveYears2',
           group: 'colorsUniqueByPeriodFiveYears2',
-          title: 'SE2b - ACTUAL COLORS',
-          chartTitle: 'ACTUAL COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Expanded Five Year Comparison Of Seasons Colors',
+          chartTitle: 'Expanded Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
@@ -635,8 +635,8 @@
           qNumber: 'SE3a',
           id: 'uniqueWithGroupsPerSeason',
           group: 'uniqueWithGroupsPerSeason',
-          title: 'SE3a - CROSS SEASON COLOR POPULARITY',
-          chartTitle: 'CROSS SEASON COLOR POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Mosaic View By Season With Popularity',
+          chartTitle: 'Color Mosaic View By Season With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var customParams = vm.prepareRequestParams();
             return charts.colorsUniqueGroupsPerSeason(customParams.year, customParams.city, customParams.category);
@@ -659,8 +659,8 @@
           qNumber: 'CA1a',
           id: 'colorsByCategoryPeriod',
           group: 'colorsByCategoryPeriod',
-          title: 'CA1a - CATEGORY COLOR FAMILY POPULARITY',
-          chartTitle: 'CATEGORY COLOR FAMILY POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Popularity By Category',
+          chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
           },
@@ -680,8 +680,8 @@
           qNumber: 'CA2a',
           id: 'colorsByCategory',
           group: 'colorsGridNails',
-          title: 'CA2a - CROSS CATEGORY COLOR FAMILY POPULARITY',
-          chartTitle: 'CROSS CATEGORY COLOR FAMILY POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Cross Category Color Popularity',
+          chartTitle: 'Cross Category Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var customParams = vm.prepareRequestParams();
             return $q.all(_.map(['couture', 'menswear', 'rtw'], function (category) {
@@ -719,8 +719,8 @@
           qNumber: 'CA2b',
           id: 'colorsByCategory2',
           group: 'colorsGridNails2',
-          title: 'CA2b - ACTUAL TOP 3 COLORS CROSS CATEGORIES',
-          chartTitle: 'ACTUAL COLORS CROSS CATEGORIES {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Cross Category Top Three Colors',
+          chartTitle: 'Cross Category Top Three Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var customParams = vm.prepareRequestParams();
 
@@ -804,8 +804,8 @@
           qNumber: 'CA3a',
           id: 'colorsByRtwCategory',
           group: 'colorsGridNails',
-          title: 'CA3a - 3 YEAR COMPARISON OF COLOR FAMILY',
-          chartTitle: '3 YEAR COMPARISON OF COLOR FAMILIES {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Three Year Comparison Of Color Popularity',
+          chartTitle: 'Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
             var customParams = vm.prepareRequestParams();
@@ -852,8 +852,8 @@
           qNumber: 'CA3b',
           id: 'colorsByRtwCategory2',
           group: 'colorsGridNails2',
-          title: 'CA3b - 3 YEAR COMPARISON OF ACTUAL TOP 3 COLORS',
-          chartTitle: '3 YEAR COMPARISON OF ACTUAL COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Expanded Three Year Comparison Of Color Popularity',
+          chartTitle: 'Expanded Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
             var customParams = vm.prepareRequestParams();
@@ -943,8 +943,8 @@
           qNumber: 'CI1a',
           id: 'citiesByColorPeriod',
           group: 'citiesByColorPeriod',
-          title: 'CI1a - CROSS CITY POPULARITY',
-          chartTitle: 'CROSS CITY POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}} {{vm.parseTitle(2)}}',
+          title: 'Cross City Popularity By Color',
+          chartTitle: 'Cross City Popularity By Color {{vm.parseTitle(0)}} {{vm.parseTitle(1)}} {{vm.parseTitle(2)}}',
           api: function () {
             var customParams = vm.prepareRequestParams();
             customParams.color = vm.filter.color.hex.replace('#', '');
@@ -967,8 +967,8 @@
           qNumber: 'DE1a',
           id: 'colorsGroupsCommon',
           group: 'colorsGroupsCommon',
-          title: 'DE1a - COLOR POPULARITY',
-          chartTitle: 'COLOR POPULARITY {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Color Popularity By Designer',
+          chartTitle: 'Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.colorsGroupsCommon(vm.prepareRequestParams())
               .then(function (results) {
@@ -993,8 +993,8 @@
           qNumber: 'DE1b',
           id: 'colorsGroupsCommon2',
           group: 'colorsGroupsCommon2',
-          title: 'DE1b - COLOR PALETTE',
-          chartTitle: 'COLOR PALETTE {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Expanded Color Popularity By Designer',
+          chartTitle: 'Expanded Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             if (vm.filter.year.all) {
               vm.filter.year.id = 2018;
@@ -1026,8 +1026,8 @@
           qNumber: 'DE2a',
           id: 'top4forDesigner',
           group: 'top4forDesigner',
-          title: 'DE2a - 2 YEAR COMPARISON OF COLOR FAMILIES',
-          chartTitle: '2 YEAR COMPARISON OF COLOR FAMILIES {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Two Year Comparison of Color Popularity By Designer',
+          chartTitle: 'Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
@@ -1075,8 +1075,8 @@
           qNumber: 'DE2b',
           id: 'top4forDesigner2',
           group: 'top4forDesigner2',
-          title: 'DE2b - 2 YEAR COMPARISON OF COLOR PALETTE',
-          chartTitle: '2 YEAR COMPARISON OF COLOR PALETTES {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Expanded Two Year Comparison of Color Popularity By Designer',
+          chartTitle: 'Expanded Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
             if (vm.filter.year.all) {
@@ -1132,8 +1132,8 @@
           qNumber: 'DE3a',
           id: 'top4Grid',
           group: 'top4Grid',
-          title: 'DE3a - CROSS DESIGNER TOP 4 COLORS',
-          chartTitle: 'CROSS DESIGNER TOP 4 COLORS {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          title: 'Designers Top Four Colors',
+          chartTitle: 'Designers Top Four Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
             return charts.designersWithTopColors(vm.prepareRequestParams());
           },
