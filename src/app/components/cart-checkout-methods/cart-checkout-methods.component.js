@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('cartCheckoutMethodsComponent', {
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService) {
       var vm = this;
 
       vm.login = function () {
@@ -10,7 +10,7 @@ angular
         authService.login(this.email, this.password)
           .then(function (data) {
             if (data && data.success) {
-              // $state.go('aboutPage');
+              vm.continue();
             } else {
               vm.error = true;
             }
@@ -73,6 +73,7 @@ angular
         }else{
           vm.loginFlag = true;
           vm.methodNumber = 2;
+          vm.maxMethod = 2;
         }
       };
 
@@ -241,6 +242,7 @@ angular
               }
               // This is where you would submit payload.nonce to your server
               vm.payload = payload;
+              console.log('@@@@@@@@@@ ',payload);
               vm.continue();
             });
           });

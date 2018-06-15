@@ -3009,6 +3009,9 @@ form .ui-select-container.selectize-control {
 .check-out-method {
   padding: 30px 50px 100px 50px;
 
+  .form-min-h {
+    min-height: 97px;
+  }
   .login {
     padding-right: 50px;
     h4 {
