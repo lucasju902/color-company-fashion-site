@@ -10,6 +10,7 @@ angular
         authService.login(this.email, this.password)
           .then(function (data) {
             if (data && data.success) {
+              vm.user = localStorageService.get('currentUser');
               vm.continue();
             } else {
               vm.error = true;
@@ -34,7 +35,7 @@ angular
         vm.methodStyle.forEach(function (value, index) {
           if (index === vm.methodNumber - 1) {
             vm.methodStyle[index] = 'black';
-          }else {
+          }else{
             vm.methodStyle[index] = 'gray';
           }
         });
@@ -83,7 +84,20 @@ angular
       };
 
       vm.goToThank = function () {
-        $state.go('cart-thank');
+        var data = {
+          email: vm.data.email.value,
+          reports: Object.keys(vm.purchase.IDs.reports),
+          teaching_materials: Object.keys(vm.purchase.IDs.teaching_materials),
+          courses: Object.keys(vm.purchase.IDs.courses),
+          payment_method_nonce: vm.payload.nonce
+        };
+        $http.get(appConfig.dashboardServiceUrl + 'checkouts', data)
+          .then(function (res) {
+            if(res) {
+              console.log('res',res);
+              $state.go('cart-thank');
+            }
+          });
       };
 
       vm.user = localStorageService.get('currentUser');
@@ -242,7 +256,6 @@ angular
               }
               // This is where you would submit payload.nonce to your server
               vm.payload = payload;
-              // console.log('@@@@@@@@@@ ',payload);
               // vm.continue();
             });
           });

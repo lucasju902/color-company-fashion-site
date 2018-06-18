@@ -54,13 +54,12 @@
           </tr>
         </table>
       </div>
-      <div class="col-sm-4 col-xs-12 go-back">
+      <div class="col-sm-4 col-xs-4 go-back">
         <div ng-show="$ctrl.products.length" ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">
-          <i class="fa fa-arrow-left fa-1x " aria-hidden="true"></i>
-          <p>&emsp;Back to {{$ctrl.wayBackName}}</p>
+          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">BACK</button>
         </div>
       </div>
-      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-12">
+      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-4">
         <div>
           <table class="table-prise">
             <tr>
