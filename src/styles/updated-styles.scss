@@ -3013,6 +3013,11 @@ form .ui-select-container.selectize-control {
     min-height: 97px;
   }
   .login {
+
+    min-height: 280px;
+    //padding-bottom: 50px;
+    //margin-bottom: 40px;
+    position: relative;
     padding-right: 50px;
     h4 {
       color: #bb0076;
@@ -3032,6 +3037,9 @@ form .ui-select-container.selectize-control {
       }
 
       .login-btn{
+        position: absolute;
+        bottom: 0;
+
         button {
           padding: 10px 35px;
           font-size: 18px;
@@ -3042,6 +3050,7 @@ form .ui-select-container.selectize-control {
 
   .guest {
     padding-left: 50px;
+    position: relative;
 
     h4 {
       color: #bb0076;
@@ -3063,26 +3072,26 @@ form .ui-select-container.selectize-control {
           }
         }
       }
+    }
 
-      .login-btn {
-        button {
-          margin-top: 50px;
-          padding: 10px 25px;
-          font-size: 18px;
-        }
+    .login-btn {
+      //position: absolute;
+      //bottom: 0;
+      button {
+        //margin-top: 50px;
+        padding: 10px 25px;
+        font-size: 18px;
       }
     }
   }
 
   @media (max-width: 1300px) and (min-width: 1200px) {
     .guest {
-      form {
-        .login-btn {
-          button {
-            margin-top: 50px;
-            padding: 7px 20px;
-            font-size: 14px;
-          }
+      .login-btn {
+        button {
+          margin-top: 50px;
+          padding: 7px 20px;
+          font-size: 14px;
         }
       }
     }
@@ -3099,10 +3108,25 @@ form .ui-select-container.selectize-control {
       }
     }
   }
+  @media (max-width: 906px) {
+
+    .login {
+      padding: 0 30px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 30px;
+    }
+    .guest {
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 30px;
+    }
+  }
 }
 
 .billing-information {
   margin-bottom: 100px;
+
   .billing-1 {
     margin-top: 50px;
     padding-right: 50px;
@@ -3175,6 +3199,16 @@ form .ui-select-container.selectize-control {
       text-align: right;
       width: 95%;
       padding-top: 10px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .billing-1 {
+      padding: 0 30px;
+    }
+    .billing-2 {
+      padding: 0 30px;
+      margin-top: 0;
     }
   }
 }

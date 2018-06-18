@@ -12,7 +12,7 @@
 <section class="subtitle">
   <div class="container-fluid  ">
     <div class="row">
-      <div class="col-lg-offset-1 col-lg-10 col-md-10">
+      <div class="col-lg-offset-1 col-lg-10 col-md-12">
         <div class="method-1">
           <h4 style="color: {{$ctrl.methodStyle[0]}}">1. CHECK OUT METHOD</h4>
           <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT</button>
@@ -39,8 +39,8 @@
 </section>
 <section ng-show="$ctrl.methodNumber === 1" class="check-out-method">
   <div class="container-fluid  text-left">
-    <div class="row">
-      <div class="col-lg-offset-2 col-lg-4 col-md-4 login">
+    <div class="row equal">
+      <div class="col-lg-offset-2 col-lg-4 col-md-6 login">
         <h4>HUEGROUP MEMBERS</h4>
         <form>
           <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email"
@@ -56,20 +56,26 @@
           </div>
         </form>
       </div>
-      <div class="col-lg-4 col-md-4 guest">
+      <div class="col-lg-4 col-md-6 guest">
         <h4>CHECKOUT AS GUEST</h4>
         <p>REGISTER WITH US FOR FUTURE CONVENIENCE</p>
         <div class="form-min-h">
           <form>
             <div class="guest-checkbox">
               <p>
-                <input type="checkbox" id="checkoutAsGuest" ng-model="$ctrl.checkoutAsGuest"/>
+                <input ng-change="$ctrl.registerAndCheckout = false"
+                       type="checkbox"
+                       id="checkoutAsGuest"
+                       ng-model="$ctrl.checkoutAsGuest"/>
                 <label for="checkoutAsGuest">CHECKOUT AS GUEST</label>
               </p>
             </div>
             <div class="guest-checkbox">
               <p>
-                <input type="checkbox" id="registerAndCheckout" ng-model="$ctrl.registerAndCheckout"/>
+                <input ng-change="$ctrl.checkoutAsGuest = false"
+                       type="checkbox"
+                       id="registerAndCheckout"
+                       ng-model="$ctrl.registerAndCheckout"/>
                 <label for="registerAndCheckout">REGISTER AND CHECKOUT</label>
               </p>
             </div>
@@ -85,7 +91,7 @@
 <section ng-show="$ctrl.methodNumber === 2" class="billing-information">
   <div class="container-fluid  text-left">
     <div class="row">
-      <div class="col-lg-offset-2 col-lg-4 col-md-4 billing-1">
+      <div class="col-lg-offset-2 col-lg-4 col-md-6 col-sm-6 billing-1">
         <div class="membr-block">
           <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text"
                  id="first_name" name="first_name"
@@ -116,7 +122,7 @@
           <label for="billingEmail">EMAIL <span class="red-text">*</span></label>
         </div>
       </div>
-      <div class="col-lg-4 col-md-4 billing-2">
+      <div class="col-lg-4 col-md-6 col-sm-6 billing-2">
         <div class="membr-block">
           <input ng-model="$ctrl.data.address.value" ng-value="$ctrl.data.address.value" type="text"
                  id="address" name="address"
@@ -230,7 +236,7 @@
 <section ng-show="$ctrl.methodNumber === 4" class="products-cart">
   <div class="container-fluid  text-center title">
     <div class="row">
-      <div class="col-lg-offset-1 col-lg-10 col-md-10 products-table ">
+      <div class="col-lg-offset-1 col-lg-10 col-md-12 products-table ">
         <table>
           <tr class="product-row" ng-repeat="item in $ctrl.products">
             <td class="product-img">
