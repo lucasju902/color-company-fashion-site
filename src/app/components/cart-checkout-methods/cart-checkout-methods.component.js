@@ -87,7 +87,7 @@ angular
       };
 
       vm.user = localStorageService.get('currentUser');
-      vm.maxMethod = 4;
+      vm.maxMethod = 1;
       vm.tax = 0;
       vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
       vm.registerAndCheckout = false;
