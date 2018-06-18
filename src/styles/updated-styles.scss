@@ -2878,7 +2878,11 @@ form .ui-select-container.selectize-control {
 
     .go-to-reports {
       position: absolute;
-      top: 90%;
+      bottom: 0;
+
+      .white-btn {
+        margin-bottom: 0;
+      }
     }
   }
 
@@ -3400,6 +3404,42 @@ form .ui-select-container.selectize-control {
   button {
     padding: 15px 30px;
     margin: 30px 0;
+  }
+}
+
+.download-page {
+  .download-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .download-item {
+      .download-img {
+        height: 170px;
+        width: auto;
+        margin-bottom: 30px;
+        margin-top: 30px;
+      }
+    }
+  }
+}
+@media (min-width: 1200px) and (max-width: 1300px) {
+  .download-page {
+    .download-row {
+      .download-item {
+        .download-img {
+          height: 150px;
+          width: auto;
+          margin-bottom: 30px;
+          margin-top: 30px;
+        }
+        button {
+          padding: 10px 15px;
+          font-size: 14px;
+        }
+      }
+    }
   }
 }
 
