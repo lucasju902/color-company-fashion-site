@@ -3389,6 +3389,15 @@ form .ui-select-container.selectize-control {
   }
 }
 
+.err-massage {
+
+  h4 {
+    color: red;
+    margin: 10px 0;
+    padding-bottom: 0;
+  }
+}
+
 .cart-thank-page {
   text-align: center;
 
@@ -3398,7 +3407,17 @@ form .ui-select-container.selectize-control {
   h4 {
     color: black;
     font-weight: 700;
-    padding-bottom: 30px;
+    padding-bottom: 10px;
+    margin: 0;
+  }
+  .order-id {
+    margin-bottom: 40px;
+    font-weight: lighter;
+
+    span {
+      color: #bb0076;
+      font-weight: 900;
+    }
   }
 
   button {

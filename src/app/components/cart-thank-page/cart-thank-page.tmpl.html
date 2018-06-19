@@ -10,7 +10,8 @@
 </section>
 <section class="cart-thank-page">
   <div class="cart-thank">
-    <h4><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>
+    <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>
+    <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId}}</span></h4>
     <div class="thank-text">
       <span>YOU WILL RECEIVE AN ORDER CONFORMATION EMAIL WITH DETAILS OF YOUR PURCHASE</span>
     </div>
@@ -24,7 +25,7 @@
     <div class="row download-row" >
       <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">
         <div>
-        <img class="download-img" src="{{$ctrl.url}}">
+        <img class="download-img" src="{{item.image_url}}">
         </div>
         <div>
         <a href="{{item.file.image_url}}" download><button class="btn">DOWNLOAD</button></a>

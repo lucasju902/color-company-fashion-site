@@ -25,7 +25,7 @@
         <div ng-show="$ctrl.maxMethod >= 2" class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 3" class="method-3">
           <h4 style="color: {{$ctrl.methodStyle[2]}}">3. PAYMENT INFORMATION</h4>
-          <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3" class="edit-btn">EDIT</button>
+          <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3 && !!$ctrl.purchase.amount" class="edit-btn">EDIT</button>
         </div>
         <div ng-show="$ctrl.maxMethod >= 3" class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 4" class="method-4">
@@ -100,7 +100,7 @@
         </div>
 
         <div class="membr-block">
-          <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.middle_name.value"
+          <input ng-model="$ctrl.data.middle_name.value" ng-value="$ctrl.data.middle_name.value"
                  type="text"
                  id="middle_name"
                  name="middle_name"
@@ -148,13 +148,13 @@
 
         <div class="select-style select-mrg">
           <ui-select
-            ng-model="$ctrl.data.states.value"
+            ng-model="$ctrl.data.state.value"
             theme="selectize"
             search-enabled="false"
           >
-            <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-            <ui-select-choices repeat="states in $ctrl.states">
-              <span ng-bind-html="states.title"></span>
+            <ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.state.value"></ui-select-match>
+            <ui-select-choices repeat="state in $ctrl.states">
+              <span ng-bind-html="state.title"></span>
             </ui-select-choices>
           </ui-select>
         </div>
@@ -174,7 +174,7 @@
             theme="selectize"
             search-enabled="false"
           >
-            <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+            <ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.country.value"></ui-select-match>
             <ui-select-choices repeat="country in $ctrl.country">
               <span ng-bind-html="country.title"></span>
             </ui-select-choices>
@@ -189,7 +189,7 @@
         </div>
 
         <div class="button login-btn">
-          <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
+          <button ng-click="$ctrl.uploadBillingInfo()" class="btn">CONTINUE</button>
         </div>
       </div>
     </div>
@@ -227,7 +227,7 @@
             </div>
           </div>
         </div>
-        <button ng-click="$ctrl.continue()" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE</button>
+        <button ng-disabled="$ctrl.payDataFlag" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE</button>
         <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>
       </form>
     </div>
@@ -266,6 +266,9 @@
             </td>
           </tr>
         </table>
+        <div class="err-massage">
+          <h4 ng-show="$ctrl.errFlag">{{$ctrl.info}}</h4>
+        </div>
       </div>
       <div class="col-lg-4 col-md-12 ">
       </div>

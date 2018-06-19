@@ -424,7 +424,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
   $stateProvider
     .state('cart-thank', {
-      url: '/cart-thank',
+      url: '/cart-thank/:id',
       component: 'cartThankPageComponent'
     });
 }
