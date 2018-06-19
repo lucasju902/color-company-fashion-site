@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('cartCheckoutMethodsComponent', {
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService) {
+    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
       var vm = this;
 
       vm.login = function () {
@@ -20,11 +20,14 @@ angular
 
       vm.continue = function () {
         if (vm.methodNumber === 2) {
-          if(!dataValidate.validate(vm.data)) {
+          if (!dataValidate.validate(vm.data)) {
             return;
           }
         }
         vm.methodNumber = vm.methodNumber + 1;
+        if (vm.methodNumber === 3 && !vm.purchase.amount) {
+          vm.methodNumber = 4;
+        }
         if (vm.maxMethod < vm.methodNumber) {
           vm.maxMethod = vm.methodNumber;
         }
@@ -59,6 +62,7 @@ angular
       };
 
       vm.goToMethod = function (number) {
+        vm.errFlag = false;
         vm.methodNumber = number;
         vm.editGrayList();
       };
@@ -86,20 +90,29 @@ angular
       vm.goToThank = function () {
         var data = {
           email: vm.data.email.value,
-          reports: Object.keys(vm.purchase.IDs.reports),
-          teaching_materials: Object.keys(vm.purchase.IDs.teaching_materials),
-          courses: Object.keys(vm.purchase.IDs.courses),
-          payment_method_nonce: vm.payload.nonce
+          reports: vm.purchase.IDs.reports,
+          teaching_materials: vm.purchase.IDs.teaching_materials,
+          courses: vm.purchase.IDs.courses,
+          payment_method_nonce: vm.nonce
         };
-        $http.get(appConfig.dashboardServiceUrl + 'checkouts', data)
+        $http.get(appConfig.dashboardServiceUrl + 'checkouts', {params: data})
           .then(function (res) {
             if(res) {
               console.log('res',res);
-              $state.go('cart-thank');
+              vm.info = res.data.info;
+              if (res.data.status === 'fail') {
+                vm.errFlag = true;
+              }else{
+                vm.errFlag = false;
+                $state.go('cart-thank', {id: res.data.orderId});
+              }
             }
           });
       };
 
+      vm.nonce = false;
+      vm.errFlag = false;
+      vm.payDataFlag = false;
       vm.user = localStorageService.get('currentUser');
       vm.maxMethod = 1;
       vm.tax = 0;
@@ -248,15 +261,22 @@ angular
             }
           });
           $('.panel-body').submit(function (event) {
+            $timeout(function () {
+              vm.payDataFlag = true;}, 0);
+
             event.preventDefault();
             hostedFieldsInstance.tokenize(function (err, payload) {
               if (err) {
-                console.error(err);
-                return;
+                $timeout(function () {
+                  vm.payDataFlag = false;
+                  console.error(err);
+                  return;}, 0);
               }
               // This is where you would submit payload.nonce to your server
-              vm.payload = payload;
-              // vm.continue();
+              $timeout(function () {
+                vm.nonce = payload.nonce;
+                vm.continue();
+                vm.payDataFlag = false;}, 0);
             });
           });
         });

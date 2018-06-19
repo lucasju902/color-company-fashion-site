@@ -2,8 +2,9 @@ angular
   .module('app')
   .component('cartThankPageComponent', {
     templateUrl: 'app/components/cart-thank-page/cart-thank-page.tmpl.html',
-    controller: function ($state, $http, appConfig, localStorageService) {
+    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
       var vm = this;
+      vm.orderId = $stateParams.id;
       vm.purchase = localStorageService.get('purchase');
       localStorageService.remove('purchase');
       localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
