@@ -148,13 +148,13 @@
 
         <div class="select-style select-mrg">
           <ui-select
-            ng-model="$ctrl.data.states.value"
+            ng-model="$ctrl.data.state.value"
             theme="selectize"
             search-enabled="false"
           >
-            <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
-            <ui-select-choices repeat="states in $ctrl.states">
-              <span ng-bind-html="states.title"></span>
+            <ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.state.value"></ui-select-match>
+            <ui-select-choices repeat="state in $ctrl.states">
+              <span ng-bind-html="state.title"></span>
             </ui-select-choices>
           </ui-select>
         </div>
@@ -174,7 +174,7 @@
             theme="selectize"
             search-enabled="false"
           >
-            <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
+            <ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.country.value"></ui-select-match>
             <ui-select-choices repeat="country in $ctrl.country">
               <span ng-bind-html="country.title"></span>
             </ui-select-choices>
@@ -189,7 +189,7 @@
         </div>
 
         <div class="button login-btn">
-          <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
+          <button ng-click="$ctrl.uploadBillingInfo()" class="btn">CONTINUE</button>
         </div>
       </div>
     </div>

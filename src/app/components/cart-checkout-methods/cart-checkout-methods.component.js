@@ -4,6 +4,40 @@ angular
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
     controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
       var vm = this;
+      vm.user = localStorageService.get('currentUser');
+
+      vm.getBillingData = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
+          .then(function (res) {
+            // console.log('res',res);
+            if (res && res.data && res.data[0]) {
+              // console.log('res',res);
+
+              for (var key in vm.data) {
+                if (key === 'state') {
+                  var index = _.findIndex(vm.states, function (item) {
+                    return item.title === res.data[0][key];
+                  });
+                  vm.data[key].value = vm.states[index];
+                }
+                if (key === 'country') {
+                  var index2 = _.findIndex(vm.country, function (item) {
+                    return item.title === res.data[0][key];
+                  });
+                  vm.data[key].value = vm.country[index2];
+                }
+                vm.data[key].value = res.data[0][key] || '';
+              }
+            }
+            if (!vm.data.email.value && vm.user) {
+              vm.data.email.value = vm.user.email;
+            }
+            vm.continue();
+          })
+          .catch(function (err) {
+            // console.log('ERROR',err);
+          });
+      };
 
       vm.login = function () {
         vm.error = false;
@@ -11,19 +45,38 @@ angular
           .then(function (data) {
             if (data && data.success) {
               vm.user = localStorageService.get('currentUser');
-              vm.continue();
+              vm.getBillingData();
             } else {
               vm.error = true;
             }
           });
       };
 
-      vm.continue = function () {
-        if (vm.methodNumber === 2) {
-          if (!dataValidate.validate(vm.data)) {
-            return;
+      vm.uploadBillingInfo = function () {
+        if (!dataValidate.validate(vm.data)) {
+          return;
+        }else{
+          var data = {};
+          for (var item in vm.data) {
+            if (vm.data[item].type === 'select') {
+              data[item] = vm.data[item].value.title;
+            } else {
+              data[item] = vm.data[item].value;
+            }
           }
+          data.member_id = vm.user.id;
+          $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
+            .then(function (res) {
+              vm.getBillingData();
+              vm.continue();
+            })
+            .catch(function (err) {
+              // console.log('ERROR',err);
+            });
         }
+      };
+
+      vm.continue = function () {
         vm.methodNumber = vm.methodNumber + 1;
         if (vm.methodNumber === 3 && !vm.purchase.amount) {
           vm.methodNumber = 4;
@@ -113,7 +166,6 @@ angular
       vm.nonce = false;
       vm.errFlag = false;
       vm.payDataFlag = false;
-      vm.user = localStorageService.get('currentUser');
       vm.maxMethod = 1;
       vm.tax = 0;
       vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
@@ -134,9 +186,9 @@ angular
         address: {value: '', required: true, name: 'address', type: 'provide'},
         second_address: {value: '', name: 'second_address', type: 'provide'},
         city: {value: '', required: true, name: 'city', type: 'provide'},
-        zip: {value: '', required: true, name: 'zip', type: 'provide'},
-        telephone: {value: '', required: true, name: 'telephone', type: 'provide'},
-        states: {
+        zip: {value: '', required: true, name: 'zip', type: 'numeric'},
+        telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
+        state: {
           value: vm.states[0],
           required: true,
           name: 'state',

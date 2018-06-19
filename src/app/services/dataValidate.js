@@ -28,7 +28,8 @@ angular.module('app').service('dataValidate', function (modalService) {
     var types = {
       provide: '*Please provide Your ',
       select: '*Please select ',
-      enter: '*Please enter Your '
+      enter: '*Please enter Your ',
+      numeric: '*Must be number: '
     };
 
     for (var item in data) {
@@ -47,6 +48,10 @@ angular.module('app').service('dataValidate', function (modalService) {
             });
           } else {
             errorMessage.push('*Please enter Your work-related email');
+          }
+        } else if (data[item].type === 'numeric') {
+          if (!(!isNaN(parseFloat(data[item].value)) && isFinite(data[item].value))) {
+            errorMessage.push(types.numeric + data[item].name);
           }
         }
       }
