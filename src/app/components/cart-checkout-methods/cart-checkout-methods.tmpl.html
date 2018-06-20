@@ -147,16 +147,24 @@
         </div>
 
         <div class="select-style select-mrg">
-          <ui-select
-            ng-model="$ctrl.data.state.value"
-            theme="selectize"
-            search-enabled="false"
-          >
-            <ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.state.value"></ui-select-match>
-            <ui-select-choices repeat="state in $ctrl.states">
+          <ui-select ng-model="$ctrl.data.state.value" theme="selectize">
+            <ui-select-match>
+              <span ng-bind-html="$select.selected.title || $ctrl.data.state.value"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="state in ($ctrl.states | filter: $select.search) track by state.id">
               <span ng-bind-html="state.title"></span>
             </ui-select-choices>
           </ui-select>
+
+          <!--<ui-select-->
+            <!--ng-model="$ctrl.data.state.value"-->
+            <!--theme="selectize"-->
+          <!--&gt;-->
+            <!--<ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.state.value"></ui-select-match>-->
+            <!--<ui-select-choices repeat="state in $ctrl.states">-->
+              <!--<span ng-bind-html="state.title"></span>-->
+            <!--</ui-select-choices>-->
+          <!--</ui-select>-->
         </div>
 
         <div class="membr-block">
