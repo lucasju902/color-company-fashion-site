@@ -376,7 +376,7 @@ input:not([type="checkbox"]):not([type="radio"]), textarea, select {
   -moz-appearance: none;
   -webkit-appearance: none;
   width: 95%;
-  height: 50px;
+  height: 20px;
 }
 
 textarea {
