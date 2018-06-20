@@ -69,15 +69,13 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('reports', {
       url: '/reports',
-      component: 'reportsComponent',
-      protected: true
+      component: 'reportsComponent'
     });
 
   $stateProvider
     .state('reportsDetails', {
       url: '/reports/:id',
-      component: 'reportsDetailsComponent',
-      protected: true
+      component: 'reportsDetailsComponent'
     });
 
   $stateProvider

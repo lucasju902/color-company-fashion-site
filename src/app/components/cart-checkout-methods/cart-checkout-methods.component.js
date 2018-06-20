@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('cartCheckoutMethodsComponent', {
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
+    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
       var vm = this;
       vm.user = localStorageService.get('currentUser');
 
@@ -53,9 +53,10 @@ angular
       };
 
       vm.uploadBillingInfo = function () {
-        if (!dataValidate.validate(vm.data)) {
-          return;
-        }else{
+        if (vm.user.id) {
+          if (!dataValidate.validate(vm.data)) {
+            return;
+          }
           var data = {};
           for (var item in vm.data) {
             if (vm.data[item].type === 'select') {
@@ -73,6 +74,8 @@ angular
             .catch(function (err) {
               // console.log('ERROR',err);
             });
+        } else {
+          vm.continue();
         }
       };
 
@@ -91,7 +94,7 @@ angular
         vm.methodStyle.forEach(function (value, index) {
           if (index === vm.methodNumber - 1) {
             vm.methodStyle[index] = 'black';
-          }else{
+          } else {
             vm.methodStyle[index] = 'gray';
           }
         });
@@ -128,7 +131,7 @@ angular
         if (!Object.keys(vm.user).length) {
           vm.loginFlag = false;
           vm.methodNumber = 1;
-        }else{
+        } else {
           vm.loginFlag = true;
           vm.methodNumber = 2;
           vm.maxMethod = 2;
@@ -150,12 +153,12 @@ angular
         };
         $http.get(appConfig.dashboardServiceUrl + 'checkouts', {params: data})
           .then(function (res) {
-            if(res) {
-              console.log('res',res);
+            if (res) {
+              console.log('res', res);
               vm.info = res.data.info;
               if (res.data.status === 'fail') {
                 vm.errFlag = true;
-              }else{
+              } else {
                 vm.errFlag = false;
                 $state.go('cart-thank', {id: res.data.orderId});
               }
@@ -314,7 +317,8 @@ angular
           });
           $('.panel-body').submit(function (event) {
             $timeout(function () {
-              vm.payDataFlag = true;}, 0);
+              vm.payDataFlag = true;
+            }, 0);
 
             event.preventDefault();
             hostedFieldsInstance.tokenize(function (err, payload) {
@@ -322,13 +326,15 @@ angular
                 $timeout(function () {
                   vm.payDataFlag = false;
                   console.error(err);
-                  return;}, 0);
+                  return;
+                }, 0);
               }
               // This is where you would submit payload.nonce to your server
               $timeout(function () {
                 vm.nonce = payload.nonce;
                 vm.continue();
-                vm.payDataFlag = false;}, 0);
+                vm.payDataFlag = false;
+              }, 0);
             });
           });
         });
