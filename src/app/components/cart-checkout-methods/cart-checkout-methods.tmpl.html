@@ -146,7 +146,7 @@
           <label for="city">CITY <span class="red-text">*</span></label>
         </div>
 
-        <div class="select-style select-mrg">
+        <div class="select-style select-mrg search-selector">
           <ui-select ng-model="$ctrl.data.state.value" theme="selectize">
             <ui-select-match placeholder="PLEASE SELECT STATE/PROVINCE *">
               <span ng-bind-html="$select.selected.title || $ctrl.data.state.value"></span>
@@ -166,7 +166,7 @@
           <label for="zip">ZIP <span class="red-text">*</span></label>
         </div>
 
-        <div class="select-style select-mrg">
+        <div class="select-style select-mrg search-selector">
           <ui-select ng-model="$ctrl.data.country.value" theme="selectize">
             <ui-select-match placeholder="PLEASE SELECT COUNTRY *">
               <span ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>

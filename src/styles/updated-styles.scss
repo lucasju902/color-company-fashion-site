@@ -3472,6 +3472,22 @@ form .ui-select-container.selectize-control {
   text-transform: uppercase;
 }
 
+.search-selector {
+  input:not([type="checkbox"]):not([type="radio"]), textarea, select {
+    border-radius: 0;
+    outline: none;
+    font-size: 10pt;
+    color: black;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    z-index: 1;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    width: 95%;
+    height: 20px;
+  }
+}
+
 /******************landing page styles***************************/
 
 .landing {
