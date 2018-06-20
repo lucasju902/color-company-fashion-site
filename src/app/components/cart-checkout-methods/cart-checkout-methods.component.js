@@ -67,7 +67,6 @@ angular
           data.member_id = vm.user.id;
           $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
             .then(function (res) {
-              // vm.getBillingData();
               vm.continue();
             })
             .catch(function (err) {

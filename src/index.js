@@ -21,7 +21,7 @@ var run = ['localStorageService', 'authService', '$state', '$transitions', 'moda
     localStorageService.set('currentUser', {});
     authService.loadCurrentUser().then(function (res) {
       if ($state.$current.self.protected && !localStorageService.get('currentUser').is_member) {
-        $state.go('aboutPage');
+        $state.go('landing');
       }
       $transitions.onStart({}, function (transition) {
         statsService.pageCounter();
