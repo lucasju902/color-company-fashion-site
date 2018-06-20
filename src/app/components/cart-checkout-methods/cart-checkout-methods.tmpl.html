@@ -148,23 +148,13 @@
 
         <div class="select-style select-mrg">
           <ui-select ng-model="$ctrl.data.state.value" theme="selectize">
-            <ui-select-match>
+            <ui-select-match placeholder="PLEASE SELECT STATE/PROVINCE *">
               <span ng-bind-html="$select.selected.title || $ctrl.data.state.value"></span>
             </ui-select-match>
-            <ui-select-choices repeat="state in ($ctrl.states | filter: $select.search) track by state.id">
+            <ui-select-choices repeat="state in ($ctrl.states | sortFilter:$select.search)">
               <span ng-bind-html="state.title"></span>
             </ui-select-choices>
           </ui-select>
-
-          <!--<ui-select-->
-            <!--ng-model="$ctrl.data.state.value"-->
-            <!--theme="selectize"-->
-          <!--&gt;-->
-            <!--<ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.state.value"></ui-select-match>-->
-            <!--<ui-select-choices repeat="state in $ctrl.states">-->
-              <!--<span ng-bind-html="state.title"></span>-->
-            <!--</ui-select-choices>-->
-          <!--</ui-select>-->
         </div>
 
         <div class="membr-block">
@@ -177,13 +167,11 @@
         </div>
 
         <div class="select-style select-mrg">
-          <ui-select
-            ng-model="$ctrl.data.country.value"
-            theme="selectize"
-            search-enabled="false"
-          >
-            <ui-select-match ng-bind-html="$select.selected.title || $ctrl.data.country.value"></ui-select-match>
-            <ui-select-choices repeat="country in $ctrl.country">
+          <ui-select ng-model="$ctrl.data.country.value" theme="selectize">
+            <ui-select-match placeholder="PLEASE SELECT COUNTRY *">
+              <span ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="country in ($ctrl.country | sortFilter:$select.search)">
               <span ng-bind-html="country.title"></span>
             </ui-select-choices>
           </ui-select>
