@@ -9,7 +9,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('aboutPage', {
-      url: '/',
+      url: '/about',
       component: 'aboutPage'
     });
 
@@ -426,6 +426,11 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     .state('cart-thank', {
       url: '/cart-thank/:id',
       component: 'cartThankPageComponent'
+    });
+  $stateProvider
+    .state('landing', {
+      url: '/',
+      component: 'landingComponent'
     });
 }
 

@@ -94,6 +94,10 @@ angular
         $state.go('profile');
       };
 
+      this.goToLanding = function () {
+        $state.go('landing');
+      };
+
       $scope.$watch(function () {
         return authService.currentUser;
       }, function (newVal) {

@@ -26,7 +26,7 @@ angular.module('app')
         self.token = null;
         self.currentUser = {};
         localStorageService.set('currentUser', {});
-        $state.go('aboutPage');
+        $state.go('landing');
       };
 
       this.loadCurrentUser = function () {
