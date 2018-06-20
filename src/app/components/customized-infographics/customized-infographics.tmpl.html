@@ -28,9 +28,9 @@
                 theme="selectize"
                 search-enabled="false"
         >
-          <ui-select-match ng-bind-html="$select.selected.title" style="text-transform: uppercase"></ui-select-match>
+          <ui-select-match ng-bind-html="$select.selected.title" class="to-uppercase"></ui-select-match>
           <ui-select-choices repeat="item in vm.charts track by item.id">
-            <span style="text-transform: uppercase" ng-bind-html="item.title"></span>
+            <span class="to-uppercase" ng-bind-html="item.title"></span>
           </ui-select-choices>
         </ui-select>
       </div>
