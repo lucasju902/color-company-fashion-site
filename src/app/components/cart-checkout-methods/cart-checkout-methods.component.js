@@ -2,19 +2,9 @@ angular
   .module('app')
   .component('cartCheckoutMethodsComponent', {
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope) {
+    controller: function (categoryValues,dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
       var vm = this;
       vm.user = localStorageService.get('currentUser');
-
-      $scope.itemArray = [
-        {id: 1, name: 'first'},
-        {id: 2, name: 'second'},
-        {id: 3, name: 'third'},
-        {id: 4, name: 'fourth'},
-        {id: 5, name: 'fifth'}
-      ];
-
-      $scope.selectedItem = $scope.itemArray[0];
 
       vm.getBillingData = function () {
         $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
