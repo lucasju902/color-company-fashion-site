@@ -5,6 +5,7 @@ angular
     controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
       var vm = this;
       vm.user = localStorageService.get('currentUser');
+      vm.methodNumber = 1;
 
       vm.getBillingData = function () {
         $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
@@ -131,9 +132,9 @@ angular
           vm.loginFlag = false;
           vm.methodNumber = 1;
         } else {
+          vm.getBillingData();
           vm.loginFlag = true;
-          vm.methodNumber = 2;
-          vm.maxMethod = 2;
+
         }
       };
 
@@ -143,6 +144,9 @@ angular
       };
 
       vm.goToThank = function () {
+        $timeout(function () {
+          vm.placeOrderFlag = true;
+        }, 0);
         var data = {
           email: vm.data.email.value,
           reports: vm.purchase.IDs.reports,
@@ -157,8 +161,14 @@ angular
               vm.info = res.data.info;
               if (res.data.status === 'fail') {
                 vm.errFlag = true;
+                $timeout(function () {
+                  vm.placeOrderFlag = false;
+                }, 0);
               } else {
                 vm.errFlag = false;
+                $timeout(function () {
+                  vm.placeOrderFlag = false;
+                }, 0);
                 $state.go('cart-thank', {id: res.data.orderId});
               }
             }
@@ -168,6 +178,7 @@ angular
       vm.nonce = false;
       vm.errFlag = false;
       vm.payDataFlag = false;
+      vm.placeOrderFlag = false;
       vm.maxMethod = 1;
       vm.tax = 0;
       vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
