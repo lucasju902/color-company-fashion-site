@@ -266,9 +266,9 @@
           <h4 ng-show="$ctrl.errFlag">We are unable to process your payment at this time. Please provide an alternate method to payment.</h4>
         </div>
       </div>
-      <div class="col-lg-4 col-md-12 ">
+      <div class="col-sm-4 col-xs-4 ">
       </div>
-      <div style="text-align: right" class="col-lg-offset-3 col-lg-4 col-md-12 ">
+      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-8 ">
         <table class="table-prise">
           <tr>
             <td>
@@ -303,7 +303,7 @@
           </tr>
         </table>
         <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">
-          <button ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">PLACE ORDER</button>
+          <button ng-disabled="$ctrl.placeOrderFlag" ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">PLACE ORDER</button>
         </div>
       </div>
     </div>

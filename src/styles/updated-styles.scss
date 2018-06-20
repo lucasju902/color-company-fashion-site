@@ -2855,6 +2855,9 @@ form .ui-select-container.selectize-control {
 
           }
         }
+        .icon:hover {
+          border: #bb0076 1px solid;
+        }
       }
 
       .product-prise {
@@ -3991,6 +3994,27 @@ form .ui-select-container.selectize-control {
 
     .padding-right-clear {
       padding-right: 0px;
+    }
+  }
+}
+
+footer {
+  ul {
+    li {
+      a {
+        outline: none !important;
+      }
+
+      a:hover {
+        border: 0;
+      }
+
+      a:focus,
+      a:active {
+        border: 0;
+        color: #777777;
+        outline: none !important;
+      }
     }
   }
 }
