@@ -3473,15 +3473,7 @@ form .ui-select-container.selectize-control {
 }
 
 /******************landing page styles***************************/
-//
-//@font-face { font-family: "Gotham-Book"; src: url("../assets/GothamHTF-Book-6145ea6944a348f5cf8990c52a826262.otf"); }
-//
-//@font-face { font-family: "Gotham-Bold"; src: url("../assets/GothamHTF-Bold-d4840facef68788c75054772b477e000.otf"); }
 
-//body{
-//  /*    font-family: 'Open Sans', sans-serif;*/
-//  font-family: 'Gotham-Book';
-//}
 .landing {
   font-family: 'Gotham-Book';
 
@@ -3527,31 +3519,6 @@ form .ui-select-container.selectize-control {
     line-height: 18pt;
   }
 
-  .btn {
-    color: #ffffff;
-    font-size: 13px;
-    background: #bb0076;
-    padding: 15px 20px 15px 20px;
-    text-decoration: none;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0px;
-    font-weight: 700;
-    transition: background 0.2s ease;
-    border: solid 2px #bb0076;
-  }
-
-  .btn:hover {
-    background: #ce0b86;
-    color: white;
-    text-decoration: none;
-  }
-
-  .button {
-    padding-top: 30px;
-
-  }
-
   .justify {
     text-align: justify;
   }
@@ -3581,213 +3548,12 @@ form .ui-select-container.selectize-control {
     padding-right: 32px;
   }
 
-  .prefooter {
-    background-color: #bb0076;
-    padding-top: 50px;
-    padding-bottom: 50px;
-    margin-top: 60px;
-  }
-
-  .box h4 {
-    color: white;
-    font-weight: 400;
-
-  }
-
-  .box {
-    border: 1px solid #f566c0;
-    padding: 30px;
-    color: white;
-    min-height: 270px;
-
-  }
-
-  .box p {
-
-    color: white;
-
-  }
-
-  #stay-connected {
-    float: left;
-    width: 80%;
-  }
-
-  input:not([type="checkbox"]):not([type="radio"]), textarea, select {
-    border-radius: 0;
-    outline: none;
-    font-size: 10pt;
-    color: black;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    z-index: 1;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    width: 95%;
-    height: 50px;
-  }
-
-  textarea {
-    padding-top: 10px;
-  }
-
-  input:not([type="checkbox"]):not([type="radio"]), textarea, select, button.button {
-    padding-left: 10px;
-    margin-bottom: 22px;
-  }
-
-  .submit .btn {
-    background-color: #bb0076;
-    transition: background 0.2s ease;
-    height: 49px;
-    text-align: center;
-    width: 100%;
-
-  }
-
-  .submit .btn:hover {
-    background-color: white;
-    transition: background 0.2s ease;
-    height: 49px;
-    color: #bb0076;
-
-  }
-
-  .submit {
-
-    padding-top: 0px;
-    border: 1px solid #f566c0;
-    background-color: white;
-    width: 20%;
-    float: left;
-    margin-bottom: 22px;
-
-  }
-
-  .learn-more {
-    float: left;
-    margin-top: 20px;
-    width: auto;
-  }
-
-  [type="checkbox"]:not(:checked),
-  [type="checkbox"]:checked {
-    position: absolute;
-    left: -9999px;
-  }
-  [type="checkbox"]:not(:checked) + label,
-  [type="checkbox"]:checked + label {
-    position: relative;
-    padding-left: 32px;
-    cursor: pointer;
-    margin-bottom: 5px;
-    display: inline-block;
-    font-size: 10.5pt;
-  }
-
-  .membership-form [type="checkbox"]:not(:checked) + label,
-  .membership-form [type="checkbox"]:checked + label {
-    font-size: 10pt;
-  }
-
-  .forms {
-    width: 50%;
-    float: left;
-    padding-right: 15px;
-  }
-
-  .forms-right {
-    width: 50%;
-    float: left;
-  }
-
-  /* checkbox aspect */
-  [type="checkbox"]:not(:checked) + label:before,
-  [type="checkbox"]:checked + label:before {
-    content: '';
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 22px;
-    height: 22px;
-    border: 1px solid #F566C0;
-    background: #ffffff;
-    border-radius: 0px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1);
-  }
-  /* checked mark aspect */
-  [type="checkbox"]:not(:checked) + label:after,
-  [type="checkbox"]:checked + label:after {
-    content: '\2022';
-    position: absolute;
-    top: -4px;
-    left: 5px;
-    font-size: 25px;
-    line-height: 1.2;
-    color: #bb0076;
-    transition: all .2s;
-  }
-  /* checked mark aspect changes */
-  [type="checkbox"]:not(:checked) + label:after {
-    opacity: 0;
-    transform: scale(0);
-  }
-  [type="checkbox"]:checked + label:after {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  /* accessibility */
-  [type="checkbox"]:checked:focus + label:before,
-  [type="checkbox"]:not(:checked):focus + label:before {
-    border: 2px solid #F566C0;
-  }
-  /* hover style just for information */
-  label:hover:before {
-    border: 2px solid #F566C0 !important;
-    background: #FFFFFF
-  }
-
-  form p {
-    float: left;
-    margin-right: 30px;
-  }
-
-  .select-style select {
-    font-size: 10pt;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    background-image: url(../assets/img/landing/arrow.png);
-    background-repeat: no-repeat;
-    background-position: 95% 50%;
-  }
-
   .search-fields .col-lg-2 {
     padding-left: 10px;
     padding-right: 10px;
   }
 
-  #members li:before {
-    content: '\2022';
-    color: red;
-    padding-right: 0.5em;
-  }
-
-  #members li {
-    color: black;
-    list-style-type: none;
-  }
-
-  #members ul {
-    padding-left: 0px;
-  }
-
   /* Add a gray background color and some padding to the footer */
-  footer {
-    background-color: white;
-    padding: 25px;
-    padding-top: 30px;
-  }
 
   .gray {
     color: #7b7b7b;
@@ -3801,50 +3567,6 @@ form .ui-select-container.selectize-control {
 
   .padding-top-0 {
     padding-top: 0px;
-  }
-
-  footer {
-    padding-right: 60px !important;
-    padding-left: 60px !important;
-  }
-
-  footer ul li {
-    display: inline;
-    float: right;
-    margin-top: 20px;
-    margin-right: 10px;
-    font-size: 8.5pt;
-    color: #777777;
-    padding-right: 10px;
-
-  }
-
-  footer ul li a {
-    text-decoration: none !important;
-    color: #777777;
-    transition: color 0.2s ease;
-
-  }
-
-  footer ul li a:hover {
-
-    color: #bb0076;;
-  }
-
-  footer #logo {
-    float: left;
-    max-width: 200px;
-    margin-right: 0px;
-    padding-right: 0px;
-
-  }
-
-  footer #copyrights {
-    font-size: 8.5pt;
-    color: #777777;
-    float: right;
-    margin-left: 20px;
-    margin-top: 16px;
   }
 
   #slideshow {
@@ -4033,12 +3755,12 @@ form .ui-select-container.selectize-control {
     }
   }
   //@-ms-keyframes color_change {
-  //  from {
-  //    fill: black;
-  //  }
-  //  to {
-  //    fill: #bc1c7d;
-  //  }
+    //from {
+    //  fill: black;
+    //}
+    //to {
+    //  fill: #bc1c7d;
+    //}
   //}
   @-o-keyframes color_change {
     from {
@@ -4167,120 +3889,18 @@ form .ui-select-container.selectize-control {
   /*SMALL DEVICE*/
 
   @media (max-width: 544px) {
-    #stay-connected {
-      width: 100%;
-    }
-    .submit {
-      width: 100%
-    }
-
-    input:not([type="checkbox"]):not([type="radio"]), textarea, select {
-      width: 100%;
-    }
-
-    .membership
-    {
-      float: none;
-      text-align: center;
-      margin-top: 0px;
-    }
-
-    .category_form {
-      text-align: center;
-      float: none;
-      margin-top: 20px;
-    }
 
     .slider {
       margin-top: 20px;
     }
-
-    .membership-product {
-      text-align: center;
-      position: relative;
-      margin-bottom: 10px;
-    }
-
-    #education-top img {
-      margin-bottom: 20px;
-    }
-
-    #education p {
-      margin-bottom: 20px;
-    }
-
-
-
-    footer  {padding-left: 15px!important; padding-right: 15px!important; }
-
   }
 
 
 
   @media (max-width: 1200px) {
-    .box {margin-top: 50px;}
-    .prefooter {padding-top: 0px;}
-    footer #logo {float: none;margin-bottom: 10px; min-width: 230px; }
-    footer ul li {float: none; }
-    footer #copyrights {float: none; text-align: center;}
-    .offer {
-      min-height: 450px;
-    }
-
-    footer ul {padding-left: 0px;}
-
 
     #logo {
       margin-left: 15px;
-    }
-
-    .buttons-group .membership
-    {
-
-      display: inline-block;
-      float: none;
-
-      margin-bottom: 30px;
-      margin-top: 0px;
-      margin-right:10px;
-      margin-left: 0px;
-
-    }
-
-
-
-    .buttons-group {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .membership-product {
-      text-align: center;
-      position: relative;
-      margin-bottom: 0px;
-
-    }
-
-    .white .btn {
-      margin-right: 0px;
-    }
-
-    #color-emotion-header h3 {
-      text-align: center;
-      margin-top: 10px;
-      padding-top: 10px;
-    }
-
-    #education-top img {
-      margin-bottom: 20px;
-    }
-
-    #education p {
-      margin-bottom: 0px;
-    }
-
-    #education h5 {
-      margin-top: 0px;
     }
 
     h3 {
@@ -4291,43 +3911,9 @@ form .ui-select-container.selectize-control {
       margin-bottom: 20px;
     }
 
-    .title .btn {
-      margin-top: 10px;
-
-    }
-
-    .title  .white {
-      margin-bottom: 20px;
-    }
-
-    #education img {margin-bottom: 40px;}
-
-  }
-
-
-  @media (max-width: 1600px) and (min-width: 1221px) {
-    .offer {
-      min-height: 650px;}
-    .box {
-      min-height: 290px;
-    }
-
-
-    .white .btn {
-      margin-bottom: 10px;
-    }
   }
 
   @media (max-width: 1920px) and (min-width: 1221px) {
-
-    footer ul li {
-      font-size: 12px;
-
-    }
-
-    footer #copyrights {
-      font-size: 12px;
-    }
 
     .slider {
       padding-left: 0px!important;
@@ -4344,90 +3930,15 @@ form .ui-select-container.selectize-control {
       padding-left: 0px;
       padding-right: 0px;
     }
-
-    .offer{
-      min-height: 0px;
-    }
-
-    .img50{
-      margin-bottom: 60px;
-    }
-
-    footer ul li {
-      text-align: center;
-      float: none;
-    }
-
     section {
       padding-left: 15px;
       padding-right: 15px;
     }
-
-    .category_form {
-      width: 100%;
-    }
-
-    .membership
-    {
-      text-align: center;
-      margin-top: 0px;
-      margin-bottom: 20px;
-      margin-top: 10px;
-
-    }
-
-    .members-list{
-      text-align: center;
-    }
-
-    .white .btn {
-      margin-right: 10px;
-    }
-
-    .schedule h3 {
-      margin-top:60px;
-    }
-    .benefits {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-
   }
 
 
 
   @media (max-width: 1101px) {
-    .navbar-header {
-      float: none;
-    }
-    .navbar-left,.navbar-right {
-      float: none !important;
-    }
-    .navbar-toggle {
-      display: block;
-    }
-    .navbar-collapse {
-      border-top: 1px solid transparent;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .navbar-fixed-top {
-      top: 0;
-      border-width: 0 0 1px;
-    }
-    .navbar-collapse.collapse {
-      display: none!important;
-    }
-    .navbar-nav {
-      float: none!important;
-      margin-top: 7.5px;
-    }
-    .navbar-nav>li {
-      float: none;
-    }
-    .navbar-nav>li>a {
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
     .collapse.in{
       display:block !important;
     }
@@ -4438,125 +3949,17 @@ form .ui-select-container.selectize-control {
   @media (max-width: 1300px) and (min-width: 1200px) {
 
     p {font-size: 9pt; line-height: 14pt;}
-    .img50 {
-      min-height: 410px;}
-    .offer {min-height: 500px;}
-
-    [type="checkbox"]:not(:checked) + label, [type="checkbox"]:checked + label {
-      font-size: 6.6pt;
-
-    }
-
-
-    .btn {
-      font-size: 8pt;
-      padding: 13px;
-
-    }
-
-    .box {
-      min-height: 230px;
-      padding: 21px;
-      padding-bottom: 0px;
-    }
-    .submit {
-      margin-bottom: 22px;
-    }
-
-    #top-menu {
-      height: 25px;
-    }
-    #top-menu ul li a {
-      font-size: 8pt;
-    }
-
-    #top-menu ul li {
-      margin-top: 2px;
-    }
-
-    .navbar {
-      min-height: 60px;
-    }
-
-    .navbar-nav { font-size: 11pt;}
 
     #logo {max-width: 220px;padding-top: 2px; padding-right: 10px;}
-
-    .white .btn {
-
-      min-width: 104px;}
-
-    .select-style select {
-      font-size: 9pt;
-      margin-bottom: 10px;
-      height: 41px;
-    }
 
     h3{font-size:22pt; margin-top: 5px;}
     h5{font-size: 12pt;}
     h4{font-size: 12pt;}
     h1{font-size: 30pt;padding-top: 30px;}
-    .header{min-height: 280px; margin-bottom:30px; }
-    .bar span {font-size: 8pt;top:15px}
-    .bar {min-height: 15px; margin-bottom: 13px;}
-    .bar img {max-height: 45px;}
-    .first-bar {margin-top: 66px;}
-    .membership-form input ,select{
-      font-size: 9pt;}
-
-    .title .btn {margin-top: 0px;}
-
-    .membership-form input[type="text"] {font-size: 9pt}
-    .membership-form [type="checkbox"]:not(:checked) + label, .membership-form [type="checkbox"]:checked + label {font-size:9pt; }
-    .membership-form input:not([type="checkbox"]):not([type="radio"]), textarea, select {margin-bottom: 10px; height: 41px;}
-
-    .dropdown-menu {font-size: 10pt;}
-    .category > p {
-      padding-top: 5px;
-    }
-
-    input:not([type="checkbox"]):not([type="radio"]), textarea, select {font-size: 9pt;}
-    .viewmore{margin-top: 20px;}
 
     .slider-images {margin-top: 40px;}
-    .vertical-coverage {padding-bottom: 40px;}
     .gray {padding-top: 20px; margin-bottom: 20px}
     .slider h5 {font-size: 12pt;}
-    #education {padding-top: 40px; padding-bottom: 20px;}
-    #education h5 {margin-top: 10px; text-transform: uppercase;}
-    #education-top {padding-bottom: 40px; padding-top: 40px;}
-    #education p {margin-bottom: 30px;}
-    #daily-insight h1 {padding-top: 0px;}
-    .course {margin-bottom: 0px}
-    .course .item {margin-bottom: 10px}
-    .offer {margin-top: 30px;}
-    .become-member {
-      margin-top: 40px;
-      padding-bottom: 40px;
-    }
-    .become-member h3 {padding-top: 20px;}
-
-    .prefooter {margin-top: 30px;}
-    .line {margin-bottom: 30px}
-    .item{margin-bottom: 20px;}
-    .member {margin-top: 0px;}
-    .partner {margin-bottom: 30px;
-
-    }
-    .speaking_engagements {
-      margin-bottom: 30px;
-    }
-    .benefits {
-      padding-top: 0px;
-      padding-bottom: 0px;
-      min-height:182px;
-    }
-
-    form p {margin-right: 10px;}
-
-    footer #copyrights {
-      margin-top: 19px;
-    }
 
     .padding-right-clear {
       padding-right: 0px;
