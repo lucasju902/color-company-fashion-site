@@ -2387,6 +2387,7 @@ form .ui-select-container.selectize-control {
         font-weight: lighter;
         padding: 10px 5px;
         height: 40px;
+        font-size: 13px;
       }
     }
 
@@ -2499,7 +2500,7 @@ form .ui-select-container.selectize-control {
       display: inline-block;
       margin-bottom: 22px;
       width: 95%;
-      font-size: 16px;
+      font-size: 13px;
 
       .selectize-control {
         //height: 50px;
@@ -2520,10 +2521,14 @@ form .ui-select-container.selectize-control {
 
       .ui-select-match {
         font-weight: lighter;
-        font-size: 16px;
+        font-size: 13px;
         vertical-align: middle;
         background-color: white;
       }
+    }
+
+    .ng-binding {
+      font-size: 13px;
     }
 
     p {
@@ -3137,6 +3142,12 @@ form .ui-select-container.selectize-control {
 .billing-information {
   margin-bottom: 100px;
 
+  .membr-block {
+    input {
+      font-size: 13px;
+    }
+  }
+
   .billing-1 {
     margin-top: 50px;
     padding-right: 50px;
@@ -3193,13 +3204,14 @@ form .ui-select-container.selectize-control {
         border-radius: 0;
         background: none;
         text-transform: uppercase;
+        font-size: 13px;
 
 
       }
 
       .ui-select-match {
         font-weight: lighter;
-        font-size: 14px;
+        font-size: 13px;
         vertical-align: middle;
         background-color: white;
       }
