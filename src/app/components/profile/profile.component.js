@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('profileComponent', {
     templateUrl: 'app/components/profile/profile.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService) {
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout) {
       var vm = this;
 
       vm.job_function = categoryValues('job function');
@@ -10,6 +10,52 @@ angular
       vm.industry = categoryValues('industry');
       vm.company_size = categoryValues('company size');
       vm.editFlag = false;
+      vm.fileFlag = true;
+
+      $scope.uploadme;
+
+      $scope.uploadImage = function () {
+        // var fd = new FormData();
+        // var imgBlob = dataURItoBlob($scope.uploadme);
+        // fd.append('file', imgBlob);
+        // $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, {id: vm.userID, image: fd}, {transformRequest: angular.identity})
+        //   .then(function (res) {
+        //     if (res.status !== 200) {
+        //       console.log(res);
+        //     }
+        //   });
+      };
+
+      // $scope.add = function (e) {
+      //   vm.file = e.files[0];
+      //   $timeout(function () {
+      //     vm.fileFlag = true;
+      //   }, 1000);
+      // };
+      //
+      // vm.uploadPhoto = function () {
+      //   var formData = new FormData();
+      //   var imgBlob = dataURItoBlob(vm.file);
+      //   formData.append('image', imgBlob, vm.file.name);
+      //   $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, {id: vm.userID, image: formData})
+      //     .then(function (res) {
+      //       if (res.status !== 200) {
+      //         console.log(res);
+      //       }
+      //     });
+      // };
+
+      function dataURItoBlob(dataURI) {
+        var binary = atob(dataURI.split(',')[1]);
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        var array = [];
+        for (var i = 0; i < binary.length; i++) {
+          array.push(binary.charCodeAt(i));
+        }
+        return new Blob([new Uint8Array(array)], {
+          type: mimeString
+        });
+      }
 
       vm.init = function () {
         authService.loadCurrentUser().then(function (res) {

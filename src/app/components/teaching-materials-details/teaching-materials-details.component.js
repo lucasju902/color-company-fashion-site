@@ -41,7 +41,7 @@ angular
       if (!products.teaching_materials) {
         products.teaching_materials = {};
       }
-      products.teaching_materials[id] = products.teaching_materials[id] ? products.teaching_materials[id] + 1 : 1;
+      products.teaching_materials[id] = 1;
       localStorageService.set('products', products);
       $state.go('cart-page', {wayBack: 'teachingMaterials'});
     };
