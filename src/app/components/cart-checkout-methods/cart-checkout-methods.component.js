@@ -148,6 +148,7 @@ angular
           vm.placeOrderFlag = true;
         }, 0);
         var data = {
+          id: vm.user.id || 0,
           email: vm.data.email.value,
           reports: vm.purchase.IDs.reports,
           teaching_materials: vm.purchase.IDs.teaching_materials,

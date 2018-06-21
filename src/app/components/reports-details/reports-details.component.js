@@ -42,7 +42,7 @@ angular
       if (!products.reports) {
         products.reports = {};
       }
-      products.reports[id] = products.reports[id] ? products.reports[id] + 1 : 1;
+      products.reports[id] = 1;
       localStorageService.set('products', products);
       $state.go('cart-page', {wayBack: 'reports'});
     };

@@ -58,17 +58,17 @@
         <div class="profile-data-text">
 
           <div class="membr-block">
+            <label for="first_name">FIRST NAME</label>
             <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text"
                    id="first_name" name="first_name"
                    ng-class="'ng-dirty' && membership.first_name.$invalid ?  'error' :''">
-            <label for="first_name">FIRST NAME</label>
           </div>
 
           <div class="membr-block">
+            <label for="last_name">LAST NAME</label>
             <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text"
                    id="last_name" name="last_name"
                    ng-class="'ng-dirty' && membership.last_name.$invalid ?  'error' :''">
-            <label for="last_name">LAST NAME</label>
           </div>
 
           <!--<div class="membr-block">-->
@@ -79,28 +79,30 @@
           <!--</div>-->
 
           <div class="membr-block">
+            <label for="company">COMPANY</label>
             <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value"
                    type="text"
                    id="company"
                    name="company"
                    ng-class="'ng-dirty' && membership.company.$invalid ?  'error' :''">
-            <label for="company">COMPANY</label>
           </div>
 
           <div class="membr-block">
+            <label for="job_title">JOB TITLE</label>
             <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value"
                    type="text"
                    id="job_title"
                    name="job_title"
                    ng-class="'ng-dirty' && membership.job_title.$invalid ?  'error' :''">
-            <label for="job_title">JOB TITLE</label>
           </div>
 
           <div class="select-style select-mrg">
+            <label for="job_function">JOB FUNCTION</label>
             <ui-select
               ng-model="$ctrl.data.job_function.value"
               theme="selectize"
               search-enabled="false"
+              id="job_function"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
               <ui-select-choices repeat="job in $ctrl.job_function">
@@ -110,10 +112,12 @@
           </div>
 
           <div class="select-style select-mrg">
+            <label for="company_size">COMPANY SIZE</label>
             <ui-select
               ng-model="$ctrl.data.company_size.value"
               theme="selectize"
               search-enabled="false"
+              id="company_size"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
               <ui-select-choices repeat="companySize in $ctrl.company_size">
@@ -123,10 +127,12 @@
           </div>
 
           <div class="select-style select-mrg">
+            <label for="industry">INDUSTRY</label>
             <ui-select
               ng-model="$ctrl.data.industry.value"
               theme="selectize"
               search-enabled="false"
+              id="industry"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
               <ui-select-choices repeat="ind in $ctrl.industry">
@@ -136,10 +142,12 @@
           </div>
 
           <div class="select-style select-mrg">
+            <label for="country">COUNTRY</label>
             <ui-select
               ng-model="$ctrl.data.country.value"
               theme="selectize"
               search-enabled="false"
+              id="country"
             >
               <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>
               <ui-select-choices repeat="cntry in $ctrl.country">
@@ -163,9 +171,9 @@
           <!--</button>-->
           <!--</div>-->
           <div class="membr-block">
+            <label class="for-textarea" for="bio">BIO</label>
             <textarea ng-show="$ctrl.editFlag" id="bio" ng-model="$ctrl.data.bio.value" ng-value="$ctrl.data.bio.value">
             </textarea>
-            <label for="bio">BIO</label>
           </div>
           <div class="profile-btn-group">
             <button ng-click="$ctrl.cancel()" class="btn white-btn basket-btn"
@@ -179,9 +187,10 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-3 col-md-3 text-center staff-item">
-        <div class="img-responsive background-image"
-             style="background: {{'url(' + $ctrl.img_url + ') top center'}};
+      <div class="col-lg-3 col-md-5 text-center staff-item">
+        <div class="profile-photo">
+          <div class="img-responsive background-image"
+               style="background: {{'url(' + $ctrl.userData.img_url + ') top center'}};
                     background-repeat: no-repeat;
                     background-size: cover;
                     height: 250px;
@@ -189,17 +198,29 @@
                     border-radius: 50%;
                     background-color: #000;
                     margin: auto"
-        >
+          >
+            <div ng-show="$ctrl.editFlag" class="edit-photo">
+              <label class="file-upload">
+                <input type="file" id="file" fileread="uploadme" ><!--ng-model="file" onchange="angular.element(this).scope().add(this)"-->
+                ADD NEW PHOTO
+              </label>
+              <br>
+              <span ng-show="$ctrl.fileFlag">{{$ctrl.file.name}}</span>
+              <br>
+              <button ng-show="$ctrl.fileFlag" ng-click="uploadImage()" class="upload-photo-btn">UPLOAD</button>
+            </div>
+          </div>
         </div>
         <div class="speaking_item" style="padding-top: 15px">
           <div class="speaking_item_header profile-name"><a>{{$ctrl.data.first_name.value}} {{$ctrl.data.last_name.value}}</a>
           </div>
-          <div ng-click="$ctrl.goCart()" class="cart-button">
+          <div ng-click="$ctrl.goCart()" class="cart-button btn white-btn">
             <i class="fa fa-shopping-cart fa-2x pointer" aria-hidden="true"></i>
             <p>&emsp;MY CART</p>
           </div>
         </div>
       </div>
+      <img src="{{uploadme}}" width="100" height="50" alt="Image preview...">
       <div class="col-lg-2 col-md-2"></div>
     </div>
   </div>

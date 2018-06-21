@@ -2317,6 +2317,49 @@ form .ui-select-container.selectize-control {
 .profile-page {
   margin-top: 0;
 
+  .img-responsive {
+    display: flex;
+    justify-content: center;
+
+    .edit-photo {
+      align-self: flex-end;
+
+      color: white;
+      opacity: .3;
+      height: 50%;
+      width: 100%;
+      background-color: #4c4c4c;
+      border-bottom-left-radius: 50% 100%;
+      border-bottom-right-radius: 50% 100%;
+      vertical-align: middle;
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .file-upload {
+        border: 1px solid white;
+        display: inline-block;
+        margin-top: 5px;
+        padding: 1px 6px;
+        cursor: pointer;
+      }
+
+      .upload-photo-btn {
+        margin: 5px 0;
+        background: none;
+        border: white 1px solid;
+      }
+
+
+    }
+  }
+
+  //.img-responsive:hover {
+  //  .edit-photo {
+  //    display: block;
+  //  }
+  //}
 
   .basket-btn {
     margin-top: 10px;
@@ -2331,12 +2374,14 @@ form .ui-select-container.selectize-control {
 
 
   .cart-button {
-    width: 150px;
+    //width: 150px;
     margin-top: 10px;
     vertical-align: middle;
     margin-left: auto;
     margin-right: auto;
     cursor: pointer;
+    outline: none;
+    padding: 7px 20px;
 
     i {
       color: #bb0076;
@@ -2344,6 +2389,16 @@ form .ui-select-container.selectize-control {
     p {
       font-size: 16px;
       font-weight: lighter;
+    }
+  }
+
+  .cart-button:hover {
+
+    i {
+      color: white;
+    }
+    p {
+      color: white;
     }
   }
 
@@ -2388,7 +2443,22 @@ form .ui-select-container.selectize-control {
         padding: 10px 5px;
         height: 40px;
         font-size: 13px;
+        margin-bottom: 10px;
       }
+
+      input, textarea {
+        &:focus ~ label, &:not([value=""]) ~ label {
+          display: block;
+
+        }
+      }
+    }
+
+    label {
+      position: static;
+      display: block;
+      font-weight: 700;
+      margin-bottom: 2px;
     }
 
     .custom-file {
@@ -2498,7 +2568,7 @@ form .ui-select-container.selectize-control {
 
     .select-mrg {
       display: inline-block;
-      margin-bottom: 22px;
+      margin-bottom: 10px;
       width: 95%;
       font-size: 13px;
 
@@ -2541,8 +2611,6 @@ form .ui-select-container.selectize-control {
         height: 24px;
       }
 
-
-
       .electize-dropdown {
         color: black;
       }
@@ -2553,6 +2621,9 @@ form .ui-select-container.selectize-control {
       margin-bottom: 0;
       color: #3f3f3f;
       font-weight: normal;
+    }
+    .for-textarea {
+      top: 10%;
     }
 
   }
@@ -3003,6 +3074,22 @@ form .ui-select-container.selectize-control {
     display: inline-block;
   }
 
+  .method-1,
+  .method-2,
+  .method-3,
+  .method-4 {
+    border-bottom: #d0d0d0 1px solid;
+    margin-bottom: 15px;
+    position: relative;
+
+    h4 {
+      span {
+        display: inline-block;
+        width: 20px;
+      }
+    }
+  }
+
   .line {
     margin-bottom: 15px;
     border-bottom: #d0d0d0 1px solid;
@@ -3010,14 +3097,16 @@ form .ui-select-container.selectize-control {
   }
 
   .edit-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
     font-size: 12px;
     padding: 4px 50px;
     background-color: #e8e8e8;
     border-radius: 0px;
     border: 0;
     color: #4c4c4c;
-    float: right;
-    vertical-align: top;
+    outline: none;
 
   }
 }
@@ -3320,6 +3409,21 @@ form .ui-select-container.selectize-control {
 
       #submit {
         margin-left: 4%;
+      }
+
+      #submit:active,
+      #submit:focus{
+        outline: none;
+        border: solid 1px #bb0076;
+        color: #ffffff;
+        background: #bb0076;
+      }
+
+      #submit:hover {
+        border: solid 1px #bb0076;
+        background: #ce0b86;
+        color: white;
+        text-decoration: none;
       }
 
       button {

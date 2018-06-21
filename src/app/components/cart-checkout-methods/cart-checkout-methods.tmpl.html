@@ -14,25 +14,21 @@
     <div class="row">
       <div class="col-lg-offset-1 col-lg-10 col-md-12">
         <div class="method-1">
-          <h4 style="color: {{$ctrl.methodStyle[0]}}">1. CHECK OUT METHOD</h4>
+          <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECK OUT METHOD</h4>
           <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT</button>
         </div>
-        <div class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 2" class="method-2">
-          <h4 style="color: {{$ctrl.methodStyle[1]}}">2. BILLING INFORMATION</h4>
+          <h4 style="color: {{$ctrl.methodStyle[1]}}"><span>2. </span>BILLING INFORMATION</h4>
           <button ng-click="$ctrl.goToMethod(2)" ng-show="$ctrl.methodNumber !== 2" class="edit-btn">EDIT</button>
         </div>
-        <div ng-show="$ctrl.maxMethod >= 2" class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 3" class="method-3">
-          <h4 style="color: {{$ctrl.methodStyle[2]}}">3. PAYMENT INFORMATION</h4>
+          <h4 style="color: {{$ctrl.methodStyle[2]}}"><span>3. </span>PAYMENT INFORMATION</h4>
           <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3 && !!$ctrl.purchase.amount" class="edit-btn">EDIT</button>
         </div>
-        <div ng-show="$ctrl.maxMethod >= 3" class="line"></div>
         <div ng-show="$ctrl.maxMethod >= 4" class="method-4">
-          <h4 style="color: {{$ctrl.methodStyle[3]}}">4. ORDER REVIEW</h4>
+          <h4 style="color: {{$ctrl.methodStyle[3]}}"><span>4. </span>ORDER REVIEW</h4>
           <button ng-click="$ctrl.goToMethod(4)" ng-show="$ctrl.methodNumber !== 4" class="edit-btn">EDIT</button>
         </div>
-        <div ng-show="$ctrl.maxMethod >= 4" class="line"></div>
       </div>
     </div>
   </div>
@@ -119,7 +115,7 @@
           <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail"
                  name="email"
                  ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>
-          <label for="billingEmail">EMAIL <span class="red-text">*</span></label>
+          <label for="billingEmail">WORK-RELATED <span class="red-text">*</span></label>
         </div>
       </div>
       <div class="col-lg-4 col-md-6 col-sm-6 billing-2">
