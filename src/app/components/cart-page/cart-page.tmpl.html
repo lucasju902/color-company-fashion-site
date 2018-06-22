@@ -26,7 +26,14 @@
             </td>
             <td class="product-name">
               <h4>{{item.header}}</h4>
-              <span ng-bind-html="item.description"></span>
+              <div class="justify margin-zero-p">
+                <p class="four_line_height" style="display: block" data-ng-bind-html="item.description"
+                   data-ellipsis
+                   data-ellipsis-symbol="... "
+                   data-ellipsis-append="<a>Read more</a>"
+                   data-ellipsis-append-click="$ctrl.toggleTextHeight"
+                ></p>
+              </div>
             </td>
             <td class="product-count">
               <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->
