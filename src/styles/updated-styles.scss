@@ -3132,18 +3132,31 @@ form .ui-select-container.selectize-control {
       .err {
 
         h4 {
+          position: absolute;
+          bottom: 20%;
           color: red;
-          margin-bottom: 10px;
+          //margin-bottom: 10px;
         }
       }
 
       a {
+        //position: absolute;
+        //bottom: 20%;
+        //height: 20px;
+        text-decoration: none;
+        outline: none;
         color: black;
+      }
+
+      .reset-password {
+        position: absolute;
+        bottom: 20%;
       }
 
       .login-btn{
         position: absolute;
         bottom: 0;
+        padding-top: 0;
 
         button {
           padding: 10px 35px;
@@ -3169,7 +3182,7 @@ form .ui-select-container.selectize-control {
     form {
       .guest-checkbox {
         p {
-          margin-right: 100px;
+          //margin-right: 100px;
           margin-bottom: 10px;
 
           label {
@@ -3192,9 +3205,16 @@ form .ui-select-container.selectize-control {
 
   @media (max-width: 1300px) and (min-width: 1200px) {
     .guest {
+      .guest-checkbox {
+        p {
+          label {
+            font-size: 12px;
+          }
+        }
+      }
+
       .login-btn {
         button {
-          margin-top: 50px;
           padding: 7px 20px;
           font-size: 14px;
         }
@@ -3291,12 +3311,13 @@ form .ui-select-container.selectize-control {
 
       .selectize-input {
         font-weight: lighter;
-        padding: 7px 5px;
+        padding: 7px 10px;
         vertical-align: middle;
         border-radius: 0;
         background: none;
         text-transform: uppercase;
         font-size: 13px;
+        box-shadow: none;
 
 
       }
@@ -3343,7 +3364,7 @@ form .ui-select-container.selectize-control {
     margin-right: auto;
     margin-left: auto;
     .panel {
-      //width: 80%;
+      box-shadow: none;
       margin: 2em auto;
     }
 
@@ -3405,10 +3426,12 @@ form .ui-select-container.selectize-control {
 
     .panel-body {
       //width: 100%;
+      position: relative;
       margin: 10px auto;
 
       #submit {
         margin-left: 4%;
+        margin-top: 40px;
       }
 
       #submit:active,
@@ -3424,6 +3447,13 @@ form .ui-select-container.selectize-control {
         background: #ce0b86;
         color: white;
         text-decoration: none;
+      }
+
+      .error-message {
+        padding-left: 16px;
+        color: red;
+        position: absolute;
+        top: 56%;
       }
 
       button {
@@ -3481,16 +3511,47 @@ form .ui-select-container.selectize-control {
   }
 }
 
+.order-review {
+  .products-table {
+    table {
+      border-top: 0;
+      border-bottom: #d0d0d0 1px solid;
+    }
+  }
+}
+
 .reset-password-cart {
   .subTitle {
     margin-bottom: 5px;
+  }
+
+  .membr-block {
+
+    label {
+      position: absolute;
+      top: 29px;
+      font-size: 16px;
+    }
+
+    input {
+      font-size: 16px;
+    }
+  }
+
+  .error-message {
+    color: red;
+    position: absolute;
+    top: 45%;
   }
 
   .line {
     margin-bottom: 15px;
     border-bottom: #878787 2px solid;
     width: 100%;
+  }
 
+  .info-text {
+    padding-top: 20px;
   }
 
   .login-container {
@@ -3584,8 +3645,6 @@ form .ui-select-container.selectize-control {
     }
   }
 }
-
-// Customized Infographics END
 
 .to-uppercase {
   text-transform: uppercase;
@@ -4123,5 +4182,15 @@ footer {
   }
 }
 
+.cart-surve-modal {
 
-// Customized Infographics END
+  .cart-modal-btn-group {
+    display: flex;
+    justify-content: space-between;
+
+    .btn {
+      margin-bottom: 10px;
+      width: 140px;
+    }
+  }
+}
