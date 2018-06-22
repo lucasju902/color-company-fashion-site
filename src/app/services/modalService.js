@@ -18,7 +18,7 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
         class: 'graphic-modal'
       },{
         tmpl: 'app/components/modal/cat-survey-modal.tmpl.html',
-        class: 'adv-modal'
+        class: 'cart-modal'
       }];
 
     $uibModal.open({

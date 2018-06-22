@@ -402,7 +402,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
   $stateProvider
     .state('cart-page', {
-      url: '/cart/:wayBack',
+      url: '/cart?:wayBack',
       component: 'cartPageComponent'
     });
   $stateProvider
