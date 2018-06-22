@@ -186,7 +186,7 @@ angular
       vm.errFlag = false;
       vm.payDataFlag = false;
       vm.placeOrderFlag = false;
-      vm.maxMethod = 4;
+      vm.maxMethod = 1;
       vm.tax = 0;
       vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
       vm.registerAndCheckout = false;
