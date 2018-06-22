@@ -7,7 +7,8 @@ var app = angular.module('app', [
   'ui.router',
   'ui.select',
   'ui.bootstrap',
-  'LocalStorageModule'
+  'LocalStorageModule',
+  'ngFileUpload'
 ]);
 
 var config = {

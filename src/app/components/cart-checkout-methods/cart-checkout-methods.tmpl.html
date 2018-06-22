@@ -14,7 +14,7 @@
     <div class="row">
       <div class="col-lg-offset-1 col-lg-10 col-md-12">
         <div class="method-1">
-          <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECK OUT METHOD</h4>
+          <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECKOUT METHOD</h4>
           <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT</button>
         </div>
         <div ng-show="$ctrl.maxMethod >= 2" class="method-2">
@@ -39,14 +39,16 @@
       <div class="col-lg-offset-2 col-lg-4 col-md-6 login">
         <h4>HUEGROUP MEMBERS</h4>
         <form>
-          <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email"
-                 id="email" type="text">
-          <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password"
-                 id="password" type="password">
+          <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? 'border-color:red;' : ''}}"
+                 ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">
+          <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? 'border-color:red;' : ''}}"
+                 ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">
           <div class="err">
             <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>
           </div>
+          <div class="reset-password">
           <a ng-click="$ctrl.passwordRecover()" class="reset-your-password pointer">RESET YOUR PASSWORD</a>
+          </div>
           <div class="button login-btn">
             <button ng-click="$ctrl.login()" class="btn">LOGIN</button>
           </div>
@@ -115,7 +117,7 @@
           <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail"
                  name="email"
                  ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>
-          <label for="billingEmail">WORK-RELATED <span class="red-text">*</span></label>
+          <label for="billingEmail">EMAIL(WORK-RELATED) <span class="red-text">*</span></label>
         </div>
       </div>
       <div class="col-lg-4 col-md-6 col-sm-6 billing-2">
@@ -219,20 +221,23 @@
             </div>
           </div>
         </div>
+        <div ng-show="$ctrl.payError" class="error-message afade text-left">
+          {{$ctrl.payError}}
+        </div>
         <button ng-disabled="$ctrl.payDataFlag" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE</button>
         <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>
       </form>
     </div>
   </div>
 </section>
-<section ng-show="$ctrl.methodNumber === 4" class="products-cart">
+<section ng-show="$ctrl.methodNumber === 4" class="products-cart order-review">
   <div class="container-fluid  text-center title">
     <div class="row">
       <div class="col-lg-offset-1 col-lg-10 col-md-12 products-table ">
         <table>
           <tr class="product-row" ng-repeat="item in $ctrl.products">
             <td class="product-img">
-              <img src="{{item.image_url}}" style="max-width: 300px; max-height: 300px">
+              <img src="{{item.image_url}}" >
             </td>
             <td class="product-name">
               <h4>{{item.header}}</h4>
@@ -271,7 +276,7 @@
       </div>
       <div class="col-sm-4 col-xs-4 ">
       </div>
-      <div class="col-sm-offset-4 col-sm-4 col-xs-8 ">
+      <div class="col-sm-offset-4 col-lg-3 col-sm-4 col-xs-8 text-right">
         <table class="table-prise">
           <tr>
             <td>

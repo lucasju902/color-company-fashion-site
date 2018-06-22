@@ -6,6 +6,7 @@ angular
       var vm = this;
       vm.user = localStorageService.get('currentUser');
       vm.methodNumber = 1;
+      vm.payError = false;
 
       vm.getBillingData = function () {
         $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
@@ -55,9 +56,6 @@ angular
 
       vm.uploadBillingInfo = function () {
         if (vm.user.id) {
-          if (!dataValidate.validate(vm.data)) {
-            return;
-          }
           var data = {};
           for (var item in vm.data) {
             if (vm.data[item].type === 'select') {
@@ -80,6 +78,9 @@ angular
       };
 
       vm.continue = function () {
+        if (vm.methodNumber === 2 && !dataValidate.validate(vm.data)) {
+          return;
+        }
         vm.methodNumber = vm.methodNumber + 1;
         if (vm.methodNumber === 3 && !vm.purchase.amount) {
           vm.methodNumber = 4;
@@ -145,6 +146,7 @@ angular
 
       vm.goToThank = function () {
         $timeout(function () {
+          vm.errFlag = false;
           vm.placeOrderFlag = true;
         }, 0);
         var data = {
@@ -173,6 +175,10 @@ angular
                 $state.go('cart-thank', {id: res.data.orderId});
               }
             }
+          })
+          .catch(function (err) {
+            vm.placeOrderFlag = false;
+            vm.errFlag = true;
           });
       };
 
@@ -230,7 +236,7 @@ angular
         authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
       }, function (err, clientInstance) {
         if (err) {
-          console.error(err);
+          // console.error(err);
           return;
         }
         braintree.hostedFields.create({
@@ -284,10 +290,13 @@ angular
           }
         }, function (err, hostedFieldsInstance) {
           if (err) {
-            console.error(err);
+            // console.error(err);
             return;
           }
           hostedFieldsInstance.on('validityChange', function (event) {
+            $timeout(function () {
+              vm.payError = false;
+            }, 0);
             var field = event.fields[event.emittedBy];
             if (field.isValid) {
               if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear') {
@@ -335,16 +344,19 @@ angular
             hostedFieldsInstance.tokenize(function (err, payload) {
               if (err) {
                 $timeout(function () {
+                  vm.payError = err.message;
                   vm.payDataFlag = false;
-                  console.error(err);
+                  // console.error(err);
                   return;
                 }, 0);
               }
               // This is where you would submit payload.nonce to your server
               $timeout(function () {
-                vm.nonce = payload.nonce;
-                vm.continue();
-                vm.payDataFlag = false;
+                if (payload && payload.nonce) {
+                  vm.nonce = payload.nonce;
+                  vm.continue();
+                  vm.payDataFlag = false;
+                }
               }, 0);
             });
           });

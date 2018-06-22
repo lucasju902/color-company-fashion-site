@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('cartPageComponent', {
     templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
-    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams) {
+    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService) {
       var vm = this;
 
       vm.init = function () {
@@ -68,9 +68,15 @@ angular
       };
 
       vm.removeProduct = function (id, type, index) {
-        delete vm.IDs[type][id];
-        vm.products.splice(index, 1);
-        localStorageService.set('products', vm.IDs);
+        modalService.showModal(4, function () {
+          console.log('@@@@@@@@@@ ',id, type, index);
+          delete vm.IDs[type][id];
+          vm.products.splice(index, 1);
+          localStorageService.set('products', vm.IDs);
+        });
+        // delete vm.IDs[type][id];
+        // vm.products.splice(index, 1);
+        // localStorageService.set('products', vm.IDs);
       };
 
       vm.goWayBack = function () {
