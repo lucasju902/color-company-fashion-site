@@ -398,7 +398,8 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('profile', {
       url: '/profile',
-      component: 'profileComponent'
+      component: 'profileComponent',
+      protected: true
     });
   $stateProvider
     .state('cart-page', {
