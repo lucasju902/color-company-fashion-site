@@ -4,11 +4,11 @@ angular
     templateUrl: 'app/components/password-recover-cart/password-recover-cart.tmpl.html',
     controller: function ($state, $http, appConfig) {
       var self = this;
-      this.successRequest = false;
-      this.email = '';
-      this.error = false;
+      self.successRequest = false;
+      self.email = '';
+      self.error = false;
 
-      this.onSendLoginClick = function () {
+      self.onSendLoginClick = function () {
         if (self.successRequest) {
           $state.go('login');
         }
@@ -29,7 +29,7 @@ angular
         }
       };
 
-      this.goBack = function () {
+      self.goBack = function () {
         $state.go('cart-checkout');
       };
     }
