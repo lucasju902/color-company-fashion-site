@@ -190,7 +190,7 @@
       <div class="col-lg-3 col-md-5 text-center staff-item">
         <div class="profile-photo">
           <div class="img-responsive background-image"
-               style="background: {{'url(' + $ctrl.userData.img_url + ') top center'}};
+               style="background: {{'url(' + $ctrl.userData.image_url + ') top center'}};
                     background-repeat: no-repeat;
                     background-size: cover;
                     height: 250px;
@@ -201,13 +201,13 @@
           >
             <div ng-show="$ctrl.editFlag" class="edit-photo">
               <label class="file-upload">
-                <input type="file" id="file" fileread="uploadme" ><!--ng-model="file" onchange="angular.element(this).scope().add(this)"-->
-                ADD NEW PHOTO
+                <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
+                        accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">
+                  Select File</button>
               </label>
               <br>
               <span ng-show="$ctrl.fileFlag">{{$ctrl.file.name}}</span>
               <br>
-              <button ng-show="$ctrl.fileFlag" ng-click="uploadImage()" class="upload-photo-btn">UPLOAD</button>
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@
           </div>
         </div>
       </div>
-      <!--<img src="{{uploadme}}" width="100" height="50" alt="Image preview...">-->
+
       <div class="col-lg-2 col-md-2"></div>
     </div>
   </div>

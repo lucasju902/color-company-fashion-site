@@ -2,8 +2,18 @@ angular
   .module('app')
   .component('profileComponent', {
     templateUrl: 'app/components/profile/profile.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout) {
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout, Upload) {
       var vm = this;
+      $scope.uploadFiles = function (file) {
+        vm.userData.image_url = file.$ngfBlobUrl;
+        file.upload = Upload.upload({
+          url: appConfig.dashboardServiceUrl + 'members/' + vm.userID,
+          method: 'PUT',
+          fields: {'member[image]': file},
+          file: file,
+          fileFormDataName: 'member[image]'
+        });
+      };
 
       vm.job_function = categoryValues('job function');
       vm.country = categoryValues('country');
@@ -11,51 +21,6 @@ angular
       vm.company_size = categoryValues('company size');
       vm.editFlag = false;
       vm.fileFlag = true;
-
-      $scope.uploadme;
-
-      $scope.uploadImage = function () {
-        // var fd = new FormData();
-        // var imgBlob = dataURItoBlob($scope.uploadme);
-        // fd.append('file', imgBlob);
-        // $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, {id: vm.userID, image: fd}, {transformRequest: angular.identity})
-        //   .then(function (res) {
-        //     if (res.status !== 200) {
-        //       console.log(res);
-        //     }
-        //   });
-      };
-
-      // $scope.add = function (e) {
-      //   vm.file = e.files[0];
-      //   $timeout(function () {
-      //     vm.fileFlag = true;
-      //   }, 1000);
-      // };
-      //
-      // vm.uploadPhoto = function () {
-      //   var formData = new FormData();
-      //   var imgBlob = dataURItoBlob(vm.file);
-      //   formData.append('image', imgBlob, vm.file.name);
-      //   $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, {id: vm.userID, image: formData})
-      //     .then(function (res) {
-      //       if (res.status !== 200) {
-      //         console.log(res);
-      //       }
-      //     });
-      // };
-
-      function dataURItoBlob(dataURI) {
-        var binary = atob(dataURI.split(',')[1]);
-        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        var array = [];
-        for (var i = 0; i < binary.length; i++) {
-          array.push(binary.charCodeAt(i));
-        }
-        return new Blob([new Uint8Array(array)], {
-          type: mimeString
-        });
-      }
 
       vm.init = function () {
         authService.loadCurrentUser().then(function (res) {
@@ -65,7 +30,6 @@ angular
               if (res && res.data) {
                 vm.userData = res.data;
                 vm.date = moment(vm.userData.date_year + '-' + vm.userData.date_month + '-' + vm.userData.date_day).format('YYYY-MM-DD');
-                vm.img_url = 'http://s3.amazonaws.com/hue-storage/huegroup-website/about_vertical_coverages/image1s/000/000/001/original/HG_REPORT-V1-image.001.jpeg?1523632810';
 
                 vm.indexes = {
                   job_function: vm.searchIndex(vm.job_function, vm.userData.job_function),
