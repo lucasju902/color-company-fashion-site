@@ -299,8 +299,8 @@ angular
             }, 0);
             var field = event.fields[event.emittedBy];
             if (field.isValid) {
-              if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear') {
-                if (!event.fields.expirationMonth.isValid || !event.fields.expirationYear.isValid) {
+              if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear' || event.emittedBy === 'cvv') {
+                if (!event.fields.expirationMonth.isValid || !event.fields.expirationYear.isValid || !event.fields.cvv.isValid) {
                   return;
                 }
               } else if (event.emittedBy === 'number') {
