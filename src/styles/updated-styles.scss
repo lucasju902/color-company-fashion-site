@@ -2987,6 +2987,54 @@ form .ui-select-container.selectize-control {
       margin-top: auto;
     }
   }
+
+  @media (max-width: 575px) {
+    .products-table {
+      .product-row {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        .product-img {
+          width: 100%;
+        }
+        .product-name {
+          width: 100%;
+
+          h4 {
+            font-size: 16px;
+          }
+          p {
+            font-size: 12px;
+          }
+        }
+        .product-count {
+          width: 100%;
+          padding: 10px 5px;
+
+          h4 {
+            font-size: 14px;
+          }
+        }
+        .product-prise {
+          width: 100%;
+          padding: 10px 5px;
+
+          h4 {
+            font-size: 14px;
+          }
+        }
+        .price-for-all {
+          width: 100%;
+          padding: 10px 5px;
+
+          h4 {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
 }
 
 .cart-checkout {
@@ -3654,6 +3702,11 @@ form .ui-select-container.selectize-control {
 
   .cart-thank {
     padding: 40px 100px;
+
+    @media (max-width: 768px) {
+      padding: 40px 0;
+
+    }
   }
   h4 {
     color: black;
