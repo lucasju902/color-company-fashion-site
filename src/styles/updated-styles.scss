@@ -2646,6 +2646,54 @@ form .ui-select-container.selectize-control {
   cursor: pointer;
 }
 
+@media (max-width: 576px) {
+  .profile-page {
+
+    .profile-page-rows {
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+
+      .staff-item {
+        width: 100%;
+      }
+
+      .user-data {
+        width: 100%;
+        order: 1;
+
+        .profile-data-text {
+          text-align: center;
+        }
+
+        .basket-btn {
+          float: none;
+        }
+      }
+      .membr-block {
+
+        label {
+          text-align: left;
+          //padding-left: 18px;
+        }
+
+        .selectize-control {
+          text-align: left;
+        }
+      }
+
+      .select-mrg {
+        width: 100%;
+        text-align: left;
+
+        label {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
 
 /*******************styles for become-member*********************/
 
