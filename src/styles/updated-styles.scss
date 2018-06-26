@@ -3877,6 +3877,11 @@ form .ui-select-container.selectize-control {
   font-family: 'Gotham-Book';
   margin-top: -100px;
 
+  .outline-style{
+    text-decoration: none;
+    outline: none;
+  }
+
   h1 {
     font-size: 34pt;
     font-weight: 700;
