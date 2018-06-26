@@ -214,7 +214,7 @@ angular
         $http.get(appConfig.dashboardServiceUrl + 'checkouts', {params: data})
           .then(function (res) {
             if (res) {
-              console.log('res', res);
+              // console.log('res', res);
               vm.info = res.data.info;
               if (res.data.status === 'fail') {
                 vm.errFlag = true;
