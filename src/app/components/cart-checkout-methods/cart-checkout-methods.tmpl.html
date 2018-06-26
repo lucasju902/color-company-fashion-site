@@ -116,7 +116,7 @@
         <div class="membr-block">
           <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail"
                  name="email"
-                 ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''" required>
+                 ng-class="'ng-dirty' && membership.Email.$invalid ?  'error' :''">
           <label for="billingEmail">EMAIL(WORK-RELATED) <span class="red-text">*</span></label>
         </div>
       </div>
@@ -147,7 +147,8 @@
         <div class="select-style select-mrg search-selector">
           <ui-select ng-model="$ctrl.data.state.value" theme="selectize">
             <ui-select-match placeholder="PLEASE SELECT STATE/PROVINCE *">
-              <span ng-bind-html="$select.selected.title || $ctrl.data.state.value"></span>
+              <span style="{{($ctrl.data.state.value && $select.selected.title != $ctrl.states[0].title)? 'color: black' : ''}}"
+                ng-bind-html="$select.selected.title || $ctrl.data.state.value"></span>
             </ui-select-match>
             <ui-select-choices repeat="state in ($ctrl.states | sortFilter:$select.search)">
               <span ng-bind-html="state.title"></span>
@@ -167,7 +168,8 @@
         <div class="select-style select-mrg search-selector">
           <ui-select ng-model="$ctrl.data.country.value" theme="selectize">
             <ui-select-match placeholder="PLEASE SELECT COUNTRY *">
-              <span ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>
+              <span style="{{($ctrl.data.country.value && $select.selected.title != $ctrl.country[0].title)? 'color: black' : ''}}"
+                    ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>
             </ui-select-match>
             <ui-select-choices repeat="country in ($ctrl.country | sortFilter:$select.search)">
               <span ng-bind-html="country.title"></span>

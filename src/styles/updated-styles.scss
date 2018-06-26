@@ -2355,7 +2355,6 @@ form .ui-select-container.selectize-control {
         border: white 1px solid;
       }
 
-
     }
   }
 
@@ -2375,7 +2374,6 @@ form .ui-select-container.selectize-control {
   .profile-btn-group {
     width: 95%;
   }
-
 
   .cart-button {
     //width: 150px;
@@ -2531,7 +2529,6 @@ form .ui-select-container.selectize-control {
         }
       }
 
-
       input {
         height: 40px;
         width: 10%;
@@ -2590,7 +2587,6 @@ form .ui-select-container.selectize-control {
         background: none;
         text-transform: uppercase;
 
-
       }
 
       .ui-select-match {
@@ -2646,6 +2642,53 @@ form .ui-select-container.selectize-control {
   cursor: pointer;
 }
 
+@media (max-width: 576px) {
+  .profile-page {
+
+    .profile-page-rows {
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+
+      .staff-item {
+        width: 100%;
+      }
+
+      .user-data {
+        width: 100%;
+        order: 1;
+
+        .profile-data-text {
+          text-align: center;
+        }
+
+        .basket-btn {
+          float: none;
+        }
+      }
+      .membr-block {
+
+        label {
+          text-align: left;
+          //padding-left: 18px;
+        }
+
+        .selectize-control {
+          text-align: left;
+        }
+      }
+
+      .select-mrg {
+        width: 100%;
+        text-align: left;
+
+        label {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
 
 /*******************styles for become-member*********************/
 
@@ -2690,7 +2733,7 @@ form .ui-select-container.selectize-control {
   margin-bottom: 50px;
 }
 
-.subtotal{
+.subtotal {
   color: #606060;
   font-weight: lighter;
 
@@ -2708,7 +2751,7 @@ form .ui-select-container.selectize-control {
 }
 
 @media (max-width: 1300px) and (min-width: 992px) {
-  .subtotal{
+  .subtotal {
     h4 {
       font-size: 16px;
     }
@@ -2879,27 +2922,45 @@ form .ui-select-container.selectize-control {
       td {
         padding: 30px 5px;
         vertical-align: middle;
-        //text-align: center;
-        //border-right: #3f3f3f 1px solid;
       }
 
       tr {
-        //border-bottom: #3f3f3f 1px solid;
+        display: flex;
+        align-items: baseline;
       }
 
       .product-img {
+        padding: 30px 10px;
         width: 26%;
-        //padding: 5px 20px;
+        .img-box {
+          position: relative;
+          display: inline-block;
+        }
+
+        .category {
+          min-width: 85px;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 45%;
+          height: 25px;
+
+          p {
+            padding: auto;
+            font-size: 12px;          }
+
+        }
 
         img {
           max-width: 300px;
           max-height: 250px;
-          width: 90%;
+          width: 100%;
           height: auto;
         }
       }
 
       .product-name {
+        align-self: start;
         width: 26%;
         text-align: left;
         h4 {
@@ -2960,7 +3021,7 @@ form .ui-select-container.selectize-control {
       }
     }
   }
-  .go-back{
+  .go-back {
     position: relative;
 
     .go-to-reports {
@@ -2992,6 +3053,64 @@ form .ui-select-container.selectize-control {
       margin-top: auto;
     }
   }
+
+  @media (max-width: 575px) {
+    .products-table {
+
+      table tr {
+        border-top: #d0d0d0 1px solid;
+      }
+
+      table tr:nth-child(1) {
+        border-top:none
+      }
+
+      .product-row {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        .product-img {
+          width: 100%;
+        }
+        .product-name {
+          width: 100%;
+          padding-bottom: 10px;
+
+          h4 {
+            font-size: 16px;
+          }
+          p {
+            font-size: 12px;
+          }
+        }
+        .product-count {
+          width: 100%;
+          padding: 10px 5px;
+
+          h4 {
+            font-size: 14px;
+          }
+        }
+        .product-prise {
+          width: 100%;
+          padding: 10px 5px;
+
+          h4 {
+            font-size: 14px;
+          }
+        }
+        .price-for-all {
+          width: 100%;
+          padding: 10px 5px;
+
+          h4 {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
 }
 
 .cart-checkout {
@@ -3003,8 +3122,7 @@ form .ui-select-container.selectize-control {
   }
 }
 
-.tax
-{
+.tax {
   position: relative;
   cursor: pointer;
   display: inline-block;
@@ -3012,8 +3130,7 @@ form .ui-select-container.selectize-control {
   outline: none;
 }
 
-.tax span
-{
+.tax span {
   visibility: hidden;
   color: black;
   position: absolute;
@@ -3027,31 +3144,28 @@ form .ui-select-container.selectize-control {
   border: 1px solid #ccc;
   opacity: .9;
   background-color: white;
-  background-image: -webkit-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-  background-image: -moz-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-  background-image: -ms-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-  background-image: -o-linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
-  background-image: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,0));
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0));
+  background-image: -moz-linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0));
+  background-image: -ms-linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0));
+  background-image: -o-linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0));
+  background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0));
   -moz-border-radius: 4px;
   border-radius: 4px;
-  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
-  box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.5) inset;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 1px 0 rgba(255, 255, 255, .5) inset;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 1px 0 rgba(255, 255, 255, .5) inset;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 1px 0 rgba(255, 255, 255, .5) inset;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.62);
 }
 
-.tax:hover
-{
+.tax:hover {
   border: 0; /* IE6 fix */
 }
 
-.tax:hover span
-{
+.tax:hover span {
   visibility: visible;
 }
 
-.tax span:after
-{
+.tax span:after {
   content: "";
   position: absolute;
   z-index: 1000;
@@ -3064,8 +3178,7 @@ form .ui-select-container.selectize-control {
   border-top: 0;
 }
 
-.tax span:before
-{
+.tax span:before {
   border-top-color: #ccc;
   bottom: -8px;
 }
@@ -3090,6 +3203,19 @@ form .ui-select-container.selectize-control {
       span {
         display: inline-block;
         width: 20px;
+      }
+    }
+
+    @media (max-width: 575px) {
+      margin-bottom: 10px;
+
+      h4 {
+        font-size: 12px;
+      }
+
+      .edit-btn {
+        font-size: 10px;
+        padding: 2px 30px;
       }
     }
   }
@@ -3157,7 +3283,7 @@ form .ui-select-container.selectize-control {
         bottom: 20%;
       }
 
-      .login-btn{
+      .login-btn {
         position: absolute;
         bottom: 0;
         padding-top: 0;
@@ -3244,15 +3370,32 @@ form .ui-select-container.selectize-control {
       margin-left: auto;
       margin-right: auto;
       margin-bottom: 30px;
-      min-width: 424px;
+      min-width: 425px;
     }
     .guest {
       margin-left: auto;
       margin-right: auto;
       padding: 0 30px;
-      min-width: 424px;
+      min-width: 425px;
     }
   }
+
+  @media (max-width: 575px) {
+    padding: 30px 0 70px 0;
+    display: flex;
+
+    .login {
+      min-width: 350px;
+      max-width: 450px;
+      flex-grow: 1;
+    }
+    .guest {
+      flex-grow: 1;
+      min-width: 350px;
+      max-width: 450px;
+    }
+  }
+
 }
 
 .billing-information {
@@ -3323,7 +3466,6 @@ form .ui-select-container.selectize-control {
         font-size: 13px;
         box-shadow: none;
 
-
       }
 
       .ui-select-match {
@@ -3350,13 +3492,21 @@ form .ui-select-container.selectize-control {
       margin-top: 0;
     }
   }
+
+  @media (max-width: 544px) {
+    .billing-2 {
+      .select-mrg {
+        width: 100%;
+      }
+    }
+  }
 }
 
 .payment-information {
   margin-bottom: 100px;
 
   .payment-item-row {
-    margin: 0 -3%;
+    margin: 0 -10px;
   }
 
   .payment-item {
@@ -3426,6 +3576,18 @@ form .ui-select-container.selectize-control {
         padding-right: 5%;
         margin-top: -5px;
       }
+
+      @media (max-width: 991px) {
+        .panel-title {
+          padding-left: 0;
+          margin-left: -15px;
+        }
+
+        .paypal-icon {
+          padding-right: 0px;
+          margin-right: -15px;
+        }
+      }
     }
 
     .panel-body {
@@ -3434,12 +3596,12 @@ form .ui-select-container.selectize-control {
       margin: 10px auto;
 
       #submit {
-        margin-left: 4%;
+        margin-left: 18px;
         margin-top: 40px;
       }
 
       #submit:active,
-      #submit:focus{
+      #submit:focus {
         outline: none;
         border: solid 1px #bb0076;
         color: #ffffff;
@@ -3478,6 +3640,17 @@ form .ui-select-container.selectize-control {
         }
 
       }
+
+      @media (max-width: 991px) {
+        #submit {
+          margin-left: -15px;
+        }
+
+        .white-btn {
+          margin-right: 0;
+        }
+
+      }
     }
 
     .helper-text {
@@ -3504,7 +3677,7 @@ form .ui-select-container.selectize-control {
 
     .braintree-hosted-fields-focused.focused-invalid {
       border: 1px solid #ebcccc;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(100, 100, 0, .6);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(255, 0, 1, 0.8);
     }
 
     @media (max-width: 670px) {
@@ -3517,7 +3690,7 @@ form .ui-select-container.selectize-control {
 
 .order-review {
   .products-table {
-    padding-bottom: 40px;
+    padding-bottom: 60px;
     position: relative;
     table {
       border-top: 0;
@@ -3570,6 +3743,10 @@ form .ui-select-container.selectize-control {
 
   .instruction {
     margin-left: 13%;
+
+    @media (max-width: 575px) {
+      margin-left: 0;
+    }
   }
 
   .login-btn {
@@ -3589,6 +3766,10 @@ form .ui-select-container.selectize-control {
     color: red;
     margin: 10px 0;
     padding-bottom: 0;
+
+    @media (max-width: 575px) {
+      font-size: 10pt;
+    }
   }
 }
 
@@ -3597,6 +3778,11 @@ form .ui-select-container.selectize-control {
 
   .cart-thank {
     padding: 40px 100px;
+
+    @media (max-width: 768px) {
+      padding: 40px 0;
+
+    }
   }
   h4 {
     color: black;
@@ -3637,6 +3823,7 @@ form .ui-select-container.selectize-control {
     }
   }
 }
+
 @media (min-width: 1200px) and (max-width: 1300px) {
   .download-page {
     .download-row {
@@ -3966,12 +4153,12 @@ form .ui-select-container.selectize-control {
     }
   }
   //@-ms-keyframes color_change {
-    //from {
-    //  fill: black;
-    //}
-    //to {
-    //  fill: #bc1c7d;
-    //}
+  //from {
+  //  fill: black;
+  //}
+  //to {
+  //  fill: #bc1c7d;
+  //}
   //}
   @-o-keyframes color_change {
     from {
@@ -4096,7 +4283,6 @@ form .ui-select-container.selectize-control {
     }
   }
 
-
   /*SMALL DEVICE*/
 
   @media (max-width: 544px) {
@@ -4105,8 +4291,6 @@ form .ui-select-container.selectize-control {
       margin-top: 20px;
     }
   }
-
-
 
   @media (max-width: 1200px) {
 
@@ -4127,14 +4311,13 @@ form .ui-select-container.selectize-control {
   @media (max-width: 1920px) and (min-width: 1221px) {
 
     .slider {
-      padding-left: 0px!important;
+      padding-left: 0px !important;
 
     }
 
   }
 
   @media (max-width: 992px) {
-
 
     .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
 
@@ -4147,11 +4330,9 @@ form .ui-select-container.selectize-control {
     }
   }
 
-
-
   @media (max-width: 1101px) {
-    .collapse.in{
-      display:block !important;
+    .collapse.in {
+      display: block !important;
     }
   }
 
@@ -4159,18 +4340,42 @@ form .ui-select-container.selectize-control {
 
   @media (max-width: 1300px) and (min-width: 1200px) {
 
-    p {font-size: 9pt; line-height: 14pt;}
+    p {
+      font-size: 9pt;
+      line-height: 14pt;
+    }
 
-    #logo {max-width: 220px;padding-top: 2px; padding-right: 10px;}
+    #logo {
+      max-width: 220px;
+      padding-top: 2px;
+      padding-right: 10px;
+    }
 
-    h3{font-size:22pt; margin-top: 5px;}
-    h5{font-size: 12pt;}
-    h4{font-size: 12pt;}
-    h1{font-size: 30pt;padding-top: 30px;}
+    h3 {
+      font-size: 22pt;
+      margin-top: 5px;
+    }
+    h5 {
+      font-size: 12pt;
+    }
+    h4 {
+      font-size: 12pt;
+    }
+    h1 {
+      font-size: 30pt;
+      padding-top: 30px;
+    }
 
-    .slider-images {margin-top: 40px;}
-    .gray {padding-top: 20px; margin-bottom: 20px}
-    .slider h5 {font-size: 12pt;}
+    .slider-images {
+      margin-top: 40px;
+    }
+    .gray {
+      padding-top: 20px;
+      margin-bottom: 20px
+    }
+    .slider h5 {
+      font-size: 12pt;
+    }
 
     .padding-right-clear {
       padding-right: 0px;
@@ -4201,7 +4406,7 @@ footer {
 
 .cart-modal {
   &.modal .modal-dialog {
-    width: 35%;
+    max-width: 500px;
     margin: auto;
 
     @media (max-width: 992px) {
@@ -4247,9 +4452,17 @@ footer {
 
 .cart-surve-modal {
 
+  h4 {
+    font-weight: 300;
+  }
+
+  .memberOnlyTitle {
+    font-weight: 600;
+  }
+
   .cart-modal-btn-group {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 
     .btn {
       margin-bottom: 10px;

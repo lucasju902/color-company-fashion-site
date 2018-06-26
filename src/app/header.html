@@ -1,4 +1,4 @@
-<div class="container-fluid" id="top-menu">
+<div ng-class="{'hide': $ctrl.hideHeader()}" class="container-fluid" id="top-menu">
   <ul>
     <li><a ui-sref="press">PRESS</a></li>
     <li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer" ng-click="$ctrl.goProfile()">My profile</a></li>
@@ -9,7 +9,7 @@
   </ul>
 </div>
 
-<nav class="navbar navbar-inverse">
+<nav ng-class="{'hide': $ctrl.hideHeader()}" class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
       <img class="pointer" ng-click="$ctrl.goToLanding()" src="../assets/images/logo.png" id="logo" alt="logo">
