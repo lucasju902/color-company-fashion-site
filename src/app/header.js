@@ -103,5 +103,9 @@ angular
       }, function (newVal) {
         self.user = localStorageService.get('currentUser');
       });
+
+      this.hideHeader = function () {
+        return $state.current.name === 'landing';
+      };
     }
   });
