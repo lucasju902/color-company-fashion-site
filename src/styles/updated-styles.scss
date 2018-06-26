@@ -2874,27 +2874,45 @@ form .ui-select-container.selectize-control {
       td {
         padding: 30px 5px;
         vertical-align: middle;
-        //text-align: center;
-        //border-right: #3f3f3f 1px solid;
       }
 
       tr {
-        //border-bottom: #3f3f3f 1px solid;
+        display: flex;
+        align-items: baseline;
       }
 
       .product-img {
+        padding: 30px 10px;
         width: 26%;
-        //padding: 5px 20px;
+        .img-box {
+          position: relative;
+          display: inline-block;
+        }
+
+        .category {
+          min-width: 85px;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 45%;
+          height: 25px;
+
+          p {
+            padding: auto;
+            font-size: 12px;          }
+
+        }
 
         img {
           max-width: 300px;
           max-height: 250px;
-          width: 90%;
+          width: 100%;
           height: auto;
         }
       }
 
       .product-name {
+        align-self: start;
         width: 26%;
         text-align: left;
         h4 {
@@ -3009,6 +3027,7 @@ form .ui-select-container.selectize-control {
         }
         .product-name {
           width: 100%;
+          padding-bottom: 10px;
 
           h4 {
             font-size: 16px;

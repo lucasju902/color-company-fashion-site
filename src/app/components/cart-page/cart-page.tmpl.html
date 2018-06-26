@@ -20,8 +20,11 @@
       <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table ">
         <table>
           <tr class="product-row" ng-repeat="item in $ctrl.products">
-            <td class="product-img" >
-              <img src="{{item.image_url}}">
+            <td class="product-img">
+              <div class="img-box">
+                <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
+                <img src="{{item.image_url}}">
+              </div>
             </td>
             <td class="product-name">
               <h4>{{item.header}}</h4>
