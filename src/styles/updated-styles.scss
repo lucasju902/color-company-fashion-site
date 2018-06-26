@@ -2990,6 +2990,15 @@ form .ui-select-container.selectize-control {
 
   @media (max-width: 575px) {
     .products-table {
+
+      table tr {
+        border-top: #d0d0d0 1px solid;
+      }
+
+      table tr:nth-child(1) {
+        border-top:none
+      }
+
       .product-row {
         display: flex;
         align-items: center;
