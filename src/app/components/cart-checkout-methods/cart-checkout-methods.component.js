@@ -2,43 +2,98 @@ angular
   .module('app')
   .component('cartCheckoutMethodsComponent', {
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout) {
+    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope) {
       var vm = this;
-      vm.user = localStorageService.get('currentUser');
-      vm.methodNumber = 1;
-      vm.payError = false;
+
+      function init() {
+        vm.methodNumber = 1;
+        vm.payError = false;
+        vm.nonce = false;
+        vm.errFlag = false;
+        vm.payDataFlag = false;
+        vm.placeOrderFlag = false;
+        vm.maxMethod = 1;
+        vm.tax = 0;
+        vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
+        vm.registerAndCheckout = false;
+        vm.checkoutAsGuest = false;
+        vm.country = categoryValues('country');
+        vm.states = categoryValues('states');
+
+        vm.email = '';
+        vm.password = '';
+        vm.error = '';
+
+        vm.data = {
+          first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+          last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+          email: {value: '', required: true, name: 'email', type: 'provide'},
+          middle_name: {value: '', name: 'middle name', type: 'provide'},
+          address: {value: '', required: true, name: 'address', type: 'provide'},
+          second_address: {value: '', name: 'second_address', type: 'provide'},
+          city: {value: '', required: true, name: 'city', type: 'provide'},
+          zip: {value: '', required: true, name: 'zip', type: 'numeric'},
+          telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
+          state: {
+            value: vm.states[0],
+            required: true,
+            name: 'state',
+            type: 'select'
+          },
+          country: {
+            value: vm.country[0],
+            required: true,
+            name: 'country',
+            type: 'select'
+          }
+        };
+
+        vm.products = [];
+        vm.all = 0;
+        vm.purchase = localStorageService.get('purchase');
+
+        vm.getProductItems(vm.purchase.IDs.reports, 'reports');
+        vm.getProductItems(vm.purchase.IDs.courses, 'courses');
+        vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
+        vm.userIsLoggedIn();
+        vm.editGrayList();
+      }
 
       vm.getBillingData = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
-          .then(function (res) {
-            // console.log('res',res);
-            if (res && res.data && res.data[0]) {
+        if (vm.user && vm.user.id) {
+          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
+            .then(function (res) {
               // console.log('res',res);
+              if (res && res.data && res.data[0]) {
+                // console.log('res',res);
 
-              for (var key in vm.data) {
-                if (key === 'state') {
-                  var index = _.findIndex(vm.states, function (item) {
-                    return item.title === res.data[0][key];
-                  });
-                  vm.data[key].value = vm.states[index];
+                for (var key in vm.data) {
+                  if (key === 'state') {
+                    var index = _.findIndex(vm.states, function (item) {
+                      return item.title === res.data[0][key];
+                    });
+                    vm.data[key].value = vm.states[index];
+                  }
+                  if (key === 'country') {
+                    var index2 = _.findIndex(vm.country, function (item) {
+                      return item.title === res.data[0][key];
+                    });
+                    vm.data[key].value = vm.country[index2];
+                  }
+                  vm.data[key].value = res.data[0][key] || '';
                 }
-                if (key === 'country') {
-                  var index2 = _.findIndex(vm.country, function (item) {
-                    return item.title === res.data[0][key];
-                  });
-                  vm.data[key].value = vm.country[index2];
-                }
-                vm.data[key].value = res.data[0][key] || '';
               }
-            }
-            if (!vm.data.email.value && vm.user) {
-              vm.data.email.value = vm.user.email;
-            }
-            vm.continue();
-          })
-          .catch(function (err) {
-            // console.log('ERROR',err);
-          });
+              if (!vm.data.email.value && vm.user) {
+                vm.data.email.value = vm.user.email;
+              }
+              vm.continue();
+            })
+            .catch(function (err) {
+              // console.log('ERROR',err);
+            });
+        }else{
+          return false;
+        }
       };
 
       vm.login = function () {
@@ -47,7 +102,6 @@ angular
           .then(function (data) {
             if (data && data.success) {
               vm.user = localStorageService.get('currentUser');
-              vm.getBillingData();
             } else {
               vm.error = true;
             }
@@ -182,56 +236,6 @@ angular
           });
       };
 
-      vm.nonce = false;
-      vm.errFlag = false;
-      vm.payDataFlag = false;
-      vm.placeOrderFlag = false;
-      vm.maxMethod = 1;
-      vm.tax = 0;
-      vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
-      vm.registerAndCheckout = false;
-      vm.checkoutAsGuest = false;
-      vm.country = categoryValues('country');
-      vm.states = categoryValues('states');
-
-      vm.email = '';
-      vm.password = '';
-      vm.error = '';
-
-      vm.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        middle_name: {value: '', name: 'middle name', type: 'provide'},
-        address: {value: '', required: true, name: 'address', type: 'provide'},
-        second_address: {value: '', name: 'second_address', type: 'provide'},
-        city: {value: '', required: true, name: 'city', type: 'provide'},
-        zip: {value: '', required: true, name: 'zip', type: 'numeric'},
-        telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
-        state: {
-          value: vm.states[0],
-          required: true,
-          name: 'state',
-          type: 'select'
-        },
-        country: {
-          value: vm.country[0],
-          required: true,
-          name: 'country',
-          type: 'select'
-        }
-      };
-
-      vm.products = [];
-      vm.all = 0;
-      vm.purchase = localStorageService.get('purchase');
-
-      vm.getProductItems(vm.purchase.IDs.reports, 'reports');
-      vm.getProductItems(vm.purchase.IDs.courses, 'courses');
-      vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
-      vm.userIsLoggedIn();
-      vm.editGrayList();
-
       braintree.client.create({
         authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
       }, function (err, clientInstance) {
@@ -361,6 +365,16 @@ angular
             });
           });
         });
+      });
+
+      $scope.$watch(function () {
+        return authService.currentUser;
+      }, function (newVal) {
+        vm.user = localStorageService.get('currentUser');
+        if (vm.user) {
+          init();
+        }
+
       });
     }
   });
