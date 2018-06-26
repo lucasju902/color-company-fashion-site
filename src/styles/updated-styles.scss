@@ -3311,6 +3311,7 @@ form .ui-select-container.selectize-control {
 
     form {
       .guest-checkbox {
+        min-height: 30px;
         p {
           //margin-right: 100px;
           margin-bottom: 10px;
@@ -3874,6 +3875,7 @@ form .ui-select-container.selectize-control {
 
 .landing {
   font-family: 'Gotham-Book';
+  margin-top: -100px;
 
   h1 {
     font-size: 34pt;
@@ -4406,7 +4408,7 @@ footer {
 
 .cart-modal {
   &.modal .modal-dialog {
-    max-width: 500px;
+    max-width: 550px;
     margin: auto;
 
     @media (max-width: 992px) {

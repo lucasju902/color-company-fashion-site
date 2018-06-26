@@ -69,7 +69,6 @@ angular
 
       vm.removeProduct = function (id, type, index) {
         modalService.showModal(4, function () {
-          console.log('@@@@@@@@@@ ',id, type, index);
           delete vm.IDs[type][id];
           vm.products.splice(index, 1);
           localStorageService.set('products', vm.IDs);
