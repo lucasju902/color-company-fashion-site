@@ -123,7 +123,7 @@
 
         <div class="select-style select-mrg search-selector">
           <ui-select ng-model="$ctrl.data.state.value" theme="selectize">
-            <ui-select-match placeholder="PLEASE SELECT STATE/PROVINCE *">
+            <ui-select-match placeholder="PLEASE SELECT STATE/PROVINCE">
               <span style="{{($ctrl.data.state.value && $select.selected.title != $ctrl.states[0].title)? 'color: black' : ''}}"
                 ng-bind-html="$select.selected.title || $ctrl.data.state.value"></span>
             </ui-select-match>

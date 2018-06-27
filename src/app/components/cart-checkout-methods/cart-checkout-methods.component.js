@@ -36,7 +36,6 @@ angular
           telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
           state: {
             value: vm.states[0],
-            required: true,
             name: 'state',
             type: 'select'
           },
@@ -113,7 +112,7 @@ angular
           var data = {};
           for (var item in vm.data) {
             if (vm.data[item].type === 'select') {
-              data[item] = vm.data[item].value.title;
+              data[item] = vm.data[item].value.title || vm.data[item].value;
             } else {
               data[item] = vm.data[item].value;
             }
