@@ -87,6 +87,10 @@ angular
         $state.go('cart-page', {wayBack: 'profile'});
       };
 
+      vm.goPurchase = function () {
+        $state.go('my-purchase');
+      };
+
       vm.cancel = function () {
         vm.editFlag = false;
         vm.intEditData();

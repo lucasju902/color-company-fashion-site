@@ -2317,6 +2317,11 @@ form .ui-select-container.selectize-control {
 .profile-page {
   margin-top: 0;
 
+  .speaking_item {
+    display: flex;
+    flex-direction :column;
+  }
+
   .img-responsive {
     display: flex;
     justify-content: center;
@@ -2375,8 +2380,11 @@ form .ui-select-container.selectize-control {
     width: 95%;
   }
 
-  .cart-button {
-    //width: 150px;
+  .cart-button,
+  .purchase-btn{
+    margin-bottom: 10px;
+    width: 163px;
+    height: 44px;
     margin-top: 10px;
     vertical-align: middle;
     margin-left: auto;
@@ -2394,13 +2402,32 @@ form .ui-select-container.selectize-control {
     }
   }
 
-  .cart-button:hover {
+  .purchase-btn {
+    padding: 10px 7px;
+  }
+
+  .cart-button:hover,
+  .purchase-btn:hover {
 
     i {
       color: white;
     }
     p {
       color: white;
+    }
+  }
+
+  @media (min-width: 1200px) and (max-width: 1300px){
+    .cart-button,
+    .purchase-btn {
+
+      width: 148px;
+      height: 40px;
+
+      p {
+        font-size: 14px;
+        font-weight: lighter;
+      }
     }
   }
 
@@ -4561,4 +4588,50 @@ footer {
       width: 140px;
     }
   }
+}
+
+/**********my purchase page*************/
+
+.my-purchase {
+
+  .my-purchase-items {
+    padding-top: 60px;
+
+    .item {
+      margin-bottom: 100px;
+
+      .purchase-name {
+        padding: 10px 0;
+        h5 {
+          margin: 0;
+        }
+      }
+
+      .price {
+        p {
+
+          span {
+            color: #bb0076;
+          }
+        }
+      }
+
+      .date-publication,
+      .date-purchase {
+        p {
+          font-size: 10pt;
+          color: grey;
+        }
+      }
+
+      .download-btn {
+        button {
+          width: 100%;
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+      }
+    }
+  }
+
 }
