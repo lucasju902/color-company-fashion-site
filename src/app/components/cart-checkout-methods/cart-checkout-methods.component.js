@@ -393,10 +393,9 @@ angular
             payment: function () {
               return paypalCheckoutInstance.createPayment({
                 flow: 'checkout',
-                amount: '21.00',
+                amount: vm.all,
                 currency: 'USD',
                 intent: 'sale'
-
                 // Your PayPal options here. For available options, see
                 // http://braintree.github.io/braintree-web/current/PayPalCheckout.html#createPayment
               });
@@ -406,38 +405,22 @@ angular
               return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
                 console.log('payload', payload);
                 console.log('nonce', payload.nonce);
-
-                var data = {
-                  id: 43,
-                  email: "testmember@test.com",
-                  reports: {'3': 1},
-                  teaching_materials: {},
-                  courses: {},
-                  payment_method_nonce: payload.nonce
-                };
-                $http.get(appConfig.dashboardServiceUrl + 'checkouts', {params: data})
-                  .then(function (res) {
-                    if (res) {
-                      console.log('res', res);
-                      vm.info = res.data.info;
-                      if (res.data.status === 'fail') {
-                        vm.errFlag = true;
-                        $timeout(function () {
-                          vm.placeOrderFlag = false;
-                        }, 0);
-                      } else {
-                        vm.errFlag = false;
-                        $timeout(function () {
-                          vm.placeOrderFlag = false;
-                        }, 0);
-                        $state.go('cart-thank', {id: res.data.orderId});
-                      }
-                    }
-                  })
-                  .catch(function (err) {
-                    vm.placeOrderFlag = false;
-                    vm.errFlag = true;
-                  });
+                if (err) {
+                  $timeout(function () {
+                    vm.payError = err.message;
+                    vm.payDataFlag = false;
+                    // console.error(err);
+                    return;
+                  }, 0);
+                }
+                // This is where you would submit payload.nonce to your server
+                $timeout(function () {
+                  if (payload && payload.nonce) {
+                    vm.nonce = payload.nonce;
+                    vm.continue();
+                    vm.payDataFlag = false;
+                  }
+                }, 0);
                 // Submit `payload.nonce` to your server.
               });
             },
