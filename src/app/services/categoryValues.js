@@ -940,7 +940,7 @@ angular.module('app')
         }
         case 'states': {
           return [
-            {id: null, title: 'PLEASE SELECT STATE/PROVINCE <span class="red-text">*</span>'},
+            {id: null, title: 'PLEASE SELECT STATE/PROVINCE'},
             {id: 1, title: 'Alabama'},
             {id: 2, title: 'Alaska'},
             {id: 3, title: 'Arizona'},
