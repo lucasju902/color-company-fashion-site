@@ -56,31 +56,7 @@
       </div>
       <div class="col-lg-4 col-md-6 guest">
         <h4>CHECKOUT AS GUEST</h4>
-        <p>REGISTER WITH US FOR FUTURE CONVENIENCE</p>
-        <div class="form-min-h">
-          <form>
-            <div class="guest-checkbox">
-              <p>
-                <input ng-change="$ctrl.registerAndCheckout = false"
-                       type="checkbox"
-                       id="checkoutAsGuest"
-                       ng-model="$ctrl.checkoutAsGuest"/>
-                <label for="checkoutAsGuest">CHECKOUT AS GUEST</label>
-              </p>
-            </div>
-            <br>
-            <div class="guest-checkbox">
-              <p>
-                <input ng-change="$ctrl.checkoutAsGuest = false"
-                       type="checkbox"
-                       id="registerAndCheckout"
-                       ng-model="$ctrl.registerAndCheckout"/>
-                <label for="registerAndCheckout">REGISTER AND CHECKOUT</label>
-              </p>
-            </div>
-          </form>
-        </div>
-        <div class="button login-btn">
+        <div class="login-btn">
           <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>
         </div>
       </div>
