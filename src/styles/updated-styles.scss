@@ -4531,3 +4531,39 @@ footer {
     }
   }
 }
+
+/**********my purchase page*************/
+
+.my-purchase {
+
+  .my-reports {
+    padding-top: 60px;
+
+    .item {
+
+      .purchase-name {
+        padding: 10px 0;
+        h5 {
+          margin: 0;
+        }
+      }
+
+      .price {
+        p {
+
+          span {
+            color: #bb0076;
+          }
+        }
+      }
+
+      .date-publication {
+        p {
+          font-size: 10pt;
+          color: grey;
+        }
+      }
+    }
+  }
+
+}
