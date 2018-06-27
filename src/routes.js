@@ -434,7 +434,8 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('my-purchase', {
       url: '/my-purchase',
-      component: 'myPurchaseComponent'
+      component: 'myPurchaseComponent',
+      protected: true
     });
 }
 
