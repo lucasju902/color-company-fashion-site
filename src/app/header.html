@@ -3,7 +3,7 @@
     <li><a ui-sref="press">PRESS</a></li>
     <li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer" ng-click="$ctrl.goProfile()">My profile</a></li>
     <li>
-      <a ng-show="!$ctrl.userIsLoggedIn()">BECOME A MEMBER</a>
+      <a class="pointer" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>
       <a ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>
     </li>
   </ul>

@@ -2317,6 +2317,10 @@ form .ui-select-container.selectize-control {
 .profile-page {
   margin-top: 0;
 
+  .profile-page-rows{
+    min-height: 640px;
+  }
+
   .speaking_item {
     display: flex;
     flex-direction :column;
@@ -4595,6 +4599,7 @@ footer {
 .my-purchase {
 
   .my-purchase-items {
+    min-height: 367px;
     padding-top: 60px;
 
     .item {
