@@ -1,7 +1,7 @@
 angular
   .module('app')
-  .component('myPurchaseComponent', {
-    templateUrl: 'app/components/my-purchase/my-purchase.tmpl.html',
+  .component('myPurchasesComponent', {
+    templateUrl: 'app/components/my-purchases/my-purchases.tmpl.html',
     controller: function ($state, $http, appConfig, $scope, authService, localStorageService) {
       var vm = this;
       vm.data = [];

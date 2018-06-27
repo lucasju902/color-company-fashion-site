@@ -88,7 +88,7 @@ angular
       };
 
       vm.goPurchase = function () {
-        $state.go('my-purchase');
+        $state.go('my-purchases');
       };
 
       vm.cancel = function () {
