@@ -3572,6 +3572,7 @@ form .ui-select-container.selectize-control {
     }
 
     .panel-heading {
+      position: relative;
       background-color: white;
       border: none;
 
@@ -3580,6 +3581,12 @@ form .ui-select-container.selectize-control {
         float: right;
         padding-right: 5%;
         margin-top: -5px;
+      }
+
+      .paypal-btn {
+        position: absolute;
+        top: 7px;
+        right: 32px;
       }
 
       @media (max-width: 991px) {
@@ -3591,6 +3598,18 @@ form .ui-select-container.selectize-control {
         .paypal-icon {
           padding-right: 0px;
           margin-right: -15px;
+        }
+
+        .paypal-btn {
+          position: absolute;
+          top: 7px;
+          right: 0px;
+        }
+      }
+
+      @media (max-width: 575px) {
+        .xcomponent-outlet {
+          max-width: 120px !important;
         }
       }
     }
@@ -3655,6 +3674,18 @@ form .ui-select-container.selectize-control {
           margin-right: 0;
         }
 
+      }
+
+      @media (max-width: 575px) {
+
+        button.btn,
+        button.white-btn{
+          font-size: 9pt;
+          height: 35px;
+          min-width: 102px;
+
+          padding: 10px 15px;
+        }
       }
     }
 

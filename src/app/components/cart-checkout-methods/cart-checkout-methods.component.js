@@ -365,6 +365,80 @@ angular
             });
           });
         });
+
+        braintree.paypalCheckout.create({
+          client: clientInstance
+        }, function (paypalCheckoutErr, paypalCheckoutInstance) {
+
+          // Stop if there was a problem creating PayPal Checkout.
+          // This could happen if there was a network error or if it's incorrectly
+          // configured.
+          if (paypalCheckoutErr) {
+            console.error('Error creating PayPal Checkout:', paypalCheckoutErr);
+            return;
+          }
+
+          // Set up PayPal with the checkout.js library
+          paypal.Button.render({
+            locale: 'en_US',
+            style: {
+              size: 'small',
+              color: 'blue',
+              shape: 'pill',
+              label: 'paypal',
+              tagline: 'false'
+            },
+            env: 'sandbox', // or 'sandbox'
+
+            payment: function () {
+              return paypalCheckoutInstance.createPayment({
+                flow: 'checkout',
+                amount: vm.all,
+                currency: 'USD',
+                intent: 'sale'
+                // Your PayPal options here. For available options, see
+                // http://braintree.github.io/braintree-web/current/PayPalCheckout.html#createPayment
+              });
+            },
+
+            onAuthorize: function (data, actions) {
+              return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
+                console.log('payload', payload);
+                console.log('nonce', payload.nonce);
+                if (err) {
+                  $timeout(function () {
+                    vm.payError = err.message;
+                    vm.payDataFlag = false;
+                    // console.error(err);
+                    return;
+                  }, 0);
+                }
+                // This is where you would submit payload.nonce to your server
+                $timeout(function () {
+                  if (payload && payload.nonce) {
+                    vm.nonce = payload.nonce;
+                    vm.continue();
+                    vm.payDataFlag = false;
+                  }
+                }, 0);
+                // Submit `payload.nonce` to your server.
+              });
+            },
+
+            onCancel: function (data) {
+              console.log('checkout.js payment cancelled', JSON.stringify(data, 0, 2));
+            },
+
+            onError: function (err) {
+              console.error('checkout.js error', err);
+            }
+          }, '#paypal-button').then(function () {
+            // The PayPal button will be rendered in an html element with the id
+            // `paypal-button`. This function will be called when the PayPal button
+            // is set up and ready to be used.
+          });
+
+        });
       });
 
       $scope.$watch(function () {
