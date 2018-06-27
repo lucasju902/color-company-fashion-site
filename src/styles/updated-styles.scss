@@ -3761,6 +3761,56 @@ form .ui-select-container.selectize-control {
       display: inline-block;
       margin-bottom: 0;
       margin-right: 4%;
+      height: 50px;
+      vertical-align: bottom;
+      padding: 15px 20px;
+      min-width: 134px;
+    }
+  }
+
+  @media (min-width: 1200px) and (max-width: 1300px) {
+    .login-btn {
+      text-align: left;
+
+      button {
+        display: inline-block;
+        margin-bottom: 0;
+        margin-right: 4%;
+        vertical-align: bottom;
+        padding: 10px;
+        height: 34px;
+        min-width: 104px;
+      }
+    }
+  }
+
+  @media (max-width: 575px) {
+    .login-btn {
+      text-align: left;
+
+      button {
+        font-size: 7pt;
+        display: inline-block;
+        margin-bottom: 0;
+        margin-right: 4%;
+        vertical-align: bottom;
+        padding: 10px;
+        height: 34px;
+        min-width: 104px;
+      }
+    }
+
+    .membr-block {
+
+      label {
+        position: absolute;
+        top: 29px;
+        font-size: 13px;
+      }
+
+      input {
+        font-size: 13px;
+      }
     }
   }
 }
