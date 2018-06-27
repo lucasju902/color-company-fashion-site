@@ -16,7 +16,7 @@ angular
         authService.login(this.email, this.password, this.isRemembered)
           .then(function (data) {
             if (data && data.success) {
-              $state.go('landing');
+              $state.go('aboutPage');
             } else {
               self.error = true;
             }

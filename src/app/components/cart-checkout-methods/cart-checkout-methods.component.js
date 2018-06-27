@@ -403,8 +403,6 @@ angular
 
             onAuthorize: function (data, actions) {
               return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
-                console.log('payload', payload);
-                console.log('nonce', payload.nonce);
                 if (err) {
                   $timeout(function () {
                     vm.payError = err.message;
