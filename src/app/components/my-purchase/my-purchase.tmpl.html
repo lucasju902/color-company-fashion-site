@@ -9,12 +9,12 @@
       </div>
     </div>
   </section>
-  <section class="my-reports">
+  <section class="my-purchase-items">
     <div class="container-fluid  text-left">
       <div class="row equal">
         <div style="{{item.style}}" class="col-lg-3 col-md-4 col-sm-6 col-xs-12 item text-dn"
-             ng-repeat="item in $ctrl.data.reports">
-          <a style="text-decoration: none" ng-href="#!/reports/{{item.item.id}}">
+             ng-repeat="item in $ctrl.data">
+          <a style="text-decoration: none" ng-href="#!/{{item.type}}/{{item.item.id}}">
             <div class="category {{item.item.hue}} text-center"><p>{{item.item.hue}}</p></div>
             <div class="img-responsive background-image"
                  style="background: {{'url(' + item.images[0].image_url +') top center'}};
@@ -31,8 +31,8 @@
           <div class="price">
             <p><span>Price:</span> ${{item.item.price}}</p>
           </div>
-          <div class="date-publication">
-            <p>Date of publication: {{item.item.published_day}}-{{item.item.published_month}}-{{item.item.published_year}}</p>
+          <div class="date-purchase">
+            <p>Date of purchase: {{item.purchaseDate}}</p>
           </div>
           <div class="download-btn">
             <a href="{{item.files[0].image_url}}" download><button class="btn">DOWNLOAD</button></a>

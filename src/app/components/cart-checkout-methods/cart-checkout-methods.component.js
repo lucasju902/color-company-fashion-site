@@ -258,11 +258,11 @@ angular
           fields: {
             number: {
               selector: '#card-number',
-              placeholder: 'CREDIT CARD NUMBER'
+              placeholder: 'CREDIT CARD NUMBER *'
             },
             cvv: {
               selector: '#cvv',
-              placeholder: 'CVV'
+              placeholder: 'CVV *'
             },
             expirationMonth: {
               selector: '#expiration-month',
