@@ -1650,6 +1650,7 @@ form .ui-select-container.selectize-control {
   }
 
   .modal-content {
+    max-width: 90%;
     transform: translate(0, 30%);
     width: 550px;
     margin: auto;
@@ -1663,6 +1664,17 @@ form .ui-select-container.selectize-control {
     }
     border-radius: 0px;
     padding: 60px;
+  }
+  @media (max-width: 600px) {
+    li {
+      font-size: 11pt;
+    }
+    p {
+      font-size: 12pt;
+    }
+    h4 {
+      font-size: 12pt;
+    }
   }
 
 }
@@ -2409,6 +2421,9 @@ form .ui-select-container.selectize-control {
   .purchase-btn {
     padding: 10px 7px;
   }
+  .update-btn {
+    margin-top: 40px;
+  }
 
   .cart-button:hover,
   .purchase-btn:hover {
@@ -2432,6 +2447,9 @@ form .ui-select-container.selectize-control {
         font-size: 14px;
         font-weight: lighter;
       }
+    }
+    .update-btn {
+      margin-top: 85px;
     }
   }
 
@@ -4638,5 +4656,14 @@ footer {
       }
     }
   }
+}
 
+/***********************************/
+
+.purchase-head-min-h {
+  min-height: 80px;
+}
+
+.purchase-body-min-h {
+  min-height: 450px;
 }

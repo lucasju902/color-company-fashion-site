@@ -2,10 +2,12 @@ angular
   .module('app')
   .component('cartCheckoutMethodsComponent', {
     templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope) {
+    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope, $cookies) {
       var vm = this;
 
       function init() {
+        vm.userIsLoggedIn();
+
         vm.methodNumber = 1;
         vm.payError = false;
         vm.nonce = false;
@@ -36,8 +38,9 @@ angular
           telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
           state: {
             value: vm.states[0],
+            required: true,
             name: 'state',
-            type: 'select'
+            type: 'both'
           },
           country: {
             value: vm.country[0],
@@ -54,9 +57,16 @@ angular
         vm.getProductItems(vm.purchase.IDs.reports, 'reports');
         vm.getProductItems(vm.purchase.IDs.courses, 'courses');
         vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
-        vm.userIsLoggedIn();
         vm.editGrayList();
       }
+
+      $scope.getStates = function (search) {
+        var newState = vm.states.slice();
+        if (search.length > 0 && newState.indexOf(search) === -1) {
+          newState.unshift(search);
+        }
+        return newState;
+      };
 
       vm.getBillingData = function () {
         if (vm.user && vm.user.id) {
@@ -90,7 +100,7 @@ angular
             .catch(function (err) {
               // console.log('ERROR',err);
             });
-        }else{
+        } else {
           return false;
         }
       };
@@ -109,22 +119,24 @@ angular
 
       vm.uploadBillingInfo = function () {
         if (vm.user.id) {
-          var data = {};
-          for (var item in vm.data) {
-            if (vm.data[item].type === 'select') {
-              data[item] = vm.data[item].value.title || vm.data[item].value;
-            } else {
-              data[item] = vm.data[item].value;
+          if (dataValidate.validate(vm.data)) {
+            var data = {};
+            for (var item in vm.data) {
+              if (vm.data[item].type === 'select') {
+                data[item] = vm.data[item].value.title || vm.data[item].value;
+              } else {
+                data[item] = vm.data[item].value;
+              }
             }
+            data.member_id = vm.user.id;
+            $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
+              .then(function (res) {
+                vm.continue();
+              })
+              .catch(function (err) {
+                // console.log('ERROR',err);
+              });
           }
-          data.member_id = vm.user.id;
-          $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
-            .then(function (res) {
-              vm.continue();
-            })
-            .catch(function (err) {
-              // console.log('ERROR',err);
-            });
         } else {
           vm.continue();
         }
@@ -182,13 +194,11 @@ angular
       };
 
       vm.userIsLoggedIn = function () {
-        if (!Object.keys(vm.user).length) {
-          vm.loginFlag = false;
-          vm.methodNumber = 1;
-        } else {
+        vm.loginFlag = ($cookies.get('hg_session') !== undefined);
+        if (vm.loginFlag) {
           vm.getBillingData();
-          vm.loginFlag = true;
-
+        } else {
+          vm.methodNumber = 1;
         }
       };
 
@@ -210,7 +220,7 @@ angular
           courses: vm.purchase.IDs.courses,
           payment_method_nonce: vm.nonce
         };
-        $http.get(appConfig.dashboardServiceUrl + 'checkouts', {params: data})
+        $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
           .then(function (res) {
             if (res) {
               // console.log('res', res);

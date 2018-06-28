@@ -48,7 +48,7 @@
           <p>BIO: <span>{{$ctrl.data.bio.value}}</span>
           </p>
         </div>
-        <button ng-click="$ctrl.editProfile()" class="btn basket-btn"
+        <button ng-click="$ctrl.editProfile()" class="btn basket-btn update-btn"
                 style="display: inline-block">
           UPDATE
         </button>
@@ -199,6 +199,7 @@
           <div ng-click="$ctrl.goPurchase()" class="purchase-btn btn white-btn">
             <p>MY PURCHASES</p>
           </div>
+          <a  ng-show="$ctrl.editFlag" ng-href="#!/recover">Change password</a>
         </div>
       </div>
     </div>

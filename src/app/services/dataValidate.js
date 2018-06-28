@@ -29,12 +29,14 @@ angular.module('app').service('dataValidate', function (modalService) {
       provide: '*Please provide Your ',
       select: '*Please select ',
       enter: '*Please enter Your ',
-      numeric: '*Must be number: '
+      numeric: '*Must be number: ',
+      both: '*Please enter or select Your '
     };
 
     for (var item in data) {
       if (data[item].required) {
-        if (data[item].value === '' || !data[item].value || (data[item].type === 'select' && data[item].value.id === null)) {
+        if (data[item].value === '' || !data[item].value || (data[item].type === 'select' && data[item].value.id === null) ||
+          (data[item].type === 'both' && (data[item].value === '' || data[item].value === 'STATE/PROVINCE <span class="red-text">*</span>'))) {
           var type = types[data[item].type] || '*Please enter ';
           errorMessage.push(type + data[item].name);
         } else if (data[item].name.includes('email')) {

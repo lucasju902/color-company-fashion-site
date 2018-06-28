@@ -5,14 +5,16 @@ angular
     controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout, Upload) {
       var vm = this;
       $scope.uploadFiles = function (file) {
-        vm.userData.image_url = file.$ngfBlobUrl;
-        file.upload = Upload.upload({
-          url: appConfig.dashboardServiceUrl + 'members/' + vm.userID,
-          method: 'PUT',
-          fields: {'member[image]': file},
-          file: file,
-          fileFormDataName: 'member[image]'
-        });
+        if (file.$ngfBlobUrl) {
+          vm.userData.image_url = file.$ngfBlobUrl;
+          file.upload = Upload.upload({
+            url: appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json',
+            method: 'PUT',
+            fields: {'member[image]': file, flag: true},
+            file: file,
+            fileFormDataName: 'member[image]'
+          });
+        }
       };
 
       vm.job_function = categoryValues('job function');
@@ -69,7 +71,8 @@ angular
             name: 'industry',
             type: 'select'
           },
-          country: {value: vm.country[vm.indexes.industry] || vm.userData.country,
+          country: {
+            value: vm.country[vm.indexes.industry] || vm.userData.country,
             required: true,
             name: 'country',
             type: 'select'
