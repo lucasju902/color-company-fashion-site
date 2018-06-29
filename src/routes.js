@@ -423,8 +423,8 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
   $stateProvider
     .state('cart-thank', {
-      url: '/cart-thank/:id',
-      component: 'cartThankPageComponent'
+      url: '/cart-thank',
+      component: 'cartThankComponent'
     });
   $stateProvider
     .state('landing', {

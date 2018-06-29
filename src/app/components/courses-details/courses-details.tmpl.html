@@ -18,7 +18,7 @@
           <div class="button membership">
             <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
           </div>
-          <div class="button membership white" ng-if="$ctrl.pageData.file">
+          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">
             <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD
               EXCERPT</a>
           </div>

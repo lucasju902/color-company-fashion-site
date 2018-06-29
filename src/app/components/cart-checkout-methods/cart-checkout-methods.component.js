@@ -173,7 +173,6 @@ angular
               vm.pageData = res.data.data.data;
               vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
               vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-              vm.pageData.file = res.data.data.files && res.data.data.files[0];
               vm.pageData.analitics = angular.copy(res.data.data.analytics);
               vm.pageData.count = obj[key];
               vm.pageData.type = name;
@@ -223,7 +222,6 @@ angular
         $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
           .then(function (res) {
             if (res) {
-              // console.log('res', res);
               vm.info = res.data.info;
               if (res.data.status === 'fail') {
                 vm.errFlag = true;
@@ -232,10 +230,12 @@ angular
                 }, 0);
               } else {
                 vm.errFlag = false;
+                localStorageService.set('purchaseItems', res.data.items);
+                localStorageService.set('orderId', res.data.orderId);
                 $timeout(function () {
                   vm.placeOrderFlag = false;
                 }, 0);
-                $state.go('cart-thank', {id: res.data.orderId});
+                $state.go('cart-thank');
               }
             }
           })

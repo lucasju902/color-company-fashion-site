@@ -55,14 +55,16 @@
     <div class="row equal">
       <div style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">
         <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
-        <div class="img-responsive background-image"
-             style="background: {{'url(' + item.image_url +') top center'}};
+        <a style="text-decoration: none" ng-href="#!/reports/{{item.id}}">
+          <div class="img-responsive background-image"
+               style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;
                     background-size: cover;
                     background-color: #e1e1e126;
                     padding-bottom: 56%;"
-        >
-        </div>
+          >
+          </div>
+        </a>
         <h5>{{item.header}}</h5>
         <div class="justify">
           <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis
