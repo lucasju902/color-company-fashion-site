@@ -415,7 +415,6 @@ angular
                 if (err) {
                   $timeout(function () {
                     vm.payError = err.message;
-                    vm.payDataFlag = false;
                     // console.error(err);
                     return;
                   }, 0);
@@ -425,7 +424,6 @@ angular
                   if (payload && payload.nonce) {
                     vm.nonce = payload.nonce;
                     vm.continue();
-                    vm.payDataFlag = false;
                   }
                 }, 0);
                 // Submit `payload.nonce` to your server.

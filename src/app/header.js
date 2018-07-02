@@ -44,7 +44,8 @@ angular
             {name: 'Contact Form', state: 'contact'},
             {name: 'Membership Inquiry', state: 'membership'},
             {name: 'Members Analytics', state: 'membersAnalytics'},
-            {name: 'Data Partnership Inquiry', state: 'partners'}
+            {name: 'Data Partnership Inquiry', state: 'partners'},
+            {name: 'Press Page', state: 'press'}
           ]
         }];
       this.selectedTab = false;

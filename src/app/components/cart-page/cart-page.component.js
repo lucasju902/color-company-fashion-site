@@ -2,24 +2,28 @@ angular
   .module('app')
   .component('cartPageComponent', {
     templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
-    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService) {
+    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService, $window) {
       var vm = this;
 
       vm.init = function () {
         vm.wayBack = $stateParams.wayBack || 'profile';
+        vm.wayBackName = ' to ';
 
         switch ($stateParams.wayBack) {
           case 'reports':
-            vm.wayBackName = 'Color Reports';
+            vm.wayBackName += 'Color Reports';
             break;
           case 'courses':
-            vm.wayBackName = 'Color Courses';
+            vm.wayBackName += 'Color Courses';
             break;
           case 'teachingMaterials':
-            vm.wayBackName = 'Color Teaching Materials';
+            vm.wayBackName += 'Color Teaching Materials';
+            break;
+          case 'profile':
+            vm.wayBackName += 'Profile';
             break;
           default:
-            vm.wayBackName = 'Profile';
+            vm.wayBackName = '';
         }
 
         vm.products = [];
@@ -57,7 +61,7 @@ angular
           for (var id in vm.IDs[type]) {
             if (vm.IDs[type][id] < 1) {
               return;
-            }else{
+            } else {
               purchase.IDs[type][id] = vm.IDs[type][id];
             }
           }
@@ -73,13 +77,16 @@ angular
           vm.products.splice(index, 1);
           localStorageService.set('products', vm.IDs);
         });
-        // delete vm.IDs[type][id];
-        // vm.products.splice(index, 1);
-        // localStorageService.set('products', vm.IDs);
       };
 
       vm.goWayBack = function () {
-        $state.go(vm.wayBack);
+        if ($window.history.length < 3) {
+          $state.go('about');
+        } else if (vm.wayBackName === '') {
+          $window.history.back();
+        } else {
+          $state.go(vm.wayBack);
+        }
       };
 
       vm.editCount = function (id, index, type, value) {
@@ -88,7 +95,7 @@ angular
           vm.IDs[type][id] = vm.IDs[type][id] + value;
           localStorageService.set('products', vm.IDs);
           vm.all = vm.all + vm.products[index].price * value;
-        }else{
+        } else {
           vm.removeProduct(id, type, index);
         }
       };

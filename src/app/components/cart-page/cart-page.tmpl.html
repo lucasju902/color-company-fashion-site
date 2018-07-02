@@ -14,7 +14,7 @@
       <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 col-xs-12 empty-cart">
         <h3>Your cart is empty</h3>
         <div class="go-to-reports pointer">
-          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">Back to {{$ctrl.wayBackName}}</button>
+          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">Back{{$ctrl.wayBackName}}</button>
         </div>
       </div>
       <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table width-100">

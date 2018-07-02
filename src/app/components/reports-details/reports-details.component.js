@@ -32,7 +32,7 @@ angular
       localStorageService.set('link', vm.pageData.excerpts[0].url);
     };
 
-    vm.aggProduct = function () {
+    vm.addProduct = function () {
       var id = vm.pageData.id;
       var products = localStorageService.get('products');
       if (!products) {
