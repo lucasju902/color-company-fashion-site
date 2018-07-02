@@ -5,11 +5,9 @@ angular.module('app')
       this.token = $cookies.get('hg_session');
 
       this.login = function (email, password, isRemembered) {
-        return $http.get(appConfig.dashboardServiceUrl + 'sessions/login.json', {
-          params: {
-            email: email,
-            password: password
-          }
+        return $http.post(appConfig.dashboardServiceUrl + 'sessions/login.json', {
+          email: email,
+          password: password
         }).then(function (res) {
           if (res.data && res.data.success) {
             self.setToken(res.data.token, isRemembered);
