@@ -168,7 +168,7 @@
       <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 text-center staff-item">
         <div class="profile-photo">
           <div class="img-responsive background-image"
-               style="background: {{'url(' + $ctrl.userData.image_url + ') top center'}};
+               style="background: {{'url(' + ($ctrl.userData.image_url || 'https://huegroup-front.herokuapp.com/assets/images/course.jpg') + ') top center'}};
                     background-repeat: no-repeat;
                     background-size: cover;
                     height: 250px;

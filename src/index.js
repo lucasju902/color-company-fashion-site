@@ -8,7 +8,8 @@ var app = angular.module('app', [
   'ui.select',
   'ui.bootstrap',
   'LocalStorageModule',
-  'ngFileUpload'
+  'ngFileUpload',
+  'updateMeta'
 ]);
 
 var config = {

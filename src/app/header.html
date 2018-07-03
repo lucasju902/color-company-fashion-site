@@ -46,16 +46,8 @@
               ng-mouseleave="$ctrl.selectedSubTab[mainNav.name]=false"
               ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">
             <li ng-click="$ctrl.toggleMenu(subNav.name)"
-                ng-class="{submenu: subNav.name === 'Dashboard'}"
                 ng-repeat="subNav in mainNav.subNavs">
               <a ui-sref={{subNav.state}}>{{subNav.name}}</a>
-              <ul ng-click="$ctrl.toggleMenu()" ng-if="subNav.name === 'Dashboard'" class="dropdown-submenu">
-                <li><a ui-sref="fashion">Fashion</a></li>
-                <li><a ui-sref="auto">Auto</a></li>
-                <!--<li><a>Scient</a></li>-->
-                <li><a ui-sref="branding">Branding</a></li>
-                <li><a ui-sref="legal">Legal</a></li>
-              </ul>
             </li>
           </ul>
         </li>

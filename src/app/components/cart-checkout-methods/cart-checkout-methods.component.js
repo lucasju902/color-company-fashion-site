@@ -70,7 +70,7 @@ angular
 
       vm.getBillingData = function () {
         if (vm.user && vm.user.id) {
-          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json')
+          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json', {params: {token: authService.token}})
             .then(function (res) {
               // console.log('res',res);
               if (res && res.data && res.data[0]) {
@@ -129,6 +129,7 @@ angular
               }
             }
             data.member_id = vm.user.id;
+            data.token = authService.token;
             $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
               .then(function (res) {
                 vm.continue();

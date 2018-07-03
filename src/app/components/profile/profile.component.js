@@ -27,7 +27,7 @@ angular
       vm.init = function () {
         authService.loadCurrentUser().then(function (res) {
           vm.userID = res.data.user.id;
-          $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json')
+          $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json', {params: {token: authService.token}})
             .then(function (res) {
               if (res && res.data) {
                 vm.userData = res.data;
@@ -110,6 +110,7 @@ angular
             }
           }
           data.flag = 'profile';
+          data.token = authService.token;
           $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, data)
             .then(function (res) {
               if (res.status !== 200) {

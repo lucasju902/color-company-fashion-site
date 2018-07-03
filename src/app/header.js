@@ -45,7 +45,7 @@ angular
             {name: 'Membership Inquiry', state: 'membership'},
             {name: 'Members Analytics', state: 'membersAnalytics'},
             {name: 'Data Partnership Inquiry', state: 'partners'},
-            {name: 'Press Page', state: 'press'}
+            {name: 'Press', state: 'press'}
           ]
         }];
       this.selectedTab = false;
@@ -53,7 +53,7 @@ angular
       this.user = null;
 
       this.toggleMenu = function (navName) {
-        if (navName !== 'Dashboard') {
+        if (_.findIndex(this.navigations, function (o) { return navName === o.name; }) === -1) {
           angular.element("#myNavbar").collapse('hide');
         }
       };

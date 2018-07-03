@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('membersAnalyticsComponent', {
     templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService) {
       var vm = this;
       vm.searchModel = '';
       vm.all = [];
@@ -11,7 +11,7 @@ angular
       var count = 0;
 
       vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json')
+        $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json', {params: {token: authService.token}})
           .then(function (res) {
             vm.pageData = angular.copy(res.data.data);
             vm.all = angular.copy(res.data.data);

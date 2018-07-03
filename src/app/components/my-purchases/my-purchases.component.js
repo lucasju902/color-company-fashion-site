@@ -8,11 +8,11 @@ angular
 
       function init() {
         if (vm.user && vm.user.id) {
-          $http.get(appConfig.dashboardServiceUrl + '/members/bought_items.json', {params: {id: vm.user.id}})
+          $http.get(appConfig.dashboardServiceUrl + '/members/bought_items.json', {params: {id: vm.user.id, token: authService.token}})
             .then(function (res) {
               for (var key in res.data) {
                 res.data[key].forEach(function (item) {
-                  item.purchaseDate = moment(item.purchase_date).format('DD, MM, YYYY');
+                  item.purchaseDate = moment(item.purchase_date).format('DD.MM.YYYY');
                   if (key === 'teaching_materials') {
                     item.type = 'teaching-materials';
                   } else {

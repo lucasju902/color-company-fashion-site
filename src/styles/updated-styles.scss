@@ -4684,3 +4684,19 @@ footer {
 .width-100 {
   width: 100%;
 }
+
+@media (max-width: 992px) {
+  .my-purchase-items {
+    .category {
+      left: 15px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .my-purchase-items {
+    .category {
+      left: 0;
+    }
+  }
+}
