@@ -25,6 +25,8 @@ angular
 
       switch (currentName) {
         case 'productInquiry':
+          this.title = 'Product Inquiry';
+          this.keywords = 'Color Product Inquiry, color database, color Product';
           this.data.permissions = {daily: true, research: true, edu: true};
           this.data.relationship = {expert: true};
           this.caption = 'Product Inquiry';
@@ -33,6 +35,8 @@ angular
           break;
 
         case 'partnershipInquire':
+          this.title = 'Data Partnership Inquiry';
+          this.keywords = 'Color data partnership, color database, color dataset, color data points in r';
           this.caption = 'Inquire about Data Partnership';
           this.inquire2 = true;
           this.url = 'new_data_partners';
@@ -40,6 +44,8 @@ angular
           break;
 
         default:
+          this.title = 'Education Partnership Inquiry';
+          this.keywords = 'Color Education partnership, color database, color Education, color Education points in r';
           this.caption = 'Inquire about Education Partnership';
           this.url = 'new_education_partners';
           this.inquire3 = true;

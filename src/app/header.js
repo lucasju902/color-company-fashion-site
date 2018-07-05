@@ -19,8 +19,8 @@ angular
           subNavs: [
             {name: 'Fashion Color Trends', state: 'fashion'},
             {name: 'Auto Color Trends', state: 'auto'},
-            {name: 'Brand Color Trends', state: 'branding'},
-            {name: 'Legal Color Trends', state: 'legal'}
+            {name: 'Brand Color Insights', state: 'branding'},
+            {name: 'Legal Color Insights', state: 'legal'}
           ]
         }, {
           name: 'Color Research',
