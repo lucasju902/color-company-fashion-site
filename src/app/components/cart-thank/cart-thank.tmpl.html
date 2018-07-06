@@ -30,7 +30,7 @@
     <div class="row download-row" >
       <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">
         <div>
-        <img class="download-img" src="{{item.image}}">
+        <img class="download-img" ng-src="{{item.image}}">
         </div>
         <div ng-show="item.file">
         <a href="{{item.file}}" download><button class="btn">DOWNLOAD</button></a>

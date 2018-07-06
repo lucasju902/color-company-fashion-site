@@ -40,7 +40,7 @@
       <div class="col-lg-5 col-md-5" ng-bind-html="item.description">
       </div>
       <div class="col-lg-7 col-md-7 ">
-        <img src="{{item.image_url || '../assets/images/infographic2.jpg'}}" class="img-responsive shadow " style="width:100%" alt="Image">
+        <img ng-src="{{item.image_url || '../assets/images/infographic2.jpg'}}" class="img-responsive shadow " style="width:100%" alt="Image">
       </div>
     </div>
   </div>
