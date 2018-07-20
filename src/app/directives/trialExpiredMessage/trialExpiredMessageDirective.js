@@ -5,7 +5,7 @@ angular.module('app').directive('hueTrialExpiredMessage', function () {
     };
 
     scope.signUpClick = function () {
-      window.location = "http://www.hue-group.com";
+      window.location = "http://www.hue-data.com";
     };
   }
 

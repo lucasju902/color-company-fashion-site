@@ -4290,6 +4290,16 @@ form .ui-select-container.selectize-control {
     display: none;
   }
 
+  .landing-logo {
+    position: absolute;
+    margin-top: 7.5% !important;
+    right: 35px;
+    height: 38px;
+    padding: 0 !important;
+    max-width: 100% !important;
+    //width: 70%;
+  }
+
   @-webkit-keyframes color_change {
     from {
       fill: black;
@@ -4345,12 +4355,12 @@ form .ui-select-container.selectize-control {
       height: 100%;
     }
 
-    .logo {
-      display: none;
-    }
-    .logo-small {
-      display: block;
-    }
+    //.logo {
+    //  display: none;
+    //}
+    //.logo-small {
+    //  display: block;
+    //}
 
     #slideshow {
 
@@ -4396,12 +4406,12 @@ form .ui-select-container.selectize-control {
 
     }
 
-    .logo {
-      display: none;
-    }
-    .logo-small {
-      display: block;
-    }
+    //.logo {
+    //  display: none;
+    //}
+    //.logo-small {
+    //  display: block;
+    //}
 
     #slideshow {
 

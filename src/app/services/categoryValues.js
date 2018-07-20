@@ -919,7 +919,7 @@ angular.module('app')
         case 'downloadExcerpt': {
           return {
             daily: 'Daily Insights',
-            newReportNotification: 'HUEGROUP new report notification',
+            newReportNotification: 'HUEDATA new report notification',
             emotionIndexInsights: 'Color -emotion index insights',
             expert: 'Expert Panelist'
 

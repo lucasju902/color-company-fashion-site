@@ -61,7 +61,7 @@ angular
               });
               data.relationship = JSON.stringify(data.relationship);
             } else if (item === 'contact' && this.data.contact.becoming) {
-              data.contact = 'Contact about becoming a HUEGROUP members';
+              data.contact = 'Contact about becoming a HUEDATA members';
             }
           }
           $window.open(localStorageService.get('link'), '_blank');

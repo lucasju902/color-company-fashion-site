@@ -9,8 +9,8 @@ angular
           name: 'About',
           subNavs: [
             {name: 'About', state: 'aboutPage'},
-            {name: 'Huegroup Vertical Coverage', state: 'verticalCoverage'},
-            {name: 'Huegroup Members', state: 'members'},
+            {name: 'Huedata Vertical Coverage', state: 'verticalCoverage'},
+            {name: 'Huedata Members', state: 'members'},
             {name: 'Speaking Engagements', state: 'speakingEngagements'},
             {name: 'Publication Schedule', state: 'publicationSchedule'}
           ]

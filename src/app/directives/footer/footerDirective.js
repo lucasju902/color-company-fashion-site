@@ -16,7 +16,7 @@ angular.module('app').directive('hueFooter', function () {
 
   return {
     restrict: 'A',
-    template: '<ul><li><a ng-click="showInfoWindow(\'about\')">About</a></li><li><a href="mailto:investors@hue-group.com">Investors</a></li><li><a ng-click="showInfoWindow(\'terms\')">Terms Of Use</a></li><li><a ng-click="showInfoWindow(\'privacy\')">Privacy</a></li><li><a href="mailto:hello@hue-group.com">Contact</a></li><li class="not-chrome-message" ng-show="browserIsNotChrome"><a href="https://www.google.com/chrome/">For best results please use Google Chrome. If you do not have Google Chrome, you can download using this link.</a></li></ul><div class="info-window" ng-if="isInfoWindowVisible()"><div class="button-close" ng-click="hideInfoWindow()"></div><div class="window-content-container"><div class="window-content" ng-include="infoUrl"></div></div></div>',
+    template: '<ul><li><a ng-click="showInfoWindow(\'about\')">About</a></li><li><a href="mailto:investors@hue-data.com">Investors</a></li><li><a ng-click="showInfoWindow(\'terms\')">Terms Of Use</a></li><li><a ng-click="showInfoWindow(\'privacy\')">Privacy</a></li><li><a href="mailto:hello@hue-group.com">Contact</a></li><li class="not-chrome-message" ng-show="browserIsNotChrome"><a href="https://www.google.com/chrome/">For best results please use Google Chrome. If you do not have Google Chrome, you can download using this link.</a></li></ul><div class="info-window" ng-if="isInfoWindowVisible()"><div class="button-close" ng-click="hideInfoWindow()"></div><div class="window-content-container"><div class="window-content" ng-include="infoUrl"></div></div></div>',
     link: link,
     scope: {}
   };
