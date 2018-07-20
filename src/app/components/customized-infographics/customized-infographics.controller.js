@@ -611,7 +611,7 @@
                       _.sortBy(r, 'percentage');
                       palettes[vm.getAbbrv('season') + yearsRange[i]] = r;
                     });
-                    results.push(palettes)
+                    results.push(palettes);
                     return results;
                   });
               });

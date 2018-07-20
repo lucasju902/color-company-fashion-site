@@ -11,6 +11,9 @@
 
           function bindData() {
             var containers = element.find('.f-season');
+            if (scope.data) {
+              scope.data.reverse();
+            }
             _.each(containers, function (c, i) {
               var data = (scope.data || [])[i];
               if (!data) {
@@ -129,12 +132,42 @@
             }
 
             scope.palettes = scope.data.splice(14, 1)[0];
+            var palettes = {};
+            var keys = [];
+            for (var k in scope.palettes) {
+              keys.push(k);
+            }
+            keys.reverse().forEach(function (key) {
+              palettes[key] = scope.palettes[key];
+            });
+            scope.palettes = palettes;
+
+            // var family = [];
+            // scope.palettes['ALL2014'].forEach(function (obj) {
+            //   if (_.indexOf(family, obj.color.family) === -1) {
+            //     family.push(obj.color.family);
+            //   }
+            // });
+            // var familyD = [];
+            // scope.data.forEach(function (obj) {
+            //   if (_.indexOf(family, obj.title) === -1) {
+            //     familyD.push(obj.title);
+            //   }
+            // });
+            // var comp = [];
+            // familyD.forEach(function (obj) {
+            //   comp.push[obj.toLowerCase()];
+            // });
+            // family = ['red', 'orange', 'yellow', 'yellow/green', 'green', 'cyan', 'blue', 'violet', 'magenta', 'brown', 'beige', 'gray', 'white', 'black'];
+            //
+            // console.log(family);
+            // console.log(familyD);
+            // console.log(comp);
+
             scope.mainSeason = scope.palettes[Object.keys(scope.palettes)[0]];
             scope.mainTitle = Object.keys(scope.palettes)[0];
-
             delete scope.palettes[Object.keys(scope.palettes)[0]];
             scope.mainSeason = _.chunk(scope.mainSeason, 4);
-
 
             var container = element.find('[chart-type="groups"]');
             var colors = _.map(scope.data, function (d) {
