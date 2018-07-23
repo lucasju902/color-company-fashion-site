@@ -3,8 +3,8 @@
 
   angular.module('app').directive('hueChartColorsWithGroupsForTwo',
     [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
+      'common', 'config', 'chartsHelper', 'colorSortService',
+      function (common, config, chartsHelper, colorSortService) {
 
         function link(scope, element, attributes) {
 
@@ -20,6 +20,8 @@
             }
 
             if (scope.data[2]) {
+              scope.data[2].data = colorSortService(scope.data[2].data, 25);
+              scope.data[3].data = colorSortService(scope.data[3].data, 25);
               scope.palettes1 = _.chunk(scope.data[2].data, 5);
               scope.palettes2 = _.chunk(scope.data[3].data, 5);
             }

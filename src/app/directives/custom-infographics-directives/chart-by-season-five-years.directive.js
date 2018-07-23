@@ -120,8 +120,8 @@
 
   angular.module('app').directive('hueChartBySeasonFiveYearsColors',
     [
-      'common', 'config', 'chartsHelper', 'reduceValue',
-      function (common, config, chartsHelper, reduceValue) {
+      'common', 'config', 'chartsHelper', 'reduceValue', 'colorSortService',
+      function (common, config, chartsHelper, reduceValue, colorSortService) {
         function link(scope, element, attributes) {
           scope.$watch('data', bindData);
 
@@ -142,31 +142,14 @@
             });
             scope.palettes = palettes;
 
-            // var family = [];
-            // scope.palettes['ALL2014'].forEach(function (obj) {
-            //   if (_.indexOf(family, obj.color.family) === -1) {
-            //     family.push(obj.color.family);
-            //   }
-            // });
-            // var familyD = [];
-            // scope.data.forEach(function (obj) {
-            //   if (_.indexOf(family, obj.title) === -1) {
-            //     familyD.push(obj.title);
-            //   }
-            // });
-            // var comp = [];
-            // familyD.forEach(function (obj) {
-            //   comp.push[obj.toLowerCase()];
-            // });
-            // family = ['red', 'orange', 'yellow', 'yellow/green', 'green', 'cyan', 'blue', 'violet', 'magenta', 'brown', 'beige', 'gray', 'white', 'black'];
-            //
-            // console.log(family);
-            // console.log(familyD);
-            // console.log(comp);
-
+            scope.palettes[Object.keys(scope.palettes)[0]] = colorSortService(scope.palettes[Object.keys(scope.palettes)[0]], 24);
             scope.mainSeason = scope.palettes[Object.keys(scope.palettes)[0]];
             scope.mainTitle = Object.keys(scope.palettes)[0];
             delete scope.palettes[Object.keys(scope.palettes)[0]];
+
+            _.forEach(scope.palettes, function (value, key) {
+              scope.palettes[key] = colorSortService(value, 21);
+            });
             scope.mainSeason = _.chunk(scope.mainSeason, 4);
 
             var container = element.find('[chart-type="groups"]');

@@ -8,7 +8,7 @@ angular
         lastName: {value: '', required: true, name: 'last name', type: 'provide'},
         title: {value: '', required: true, name: 'title', type: ''},
         company: {value: '', required: true, name: 'company name', type: 'provide'},
-        phone: {value: '', required: true, name: 'phone number', type: 'enter'},
+        phone: {value: '', name: 'phone number', type: 'enter'},
         companyEmail: {value: '', required: true, name: 'company email', type: 'provide'},
         comments: {value: '', required: true, name: 'comments', type: 'enter'}
       };

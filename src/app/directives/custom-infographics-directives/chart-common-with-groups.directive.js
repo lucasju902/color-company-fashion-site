@@ -3,8 +3,8 @@
 
   angular.module('app').directive('hueChartCommonWithGroups',
     [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
+      'common', 'config', 'chartsHelper', 'colorSortService',
+      function (common, config, chartsHelper, colorSortService) {
 
         function link(scope, element, attributes) {
 
@@ -19,7 +19,10 @@
               return;
             }
 
-            scope.palettes = _.chunk(scope.data['palettes'], 5);
+            if (scope.data['palettes']) {
+              scope.palettes = colorSortService(scope.data['palettes'], 25);
+            }
+            scope.palettes = _.chunk(scope.palettes, 5);
 
             var containerBagel = element.find('[chart-type="bagel"]').html('');
             var containerBrief = element.find('[chart-type="brief"]').html('');
