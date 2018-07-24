@@ -399,7 +399,7 @@
               charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
                 .then(function (results) {
                   var param = vm.prepareColors();
-                  dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams())
+                  dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(results, function (colorGroup) {
                         colorGroup.colors = [];
@@ -742,7 +742,7 @@
                     data: group
                   }];
                 async.waterfall([function (cb) {
-                  dashboardRepository["category"].getColorPalette(3, vm.prepareColorsParams())
+                  dashboardRepository["category"].getColorPalette(3, vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(groups[0].data, function (colorGroup) {
                         colorGroup.colors = [];
@@ -755,7 +755,7 @@
                       cb();
                     });
                 }, function (cb) {
-                  dashboardRepository["category"].getColorPalette(2, vm.prepareColorsParams())
+                  dashboardRepository["category"].getColorPalette(2, vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(groups[1].data, function (colorGroup) {
                         colorGroup.colors = [];
@@ -768,7 +768,7 @@
                       cb();
                     });
                 }, function (cb) {
-                  dashboardRepository["category"].getColorPalette(1, vm.prepareColorsParams())
+                  dashboardRepository["category"].getColorPalette(1, vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(groups[2].data, function (colorGroup) {
                         colorGroup.colors = [];
@@ -880,7 +880,7 @@
                     data: group
                   }];
                 async.waterfall([function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[0], vm.prepareColorsParams())
+                  dashboardRepository["year"].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(groups[0].data, function (colorGroup) {
                         colorGroup.colors = [];
@@ -893,7 +893,7 @@
                       cb();
                     });
                 }, function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[1], vm.prepareColorsParams())
+                  dashboardRepository["year"].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(groups[1].data, function (colorGroup) {
                         colorGroup.colors = [];
@@ -906,7 +906,7 @@
                       cb();
                     });
                 }, function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[2], vm.prepareColorsParams())
+                  dashboardRepository["year"].getColorPalette(yearsRange[2], vm.prepareColorsParams(), 250)
                     .then(function (data) {
                       _.each(groups[2].data, function (colorGroup) {
                         colorGroup.colors = [];
