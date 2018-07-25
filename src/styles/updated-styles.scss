@@ -4718,6 +4718,24 @@ footer {
   padding-top: 13px;
 }
 
+.list-huegroup{
+  padding-left: 0 !important;
+  text-align: left;
+  li  {
+    list-style-type: none;
+    color: #000;
+  }
+  li:before {
+    content: "-  ";
+  }
+}
+.del-padding {
+   p {
+     padding-bottom: 0;
+     margin-bottom: 0;
+   }
+}
+
 .pad-b-80 {
   padding-bottom: 80px;
 }
