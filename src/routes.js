@@ -34,13 +34,15 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('members', {
       url: '/members',
-      component: 'membersComponent'
+      component: 'membersComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('verticalCoverage', {
       url: '/vertical-coverage',
-      component: 'verticalCoverageComponent'
+      component: 'verticalCoverageComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
@@ -69,13 +71,15 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('reports', {
       url: '/reports',
-      component: 'reportsComponent'
+      component: 'reportsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('reportsDetails', {
       url: '/reports/:id',
-      component: 'reportsDetailsComponent'
+      component: 'reportsDetailsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
@@ -100,55 +104,64 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     .state('customizedInfographics', {
       url: '/customized-infographics',
       component: 'customizedInfographicsComponent',
-      protected: true
+      protected: true,
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('membersAnalytics', {
       url: '/members-analytics',
       component: 'membersAnalyticsComponent',
-      protected: true
+      protected: true,
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('publicationSchedule', {
       url: '/publication-schedule',
-      component: 'publicationScheduleComponent'
+      component: 'publicationScheduleComponent',
+      onlyAdmin: true
     });
   $stateProvider
     .state('goodReads', {
       url: '/good-reads',
-      component: 'goodReadsComponent'
+      component: 'goodReadsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('goodReadsDetails', {
       url: '/good-reads/:id',
-      component: 'goodReadsDetailsComponent'
+      component: 'goodReadsDetailsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('teachingMaterials', {
       url: '/teaching-materials',
-      component: 'teachingMaterialsComponent'
+      component: 'teachingMaterialsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('teachingDetailsMaterials', {
       url: '/teaching-materials/:id',
-      component: 'teachingMaterialsDetailsComponent'
+      component: 'teachingMaterialsDetailsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('courses', {
       url: '/courses',
-      component: 'coursesComponent'
+      component: 'coursesComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
     .state('coursesDetails', {
       url: '/courses/:id',
-      component: 'coursesDetailsComponent'
+      component: 'coursesDetailsComponent',
+      onlyAdmin: true
     });
 
   $stateProvider
@@ -268,7 +281,8 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     .state('auto', {
       url: '/auto',
       templateUrl: 'app/components/dashboards/auto/auto.tmpl.html',
-      protected: true
+      protected: true,
+      onlyAdmin: true
     });
 
   $stateProvider
@@ -304,7 +318,8 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     .state('legal', {
       url: '/legal',
       templateUrl: 'app/components/dashboards/legal/legal.tmpl.html',
-      protected: true
+      protected: true,
+      onlyAdmin: true
     });
 
   $stateProvider
@@ -340,7 +355,8 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     .state('branding', {
       url: '/branding',
       templateUrl: 'app/components/dashboards/branding/branding.tmpl.html',
-      protected: true
+      protected: true,
+      onlyAdmin: true
     });
 
   $stateProvider

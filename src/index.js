@@ -22,13 +22,17 @@ var run = ['localStorageService', 'authService', '$state', '$transitions', 'moda
     statsService.pageCounter();
     localStorageService.set('currentUser', {});
     authService.loadCurrentUser().then(function (res) {
-      if ($state.$current.self.protected && !localStorageService.get('currentUser').is_member) {
+      if (($state.$current.self.protected && !localStorageService.get('currentUser').is_member) ||
+        ($state.$current.self.onlyAdmin && !localStorageService.get('currentUser').is_admin)) {
         $state.go('landing');
       }
       $transitions.onStart({}, function (transition) {
         statsService.pageCounter();
         if (transition.to().protected && !localStorageService.get('currentUser').is_member) {
           modalService.showModal(1);
+          return false;
+        } else if (transition.to().onlyAdmin && !localStorageService.get('currentUser').is_admin) {
+          $state.go('landing');
           return false;
         }
       });
@@ -50,8 +54,8 @@ angular.module('app').constant('appConfig', {
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
   // authServiceUrl: 'http://localhost:5000',
   authServiceUrl: '',
-  // dashboardServiceUrl: 'http://localhost:3002/',
-  dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  dashboardServiceUrl: 'http://localhost:3002/',
+  // dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
 
   repositories: {
     mainParams: ['region_id', 'designer_id', 'category_id', 'season_id', 'year', 'city_id']

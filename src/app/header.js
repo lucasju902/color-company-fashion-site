@@ -4,34 +4,35 @@ angular
     templateUrl: 'app/header.html',
     controller: function ($state, authService, $rootScope, $scope, localStorageService) {
       var self = this;
+
       this.navigations = [
         {
           name: 'About',
           subNavs: [
             {name: 'About', state: 'aboutPage'},
-            {name: 'HUEDATA Vertical Coverage', state: 'verticalCoverage'},
-            {name: 'HUEDATA Members', state: 'members'},
+            {name: 'HUEDATA Vertical Coverage', state: 'verticalCoverage', onlyAdmin: true},
+            {name: 'HUEDATA Members', state: 'members', onlyAdmin: true},
             {name: 'Speaking Engagements', state: 'speakingEngagements'},
-            {name: 'Publication Schedule', state: 'publicationSchedule'}
+            {name: 'Publication Schedule', state: 'publicationSchedule', onlyAdmin: true}
           ]
         }, {
           name: 'Color Trends',
           subNavs: [
             {name: 'Fashion Color Trends', state: 'fashion'},
-            {name: 'Auto Color Trends', state: 'auto'},
-            {name: 'Brand Color Insights', state: 'branding'},
-            {name: 'Legal Color Insights', state: 'legal'}
+            {name: 'Auto Color Trends', state: 'auto', onlyAdmin: true},
+            {name: 'Brand Color Insights', state: 'branding', onlyAdmin: true},
+            {name: 'Legal Color Insights', state: 'legal', onlyAdmin: true}
           ]
         }, {
           name: 'Color Research',
           subNavs: [
             {name: 'Color Indices', state: 'colorEmotion'},
-            {name: 'Color Reports', state: 'reports'},
+            {name: 'Color Reports', state: 'reports', onlyAdmin: true},
             {name: 'Color Infographics', state: 'infographics'},
-            {name: 'Color Customized Infographics', state: 'customizedInfographics'},
-            {name: 'Color Courses', state: 'courses'},
-            {name: 'Color Teaching Materials', state: 'teachingMaterials'},
-            {name: 'Good Reads', state: 'goodReads'}
+            {name: 'Color Customized Infographics', state: 'customizedInfographics', onlyAdmin: true},
+            {name: 'Color Courses', state: 'courses', onlyAdmin: true},
+            {name: 'Color Teaching Materials', state: 'teachingMaterials', onlyAdmin: true},
+            {name: 'Good Reads', state: 'goodReads', onlyAdmin: true}
           ]
         }, {
           name: 'Color Daily',
@@ -43,7 +44,7 @@ angular
           subNavs: [
             {name: 'Contact Form', state: 'contact'},
             {name: 'Membership Inquiry', state: 'membership'},
-            {name: 'Members Analytics', state: 'membersAnalytics'},
+            {name: 'Members Analytics', state: 'membersAnalytics', onlyAdmin: true},
             {name: 'Data Partnership Inquiry', state: 'partners'},
             {name: 'Press', state: 'press'}
           ]

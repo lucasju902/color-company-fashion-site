@@ -4717,3 +4717,27 @@ footer {
 .pad-t-13 {
   padding-top: 13px;
 }
+
+.pad-b-80 {
+  padding-bottom: 80px;
+}
+
+.color-ind-bar {
+  width: 90%;
+  margin: auto auto 39px auto;
+  background-image: url(../assets/images/bar.jpg);
+  min-height: 59px;
+  height: 80px;
+  position: relative;
+
+  span {
+    top: 37%;
+    position: absolute;
+  }
+
+  img {
+    max-height: 55px;
+    //padding: 5px 2px 2px 2px;
+    margin: 13px 5px 10px 10px;
+  }
+}

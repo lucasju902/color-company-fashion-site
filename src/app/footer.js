@@ -3,6 +3,7 @@ angular
   .component('appFooter', {
     templateUrl: 'app/footer.html',
     controller: function ($state, $scope, $stateParams, scrollService, modalService, $http, appConfig, dataValidate) {
+      var self = this;
       this.email = '';
       this.permissions = {
         'Daily Insights': false,
@@ -38,13 +39,19 @@ angular
           data = {
             email: data.email.value,
             permissions: permissions
-          }
+          };
           if (this.relationship['Expert Panelist']) {
             data.relationship = 'Expert Panelist';
           }
           data.permissions = JSON.stringify(data.permissions);
           $http.get(appConfig.dashboardServiceUrl + 'new_member_email', {
             params: data
+          }).then(function (res) {
+            if (res.data.status === 'ok') {
+              self.email = '';
+            } else {
+              alert('Error! Maybe email already subscribe.');
+            }
           });
         }
       };
