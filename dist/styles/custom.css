@@ -1021,3 +1021,20 @@ footer #copyrights {
   margin: 0;
   color: #bb0076;
 }
+
+.text-align-left {
+  text-align: left;
+  margin-bottom: 0;
+}
+.padding-left-3 {
+  padding-left: 3%;
+}
+.padding-left-7 {
+  padding-left: 7%;
+}
+.text-bold {
+  font-weight:bold
+}
+.padding-bottom-20 {
+  padding-bottom: 20px !important;
+}
