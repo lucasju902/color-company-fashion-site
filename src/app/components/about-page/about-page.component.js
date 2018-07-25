@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('aboutPage', {
     templateUrl: 'app/components/about-page/about-page.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce) {
       var vm = this;
       vm.pageData = {};
 
@@ -19,6 +19,7 @@ angular
               // });
 
               vm.pageData = res.data;
+              vm.pageData.editor = $sce.trustAsHtml(vm.pageData.editor);
             }
           });
       };
