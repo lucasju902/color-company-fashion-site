@@ -4719,6 +4719,8 @@ footer {
 }
 
 .list-huegroup{
+  padding-left: 0;
+  text-align: left;
   li  {
     list-style-type: none;
     color: #000;
@@ -4726,4 +4728,10 @@ footer {
   li:before {
     content: "- ";
   }
+}
+.del-padding {
+   p {
+     padding-bottom: 0;
+     margin-bottom: 0;
+   }
 }
