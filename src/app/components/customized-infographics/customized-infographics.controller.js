@@ -1401,7 +1401,7 @@
         var footer = angular.element('.customized-infographics-footer');
         var titles = angular.element('.graphic-titles');
         footer.css({display: 'block'});
-        titles.css({'text-align': 'left', 'font-size': '3em'});
+        // titles.css({'text-align': 'left', 'font-size': '3em'});
         captureEl.css({'padding-top': '30px'});
         var captureElHeight = captureEl.height();
         var captureElWidth = captureEl.width();

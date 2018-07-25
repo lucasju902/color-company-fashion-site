@@ -12,8 +12,9 @@ angular.module('app')
           if (res.data && res.data.success) {
             self.setToken(res.data.token, isRemembered);
             self.currentUser = res.data.user;
+            self.currentUser.is_admin = res.data.user.email === 'admin@huegroup.com';
             self.token = res.data.token;
-            localStorageService.set('currentUser', res.data.user);
+            localStorageService.set('currentUser', self.currentUser);
           }
           return res.data;
         });
@@ -33,7 +34,8 @@ angular.module('app')
           .then(function (data) {
             if (data.data.success) {
               self.currentUser = data.data.user;
-              localStorageService.set('currentUser', data.data.user);
+              self.currentUser.is_admin = data.data.user.email === 'admin@huegroup.com';
+              localStorageService.set('currentUser', self.currentUser);
             } else {
               localStorageService.set('currentUser', {});
             }

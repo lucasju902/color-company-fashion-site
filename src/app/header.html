@@ -47,7 +47,7 @@
               ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">
             <li ng-click="$ctrl.toggleMenu(subNav.name)"
                 ng-repeat="subNav in mainNav.subNavs">
-              <a ui-sref={{subNav.state}}>{{subNav.name}}</a>
+              <a ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref={{subNav.state}}>{{subNav.name}}</a>
             </li>
           </ul>
         </li>
