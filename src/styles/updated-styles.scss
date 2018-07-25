@@ -4717,3 +4717,13 @@ footer {
 .pad-t-13 {
   padding-top: 13px;
 }
+
+.list-huegroup{
+  li  {
+    list-style-type: none;
+    color: #000;
+  }
+  li:before {
+    content: "- ";
+  }
+}
