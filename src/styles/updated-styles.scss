@@ -4719,14 +4719,14 @@ footer {
 }
 
 .list-huegroup{
-  padding-left: 0;
+  padding-left: 0 !important;
   text-align: left;
   li  {
     list-style-type: none;
     color: #000;
   }
   li:before {
-    content: "- ";
+    content: "-  ";
   }
 }
 .del-padding {
