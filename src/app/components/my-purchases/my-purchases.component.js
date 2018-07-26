@@ -14,9 +14,11 @@ angular
                 res.data[key].forEach(function (item) {
                   item.purchaseDate = moment(item.purchase_date).format('DD.MM.YYYY');
                   if (key === 'teaching_materials') {
-                    item.type = 'teaching-materials';
-                  } else {
-                    item.type = key;
+                    item.type = 'color-teaching-materials';
+                  } else if (key === 'reports') {
+                    item.type = 'color-reports';
+                  } else if (key === 'courses') {
+                    item.type = 'color-education-courses';
                   }
                   vm.data.push(item);
                 });

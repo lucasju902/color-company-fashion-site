@@ -9,7 +9,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('aboutPage', {
-      url: '/about',
+      url: '/about-huedata',
       component: 'aboutPage'
     });
 
@@ -21,13 +21,13 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('speakingEngagements', {
-      url: '/speaking-engagements',
+      url: '/huedata-speaking-engagements',
       component: 'speakingEngagementsComponent'
     });
 
   $stateProvider
     .state('press', {
-      url: '/press',
+      url: '/huedata-press-inquiry',
       component: 'pressComponent'
     });
 
@@ -47,7 +47,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('membership', {
-      url: '/membership',
+      url: '/huedata-membership',
       component: 'membershipComponent',
       params: {
         scrollTo: false
@@ -56,7 +56,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('colorEmotion', {
-      url: '/color-emotion',
+      url: '/color-research',
       component: 'colorEmotionComponent',
       protected: true
 
@@ -64,45 +64,45 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('partners', {
-      url: '/data-partners',
+      url: '/huedata-data-partners',
       component: 'partnersComponent'
     });
 
   $stateProvider
     .state('reports', {
-      url: '/reports',
+      url: '/color-reports',
       component: 'reportsComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('reportsDetails', {
-      url: '/reports/:id',
+      url: '/color-reports/:id',
       component: 'reportsDetailsComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('dailyInsights', {
-      url: '/daily-insights',
+      url: '/color-blog',
       component: 'dailyInsightsComponent'
     });
 
   $stateProvider
     .state('infographics', {
-      url: '/infographics',
+      url: '/color-infographics',
       component: 'infographicsComponent'
     });
 
   $stateProvider
     .state('infographicsDetails', {
-      url: '/infographics/:id',
+      url: '/color-infographics/:id',
       component: 'infographicsDetailsComponent'
     });
 
   $stateProvider
     .state('customizedInfographics', {
-      url: '/customized-infographics',
+      url: '/color-customized-infographics',
       component: 'customizedInfographicsComponent',
       protected: true,
       onlyAdmin: true
@@ -110,7 +110,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('membersAnalytics', {
-      url: '/members-analytics',
+      url: '/huedata-members-analytics',
       component: 'membersAnalyticsComponent',
       protected: true,
       onlyAdmin: true
@@ -118,48 +118,48 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('publicationSchedule', {
-      url: '/publication-schedule',
+      url: '/huedata-publication-schedule',
       component: 'publicationScheduleComponent',
       onlyAdmin: true
     });
   $stateProvider
     .state('goodReads', {
-      url: '/good-reads',
+      url: '/color-good-reads',
       component: 'goodReadsComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('goodReadsDetails', {
-      url: '/good-reads/:id',
+      url: '/color-good-reads/:id',
       component: 'goodReadsDetailsComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('teachingMaterials', {
-      url: '/teaching-materials',
+      url: '/color-teaching-materials',
       component: 'teachingMaterialsComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('teachingDetailsMaterials', {
-      url: '/teaching-materials/:id',
+      url: '/color-teaching-materials/:id',
       component: 'teachingMaterialsDetailsComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('courses', {
-      url: '/courses',
+      url: '/color-education-courses',
       component: 'coursesComponent',
       onlyAdmin: true
     });
 
   $stateProvider
     .state('coursesDetails', {
-      url: '/courses/:id',
+      url: '/color-education-courses/:id',
       component: 'coursesDetailsComponent',
       onlyAdmin: true
     });
@@ -178,7 +178,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('contact', {
-      url: '/contact',
+      url: '/contact-huedata',
       component: 'contactUsComponent'
     });
 
@@ -222,7 +222,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   // Fashion Dashboard
   $stateProvider
     .state('fashion', {
-      url: '/fashion',
+      url: '/fashion-color-trends',
       templateUrl: 'app/components/dashboards/fashion/fashion.tmpl.html',
       protected: true
     });
@@ -279,7 +279,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   // Auto Dashboard
   $stateProvider
     .state('auto', {
-      url: '/auto',
+      url: '/auto-color-trends',
       templateUrl: 'app/components/dashboards/auto/auto.tmpl.html',
       protected: true,
       onlyAdmin: true
@@ -316,7 +316,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   // Legal Dashboard
   $stateProvider
     .state('legal', {
-      url: '/legal',
+      url: '/legal-color-trademarks',
       templateUrl: 'app/components/dashboards/legal/legal.tmpl.html',
       protected: true,
       onlyAdmin: true
@@ -353,7 +353,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   // Brand Dashboard
   $stateProvider
     .state('branding', {
-      url: '/branding',
+      url: '/branding-colors',
       templateUrl: 'app/components/dashboards/branding/branding.tmpl.html',
       protected: true,
       onlyAdmin: true

@@ -60,7 +60,7 @@ fall color reports, spring color reports, winter color reports, fashion color re
     <div class="row equal">
       <div style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">
         <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>
-        <a style="text-decoration: none" ng-href="#!/reports/{{item.id}}">
+        <a style="text-decoration: none" ng-href="#!/color-reports/{{item.id}}">
           <div class="img-responsive background-image"
                style="background: {{'url(' + item.image_url +') top center'}};
                     background-repeat: no-repeat;
@@ -78,7 +78,7 @@ fall color reports, spring color reports, winter color reports, fashion color re
              data-ellipsis-append-click="$ctrl.toggleTextHeight"
           ></p>
         </div>
-        <span>{{item.date}}</span><a ng-href="#!/reports/{{item.id}}">Learn more</a>
+        <span>{{item.date}}</span><a ng-href="#!/color-reports/{{item.id}}">Learn more</a>
       </div>
     </div>
   </div>

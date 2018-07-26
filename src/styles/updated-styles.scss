@@ -4039,16 +4039,17 @@ form .ui-select-container.selectize-control {
     letter-spacing: -1.5pt;
     padding-bottom: 10px;
     font-family: 'Gotham-bold';
+    padding-top: 0;
+    margin-top: 0;
   }
 
   h3 {
-
     font-size: 25pt;
     font-weight: 700;
     color: black;
     letter-spacing: -1.5pt;
-    padding-bottom: 0px;
-    margin-bottom: 0px;
+    padding-bottom: 0;
+    margin: 0;
     font-family: 'Gotham-Book';
   }
 
@@ -4072,6 +4073,7 @@ form .ui-select-container.selectize-control {
     font-size: 11pt;
     font-weight: 400;
     line-height: 18pt;
+    margin: 0;
   }
 
   .justify {
@@ -4223,7 +4225,7 @@ form .ui-select-container.selectize-control {
   }
 
   .logo {
-    margin-top: 50px;
+    margin-top: 30px;
     margin-bottom: 30px;
     position: relative;
 
@@ -4246,8 +4248,6 @@ form .ui-select-container.selectize-control {
   .menu ul li {
     display: inline-block;
     width: 19%;
-    padding-bottom: 30px;
-
   }
 
   .menu ul {
@@ -4287,7 +4287,7 @@ form .ui-select-container.selectize-control {
   }
 
   #statement {
-    margin-bottom: 80px;
+    margin-bottom: 50px;
   }
   .logo-small {
     display: none;
@@ -4430,7 +4430,6 @@ form .ui-select-container.selectize-control {
       float: left;
       width: 50%;
       padding-bottom: 30px;
-
     }
 
   }
@@ -4736,8 +4735,8 @@ footer {
    }
 }
 
-.pad-b-80 {
-  padding-bottom: 80px;
+.pad-b-60 {
+  padding-bottom: 60px;
 }
 
 .color-ind-bar {
@@ -4757,5 +4756,43 @@ footer {
     max-height: 55px;
     //padding: 5px 2px 2px 2px;
     margin: 13px 5px 10px 10px;
+  }
+}
+
+.indices-block {
+  //height: 500px;
+  h5 {
+    height: 45px;
+    margin-bottom: 15px;
+  }
+
+  p {
+    height: 100px;
+    //height: 40%;
+  }
+
+  .left {
+    padding-top: 50px;
+  }
+
+  @media(max-width: 1200px) {
+    p {
+      padding-bottom: 15px;
+    }
+  }
+
+  @media (max-width: 1300px) {
+    .left {
+      padding-top: 30px;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    p {
+      height: 200px;
+    }
+    .left {
+      padding-top: 10px;
+    }
   }
 }

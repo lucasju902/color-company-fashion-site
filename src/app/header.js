@@ -26,12 +26,12 @@ angular
         }, {
           name: 'Color Research',
           subNavs: [
-            {name: 'Color Indices', state: 'colorEmotion'},
-            {name: 'Color Reports', state: 'reports', onlyAdmin: true},
-            {name: 'Color Infographics', state: 'infographics'},
-            {name: 'Color Customized Infographics', state: 'customizedInfographics', onlyAdmin: true},
-            {name: 'Color Courses', state: 'courses', onlyAdmin: true},
-            {name: 'Color Teaching Materials', state: 'teachingMaterials', onlyAdmin: true},
+            {name: 'Indices', state: 'colorEmotion'},
+            {name: 'Reports', state: 'reports', onlyAdmin: true},
+            {name: 'Infographics', state: 'infographics'},
+            {name: 'Customized Infographics', state: 'customizedInfographics', onlyAdmin: true},
+            {name: 'Courses', state: 'courses', onlyAdmin: true},
+            {name: 'Teaching Materials', state: 'teachingMaterials', onlyAdmin: true},
             {name: 'Good Reads', state: 'goodReads', onlyAdmin: true}
           ]
         }, {
@@ -42,11 +42,11 @@ angular
         }, {
           name: 'Contact',
           subNavs: [
-            {name: 'Contact Form', state: 'contact'},
+            {name: 'Contact Us', state: 'contact'},
             {name: 'Membership Inquiry', state: 'membership'},
             {name: 'Members Analytics', state: 'membersAnalytics', onlyAdmin: true},
             {name: 'Data Partnership Inquiry', state: 'partners'},
-            {name: 'Press', state: 'press'}
+            {name: 'Press Inquiry', state: 'press'}
           ]
         }];
       this.selectedTab = false;
