@@ -453,5 +453,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       component: 'myPurchasesComponent',
       protected: true
     });
+  $stateProvider
+    .state('unsubscribe', {
+      url: '/unsubscribe?:token',
+      component: 'unsubscribeComponent'
+    });
 }
 
