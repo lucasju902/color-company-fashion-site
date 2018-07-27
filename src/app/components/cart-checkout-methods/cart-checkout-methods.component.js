@@ -212,13 +212,25 @@ angular
           vm.errFlag = false;
           vm.placeOrderFlag = true;
         }, 0);
+        var names = [];
+        var prices = [];
+        vm.products.forEach(function (item) {
+          names.push(item.header);
+          prices.push(item.price);
+        });
         var data = {
           id: vm.user.id || 0,
           email: vm.data.email.value,
           reports: vm.purchase.IDs.reports,
           teaching_materials: vm.purchase.IDs.teaching_materials,
           courses: vm.purchase.IDs.courses,
-          payment_method_nonce: vm.nonce
+          payment_method_nonce: vm.nonce,
+          name: vm.data.first_name.value + ' ' + vm.data.last_name.value,
+          address: vm.data.address.value,
+          zip: vm.data.zip.value,
+          city: vm.data.city.value,
+          productsNames: names,
+          productsPrices: prices
         };
         $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
           .then(function (res) {

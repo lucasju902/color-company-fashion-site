@@ -1408,8 +1408,8 @@
 
         timeout(function () {
           html2canvas(captureEl[0], {
-            height: captureElHeight,
-            width: captureElWidth,
+            height: captureElHeight + 20,
+            width: captureElWidth + 10,
             background: '#fff'
           }).then(function (canvas) {
             var img = canvas.toDataURL("image/jpeg");
