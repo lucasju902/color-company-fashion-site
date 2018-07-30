@@ -56,7 +56,7 @@ angular
         $location.hash('');
       };
       vm.getUser = function () {
-        return localStorageService.get('currentUser')? true : false;
+        return localStorageService.get('currentUser').id === undefined;
       };
     }
   });
