@@ -458,5 +458,10 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       url: '/unsubscribe?:token',
       component: 'unsubscribeComponent'
     });
+  $stateProvider
+    .state('order-email', {
+      url: '/order-email?:token',
+      component: 'orderEmailComponent'
+    });
 }
 
