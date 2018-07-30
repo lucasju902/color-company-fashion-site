@@ -49,7 +49,7 @@ angular
           }).then(function (res) {
             if (res.data.status === 'ok') {
               self.email = '';
-              modalService.showModal(0, null, ['Thank you for signing up! Welcome to the HUEDATA community!'], true);
+              modalService.showModal(0, null, ['Thank you for signing up! Welcome to the HUEDATA community! Check your inbox!'], true);
             } else {
               modalService.showModal(0, null, ['* Error! This email is already in use.']);
             }
