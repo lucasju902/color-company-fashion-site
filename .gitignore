@@ -17,3 +17,7 @@ npm-debug.log
 # Docker
 Dockerfile
 docker-compose.yml
+
+
+#Dist
+dist/
