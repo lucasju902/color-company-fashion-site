@@ -4811,3 +4811,21 @@ footer {
   font-size: 16px ;
 }
 
+.left-header {
+  float: left !important;
+  color: #E8E8EE;
+  padding-left: 0 !important;
+  margin-left: -35px !important;
+}
+
+@media (max-width: 604px){
+  .left-header {
+    display: none !important;
+    margin-left: 0 !important;
+  }
+}
+
+.lighter-grey-color{
+  color: #D3D3D3 !important;
+
+}

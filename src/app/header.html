@@ -1,11 +1,14 @@
 <div ng-class="{'hide': $ctrl.hideHeader()}" class="container-fluid" id="top-menu">
+
   <ul>
-    <li><a ui-sref="cart-page">My Cart</a></li>
-    <li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer" ng-click="$ctrl.goProfile()">My profile</a></li>
+    <li><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>
+    <li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>
     <li>
       <a class="pointer" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>
-      <a ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>
+      <a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>
     </li>
+
+    <li class="left-header">The World's Color Intelligence Platform</li>
   </ul>
 </div>
 
