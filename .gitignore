@@ -19,5 +19,3 @@ Dockerfile
 docker-compose.yml
 
 
-#Dist
-dist/
