@@ -11,7 +11,7 @@
       </div>
       <div class="col-lg-2">
         <div class="button membership">
-          <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
+          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
         </div>
       </div>
     </div>

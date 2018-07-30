@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('reportsComponent', {
     templateUrl: 'app/components/reports/reports.tmpl.html',
-    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
       vm.filters = {};
       vm.hueModel = 'VERTICALS';
@@ -94,6 +94,9 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser')? true : false;
       };
     }
   });

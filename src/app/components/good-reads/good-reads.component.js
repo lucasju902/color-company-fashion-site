@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('goodReadsComponent', {
     templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
       vm.all = [];
       vm.items = [];
@@ -46,6 +46,10 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser')? true : false;
       };
     }
   });

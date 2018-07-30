@@ -25,7 +25,9 @@ angular
       anchorSmoothScroll.scrollTo(eID);
       $location.hash('');
     };
-
+    vm.getUser = function () {
+      return localStorageService.get('currentUser')? true : false;
+    };
     vm.downloadExcerpt = function () {
       $state.go('download-excerpt', {type: 'courses', id: vm.pageData.id});
       localStorageService.set('link', vm.pageData.excerpts[0].url);

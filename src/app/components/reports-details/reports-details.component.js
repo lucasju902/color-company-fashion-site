@@ -45,5 +45,9 @@ angular
       localStorageService.set('products', products);
       $state.go('cart-page', {wayBack: 'reports'});
     };
+
+    vm.getUser = function () {
+      return localStorageService.get('currentUser')? true : false;
+    };
   }
 });

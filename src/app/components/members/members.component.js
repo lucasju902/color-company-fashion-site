@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('membersComponent', {
     templateUrl: 'app/components/members/members.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
       vm.filter = '';
       vm.init = function () {
@@ -27,6 +27,9 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+      vm.getUser = function () {
+            return localStorageService.get('currentUser')? true : false;
       };
     }
   });

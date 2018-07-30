@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('speakingEngagementsComponent', {
     templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll) {
+    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
       vm.pageData = {};
       vm.speakers = [];
@@ -54,6 +54,9 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser')? true : false;
       };
     }
   });
