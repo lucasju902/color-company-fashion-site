@@ -25,6 +25,9 @@ angular
       anchorSmoothScroll.scrollTo(eID);
       $location.hash('');
     };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser')? true : false
+    };
 
     vm.downloadExcerpt = function () {
       $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
@@ -44,6 +47,9 @@ angular
       products.teaching_materials[id] = 1;
       localStorageService.set('products', products);
       $state.go('cart-page', {wayBack: 'teachingMaterials'});
+    };
+    vm.getStorage = function () {
+      return localStorageService.get('currentUser')? true : false;
     };
   }
 });

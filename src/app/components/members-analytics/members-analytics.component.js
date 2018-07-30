@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('membersAnalyticsComponent', {
     templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService, localStorageService) {
       var vm = this;
       vm.searchModel = '';
       vm.all = [];
@@ -45,6 +45,10 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser')? true : false;
       };
     }
   });

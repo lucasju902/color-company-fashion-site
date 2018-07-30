@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('verticalCoverageComponent', {
     templateUrl: 'app/components/vertical-coverage/vertical-coverage.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
       vm.pageData = {};
 
@@ -26,5 +26,9 @@ angular
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
       };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser')? true : false;
+      };
+
     }
   });

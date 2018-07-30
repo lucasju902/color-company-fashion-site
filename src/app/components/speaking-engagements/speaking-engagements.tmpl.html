@@ -100,7 +100,7 @@ color conference keynote speaker, design conference speakers, design conference 
             </button>
           </div>
           <div class="button membership" style="float:left; ">
-            <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
+            <button ng-if="$ctrl.checkUser()" class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
           </div>
         </div>
       </form>

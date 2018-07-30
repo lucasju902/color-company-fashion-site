@@ -14,7 +14,7 @@ color theory infographics, infographics color scheme"></update-meta>
       </div>
       <div class="col-lg-3 col-md-12 text-right buttons-group" >
         <div class="button membership btn-space-left">
-          <button class="btn join-btn " ng-click="gotoElement('prefooter')">JOIN</button>
+          <button ng-if="$ctrl.checkUser()" class="btn join-btn " ng-click="gotoElement('prefooter')">JOIN</button>
         </div>
         <div class="button membership">
           <button class="btn white-btn btn-no-space-right" ui-sref="productInquiry">PRODUCT INQUIRY</button>

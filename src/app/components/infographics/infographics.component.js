@@ -2,7 +2,8 @@ angular
   .module('app')
   .component('infographicsComponent', {
     templateUrl: 'app/components/infographics/infographics.tmpl.html',
-    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll,
+                          localStorageService) {
       var vm = this;
       vm.hueModel = 'VERTICAL';
       vm.yearModel = 'YEAR';
@@ -89,6 +90,10 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser')? true : false;
       };
 
 

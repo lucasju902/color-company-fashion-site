@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('aboutPage', {
     templateUrl: 'app/components/about-page/about-page.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce) {
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce, localStorageService) {
       var vm = this;
       vm.pageData = {};
 
@@ -30,6 +30,9 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser')? true : false;
       };
 
       vm.playerAPI = function (action) {

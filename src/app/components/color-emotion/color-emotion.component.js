@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('colorEmotionComponent', {
     templateUrl: 'app/components/color-emotion/color-emotion.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
+    controller: function ($location, anchorSmoothScroll, localStorageService) {
       var vm = this;
 
       vm.gotoElement = function (eID) {
@@ -10,5 +10,12 @@ angular
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
       };
+
+      vm.getUser = function () {
+          return localStorageService.get('currentUser')? true : false;
+      };
+
+
+
     }
   });

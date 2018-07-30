@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('dailyInsightsComponent', {
     templateUrl: 'app/components/daily-insights/daily-insights.tmpl.html',
-    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll) {
+    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
       vm.pageData = {};
       vm.items = [];
@@ -57,6 +57,9 @@ angular
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
-      }
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser')? true : false;
+      };
     }
   });

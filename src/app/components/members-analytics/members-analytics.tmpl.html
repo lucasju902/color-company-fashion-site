@@ -15,7 +15,7 @@
       </div>
       <div class="col-lg-4 col-md-12 buttons-group">
         <div class="button membership">
-          <button class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
+          <button ng-if="$ctrl.checkUser()" class="btn join-btn" ng-click="$ctrl.gotoElement('prefooter')">JOIN</button>
         </div>
         <div class="button membership">
           <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>
