@@ -90,5 +90,10 @@ angular
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
       };
+
+
+      vm.makeDate = function (item) {
+          return moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('MMMM D, YYYY');
+      };
     }
   });
