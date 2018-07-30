@@ -15,11 +15,11 @@ angular
       };
 
       this.modalUpdate = function (number) {
-        modalService.showModal(number)
+        modalService.showModal(number);
       };
 
       this.scroll = function () {
-        scrollService.scrollMember()
+        scrollService.scrollMember();
       };
 
       this.submitEmail = function () {
@@ -49,8 +49,9 @@ angular
           }).then(function (res) {
             if (res.data.status === 'ok') {
               self.email = '';
+              modalService.showModal(0, null, ['Thank you for signing up! Welcome to the HUEDATA community!'], true);
             } else {
-              alert('Error! Maybe email already subscribe.');
+              modalService.showModal(0, null, ['* Error! This email is already in use.']);
             }
           });
         }

@@ -4840,30 +4840,30 @@ footer {
 
 @media (max-width: 1765px) {
   .h1-daily {
-    font-size: 28pt !important;
+    font-size: 26pt !important;
   }
 }
 @media (max-width: 1600px) {
   .h1-daily {
-    font-size: 26pt !important;
+    font-size: 24pt !important;
   }
 }
 
 @media (max-width: 1500px) {
   .h1-daily {
-    font-size: 24pt !important;
+    font-size: 22pt !important;
   }
 }
 @media (max-width: 1400px) {
   .h1-daily {
-    font-size: 22pt !important;
-  }
-}
-@media (max-width: 1245px) {
-  .h1-daily {
     font-size: 20pt !important;
   }
 }
+//@media (max-width: 1245px) {
+//  .h1-daily {
+//    font-size: 19pt !important;
+//  }
+//}
 @media (max-width: 1200px) {
   .h1-daily {
     font-size: 18pt !important;
@@ -4888,4 +4888,20 @@ footer {
   display : inline-block;
   line-height: 42px;
   font-size: 24pt !important;
+}
+
+.msg-inf {
+  display: flex;
+  max-width: 440px;
+  margin: auto;
+  height: 200px;
+  padding-top: 30px;
+  flex-direction: column;
+  
+  p {
+    line-height: 25px;
+    font-weight: 700;
+    font-size: 20px;
+    color: #bb0076;
+  }
 }

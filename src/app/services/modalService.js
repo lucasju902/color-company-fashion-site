@@ -1,5 +1,5 @@
 angular.module('app').service('modalService', function ($rootScope, $uibModal) {
-  this.showModal = function (number, img, item) {
+  this.showModal = function (number, img, item, flag) {
     var arr = [
       {
         tmpl: 'app/components/modal/modal.tmpl.html',
@@ -16,7 +16,8 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
       {
         tmpl: 'app/components/modal/dailyModal.tmpl.html',
         class: 'graphic-modal'
-      },{
+      },
+      {
         tmpl: 'app/components/modal/cat-survey-modal.tmpl.html',
         class: 'cart-modal'
       }];
@@ -34,6 +35,9 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
         $scope.img = img;
         if (item) {
           $scope.item = item;
+        }
+        if (flag) {
+          $scope.flag = flag;
         }
       },
       windowTopClass: arr[number].class,

@@ -44,7 +44,7 @@ angular
             params: data
           }).then(function (res) {
             if (res.status === 200) {
-              $state.go('thank-you', {parFrom: 'speaking'});
+              $state.go('thank-you');
             }
           });
         }

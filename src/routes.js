@@ -396,7 +396,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 
   $stateProvider
     .state('thank-you', {
-      url: '/thank-you/:parFrom',
+      url: '/thank-you',
       component: 'thankYouComponent'
     });
 

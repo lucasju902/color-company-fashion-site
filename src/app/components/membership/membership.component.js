@@ -51,7 +51,7 @@ angular
             params: data
           }).then(function (res) {
             if (res.status === 200) {
-              $state.go('thank-you', {parFrom: 'membership'});
+              $state.go('thank-you');
             }
           });
         }

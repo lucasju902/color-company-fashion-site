@@ -1,9 +1,12 @@
 <div class="modal-err">
   <h4>www.hue-data.com says:</h4>
-  <p>Please correct the following problem(s):</p>
-  <ul>
+  <p ng-show="flag != true">Please correct the following problem(s):</p>
+  <ul ng-show="flag != true">
     <li ng-repeat="str in item">{{str}}</li>
   </ul>
+  <p ng-show="flag == true" style="text-align: center;">
+    {{item[0]}}
+  </p>
 </div>
 <div class="div-but">
   <button class="btn " style="outline: none;" ng-click="cancel()">OK</button>

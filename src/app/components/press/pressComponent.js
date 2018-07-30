@@ -39,7 +39,7 @@ angular
           })
             .then(function (res) {
               if (res.status === 200) {
-                $state.go('thank-you', {parFrom: 'press'});
+                $state.go('thank-you');
               }
             });
         }
