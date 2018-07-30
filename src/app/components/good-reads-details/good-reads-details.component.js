@@ -13,7 +13,7 @@ angular
         vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
       });
     };
-    vm.getStorage = function () {
+    vm.getUser = function () {
           return localStorageService.get('currentUser')? true : false;
     };
   }

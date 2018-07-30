@@ -48,7 +48,7 @@ angular
       localStorageService.set('products', products);
       $state.go('cart-page', {wayBack: 'teachingMaterials'});
     };
-    vm.getStorage = function () {
+    vm.getUser = function () {
       return localStorageService.get('currentUser')? true : false;
     };
   }
