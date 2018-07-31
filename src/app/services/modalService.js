@@ -36,7 +36,7 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
         if (item) {
           $scope.item = item;
         }
-        if (flag) {
+        if (flag !== undefined) {
           $scope.flag = flag;
         }
       },
