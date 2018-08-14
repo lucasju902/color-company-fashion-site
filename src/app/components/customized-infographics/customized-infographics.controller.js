@@ -146,7 +146,7 @@
         var city = reg.test(vm.filter.city.title) ? 'all' : vm.filter.city.title;
         var season = reg.test(vm.filter.season.title) ? 'all' : vm.filter.season.title;
         var category = reg.test(vm.filter.category.title) ? 'all' : vm.filter.category.title;
-        var designer = reg.test(vm.filter.designer.title) ? 'all' : vm.filter.designer.title;
+        var designer = reg.test(vm.filter.designer.title) ? 'all' : vm.filter.designer.title.replace(/ /g, '_');
 
         return {
           city: city,
