@@ -5,7 +5,7 @@
     <div chart-type="brief"></div>
   </div>
   <div class="colors" ng-if="mode.extraView">
-    <label>The pallette</label>
+    <label>The palette</label>
     <div ng-repeat="row in [0,1,2,3,4]">
       <div class="color-brick" ng-repeat="color in palettes[row]" ng-class="{ empty: color.color.isEmpty }">
         <span style="background: {{ color.color.color.hex }}"></span>
