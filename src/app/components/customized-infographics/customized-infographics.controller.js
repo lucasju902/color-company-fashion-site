@@ -996,12 +996,9 @@
           title: 'Expanded Color Popularity By Designer',
           chartTitle: 'Expanded Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
           api: function () {
-            if (vm.filter.year.all) {
-              vm.filter.year.id = 2018;
-            }
             return charts.colorsGroupsCommon(vm.prepareRequestParams())
               .then(function (results) {
-                return dashboardRepository['year'].getColorPalette(vm.filter.year.id, vm.prepareColorsParams(), 250)
+                return dashboardRepository['year'].getColorPalette(vm.filter.year.all ? 2018 : vm.filter.year.id, vm.prepareColorsParams(), 250)
                   .then(function (data) {
                     results['palettes'] = data;
                     return results;
