@@ -58,7 +58,7 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     .state('colorEmotion', {
       url: '/color-research',
       component: 'colorEmotionComponent',
-      protected: true
+      // protected: true
 
     });
 
