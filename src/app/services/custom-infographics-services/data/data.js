@@ -2,7 +2,7 @@
   'use strict';
 
   var serviceId = 'data';
-  var apiRootUrl = 'https://huefashion2.herokuapp.com/api/';
+  var apiRootUrl = 'https://huedata-fashion.herokuapp.com/api/';
   // var apiRootUrl = 'http://localhost:5000/api/?remoteUrl=/';
   angular.module('app').factory(serviceId,
     [
