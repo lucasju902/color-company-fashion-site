@@ -48,7 +48,7 @@ app.run(run);
 
 angular.module('app').constant('appConfig', {
   appName: 'huefashion',
-  webServiceUrl: 'https://huefashion2.herokuapp.com/api/',
+  webServiceUrl: 'https://huedata-fashion.herokuapp.com/api/',
   autoServiceUrl: 'https://hueauto.herokuapp.com/api/',
   brandingServiceUrl: 'https://huebrand.herokuapp.com/api/',
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
