@@ -4905,3 +4905,82 @@ footer {
     color: #bb0076;
   }
 }
+
+//Indices
+.preview {
+  height:150px;
+  width: 150px;
+  border: 1px black solid;
+}
+.sp-container .sp-light .sp-input-disabled .sp-palette-buttons-disabled .sp-palette-disabled .sp-initial-disabled .sp-hidden {
+  //display: block !important;
+}
+
+//Color Naming Index
+
+.title-color-index-block {
+  //display: flex;
+  margin-bottom: 80px;
+
+  .title-color-index {
+    font-size: 40px;
+    text-align: center;
+    margin: 0 auto;
+    //justify-content: center;
+  }
+  .button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .line {
+    margin-bottom: 0;
+  }
+}
+.color-naming-block-desc{
+  margin: 0 auto;
+  width: 450px;
+  //border: 1px solid red;
+  display: flex;
+  flex-direction: column;
+
+  .title-link-color-picker {
+    text-align: center;
+  }
+  #color-naming-block-desc_img_1,
+  #color-naming-block-desc_img_2 {
+    border-top: 0;
+    width: 115px;
+    margin: 60px auto 30px auto;
+  }
+  .button {
+    text-align: center;
+  }
+}
+//------------------------------
+.sp-picker-container {
+  width: 250px;
+}
+
+.color-picker-swatch .ng-scope .color-picker-swatch-left .input-group-addon {
+  width: 100px!important;
+}
+
+#s_color_picker_id {
+  text-align: center;
+}
+
+//#color_picker &:hover {
+//  cursor: crosshair;
+//}
+#color_id {
+  height: 100px;
+  background-color: #000;
+}
+
+.color-picker-block {
+  padding-bottom: 60px;
+  padding-top: 60px;
+  background-color: #f2f2f2;
+}
+//---------------------------------------
