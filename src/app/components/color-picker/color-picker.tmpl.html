@@ -34,11 +34,12 @@
     <!--<div>{{pixelColor ? pixelColor : 'rgb(0,0,0)'}}</div>-->
 <!--</div>-->
 
-<section id="education-top">
+<section class="bg-color-picker-block">
     <div class="container-fluid ">
         <div class="row">
             <div class="col-lg-12 col-md-12 ">
-                <h5 class="title-link-color-picker h-data ng-binding">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>
+                <h5 class="title-link-color-picker h-data ng-binding color-picker-title">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>
+                <div class="color-picker-title-img"><img src="../assets/images/validation.png" alt=""></div>
                 <!--<div ng-controller="MyCtrl" id="color-picker">-->
                     <!--Color:-->
                     <!--<ui-colorpicker ng-model="targetColor"></ui-colorpicker>-->
@@ -49,63 +50,40 @@
                     <!--<div class="preview" ng-style="{ backgroundColor: targetColor }"></div>-->
                 <!--</div>-->
             </div>
+        </div>
             <div class="row">
 
-                <div class="col-lg-4 col-md-4 color-piker-item">
+                <div class="col-lg-4 col-md-4 color-piker-item_canvas">
                     <div id="s_color_picker_id">
-                        <canvas id="color_picker" width="200" height="200"></canvas>
-                        <div>{{pixelColor ? pixelColor : 'rgb(0,0,0)'}}</div>
+                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>
+                        <!--<div>{{pixelColor}}</div>-->
+
+                        <div class="slidecontainer">
+                            <!--<input class="slider" type="range" id="rg" name="volume" min="0" max="100" step="1" ng-change="colorPickerSlider()" onchange="colorPickerSlider()">-->
+                            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
+                            <label id="threeDotSpeed"></label>
+                        </div>
+
+                        <input type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
+                            <label id="value_span"></label>
+                            <!--<input  type="range" id="cowbell" name="cowbell" min="0" max="100" value="90" step="1">-->
+                            <!--<label for="cowbell">Cowbell</label>-->
+                        <div class="rgb-display">
+                            <div >{{pixel[0]}}</div>
+                            <div >{{pixel[1]}}</div>
+                            <div >{{pixel[2]}}</div>
+                        </div>
+
+
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-4 color-piker-item">
-                    <img id="color-naming-block-desc_img_1" src="../assets/images/icon.png" alt="">
+                    <div class="color-picker-title-img"><img src="../assets/images/validation.png" alt=""></div>
                 </div>
                 <div class="col-lg-4 col-md-4 color-piker-item">
                     <div id="color_id"></div>
 
                 </div>
             </div>
-        </div>
     </div>
-    <!--<color-picker ng-model="colorPicker" options="options"></color-picker>-->
 </section>
-
-<!--<section id="education">-->
-<!--<div class="container-fluid">-->
-<!--<div class="row">-->
-<!--<div class="col-lg-4 col-md-4  col-sm-12 indices-block">-->
-<!--<h5>Performance Analysis</h5>-->
-<!--<p>Search for the meaning of colors using the two available color-->
-<!-- - attribute associations classifications:<br><br></p>-->
-<!--<div class="left">-->
-<!--<div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">-->
-<!--<span>EMOTIONAL ATTRIBUTES INDEX</span>-->
-<!--</div>-->
-
-<!--<div class="color-ind-bar"><img src="../assets/images/non-emontional.png"-->
-<!--alt="Image">-->
-<!--<span>NON-EMOTIONAL ATTRIBUTES INDEX</span>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->
-<!--<h5>CEI Interactive Color Upload</h5>-->
-<!--<p>Stress-test the colors you’re considering agains the CEI to validate the-->
-<!--colors evoke the attributes you’re looking for within the relevant-->
-<!--product and demographic context. Simply upload your colors and we’ll-->
-<!--analyze them for you.</p>-->
-<!--<img src="../assets/images/indices2.png" class="img-responsive " alt="Image">-->
-<!--</div>-->
-
-<!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->
-<!--<h5>COLOR NAMING INDEX</h5>-->
-<!--<p>With nearly 10 million color names in our system, HUEDATA-->
-<!--can help you name your color right. Explore our color naming-->
-<!--visualizations to identify best ways to communicate your color-->
-<!--selection.<br><br></p>-->
-<!--<img src="../assets/images/indices3.png" class="img-responsive  text-center" alt="Image">-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--</section>-->
