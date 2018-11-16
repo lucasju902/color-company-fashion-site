@@ -57,7 +57,23 @@ function routesConfig($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('colorEmotion', {
       url: '/color-research',
-      component: 'colorEmotionComponent',
+      component: 'colorEmotionComponent'
+      // protected: true
+
+    });
+
+  $stateProvider
+    .state('colorIndex', {
+      url: '/color-index',
+      component: 'colorIndexComponent'
+      // protected: true
+
+    });
+
+  $stateProvider
+    .state('colorPicker', {
+      url: '/color-picker',
+      component: 'colorPickerComponent'
       // protected: true
 
     });

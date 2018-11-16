@@ -365,7 +365,7 @@ section {
   width: 80%;
 }
 
-input:not([type="checkbox"]):not([type="radio"]), textarea, select {
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select {
   border-radius: 0;
   outline: none;
   font-size: 10pt;
@@ -383,7 +383,7 @@ textarea {
   padding-top: 10px;
 }
 
-input:not([type="checkbox"]):not([type="radio"]), textarea, select, button.button {
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select, button.button {
   padding-left: 10px;
   margin-bottom: 22px;
 }

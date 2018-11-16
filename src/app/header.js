@@ -27,6 +27,7 @@ angular
           name: 'Color Research',
           subNavs: [
             {name: 'Indices', state: 'colorEmotion'},
+            {name: 'The Color Naming Index', state: 'colorIndex'},
             {name: 'Reports', state: 'reports', onlyAdmin: true},
             {name: 'Infographics', state: 'infographics'},
             {name: 'Customized Infographics', state: 'customizedInfographics', onlyAdmin: true},

@@ -1,0 +1,89 @@
+<update-title title="The Color Naming Index"></update-title>
+<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->
+<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->
+<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->
+<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->
+
+<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>
+
+<section id="color-emotion-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">
+                <div class="title-color-index">The Color Naming Index</div>
+                <div class="button membership">
+                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>
+                </div>
+                <div class="line"></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!--<div id="s_color_picker_id">-->
+    <!--<canvas id="color_picker" width="200" height="200"></canvas>-->
+    <!--<div id="color_id"></div>-->
+    <!--<div>{{pixelColor ? pixelColor : 'rgb(0,0,0)'}}</div>-->
+<!--</div>-->
+
+<section class="bg-color-picker-block">
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 ">
+                <h5 class="title-link-color-picker h-data ng-binding color-picker-title">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>
+                <div class="color-picker-title-img"><img src="../assets/images/validation.png" alt=""></div>
+                <!--<div ng-controller="MyCtrl" id="color-picker">-->
+                    <!--Color:-->
+                    <!--<ui-colorpicker ng-model="targetColor"></ui-colorpicker>-->
+                    <!--<br/>-->
+                    <!--Text input: <input ng-model='targetColor'/>-->
+                    <!--<br/>-->
+                    <!--Value: {{targetColor}}-->
+                    <!--<div class="preview" ng-style="{ backgroundColor: targetColor }"></div>-->
+                <!--</div>-->
+            </div>
+        </div>
+            <div class="row">
+
+                <div class="col-lg-4 col-md-4 color-piker-item_canvas">
+                    <div id="s_color_picker_id">
+                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>
+                        <!--<div>{{pixelColor}}</div>-->
+
+                        <div class="slidecontainer">
+                            <!--<input class="slider" type="range" id="rg" name="volume" min="0" max="100" step="1" ng-change="colorPickerSlider()" onchange="colorPickerSlider()">-->
+                            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
+                            <label id="threeDotSpeed"></label>
+                        </div>
+
+                        <input type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
+                            <label id="value_span"></label>
+                            <!--<input  type="range" id="cowbell" name="cowbell" min="0" max="100" value="90" step="1">-->
+                            <!--<label for="cowbell">Cowbell</label>-->
+                        <div class="rgb-display">
+                            <div >{{pixel[0]}}</div>
+                            <div >{{pixel[1]}}</div>
+                            <div >{{pixel[2]}}</div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 color-piker-item">
+                    <div class="color-picker-title-img"><img src="../assets/images/validation.png" alt=""></div>
+                </div>
+                <div class="col-lg-4 col-md-4 color-piker-item">
+                    <div id="color_id"></div>
+
+                </div>
+            </div>
+    </div>
+</section>
