@@ -85,7 +85,7 @@
     "cors": "^2.8.4",
     "ejs": "2.5.6",
     "express": "4.15.2",
-    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp": "4.0.0",
     "gulp-concat-css": "^2.3.0",
     "moment": "2.21.0",
     "request": "^2.83.0"
