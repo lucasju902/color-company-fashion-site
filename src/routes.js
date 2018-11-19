@@ -77,6 +77,13 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       // protected: true
 
     });
+  $stateProvider
+    .state('colorNamingIndex', {
+      url: '/color-naming-index',
+      component: 'colorNamingIndexComponent'
+      // protected: true
+
+    });
 
   $stateProvider
     .state('partners', {
