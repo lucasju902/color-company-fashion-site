@@ -1,0 +1,45 @@
+<update-title title="The Color Naming Index"></update-title>
+<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->
+<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->
+<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->
+<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->
+
+
+<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>
+
+<section id="color-emotion-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-6">
+        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">
+        <div class="title-color-index">The Color Naming Index</div>
+        <div class="button membership">
+          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>
+        </div>
+        <div class="line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-color-picker-block">
+  <div class="container-fluid ">
+    <div class="row">
+      <div>
+        <ul>
+          <li class="color-index-accordion-title" ng-repeat="item in items" ng-click="clickItemAccordion(item)">
+            {{item.name}}
+            <div class="color-index-accordion-item" ng-show="accordion.current == item.name && isOpen">
+              <div ng-repeat="sub in item.sub">{{sub.name}}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

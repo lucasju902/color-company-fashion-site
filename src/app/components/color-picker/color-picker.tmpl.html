@@ -39,23 +39,16 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 ">
                 <h5 class="title-link-color-picker h-data ng-binding color-picker-title">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>
-                <div class="color-picker-title-img"><img src="../assets/images/validation.png" alt=""></div>
-                <!--<div ng-controller="MyCtrl" id="color-picker">-->
-                    <!--Color:-->
-                    <!--<ui-colorpicker ng-model="targetColor"></ui-colorpicker>-->
-                    <!--<br/>-->
-                    <!--Text input: <input ng-model='targetColor'/>-->
-                    <!--<br/>-->
-                    <!--Value: {{targetColor}}-->
-                    <!--<div class="preview" ng-style="{ backgroundColor: targetColor }"></div>-->
-                <!--</div>-->
+                <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/picker.png" alt=""></div>
             </div>
         </div>
             <div class="row">
 
                 <div class="col-lg-4 col-md-4 color-piker-item_canvas">
                     <div id="s_color_picker_id">
-                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>
+                        <div class="wrapper-color-picker">
+                            <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>
+                        </div>
 
                         <div class="slidecontainer">
                             <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
@@ -82,7 +75,7 @@
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-4 color-piker-item">
-                    <div class="color-picker-title-img"><img src="../assets/images/validation.png" alt=""></div>
+                    <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>
                 </div>
                 <div class="col-lg-4 col-md-4 color-piker-item">
                     <div id="color_id"></div>

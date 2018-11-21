@@ -10,47 +10,6 @@ angular
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
       };
-        $scope.dataa = 'weqwewqeqweqwewqe';
-
-        // $scope.clickPicker = function () {
-        //     console.log('$scope', $scope);
-        // };
-      // function clickPicker($scope) {
-      //     $scope.dataaaa = '123';
-      //     console.log('$scope', $scope);
-      // }
-
-      // vm.getUser = function () {
-      //     return localStorageService.get('currentUser').id === undefined;
-      // };
-
-        $scope.color = '#FF0000';
-
-// options - if a list is given then choose one of the items. The first item in the list will be the default
-        $scope.options = {
-            // html attributes
-            // validation
-            restrictToFormat: true,
-            preserveInputFormat: true,
-            allowEmpty: true,
-            // color
-            format: 'rgb',
-            case: 'lower',
-            // sliders
-            hue: [true, false],
-            alpha: false,
-            dynamicHue: false,
-            dynamicSaturation: false,
-            dynamicLightness: false,
-            dynamicAlpha: false,
-            // swatch
-            swatchPos: 'left',
-            // popup
-            round: true,
-            // pos: ['bottom left', 'bottom right', 'top left', 'top right'],
-            inline: true
-            // horizontal: [false, true],
-        };
 
         color_picker = document.getElementById("color_picker");
         color_id = document.getElementById("color_id");
@@ -180,8 +139,8 @@ angular
         }
 
         function select_color(e) {
-            var x = e.pageX - color_picker.offsetLeft - 50,
-                y = e.pageY - color_picker.offsetTop - 635,
+            var x = e.pageX - color_picker.offsetLeft - 48,
+                y = e.pageY - color_picker.offsetTop - 665,
                 pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
 
                 // pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),

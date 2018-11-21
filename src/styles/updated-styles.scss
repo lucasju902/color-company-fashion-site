@@ -4950,11 +4950,14 @@ footer {
   #color-naming-block-desc_img_1,
   #color-naming-block-desc_img_2 {
     border-top: 0;
-    width: 115px;
+    width: 95px;
     margin: 60px auto 30px auto;
   }
   .button {
     text-align: center;
+    .color-index-btn {
+      padding: 15px 30px 15px 30px;
+    }
   }
 }
 //------------------------------
@@ -4969,10 +4972,20 @@ footer {
 #s_color_picker_id {
   text-align: center;
 }
+.wrapper-color-picker {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  &:hover {
+    cursor: crosshair;
+  }
+}
+#color_picker:hover {
+  //cursor: crosshair;
+}
+#color_picker  {
 
-//#color_picker &:hover {
-//  cursor: crosshair;
-//}
+}
 #color_id {
   background-color: #000;
   border: 2px solid white;
@@ -5001,6 +5014,8 @@ footer {
 
   .big-num-color-naming {
     font-size: 85px;
+    width: 135px;
+    margin: 0 auto;
     text-align: center;
     font-weight: bold;
     &:hover .modal-color-naming {
@@ -5022,30 +5037,15 @@ footer {
   position: absolute;
   top: -114px;
   font-size: 12px;
-  //width: 300px;
+  width: 100%;
+  left: 0px;
   min-height: 100px;
   max-height: 100px;
   background: white;
-  //overflow: hidden;
   box-shadow: #3f3f3f 0 0 10px -2px;
-  padding: 10px;
-  //&:after {
-  //  bottom: -30px;
-  //  left: 48%;
-  //  z-index: 10;
-  //  content: ' ';
-  //  display: inline-block;
-  //  width: 0;
-  //  height: 0;
-  //  border-top: white solid 23px;
-  //  border-left: 14px solid transparent;
-  //  border-right: 14px solid transparent;
-  //  vertical-align: top;
-  //  margin-top: 4px;
-  //  position: absolute;
-  //}
+  padding: 15px;
   .modal-color-naming_text {
-    height: 90px;
+    height: 85px;
     overflow: hidden;
 
     p {
@@ -5100,6 +5100,10 @@ footer {
   margin: 70px 0;
   display: flex;
   justify-content: center;
+  .color-picker-img {
+    width: 100px;
+    height: 100px;
+  }
 }
 .color-piker-item_canvas {
 padding-left: 20%;
@@ -5213,4 +5217,21 @@ input[type=range]::slider-thumb {
 .zero-input[type=range]::-webkit-slider-thumb {
   background: #FFF;
   border: 2px solid #BBB;
+}
+// color-index-accordion
+.color-index-accordion-title {
+  font-size: 20px;
+  border: 2px solid #cfcfcf;
+  list-style-type: none;
+  width: 100%;
+  min-height: 50px;
+  height: auto;
+  padding: 10px;
+  background: #fff;
+  font-weight: bold;
+  .color-index-accordion-item {
+    height: 100px;
+    font-size: 16px;
+    font-weight: 200;
+  }
 }
