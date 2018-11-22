@@ -5230,8 +5230,15 @@ input[type=range]::slider-thumb {
   background: #fff;
   font-weight: bold;
   .color-index-accordion-item {
-    height: 100px;
+    height: auto;
     font-size: 16px;
     font-weight: 200;
   }
+}
+.img-accordion {
+  //width: 80%;
+  //margin: 0 auto;
+  //background: url(http://s3.amazonaws.com/huestorage/huegroup-website/infographic_infographic_files/infographic_files/000/000/035/original/CO2a.RTW.FW.17.AllRe.MI.07_27_2018.jpg?1532744790) no-repeat center;
+  //background-size: contain;
+  //margin-bottom: 38px
 }

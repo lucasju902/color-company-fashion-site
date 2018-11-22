@@ -3,7 +3,7 @@
 <!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->
 <!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->
 <!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->
-
+<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.10.0.js"></script
 
 <h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>
 
@@ -34,8 +34,9 @@
         <ul>
           <li class="color-index-accordion-title" ng-repeat="item in items" ng-click="clickItemAccordion(item)">
             {{item.name}}
-            <div class="color-index-accordion-item" ng-show="accordion.current == item.name && isOpen">
-              <div ng-repeat="sub in item.sub">{{sub.name}}</div>
+            <!--<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>-->
+            <div class="color-index-accordion-item" ng-show="accordion.current == item.name">
+              <div ng-repeat="sub in item.sub"> <div ng-bind-html='sub.name' ></div></div>
             </div>
           </li>
         </ul>
