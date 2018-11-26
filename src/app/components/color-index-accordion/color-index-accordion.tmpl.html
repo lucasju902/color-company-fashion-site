@@ -3,7 +3,6 @@
 <!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->
 <!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->
 <!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->
-<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.10.0.js"></script
 
 <h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>
 
@@ -28,19 +27,351 @@
 </section>
 
 <section class="bg-color-picker-block">
-  <div class="container-fluid ">
+  <div class="container-fluid">
     <div class="row">
-      <div>
-        <ul>
-          <li class="color-index-accordion-title" ng-repeat="item in items" ng-click="clickItemAccordion(item)">
-            {{item.name}}
-            <!--<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>-->
-            <div class="color-index-accordion-item" ng-show="accordion.current == item.name">
-              <div ng-repeat="sub in item.sub"> <div ng-bind-html='sub.name' ></div></div>
-            </div>
-          </li>
-        </ul>
-      </div>
+        <div ng-controller="AccordionCtrl">
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group class="color-index-accordion-title">
+                    <uib-accordion-heading>
+                        37 COLOR ASSOCIATION NAMES <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </uib-accordion-heading>
+                    <div class="color-index-accordion-item">
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" ng-click="console.log('scope', $scope)" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                        <div class='checkboxes-accordion'>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                            <div class="checkbox-accordion-item">
+                                <label class="title-checkbox-accordion"></label>
+                                <input type="checkbox" class="option-input checkbox" />
+                                <span class="checkbox-accordion_text">PINK BERRY</span>
+                                <span class="checkbox-accordion_small_text">TEST TEST</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div uib-accordion-group class="color-index-accordion-title">
+                    <uib-accordion-heading>
+                        22 PAINT COLOR NAMES <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </uib-accordion-heading>
+                    <div class="color-index-accordion-item">
+                        This is just some content to illustrate fancy headings
+                    </div>
+                </div>
+                <div uib-accordion-group class="color-index-accordion-title">
+                    <uib-accordion-heading>
+                        139 COLOURLOVERS COLOR NAMES <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </uib-accordion-heading>
+                    <div class="color-index-accordion-item">
+                        This is just some content to illustrate fancy headings
+                    </div>
+                </div>
+                <div uib-accordion-group class="color-index-accordion-title">
+                    <uib-accordion-heading>
+                        18 RESEARCH COLOR NAMES <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </uib-accordion-heading>
+                    <div class="color-index-accordion-item">
+                        This is just some content to illustrate fancy headings
+                    </div>
+                </div>
+                <div uib-accordion-group class="color-index-accordion-title">
+                    <uib-accordion-heading>
+                        COLOR MOSAIC FOR (COLOR NAME) <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    </uib-accordion-heading>
+                    <div class="color-index-accordion-item">
+                        <img class="img-accordion img-responsive img50" alt="Image" ng-src="http://s3.amazonaws.com/huestorage/huegroup-website/infographic_infographic_files/infographic_files/000/000/035/original/CO2a.RTW.FW.17.AllRe.MI.07_27_2018.jpg?1532744790" src="http://s3.amazonaws.com/huestorage/huegroup-website/infographic_infographic_files/infographic_files/000/000/035/original/CO2a.RTW.FW.17.AllRe.MI.07_27_2018.jpg?1532744790">
+                    </div>
+                </div>
+            </uib-accordion>
+        </div>
+
+      <!--<div>-->
+        <!--<ul>-->
+          <!--<li class="color-index-accordion-title" ng-repeat="item in items" ng-click="clickItemAccordion(item)">-->
+            <!--{{item.name}}<i class=" fa float-right arrow-up-down" ng-class="{'arrow-up-down': !isOpen, 'down-arrow-up': isOpen}"></i>-->
+            <!--&lt;!&ndash;<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isOpen, 'glyphicon-chevron-right': !isOpen}"></i>&ndash;&gt;-->
+            <!--<div class="color-index-accordion-item" ng-show="accordion.current == item.name">-->
+              <!--<div ng-repeat="sub in item.sub"> <div ng-bind-html='sub.name' ></div></div>-->
+            <!--</div>-->
+          <!--</li>-->
+        <!--</ul>-->
+      <!--</div>-->
     </div>
   </div>
 </section>

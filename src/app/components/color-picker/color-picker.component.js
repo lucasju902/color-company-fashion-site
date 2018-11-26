@@ -11,8 +11,8 @@ angular
         $location.hash('');
       };
 
-        color_picker = document.getElementById("color_picker");
-        color_id = document.getElementById("color_id");
+        var color_picker = document.getElementById("color_picker");
+        var color_id = document.getElementById("color_id");
         $scope.changeColor = function () {
             color_picker.onmousedown = select_color;
         };

@@ -95,6 +95,14 @@ function routesConfig($stateProvider, $urlRouterProvider) {
     });
 
   $stateProvider
+    .state('colorNamingInfo', {
+      url: '/color-naming-info',
+      component: 'colorNamingInfoComponent'
+          // protected: true
+
+    })
+
+  $stateProvider
     .state('partners', {
       url: '/huedata-data-partners',
       component: 'partnersComponent'
