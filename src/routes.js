@@ -100,7 +100,15 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       component: 'colorNamingInfoComponent'
           // protected: true
 
-    })
+    });
+
+  $stateProvider
+    .state('colorIndexSearch', {
+      url: '/color-index-search',
+      component: 'colorIndexSearchComponent'
+          // protected: true
+
+    });
 
   $stateProvider
     .state('partners', {
