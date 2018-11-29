@@ -22,7 +22,7 @@ angular
                 } else {
                     delete vm.data['rgb'];
                 }
-                $http.get(appConfig.dashboardServiceUrl + 'colors/find.json', {
+                $http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
                     params: vm.data
                 }).then(function (res) {
                     if (res && res.data) {
