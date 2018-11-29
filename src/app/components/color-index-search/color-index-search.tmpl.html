@@ -43,8 +43,8 @@
       <div class="col-lg-2 col-md-2"></div>
     </div>
     <div class="row equal" style="margin-top: 30px">
-      <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 item" style="min-height: 50px" ng-repeat="color in $ctrl.colorData">
-        <div class="category text-center" style="background: #{{color}}; width: 100px; height: 80px; margin: 10px;"><p style="color: #000;">#{{color}}</p></div>
+      <div class="col-md-2 item" style="min-height: 50px" ng-repeat="color in $ctrl.colorData">
+        <div class="category text-center" style="background: rgb({{color.rgb}}); width: 140px; height: 80px; margin: 10px;"><p style="color: #fff;margin: 0">{{color.name}}</p><p style="color: #fff;">rgb({{color.rgb}})</p></div>
       </div>
     </div>
   </div>
