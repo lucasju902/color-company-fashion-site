@@ -8,7 +8,7 @@ angular
 
         this.colorSearch = function () {
             if (dataValidate.validate(vm.data)) {
-                let colorWithNum = parseInt(vm.data.color.replace(/[^0-9\.]/g, ''), 10);
+                var colorWithNum = parseInt(vm.data.color.replace(/[^0-9\.]/g, ''), 10);
                 // console.log("colorWithNum", colorWithNum);
                 // console.log("colorWithNum", isNaN(colorWithNum))
                 // console.log("vm.data.color", vm.data.color)
