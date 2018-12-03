@@ -5132,7 +5132,7 @@ padding-left: 20%;
     margin: 40px 0 20px 0;
   }
   #rg {
-    padding: 5px;
+    padding: 5px 0;
     border-radius: 3px;
     background: linear-gradient(90deg, rgba(255,255,255,1) 7%, rgba(163,163,163,1) 28%, rgba(0,0,0,1) 89%);
     box-shadow: 0 0 22px -4px black;
@@ -5220,9 +5220,14 @@ input[type=range]::slider-thumb {
 }
 // color-index-accordion
 .color-index-accordion-title {
-  border: 2px solid #cfcfcf!important;
+  border: 1px solid #cfcfcf!important;
   margin: 0!important;
   padding: 20px;
+  border-radius: 0px!important;
+  border-bottom: none!important;
+  &:last-child {
+    border-bottom: 1px solid #cfcfcf!important;
+  }
 
   .color-index-accordion-item {
     height: auto;
@@ -5344,27 +5349,55 @@ input[type=range]::slider-thumb {
       font-weight: bold;
       position: absolute;
       top: 13px;
-      left: 50px;
+      left: 65px;
       width: 120px;
     }
     .checkbox-accordion_small_text {
       font-size: 14px;
       position: absolute;
       line-height: 2;
-      left: 50px;
+      left: 65px;
       top: 27px;
       width: 120px;
       font-weight: initial;
     }
   }
 }
+.accordion-button {
+  display: flex;
+  justify-content: center;
+}
+.panel > div > h4 > a > span > i {
+  content: ' ';
+  display: inline-block;
+  margin-left: 7px;
+  width: 0;
+  height: 0;
+  border-top: #b91378 solid 10px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+}
+.panel-group .panel-open > div > h4 > a > span > i {
+  content: ' ';
+  width: 0;
+  height: 0;
+  border-top: #b91378 solid 10px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  -webkit-transform: rotate(-180deg);
+  -ms-transform: rotate(-180deg);
+  transform: rotate(-180deg);
+}
+.glyphicon-chevron-right:before {
+  content: '' !important;
+}
 // color-naming-info
 .color-naming-info {
   font-size: 16px;
-  margin: 0 0 40px 0;
+  margin: 0 0 180px 0;
 }
 .color-naming-info-part_text {
-  margin-bottom: 12px;
+  margin-bottom: 70px;
   text-align: justify;
   font-size: 18px;
   font-weight: 300;
@@ -5377,12 +5410,15 @@ input#search-bar{
   margin: 0 auto;
   width: 100%;
   height: 60px;
-  padding: 0 0 5px 0;
-  font-size: 35px;
+  padding: 0 0 0 0;
+  font-size: 32px;
   border: none;
   border-bottom: 3px solid #D0CFCE;
   outline: none;
   color: #c8c8c8;
+  &::placeholder {
+    color: #000;
+  }
 }
 .search-icon{
   position: relative;

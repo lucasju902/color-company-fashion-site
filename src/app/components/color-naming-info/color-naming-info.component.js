@@ -3,11 +3,14 @@ angular
   .component('colorNamingInfoComponent', {
     templateUrl: 'app/components/color-naming-info/color-naming-info.tmpl.html',
     controller: function ($location, anchorSmoothScroll) {
-      var vm = this;
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
+        var vm = this;
+
+        $(document).ready(function() {
+            $(".scroll_down").click(function() {
+                $('html, body').animate({
+                    scrollTop: $("#education-top").offset().top
+                }, 1500);
+            });
+        });
     }
   });

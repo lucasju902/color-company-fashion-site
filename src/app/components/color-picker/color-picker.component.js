@@ -182,5 +182,13 @@ angular
             }
         }
 
+        $(document).ready(function() {
+            $(".scroll_down").click(function () {
+                $('html, body').animate({
+                    scrollTop: $(".scroll-end").offset().top
+                }, 1500);
+            });
+        });
+
     }
   });
