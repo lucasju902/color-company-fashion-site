@@ -3,10 +3,18 @@
 <!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->
 <!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->
 <!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->
+
+<!--<meta charset="utf-8">  &lt;!&ndash; it's important for d3.js &ndash;&gt;-->
+<!--&lt;!&ndash;<script src="bower_components/jquery/dist/jquery.min.js"></script>&ndash;&gt;-->
+<!--<script src="bower_components/angular/angular.min.js"></script>-->
+<!--<script src="bower_components/d3/d3.min.js"></script>-->
+<!--<script src="bower_components/d3-cloud/build/d3.layout.cloud.js"></script>-->
+<!--<script src="bower_components/angular-d3-word-cloud/dist/angular-word-cloud.min.js"></script>-->
+
 <meta charset="utf-8">  <!-- it's important for d3.js -->
-<script src="../../../../bower_components/d3/d3.min.js"></script>
-<script src="../../../../bower_components/d3-cloud/build/d3.layout.cloud.js"></script>
-<script src="../../../../bower_components/angular-d3-word-cloud/dist/angular-word-cloud.min.js"></script>
+<script src="bower_components/d3/d3.min.js"></script>
+<script src="bower_components/d3-cloud/build/d3.layout.cloud.js"></script>
+<script src="bower_components/angular-d3-word-cloud/dist/angular-word-cloud.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
 <!--<script src="cloud.js"></script>-->
 <!--Chroma.js-->
@@ -86,221 +94,17 @@
   <div class="container-fluid">
     <div class="row">
 
-        <div id="wordsCloud">
-            <word-cloud words="ctrl.words" width="ctrl.width" height="ctrl.height"
-                        padding="10"
-                        rotate="ctrl.rotate"
-                        random="ctrl.random"
-                        use-tooltip="ctrl.useTooltip"
-                        use-transition="ctrl.useTransition"
-                        on-click="ctrl.wordClicked">
-            </word-cloud>
-        </div>
+        <!--<div id="wordsCloud">-->
+            <!--<word-cloud words="ctrl.words" width="ctrl.width" height="ctrl.height"-->
+                        <!--padding="10"-->
+                        <!--rotate="ctrl.rotate"-->
+                        <!--random="ctrl.random"-->
+                        <!--use-tooltip="ctrl.useTooltip"-->
+                        <!--use-transition="ctrl.useTransition"-->
+                        <!--on-click="ctrl.wordClicked">-->
+            <!--</word-cloud>-->
+        <!--</div>-->
 
-        <script>
-            var text_string = "\"melody pink\"\n" +
-                "\"ash pink\"\n" +
-                "\"tearose pink\"\n" +
-                "\"go go pink\"\n" +
-                "\"lazer pink\"\n" +
-                "\"pouf of pink\"\n" +
-                "\"clove pink\"\n" +
-                "\"affinity pink\"\n" +
-                "\"lotus pink\"\n" +
-                "\"pink ballet\"\n" +
-                "\"bulgarian pink\"\n" +
-                "\"lullaby pink\"\n" +
-                "\"blossom pink\"\n" +
-                "\"southern pink\"\n" +
-                "\"sea shell pink\"\n" +
-                "\"cheerio pink\"\n" +
-                "\"pink scallop\"\n" +
-                "\"fire pink\"\n" +
-                "\"hot pink kiss\"\n" +
-                "\"pink lavender\"\n" +
-                "\"canyon pink\"\n" +
-                "\"pink lilac\"\n" +
-                "\"pink purple\"\n" +
-                "\"veil pink\"\n" +
-                "\"little girl pink\"\n" +
-                "\"heather pink\"\n" +
-                "\"tatiana pink\"\n" +
-                "\"little pinky\"\n" +
-                "\"novel pink\"\n" +
-                "\"sleeping pink\"\n" +
-                "\"carnival pink\"\n" +
-                "\"pink dogwood\"\n" +
-                "\"prism pink\"\n" +
-                "\"very pink\"\n" +
-                "\"sand pink\"\n" +
-                "\"cyclamen pink\"\n" +
-                "\"candytuft pink\"\n" +
-                "\"a livid pink\"\n" +
-                "\"aster pink\"\n" +
-                "\"magenta pink\"\n" +
-                "\"pink sky\"\n" +
-                "\"feather pink\"\n" +
-                "\"exuberant pink\"\n" +
-                "\"pink nutmeg\"\n" +
-                "\"skyline pink\"\n" +
-                "\"ballerina pink\"\n" +
-                "\"indian pink\"\n" +
-                "\"pinking of you\"\n" +
-                "\"pink cloud\"\n" +
-                "\"chalky pink\"\n" +
-                "\"pink azalea\"\n" +
-                "\"passionate pink\"\n" +
-                "\"sprinting pink\"\n" +
-                "\"apricot pink\"\n" +
-                "\"saltmarsh pink\"\n" +
-                "\"pink parfait\"\n" +
-                "\"sleepy pink\"\n" +
-                "\"pink marzipan\"\n" +
-                "\"cupid pink\"\n" +
-                "\"pink charade\"\n" +
-                "\"nasturtium pink\"\n" +
-                "\"hunting pink\"\n" +
-                "\"pink masterpiece\"\n" +
-                "\"vermiel pink\"\n" +
-                "\"caramel pink\"\n" +
-                "\"aruba pink\"\n" +
-                "\"chelsea pink\"\n" +
-                "\"pink canterbury\"\n" +
-                "\"balranald pink\"\n" +
-                "\"lilac pink\"\n" +
-                "\"madrid pink\"\n" +
-                "\"pink light\"\n" +
-                "\"pink corsage\"\n" +
-                "\"new pink\"\n" +
-                "\"pink clematis\"\n" +
-                "\"oxalis pink\"\n" +
-                "\"pink angora\"\n" +
-                "\"pink ruff\"\n" +
-                "\"wild pink\"\n" +
-                "\"opal pink\"\n" +
-                "\"privacy pink\"\n" +
-                "\"begonia pink\"\n" +
-                "\"cheeky pink\"\n" +
-                "\"piquant pink\"\n" +
-                "\"coventry pink\"\n" +
-                "\"capri pink\"\n" +
-                "\"pink posy\"\n" +
-                "\"softly pink\"\n" +
-                "\"art deco pink\"\n" +
-                "\"pink amour\"\n" +
-                "\"pink chrysanthemum\"\n" +
-                "\"harlequin pink\"\n" +
-                "\"pink mallow\"\n" +
-                "\"fantastic pink\"\n" +
-                "\"antoinette pink\"\n" +
-                "\"pink tease\"\n" +
-                "\"pink puppet\"\n" +
-                "\"azalea pink\"\n" +
-                "\"pike's pink\"\n" +
-                "\"pink joy\"\n" +
-                "\"dolce pink\"\n" +
-                "\"florence pink\"\n" +
-                "\"taos pink\"\n" +
-                "\"racer pink\"\n" +
-                "\"orchid pink\"\n" +
-                "\"cascade pink\"\n" +
-                "\"copper pink\"\n" +
-                "\"pink sand beach\"\n" +
-                "\"pink buff\"\n" +
-                "\"pink pink\"\n" +
-                "\"pink tiger\"\n" +
-                "\"iris pink\"\n" +
-                "\"pink geranium\"\n" +
-                "\"paper pink\"\n" +
-                "\"piglet pink\"\n" +
-                "\"snow pink\"\n" +
-                "\"fountain grass pink\"\n" +
-                "\"cool pink\"\n" +
-                "\"pink linen\"\n" +
-                "\"coho pink\"\n" +
-                "\"coy pink\"\n" +
-                "\"verona pink\"\n" +
-                "\"matador pink\"\n" +
-                "\"pink vanilla\"\n" +
-                "\"pink thread\"\n" +
-                "\"patio pink\"\n" +
-                "\"serene pink\"\n" +
-                "\"pinkish plum\"\n" +
-                "\"pink mamosa\"\n" +
-                "\"brilliant pink\"\n" +
-                "\"candystriper pink\"\n" +
-                "\"loving pink\"\n" +
-                "\"abandon pink\";"
-
-            drawWordCloud(text_string);
-
-            function drawWordCloud(text_string){
-                var common = "whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,will,would,should,can,could,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,isn't,aren't,wasn't,weren't,hasn't,haven't,hadn't,doesn't,don't,didn't,won't,wouldn't,shan't,shouldn't,can't,cannot,couldn't,mustn't,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall";
-
-                var word_count = {};
-                var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
-                if (words.length == 1){
-                    word_count[words[0]] = 1;
-                } else {
-                    words.forEach(function(word){
-                        var word = word.toLowerCase();
-                        if (word != "" && common.indexOf(word)==-1 && word.length>1){
-                            if (word_count[word]){
-                                word_count[word]++;
-                            } else {
-                                word_count[word] = 1;
-                            }
-                        }
-                    })
-                }
-
-                var svg_location = "#chart";
-                var width = 450;
-                var height = 450;
-
-                var fill = d3.scale.category20();
-
-                var word_entries = d3.entries(word_count);
-
-                var xScale = d3.scale.linear()
-                    .domain([0, d3.max(word_entries, function(d) {
-                        return d.value;
-                    })
-                    ])
-                    .range([10,100]);
-
-                d3.layout.cloud().size([width, height])
-                    .timeInterval(20)
-                    .words(word_entries)
-                    .fontSize(function(d) { return xScale(+d.value); })
-                    .text(function(d) { return d.key; })
-                    .rotate(function() { return ~~(Math.random() * 2) * 90; })
-                    .font("Impact")
-                    .on("end", draw)
-                    .start();
-
-                function draw(words) {
-                    d3.select(svg_location).append("svg")
-                        .attr("width", width)
-                        .attr("height", height)
-                        .append("g")
-                        .attr("transform", "translate(" + [width >> 1, height >> 1] + ")")
-                        .selectAll("text")
-                        .data(words)
-                        .enter().append("text")
-                        .style("font-size", function(d) { return xScale(d.value) + "px"; })
-                        .style("font-family", "Impact")
-                        .style("fill", function(d, i) { return fill(i); })
-                        .attr("text-anchor", "middle")
-                        .attr("transform", function(d) {
-                            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                        })
-                        .text(function(d) { return d.key; });
-                }
-
-                d3.layout.cloud().stop();
-            }
-        </script>
         <!--Chroma.js-->
         <!--<div class="container">-->
             <!--<label for="user-color">Select your color:</label>-->
