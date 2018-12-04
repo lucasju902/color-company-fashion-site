@@ -5230,9 +5230,10 @@ input[type=range]::slider-thumb {
   }
 
   .color-index-accordion-item {
-    height: auto;
-    font-size: 16px;
-    font-weight: 200;
+    display: flex;
+    flex-flow: row wrap;
+    align-content: space-between;
+    justify-content: space-between;
   }
 }
 .img-accordion {
@@ -5289,7 +5290,7 @@ input[type=range]::slider-thumb {
   -webkit-animation: click-wave 0.65s;
   -moz-animation: click-wave 0.65s;
   animation: click-wave 0.65s;
-  background: #b91378;
+  background: #ffffff;
   content: '';
   display: block;
   position: relative;
@@ -5394,7 +5395,8 @@ input[type=range]::slider-thumb {
 // color-naming-info
 .color-naming-info {
   font-size: 16px;
-  margin: 0 0 180px 0;
+  padding: 50px 0 0 0;
+  background: #f2f2f2;
 }
 .color-naming-info-part_text {
   margin-bottom: 70px;
@@ -5406,7 +5408,7 @@ input[type=range]::slider-thumb {
 .search-container{
 }
 input#search-bar{
-  background-color: #FFFFFF!important;
+  background-color: #f2f2f2!important;
   margin: 0 auto;
   width: 100%;
   height: 60px;
@@ -5437,4 +5439,17 @@ input#search-bar{
   background-size: 45px 45px;
   right: 33px;
   top: 5px;
+}
+.color-search-pen-img {
+  width: 100px;
+  margin: 0 auto;
+  display: block;
+}
+.color-search-title {
+  margin-bottom: 150px;
+}
+#chart {
+  width: 450px;
+  height: 450px;
+  margin: 0 auto;
 }

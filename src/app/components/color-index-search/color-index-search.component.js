@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('colorIndexSearchComponent', {
     templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
-    controller: function (dataValidate, appConfig, anchorSmoothScroll, $http) {
+    controller: function (dataValidate, appConfig, $window,$location, anchorSmoothScroll, $http, $scope, searchColor) {
       var vm = this;
       vm.colorData = {};
 
@@ -27,12 +27,16 @@ angular
                 }).then(function (res) {
                     if (res && res.data) {
                         vm.colorData = res.data.data.map(function (item) {
+                            colors = item.data;
                             return item.data;
                         });
+                        searchColor.set(vm.colorData);
+                        $location.url('/color-index-accordion');
                         // console.log("colorDatacolorDatacolorData", vm.colorData);
                     }
                 });
             }
+
         };
 
             // $http.get(appConfig.dashboardServiceUrl + 'colors/index.json')
