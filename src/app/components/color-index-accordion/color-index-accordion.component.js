@@ -16,8 +16,7 @@ angular
             });
         }
 
-        colorNames = colorNames.join(' ')
-        console.log("colorNames", colorNames);
+        colorNames = colorNames.join(' ');
 
 
         // var text_string = "be talkin’ about t do that. And two: you dropped a hundred and fifty grand on a fuckin’ education you coulda got for a dollar fifty in late charges at the public library.";
