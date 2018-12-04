@@ -102,8 +102,8 @@ angular
             }
 
             var svg_location = "#chart";
-            var width = $(document).width();
-            var height = $(document).height();
+            var width = 450;
+            var height = 450;
 
             var fill = d3.scale.category20();
 
@@ -177,57 +177,63 @@ angular
         // console.log(hexColorDelta(yellow1, blue)); // 0.19999999999999998
         //
 
-        // var self = this;
-        // self.height = $window.innerHeight * 0.5;
-        // self.width = $element.find('#wordsCloud')[0].offsetWidth;
-        // self.wordClicked = wordClicked;
-        // self.rotate = rotate;
-        // self.useTooltip = true;
-        // self.useTransition = false;
-        // self.words = [
-        //     {text: 'Angular',size: 25, color: '#6d989e', tooltipText: 'Angular Tooltip'},
-        //     {text: 'Angular2',size: 35, color: '#473fa3', tooltipText: 'Angular2 Tooltip'}
-        // ]
-        // self.random = random;
-        //
-        // function random() {
-        //     return 0.4; // a constant value here will ensure the word position is fixed upon each page refresh.
-        // }
-        //
-        // function rotate() {
-        //     return ~~(Math.random() * 2) * 90;
-        // }
-        //
-        // function wordClicked(word){
-        //     alert('text: ' + word.text + ',size: ' + word.size);
-        // }
-
+        var self = this;
+        self.height = $window.innerHeight * 0.5;
+        self.width = 250;
+        self.wordClicked = wordClicked;
+        self.rotate = rotate;
+        self.useTooltip = true;
+        self.useTransition = true;
+        self.words = [
+            {text: 'Angular',size: 25,color: '#0e6632',tooltipText: 'Angular Tooltip'},
+            {text: 'Angular23',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+            {text: 'Angular2',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+            {text: 'Angular23',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+            {text: 'Angular23',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+            {text: 'Angular',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'}
+        ]
+        //custom rotate
+        function rotate(){
+            return ~~(Math.random() * 2) * 90;
+        }
+        //custom random
+        function random(){
+            return 0.4; //a constant value here will ensure the word position is fixed upon each page refresh.
+        }
+        function wordClicked(word){
+            alert(word);
+        }
     }
   });
 angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
     $scope.oneAtATime = true;
 });
-// angular.module('app').controller('appController', function ($window, $element) {
-//         var self = this;
-//         self.height = $window.innerHeight * 0.5;
-//         self.width = $element.find('word-cloud')[0].offsetWidth;
-//         self.wordClicked = wordClicked;
-//         self.rotate = rotate;
-//         self.useTooltip = true;
-//         self.useTransition = true;
-//         self.words = [
-//             {text: 'Angular',size: 25,color: '#0e6632',tooltipText: 'Angular Tooltip'},
-//             {text: 'Angular2',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'}
-//         ]
-//         //custom rotate
-//         function rotate(){
-//             return ~~(Math.random() * 2) * 90;
-//         }
-//         //custom random
-//         function random(){
-//             return 0.4; //a constant value here will ensure the word position is fixed upon each page refresh.
-//         }
-//         function wordClicked(word){
-//             alert(word);
-//         }
-// });
+angular.module('app').controller('appController', function ($window,$element) {
+
+    var self = this;
+    self.height = $window.innerHeight * 0.5;
+    self.width = $element.find('word-cloud')[0].offsetWidth;
+    self.wordClicked = wordClicked;
+    self.rotate = rotate;
+    self.useTooltip = true;
+    self.useTransition = true;
+    self.words = [
+        {text: 'Angular',size: 25,color: '#0e6632',tooltipText: 'Angular Tooltip'},
+        {text: 'Angular23',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+        {text: 'Angular2',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+        {text: 'Angular23',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+        {text: 'Angular23',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'},
+        {text: 'Angular',size: 35,color: '#0e558',tooltipText: 'Angular2 Tooltip'}
+    ]
+    //custom rotate
+    function rotate(){
+        return ~~(Math.random() * 2) * 90;
+    }
+    //custom random
+    function random(){
+        return 0.4; //a constant value here will ensure the word position is fixed upon each page refresh.
+    }
+    function wordClicked(word){
+        alert(word);
+    }
+});

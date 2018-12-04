@@ -10,7 +10,7 @@ var app = angular.module('app', [
   'LocalStorageModule',
   'ngFileUpload',
   'updateMeta'
-  // 'angularD3WordCloud'
+  // 'angular-d3-word-cloud'
 ]);
 
 var config = {
