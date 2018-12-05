@@ -20,7 +20,7 @@ angular
 
 
         // var text_string = "be talkin’ about t do that. And two: you dropped a hundred and fifty grand on a fuckin’ education you coulda got for a dollar fifty in late charges at the public library.";
-
+        console.log("d3.layout", d3.layout);
         drawWordCloud(colorNames);
 
         function drawWordCloud(text_string){
@@ -48,9 +48,8 @@ angular
             var width = 650;
             var height = 450;
 
-            var fill = d3.scale.category20();
-            // var fill = colorRGB
-            console.log("d3.fill.fill()", fill);
+            // var fill = d3.scale.category20();
+            // // var fill = colorRGB
 
             var word_entries = d3.entries(word_count);
 
