@@ -101,10 +101,10 @@ Color validation, Color information, Color dataset, Color database, Color design
         </div>
       </div>
     </div>
-
 </section>
+
 <section class="landing-analytics-description">
-  <div class="container-fluid">
+  <div class="container">
     <div class="row">
       <div class="col-md-5 col-lg-5">
         <h1 class="landing-analytics_title">We love <br> colors analytics</h1>
@@ -126,38 +126,105 @@ Color validation, Color information, Color dataset, Color database, Color design
     </div>
   </div>
 </section>
-<section>
+<section class="landing-reports-section">
   <div class="container">
     <div class="row flex landing-reports">
       <div class="landing-report-item">
-        <img src="../../../assets/img/landing/colors-H.png" alt="">
+        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
+        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
         <span>CRIME</span>
         <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
       </div>
       <div class="landing-report-item">
-        <img src="../../../assets/img/landing/colors-H.png" alt="">
+        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
+        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
+
         <span>CRIME</span>
         <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
       </div>
       <div class="landing-report-item">
-        <img src="../../../assets/img/landing/colors-H.png" alt="">
+        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
+        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
+
         <span>CRIME</span>
         <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
       </div>
       <div class="landing-report-item">
-        <img src="../../../assets/img/landing/colors-H.png" alt="">
+        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
+        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
+
         <span>CRIME</span>
         <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
       </div>
       <div class="landing-report-item">
-        <img src="../../../assets/img/landing/colors-H.png" alt="">
+        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
+        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
+
         <span>CRIME</span>
         <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
       </div>
       <div class="landing-report-item">
-        <img src="../../../assets/img/landing/colors-H.png" alt="">
+        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
+        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
         <span>CRIME</span>
         <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
+      </div>
+    </div>
+    <div class="landing-color-index-title">
+      <p>Check out our propraitery</p>
+      <p>Color Naming Index</p>
+      <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">
+    </div>
+  </div>
+</section>
+
+<section class="landing-color-picker">
+  <div class="container">
+    <div class="row landing-color-picker-block">
+    <div class="col-md-2 col-lg-2 landing-color-picker-title">
+      <p>SELECT A COLOR TO&nbsp;START</p>
+    </div>
+      <div class="col-lg-3 col-md-3 ">
+        <div id="s_color_picker_id">
+          <div class="wrapper-color-picker">
+            <canvas id="color_picker" width="220" height="220" ng-click="changeColor()"></canvas>
+          </div>
+
+          <div class="slidecontainer">
+            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
+            <span class="slider-title-opacity">OPACITY</span>
+            <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
+            <label id="value_span"></label>
+          </div>
+
+
+          <div class="rgb-display">
+            <div class="rgb-display_item">
+              <span class="rgb-display-title">R</span>
+              <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
+            </div>
+            <div class="rgb-display_item">
+              <span class="rgb-display-title">G</span>
+              <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
+            </div>
+            <div class="rgb-display_item">
+              <span class="rgb-display-title">B</span>
+              <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-1 col-md-1 color-piker-item">
+        <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/arrow_picker.png" alt=""></div>
+      </div>
+      <div class="col-lg-3 col-md-3 landing-color-piker-image">
+        <div id="color_id"></div>
+      </div>
+      <div class="col-md-3 col-lg-3 landing-color-picker-title" style="width: 230px;">
+        <p>HOW IS THIS&nbsp;COLOR CALLED</p>
+        <div class="button landing-color-picker-button">
+          <a class="btn join-btn" ng-click="$ctrl.colorSearch()" >FIND OUT</a>
+        </div>
       </div>
     </div>
   </div>

@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('colorIndexSearchComponent', {
     templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
-    controller: function (dataValidate, appConfig, $window,$location, anchorSmoothScroll, $http, $scope, searchColor) {
+    controller: function (dataValidate, appConfig, $window, $location, anchorSmoothScroll, $http, $scope, searchColor) {
       var vm = this;
       vm.colorData = {};
 

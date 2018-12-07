@@ -59,15 +59,15 @@ angular
                 })
                 ])
                 .range([10,100]);
-            d3.layout.cloud().size([width, height])
-                .timeInterval(20)
-                .words(word_entries)
-                .fontSize(function(d) { return xScale(+d.value); })
-                .text(function(d) { return d.key; })
-                .rotate(function() { return ~~(Math.random() * 2) * 90; })
-                .font("Impact")
-                .on("end", draw)
-                .start();
+            // d3.layout.cloud().size([width, height])
+            //     .timeInterval(20)
+            //     .words(word_entries)
+            //     .fontSize(function(d) { return xScale(+d.value); })
+            //     .text(function(d) { return d.key; })
+            //     .rotate(function() { return ~~(Math.random() * 2) * 90; })
+            //     .font("Impact")
+            //     .on("end", draw)
+            //     .start();
 
             function draw(words) {
                 d3.select(svg_location).append("svg")
@@ -88,7 +88,7 @@ angular
                     .text(function(d) { return d.key; });
             }
 
-            d3.layout.cloud().stop();
+            // d3.layout.cloud().stop();
         }
     }
   });

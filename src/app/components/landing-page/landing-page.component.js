@@ -2,7 +2,8 @@ angular
   .module('app')
   .component('landingPageComponent', {
     templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
-    controller: function (authService, $state, localStorageService) {
+    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location) {
+    var vm =this;
 
       $(document).ready(function () {
         $("nav").find("li").on("click", "a", function () {
@@ -66,5 +67,131 @@ angular
           Slide.fadeIn(it).addClass('current');
           }
       });
+//                                                                                                          COLOR-PICKER
+        var color_picker = document.getElementById("color_picker");
+        var color_id = document.getElementById("color_id");
+
+        $scope.changeColor = function () {
+            color_picker.onmousedown = select_color;
+        };
+        color_picker_add();
+
+        $scope.colorPickerSliderGray = function  () {
+            var value = document.getElementById('rg').value;
+            color_id.style.filter =  "saturate(" + value + "%)";
+        };
+
+        $scope.colorPickerSliderOpacity = function  () {
+            var value = document.getElementById('range_opacity').value;
+            document.getElementById('value_span').innerHTML = value*100 + '%';
+            color_id.style.opacity =  value;
+        };
+
+        $scope.colorPickerRGB = function () {
+            var colorInputR = document.getElementById('colorInputR').value;
+            var colorInputG = document.getElementById('colorInputG').value;
+            var colorInputB = document.getElementById('colorInputB').value;
+
+            $scope.colorRGB_R = colorInputR;
+            $scope.colorRGB_G = colorInputG;
+            $scope.colorRGB_B = colorInputB;
+
+            inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
+            color_id.style.backgroundColor = inputRGB;
+        };
+
+        function color_picker_add() {
+            color_picker_ = color_picker.getContext("2d"),
+                center_x = (color_picker.width)/2,
+                center_y = (color_picker.height)/2,
+                sx = center_x,
+                sy = center_y;
+
+            $scope.colorRGB_R = 0;
+            $scope.colorRGB_G = 0;
+            $scope.colorRGB_B = 0;
+            palette = new color_picker_element(center_x, center_y, sx, sy);
+            palette.draw();
+        }
+
+        function select_color(e) {
+            var x = e.pageX - color_picker.offsetLeft - 564,
+                y = e.pageY - color_picker.offsetTop - 3634,
+                pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+                pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
+            color_id.style.backgroundColor = pixelColor;
+
+            $scope.pixel = pixel;
+            $scope.colorRGB_R = pixel[0];
+            $scope.colorRGB_G = pixel[1];
+            $scope.colorRGB_B = pixel[2];
+            console.log('pixelColor _select_color', $scope);
+            console.log('y  _select_color',y);
+            console.log('x  _select_color',x);
+        }
+        function color_picker_element(center_x, center_y, sx, sy) {
+            this.center_x = center_x;
+            this.center_y = center_y;
+            this.sx = sx;
+            this.sy = sy;
+            this.draw = function() {
+                for(var i = 0; i < 360; i+=0.1)
+                {
+                    var rad = (i-45) * (Math.PI) / 180;
+                    color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
+                    color_picker_.beginPath();
+                    color_picker_.moveTo(center_x, center_y);
+                    color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+                    color_picker_.stroke();
+                }
+            }
+        }
+
+
+
+        this.colorSearch = function () {
+            // if (dataValidate.validate(vm.data)) {
+            //         var colorWithNum = parseInt(vm.data.color.replace(/[^0-9\.]/g, ''), 10);
+                // console.log("colorWithNum", colorWithNum);
+                // console.log("colorWithNum", isNaN(colorWithNum))
+                // console.log("vm.data.color", vm.data.color)
+                // console.log("colorWithNum", colorWithNum.toString().length );
+                // if (isNaN(!colorWithNum) || colorWithNum) {
+                //     var regex = /[\d|,|.| |e|E|\+]+/g;
+                //     vm.data.color = vm.data.color.match(regex);
+                //     console.log("matches", vm.data.color);
+                    // vm.data = {rgb: vm.data.color};
+                    // console.log("vm.data", vm.data);
+                // } else {
+                //     delete vm.data['rgb'];
+                // }
+                vm.data = { rgb: "" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + "" };
+            console.log("vm.data", vm.data)
+                $http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
+                    params: vm.data
+                }).then(function (res) {
+                    if (res && res.data) {
+                        vm.colorData = res.data.data.map(function (item) {
+                            colors = item.data;
+                            return item.data;
+                        });
+                        searchColor.set(vm.colorData);
+                        $location.url('/color-index-accordion');
+                        // console.log("colorDatacolorDatacolorData", vm.colorData);
+                    }
+                });
+            // }
+
+        };
+
+
+        // $(document).ready(function() {
+        //     $(".scroll_down").click(function () {
+        //         $('html, body').animate({
+        //             scrollTop: $(".scroll-end").offset().top
+        //         }, 1500);
+        //     });
+        // });
+
     }
   });
