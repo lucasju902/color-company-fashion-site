@@ -23,7 +23,8 @@ body {
 
 #logo {
   margin-top: 5px;
-  padding-right: 40px;
+  padding-right: 220px;
+  padding-left: 25px;
 }
 
 #top-menu {
@@ -75,6 +76,10 @@ body {
   transition: color 0.2s ease;
   padding-bottom: 5px;
   padding-top: 15px;
+  padding: 10px 20px!important;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .header {
