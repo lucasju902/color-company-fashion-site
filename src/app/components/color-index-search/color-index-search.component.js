@@ -25,16 +25,18 @@ angular
                 $http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
                     params: vm.data
                 }).then(function (res) {
-                    if (res && res.data) {
+                    console.log("res", res)
+                    vm.validData = res.data.data;
+                    if (res && res.data.data.length > 0) {
                         vm.colorData = res.data.data.map(function (item) {
                             colors = item.data;
                             return item.data;
                         });
-                        searchColor.set(vm.colorData);
+                        searchColor.set(vm.colorData, vm.data.color);
                         $location.url('/color-index-accordion');
-                        // console.log("colorDatacolorDatacolorData", vm.colorData);
                     }
                 });
+                console.log("vm.colorData",vm.colorData, vm.colorData === {})
             }
 
         };

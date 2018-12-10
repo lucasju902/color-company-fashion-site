@@ -1,5 +1,5 @@
 // (function() {
-//     console.log("d3", d3)
+//     console.log("d3 :: script :: cloud.js", d3)
 //     function cloud() {
 //         var size = [100, 100],
 //             text = cloudText,

@@ -5229,13 +5229,12 @@ input[type=range]::slider-thumb {
   &:last-child {
     border-bottom: 1px solid #cfcfcf!important;
   }
-
-  .color-index-accordion-item {
-    display: flex;
-    flex-flow: row wrap;
-    align-content: space-between;
-    justify-content: space-between;
-  }
+}
+.color-index-accordion-item {
+  display: flex;
+  flex-flow: row wrap;
+  align-content: space-between;
+  justify-content: space-between;
 }
 .img-accordion {
   //width: 80%;
@@ -5476,8 +5475,8 @@ input#search-bar{
   width: 930px;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
-  padding-top: 56.25%;
+  //overflow: hidden;
+  //padding-top: 56.25%;
 }
 .landing-analytics-description {
   height: 780px;

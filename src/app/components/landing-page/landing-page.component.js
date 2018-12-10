@@ -25,46 +25,46 @@ angular
           }
         }
 
-        function slide() {
-          sact('next', 0, 1200);
-        }
-
-        function sact(a, ix, it) {
-          var currentSlide = $('.current');
-          var nextSlide = currentSlide.next('.slideitem');
-          var prevSlide = currentSlide.prev('.slideitem');
-          var reqSlide = $('.slideitem').eq(ix);
-
-          var currentDot = $('.active-dot');
-          var nextDot = currentDot.next();
-          var prevDot = currentDot.prev();
-          var reqDot = $('.dot').eq(ix);
-
-          if (nextSlide.length == 0) {
-            nextDot = $('.dot').first();
-            nextSlide = $('.slideitem').first();
+          function slide() {
+              sact('next', 0, 2000);
           }
 
-          if (prevSlide.length == 0) {
-            prevDot = $('.dot').last();
-            prevSlide = $('.slideitem').last();
-          }
+          function sact(a, ix, it) {
+              var currentSlide = $('.current');
+              var nextSlide = currentSlide.next('.slideitem');
+              var prevSlide = currentSlide.prev('.slideitem');
+              var reqSlide = $('.slideitem').eq(ix);
 
-          if (a == 'next') {
-            var Slide = nextSlide;
-            var Dot = nextDot;
-          }
-          else if (a == 'prev') {
-            var Slide = prevSlide;
-            var Dot = prevDot;
-          }
-          else {
-            var Slide = reqSlide;
-            var Dot = reqDot;
-          }
+              var currentDot = $('.active-dot');
+              var nextDot = currentDot.next();
+              var prevDot = currentDot.prev();
+              var reqDot = $('.dot').eq(ix);
 
-          currentSlide.fadeOut(it).removeClass('current');
-          Slide.fadeIn(it).addClass('current');
+              if (nextSlide.length == 0) {
+                  nextDot = $('.dot').first();
+                  nextSlide = $('.slideitem').first();
+              }
+
+              if (prevSlide.length == 0) {
+                  prevDot = $('.dot').last();
+                  prevSlide = $('.slideitem').last();
+              }
+
+              if (a == 'next') {
+                  var Slide = nextSlide;
+                  var Dot = nextDot;
+              }
+              else if (a == 'prev') {
+                  var Slide = prevSlide;
+                  var Dot = prevDot;
+              }
+              else {
+                  var Slide = reqSlide;
+                  var Dot = reqDot;
+              }
+              var it_before = it - 500;
+              currentSlide.fadeOut(it_before).removeClass('current');
+              Slide.fadeIn(it).addClass('current');
           }
       });
 //                                                                                                          COLOR-PICKER

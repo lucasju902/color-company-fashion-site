@@ -25,7 +25,7 @@ angular
         }
 
         function slide() {
-          sact('next', 0, 1200);
+          sact('next', 0, 2000);
         }
 
         function sact(a, ix, it) {
@@ -61,8 +61,8 @@ angular
             var Slide = reqSlide;
             var Dot = reqDot;
           }
-
-          currentSlide.fadeOut(it).removeClass('current');
+          var it_before = it - 500;
+          currentSlide.fadeOut(it_before).removeClass('current');
           Slide.fadeIn(it).addClass('current');
           }
       });

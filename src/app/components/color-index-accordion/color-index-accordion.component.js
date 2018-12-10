@@ -4,26 +4,27 @@ angular
     templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
     controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
         var vm = this;
-        vm.colorData = searchColor.get();
-        console.log("$scope.colorData : colorIndexAccordionComponent", vm.colorData);
+        vm.colorData = searchColor.get()[0];
+        vm.searchColorName = searchColor.get()[1];
+        console.log("$scope.colorData : colorIndexAccordionComponent", vm);
 
         var colorNames = [], colorRGB = [];
 
-        if (vm.colorData.length > 1) {
-            vm.colorData.forEach(function (color) {
-                colorRGB.push(color.rgb);
-                colorNames.push(color.name);
-            });
+        if (!jQuery.isEmptyObject(vm.colorData)) {
+            if (vm.colorData.length > 1) {
+                vm.colorData.forEach(function (color) {
+                    colorRGB.push(color.rgb);
+                    colorNames.push(color.name);
+                });
+            }
         }
-
         colorNames = colorNames.join(' ');
 
-
         // var text_string = "be talkin’ about t do that. And two: you dropped a hundred and fifty grand on a fuckin’ education you coulda got for a dollar fifty in late charges at the public library.";
-        console.log("d3.layout", d3);
+        // console.log("d3.layout", d3);
         drawWordCloud(colorNames);
 
-        function drawWordCloud(text_string){
+        function drawWordCloud(text_string) {
             var common = "poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,,says,said,shall";
 
             var word_count = {};
@@ -41,7 +42,7 @@ angular
                             word_count[word] = 1;
                         }
                     }
-                })
+                });
             }
 
             var svg_location = "#chart";
@@ -90,6 +91,93 @@ angular
 
             // d3.layout.cloud().stop();
         }
+
+                                                                // Chroma.js Chroma.js Chroma.js Chroma.jsChroma.js Chroma.js Chroma.js Chroma.js Chroma.js Chroma.js Chroma.jsChroma.js Chroma.js
+        // document.addEventListener('DOMContentLoaded', function() {
+
+            var btnGenerateColorScheme = document.querySelector('#generate-color-scheme'),
+                btnGenerateColorScale = document.querySelector('#generate-color-scale'),
+                colorScheme = document.querySelector('.color-scheme'),
+                colorScale = document.querySelector('.color-scale'),
+                steps = 99, // is preferably an odd number
+                chromaColor, userColor, colorList, scaleColors, scaleCount, scaleList;
+
+//             btnGenerateColorScheme.addEventListener('click', function() {
+// // Reinitialize the color list.
+//                 colorList = [];
+//
+//                 // Get the color value.
+//                 userColor = document.querySelector('#user-color').value;
+//
+//                 // Reset the content of the color scheme list.
+//                 colorScheme.innerHTML = '';
+//
+//                 // Initialize Chroma.
+//                 chromaColor = chroma(userColor);
+//
+//                 // Create a monchromatic color scheme.
+//                 for (var i = 0; i < steps; i++) {
+//                     colorList[i] = chromaColor.darken(i * 0.04);
+//                     console.log('i', i);
+//                     console.log('colorList', colorList[i]);
+//
+//                 }
+//
+//                 // Generate some elements.
+//                 for (var j = 0; j < colorList.length; j++) {
+//                     var newItem = document.createElement('li');
+//
+//                     newItem.style.backgroundColor = colorList[j];
+//                     newItem.innerHTML = '<div class="color-info">' +
+//                         '<span>' + colorList[j] + '</span>' +
+//                         '<span>' + chroma(colorList[j]).css() + '</span>' +
+//                         '</div>';
+//
+//                     colorScheme.appendChild(newItem);
+//                 }
+//             });
+
+            // btnGenerateColorScale.addEventListener('click', function() {
+            //     scaleList = [];
+            //     scaleColors = [];
+            //
+            //     // Get the color values and scale count.
+            //     // scaleColors[0] = document.querySelector('#scale-color-1').value;
+            //     scaleColors[0] = vm.colorData[0].rgb;
+            //     console.log("scaleColors", scaleColors);
+            //     scaleColors[1] = document.querySelector('#scale-color-2').value;
+            //     scaleCount = document.querySelector("#scale-count").value;
+            //
+            //     // Reset the content of the color scale list.
+            //     colorScale.innerHTML = '';
+            //
+            //     // Create the color scale.
+            //     scaleList = chroma.scale(scaleColors).colors(scaleCount);
+            //
+            //     // Generate some elements.
+            //
+            //     for (var x = 0; x < scaleList.length; x++) {
+            //         // Generate some elements.
+            //         var newItem = document.createElement('li');
+            //
+            //         newItem.style.backgroundColor = scaleList[x];
+            //
+            //         colorScale.appendChild(newItem);
+            //     }
+            // });
+
+        // function componentToHex(c) {
+        //     var hex = c.toString(16);
+        //     return hex.length == 1 ? "0" + hex : hex;
+        // }
+        //
+        // function rgbToHex(r, g, b) {
+        //     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        // }
+        //
+        // alert( rgbToHex(255, 255, 255) ); // #0033ff
+
+        // });
     }
   });
 angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
