@@ -4,7 +4,7 @@ angular
     templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
     controller: function (dataValidate, appConfig, $window, $location, anchorSmoothScroll, $http, $scope, searchColor) {
       var vm = this;
-      vm.colorData = {};
+      vm.colorsData = {};
 
         this.colorSearch = function () {
             if (dataValidate.validate(vm.data)) {
@@ -22,23 +22,22 @@ angular
                 } else {
                     delete vm.data['rgb'];
                 }
-                $http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
+							$http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
                     params: vm.data
                 }).then(function (res) {
                     console.log("res", res)
                     vm.validData = res.data.data;
                     if (res && res.data.data.length > 0) {
-                        vm.colorData = res.data.data.map(function (item) {
-                            colors = item.data;
+                        vm.colorsData = res.data.data.map(function (item) {
+                            // colors = item.data;
                             return item.data;
                         });
-                        searchColor.set(vm.colorData, vm.data.color);
+                        searchColor.set(vm.colorsData, vm.data.color, vm.colorsData[0].rgb);
                         $location.url('/color-index-accordion');
                     }
                 });
-                console.log("vm.colorData",vm.colorData, vm.colorData === {})
+                console.log("vm.colorsData",vm.colorsData, vm.colorsData === {});
             }
-
         };
 
             // $http.get(appConfig.dashboardServiceUrl + 'colors/index.json')

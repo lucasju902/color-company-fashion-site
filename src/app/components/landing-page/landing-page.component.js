@@ -175,7 +175,7 @@ angular
                             colors = item.data;
                             return item.data;
                         });
-                        searchColor.set(vm.colorData);
+                        searchColor.set(vm.colorData, undefined, vm.data.rgb);
                         $location.url('/color-index-accordion');
                         // console.log("colorDatacolorDatacolorData", vm.colorData);
                     }
