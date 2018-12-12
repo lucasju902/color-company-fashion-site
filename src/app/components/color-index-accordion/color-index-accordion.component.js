@@ -19,16 +19,18 @@ angular
         var similarSaturateColors = [];
         var similarDarkenColors = [];
 
-        for (var i = 0; similarSaturateColors.length <= 15; ++i) {
+        for (var i = 0; similarSaturateColors.length <= 12; ++i) {
           similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
-          similarDarkenColors.push(chroma(colorRgb).darken(0.07 * i).hex());
+          similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
         }
-        let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
-        notDuplicateColors(similarSaturateColors);
+        // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
+        // notDuplicateColors(similarSaturateColors);
         // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
 
-        vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
-        vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
+        vm.similarSaturateColors = similarSaturateColors;
+        // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
+        vm.similarDarkenColors = similarDarkenColors;
+        // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
       }
 
       console.log('similarDarkenColors', vm.similarDarkenColors);
