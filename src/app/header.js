@@ -50,6 +50,13 @@ angular
             {name: 'Press Inquiry', state: 'press'}
           ]
         }];
+
+			this.navigation_profile = [{
+				name: 'HI',
+				subNavs: [
+					{name: 'Profile', state: 'profile'}
+				]}];
+
       this.selectedTab = false;
       this.selectedSubTab = [];
       this.user = null;
@@ -98,7 +105,7 @@ angular
       };
 
       this.goToLanding = function () {
-        $state.go('landing');
+        $state.go('/');
       };
 
       $scope.$watch(function () {

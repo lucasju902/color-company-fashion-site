@@ -491,15 +491,15 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       component: 'cartThankComponent'
     });
   $stateProvider
-    .state('landing', {
-      url: '/',
-      component: 'landingComponent'
-    });
-  $stateProvider
     .state('landing-page', {
-      url: '/landing',
+      url: '/',
       component: 'landingPageComponent'
     });
+  // $stateProvider
+  //   .state('landing-page', {
+  //     url: '/landing',
+  //     component: 'landingPageComponent'
+  //   });
   $stateProvider
     .state('my-purchases', {
       url: '/my-purchases',

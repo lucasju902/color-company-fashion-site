@@ -22,8 +22,9 @@ body {
 }
 
 #logo {
-  margin-top: 5px;
-  padding-right: 220px;
+  /*margin-top: 5px;*/
+  padding: 10px 0;
+  /*padding-right: 220px;*/
   padding-left: 25px;
 }
 
@@ -60,8 +61,10 @@ body {
 }
 
 .navbar-nav {
-  margin-left: 20px;
-  margin-top: 5px;
+  /*margin-left: 20px;*/
+  /*margin-top: 5px;*/
+  margin-left: auto;
+  padding: 16px 0;
   font-size: 13.5pt;
   font-weight: 400;
 

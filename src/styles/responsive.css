@@ -311,8 +311,9 @@
     }
 
     .navbar-nav {
+        display: none!important;
         float: none !important;
-        margin-top: 7.5px;
+        /*margin-top: 7.5px;*/
     }
 
     .navbar-nav > li {
@@ -384,7 +385,7 @@
 
     #logo {
         max-width: 220px;
-        padding-top: 2px;
+        /*padding-top: 2px;*/
         padding-right: 10px;
     }
 

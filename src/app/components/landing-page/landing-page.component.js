@@ -70,6 +70,9 @@ angular
 //                                                                                                          COLOR-PICKER
         var color_picker = document.getElementById("color_picker");
         var color_id = document.getElementById("color_id");
+        $scope.colorPickerGray = 100;
+        $scope.colorPickerOpacity = 1;
+			  document.getElementById('value_span').innerHTML = '100%';
 
         $scope.changeColor = function () {
             color_picker.onmousedown = select_color;
@@ -116,7 +119,7 @@ angular
 
         function select_color(e) {
             var x = e.pageX - color_picker.offsetLeft - 564,
-                y = e.pageY - color_picker.offsetTop - 3634,
+                y = e.pageY - color_picker.offsetTop - 3622,
                 pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
             color_id.style.backgroundColor = pixelColor;

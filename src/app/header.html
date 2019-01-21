@@ -1,33 +1,35 @@
-<div ng-class="{'hide': $ctrl.hideHeader()}" class="container-fluid" id="top-menu">
+<!--<div ng-class="{'hide': $ctrl.hideHeader()}" class="container-fluid" id="top-menu">-->
 
-  <ul>
-    <li><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>
-    <li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>
-    <li>
-      <a class="pointer" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>
-      <a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>
-    </li>
+  <!--<ul>-->
+    <!--<li><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>-->
+    <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->
+    <!--<li>-->
+      <!--<a class="pointer" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>-->
+      <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->
+    <!--</li>-->
 
-    <li class="left-header">The World's Color Intelligence Platform</li>
-  </ul>
-</div>
+    <!--<li class="left-header">The World's Color Intelligence Platform</li>-->
+  <!--</ul>-->
+<!--</div>-->
 
 <nav ng-class="{'hide': $ctrl.hideHeader()}" class="navbar navbar-inverse">
   <div class="container-fluid">
-    <div class="navbar-header">
-      <img class="pointer" style="margin-top: 18px; padding-top: 0;" ng-click="$ctrl.goToLanding()" src="../assets/images/logo.png" id="logo" alt="logo">
-      <button type="button" ng-click="$ctrl.open()" class="navbar-toggle collapsed"
 
-              aria-expanded="false">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
     <!--data-toggle="collapse" data-target="#myNavbar"-->
 
-    <div class="collapse navbar-collapse" data-toggle="collapse" id="myNavbar">
+    <div class="collapse navbar-collapse flexible-menu" data-toggle="collapse" id="myNavbar">
+      <div class="navbar-header">
+          <a href="/">
+          <img class="pointer" ng-click="$ctrl.goToLanding()" src="../assets/images/logo.png" id="logo" alt="logo">
+          </a>
+        <button type="button" ng-click="$ctrl.open()" class="navbar-toggle collapsed"
 
+                aria-expanded="false">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
       <ul class="nav navbar-nav">
 
         <li class="dropdown"
@@ -56,19 +58,59 @@
         </li>
       </ul>
 
-      <ul class="nav navbar-nav main-nav navbar-right login">
-        <li>
-          <a ng-show="!$ctrl.userIsLoggedIn()" ng-click="$ctrl.toggleMenu()" ui-sref="login" style="font-size:9pt">
-            Member Login
-            <img src="../assets/images/login-icon.png" id="login" alt="login"
-                 style="padding-left: 10px; margin-top:-4px;">
-          </a>
-          <a ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="font-size:9pt">
-            Log Out
-            <img src="../assets/images/login-icon.png" id="login" alt="login"
-                 style="padding-left: 10px; margin-top:-4px;">
-          </a>
-        </li>
+
+
+
+      <ul class="nav navbar-nav main-nav navbar-right login" ng-class="{true: 'menu-client-logged', false: 'menu-client'}[$ctrl.userIsLoggedIn()]">
+        <!--<ul ng-show="$ctrl.userIsLoggedIn()" class="menu-client-logged">-->
+
+        <!--</ul>-->
+
+        <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->
+
+
+          <li class="dropdown"
+              ng-show="$ctrl.userIsLoggedIn()"
+              ng-mouseleave="$ctrl.selectedTab=false"
+              ng-mouseover="$ctrl.selectedTab=true"
+              ui-sref-active="active"
+              ng-class="$ctrl.getActiveMainNav(mainNav.name) && !$ctrl.selectedTab || $ctrl.selectedSubTab[mainNav.name] ? 'active' : ''"
+              ng-repeat="mainNav in $ctrl.navigation_profile">
+
+              <a ng-if="!mainNav.state" class="dropdown-toggle full-name-menu-link">
+                  {{mainNav.name}} {{$ctrl.user.full_name}}
+              </a>
+              <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref={{mainNav.state}}
+                 class="dropdown-toggle"
+                 data-toggle="dropdown">
+                  {{mainNav.name}}
+              </a>
+              <ul class="dropdown-menu" ng-if="mainNav.subNavs && mainNav.subNavs.length > 0"
+                  ng-mouseleave="$ctrl.selectedSubTab[mainNav.name]=false"
+                  ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">
+                  <li ng-click="$ctrl.toggleMenu(subNav.name)"
+                      ng-repeat="subNav in mainNav.subNavs">
+                      <a ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref={{subNav.state}}>{{subNav.name}}</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+              <a ng-show="!$ctrl.userIsLoggedIn()" ng-click="$ctrl.toggleMenu()" ui-sref="login" style="padding: 0px 0 12px 0!important;">
+                  Member Login
+                  <img src="../assets/images/login-icon.png" id="login" alt="login"
+                       style="padding-left: 10px;margin-top: -5px;width: 30px;">
+              </a>
+              <a ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="">
+                  Log Out
+                  <img src="../assets/images/login-icon.png" id="login" alt="login"
+                       style="padding-left: 2px; margin-top:-4px;">
+              </a>
+          </li>
+          <li>
+              <a class="pointer" style="padding: 0px!important;" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>
+              <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->
+          </li>
+          <li ng-show="$ctrl.userIsLoggedIn()"><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>
       </ul>
     </div>
   </div>

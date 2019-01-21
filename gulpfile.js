@@ -20,7 +20,7 @@ gulp.task('default', gulp.series('clean', 'build'));
 gulp.task('watch', watch);
 
 function reloadBrowserSync(cb) {
-  browserSync.reload();
+  // browserSync.reload();
   cb();
 }
 
