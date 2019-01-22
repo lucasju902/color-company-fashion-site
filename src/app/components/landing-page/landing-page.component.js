@@ -62,11 +62,18 @@ angular
                   var Slide = reqSlide;
                   var Dot = reqDot;
               }
-              var it_before = it - 500;
+              var it_before = it - 1500;
               currentSlide.fadeOut(it_before).removeClass('current');
               Slide.fadeIn(it).addClass('current');
           }
       });
+
+//                                                                                                          REPORTS ON LANDING
+			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
+				console.log("res", res.data.reports);
+				vm.reports_on_landing = res.data.reports
+			});
+
 //                                                                                                          COLOR-PICKER
         var color_picker = document.getElementById("color_picker");
         var color_id = document.getElementById("color_id");

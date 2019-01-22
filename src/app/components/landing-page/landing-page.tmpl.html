@@ -134,45 +134,10 @@ Color validation, Color information, Color dataset, Color database, Color design
 <section class="landing-reports-section">
   <div class="container">
     <div class="row flex landing-reports">
-      <div class="landing-report-item">
-        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
-        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
-        <span>CRIME</span>
-        <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
-      </div>
-      <div class="landing-report-item">
-        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
-        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
-
-        <span>CRIME</span>
-        <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
-      </div>
-      <div class="landing-report-item">
-        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
-        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
-
-        <span>CRIME</span>
-        <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
-      </div>
-      <div class="landing-report-item">
-        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
-        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
-
-        <span>CRIME</span>
-        <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
-      </div>
-      <div class="landing-report-item">
-        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
-        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
-
-        <span>CRIME</span>
-        <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
-      </div>
-      <div class="landing-report-item">
-        <!--<img src="../../../assets/img/landing/colors-H.png" alt="">-->
-        <img src="http://s3.amazonaws.com/huestorage/huegroup-website/teaching_material_images/images/000/000/003/original/image.jpg?1529420732" alt="">
-        <span>CRIME</span>
-        <p>THE MOST DANGEROUS CITES IN THE WORLD IN 2018</p>
+      <div class="landing-report-item" ng-repeat="report in $ctrl.reports_on_landing">
+        <img class="download-img" ng-src="{{report.image}}">
+        <span>{{report.hue}}</span>
+        <p>{{report.header}}</p>
       </div>
     </div>
     <div class="landing-color-index-title">

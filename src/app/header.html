@@ -63,12 +63,11 @@
 
       <ul class="nav navbar-nav main-nav navbar-right login" ng-class="{true: 'menu-client-logged', false: 'menu-client'}[$ctrl.userIsLoggedIn()]">
         <!--<ul ng-show="$ctrl.userIsLoggedIn()" class="menu-client-logged">-->
-
         <!--</ul>-->
-
         <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->
-
-
+          <li ng-show="$ctrl.user.is_admin">
+              <a ng-href="https://gentle-bastion-76293.herokuapp.com/abouts">ADMIN</a>
+          </li>
           <li class="dropdown"
               ng-show="$ctrl.userIsLoggedIn()"
               ng-mouseleave="$ctrl.selectedTab=false"
@@ -78,7 +77,7 @@
               ng-repeat="mainNav in $ctrl.navigation_profile">
 
               <a ng-if="!mainNav.state" class="dropdown-toggle full-name-menu-link">
-                  {{mainNav.name}} {{$ctrl.user.full_name}}
+                  {{mainNav.name}} {{$ctrl.user.first_name}}
               </a>
               <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref={{mainNav.state}}
                  class="dropdown-toggle"
@@ -95,22 +94,24 @@
               </ul>
           </li>
           <li>
-              <a ng-show="!$ctrl.userIsLoggedIn()" ng-click="$ctrl.toggleMenu()" ui-sref="login" style="padding: 0px 0 12px 0!important;">
-                  Member Login
-                  <img src="../assets/images/login-icon.png" id="login" alt="login"
-                       style="padding-left: 10px;margin-top: -5px;width: 30px;">
-              </a>
-              <a ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="">
-                  Log Out
-                  <img src="../assets/images/login-icon.png" id="login" alt="login"
-                       style="padding-left: 2px; margin-top:-4px;">
-              </a>
-          </li>
-          <li>
-              <a class="pointer" style="padding: 0px!important;" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>
+              <a class="pointer" style="padding: 0 0 0 47px!important;" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>
               <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->
           </li>
-          <li ng-show="$ctrl.userIsLoggedIn()"><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>
+          <li>
+              <a ng-show="!$ctrl.userIsLoggedIn()" ng-click="$ctrl.toggleMenu()" ui-sref="login" style="padding: 0 0 12px 47px!important;">
+                  Member Login
+                  <img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 6px;margin-top: -5px;width: 27px;">
+              </a>
+              <a ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="min-width: 90px;">
+                  Log Out
+                  <!--<img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 2px; margin-top:-4px;">-->
+              </a>
+          </li>
+          <li ng-show="$ctrl.userIsLoggedIn()">
+              <a class="lighter-grey-color" ui-sref="cart-page" style="padding-top: 6px!important;height: 40px;padding-right: 12px!important;">
+                  <i style="display: inline-block" class="fa fa-shopping-cart fa-2x cart-img-header" aria-hidden="true"></i>
+              </a>
+          </li>
       </ul>
     </div>
   </div>
