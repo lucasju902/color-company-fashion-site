@@ -200,7 +200,7 @@ angular
 			};
 
 			this.colorSearch = function () {
-				let colorNumberRGB =  "" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + "" ;
+				var colorNumberRGB =  "" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + "" ;
 				vm.data = { color: vm.colorData[0].name };
 				$http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
 					params: vm.data
