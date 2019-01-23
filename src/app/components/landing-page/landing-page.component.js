@@ -106,7 +106,7 @@ angular
             $scope.colorRGB_G = colorInputG;
             $scope.colorRGB_B = colorInputB;
 
-            inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
+            var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
             color_id.style.backgroundColor = inputRGB;
         };
 
@@ -125,7 +125,7 @@ angular
         }
 
         function select_color(e) {
-            var x = e.pageX - color_picker.offsetLeft - 564,
+            var x = e.pageX - color_picker.offsetLeft - 664,
                 y = e.pageY - color_picker.offsetTop - 3622,
                 pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";

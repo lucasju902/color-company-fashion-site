@@ -52,7 +52,7 @@ angular
         }];
 
 			this.navigation_profile = [{
-				name: 'HI',
+				name: 'Hi',
 				subNavs: [
 					{name: 'Profile', state: 'profile'}
 				]}];

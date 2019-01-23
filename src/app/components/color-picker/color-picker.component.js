@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('colorPickerComponent', {
     templateUrl: 'app/components/color-picker/color-picker.tmpl.html',
-    controller: function ($location, $scope, anchorSmoothScroll) {
+    controller: function ($location, $scope,$http, appConfig, anchorSmoothScroll, searchColor) {
       var vm = this;
 
       vm.gotoElement = function (eID) {
@@ -120,7 +120,7 @@ angular
             $scope.colorRGB_G = colorInputG;
             $scope.colorRGB_B = colorInputB;
 
-            inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
+            var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
             color_id.style.backgroundColor = inputRGB;
         }
 
@@ -155,7 +155,7 @@ angular
             $scope.colorRGB_R = pixel[0];
             $scope.colorRGB_G = pixel[1];
             $scope.colorRGB_B = pixel[2];
-            console.log('pixelColor _select_color', $scope);
+            console.log('select_color :: scope', $scope);
             console.log('y  _select_color',y);
             console.log('x  _select_color',x);
             // console.log('pixel  _select_color',pixel);
@@ -181,6 +181,41 @@ angular
                 }
             }
         }
+
+			this.showNumberOfColors = function () {
+				vm.data = { rgb: "" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + "" };
+				console.log("vm.data", vm.data)
+				$http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
+					params: vm.data
+				}).then(function (res) {
+					if (res && res.data) {
+						vm.colorData = res.data.data.map(function (item) {
+							colors = item.data;
+							return item.data;
+						});
+						vm.colorNumberNames =res.data.colorNumberNames;
+						console.log("colorDatacolorDatacolorData", vm.colorData);
+					}
+				});
+			};
+
+			this.colorSearch = function () {
+				let colorNumberRGB =  "" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + "" ;
+				vm.data = { color: vm.colorData[0].name };
+				$http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
+					params: vm.data
+				}).then(function (res) {
+					if (res && res.data) {
+						vm.colorData = res.data.data.map(function (item) {
+							colors = item.data;
+							return item.data;
+						});
+						searchColor.set(vm.colorData, undefined, colorNumberRGB);
+						$location.url('/color-index-accordion');
+						// console.log("colorDatacolorDatacolorData", vm.colorData);
+					}
+				});
+			};
 
         $(document).ready(function() {
             $(".scroll_down").click(function () {

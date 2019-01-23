@@ -66,7 +66,9 @@
         <!--</ul>-->
         <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->
           <li ng-show="$ctrl.user.is_admin">
-              <a ng-href="https://gentle-bastion-76293.herokuapp.com/abouts">ADMIN</a>
+              <a class="menu-client_item_test" ng-href="https://gentle-bastion-76293.herokuapp.com/abouts"
+                 style="padding-right: 50px!important;">
+                  ADMIN</a>
           </li>
           <li class="dropdown"
               ng-show="$ctrl.userIsLoggedIn()"
@@ -76,11 +78,11 @@
               ng-class="$ctrl.getActiveMainNav(mainNav.name) && !$ctrl.selectedTab || $ctrl.selectedSubTab[mainNav.name] ? 'active' : ''"
               ng-repeat="mainNav in $ctrl.navigation_profile">
 
-              <a ng-if="!mainNav.state" class="dropdown-toggle full-name-menu-link">
+              <a ng-if="!mainNav.state" class="dropdown-toggle menu-client_item_test full-name-menu-link" style="font-size: 16px;">
                   {{mainNav.name}} {{$ctrl.user.first_name}}
               </a>
               <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref={{mainNav.state}}
-                 class="dropdown-toggle"
+                 class="dropdown-toggle menu-client_item_test"
                  data-toggle="dropdown">
                   {{mainNav.name}}
               </a>
@@ -89,7 +91,7 @@
                   ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">
                   <li ng-click="$ctrl.toggleMenu(subNav.name)"
                       ng-repeat="subNav in mainNav.subNavs">
-                      <a ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref={{subNav.state}}>{{subNav.name}}</a>
+                      <a class="menu-client_item_test" ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref={{subNav.state}}>{{subNav.name}}</a>
                   </li>
               </ul>
           </li>
@@ -102,14 +104,15 @@
                   Member Login
                   <img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 6px;margin-top: -5px;width: 27px;">
               </a>
-              <a ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="min-width: 90px;">
-                  Log Out
+              <a class="menu-client_item_test" ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="min-width: 60px;font-size: 16px;">
+                  Logout
                   <!--<img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 2px; margin-top:-4px;">-->
               </a>
           </li>
           <li ng-show="$ctrl.userIsLoggedIn()">
               <a class="lighter-grey-color" ui-sref="cart-page" style="padding-top: 6px!important;height: 40px;padding-right: 12px!important;">
-                  <i style="display: inline-block" class="fa fa-shopping-cart fa-2x cart-img-header" aria-hidden="true"></i>
+                  <!--<i style="display: inline-block" class="fa fa-shopping-cart fa-2x cart-img-header" aria-hidden="true"></i>-->
+                  <img src="../assets/images/cart_TH.png"  alt="cart" style="margin-top: 2px;width: 24px;">
               </a>
           </li>
       </ul>

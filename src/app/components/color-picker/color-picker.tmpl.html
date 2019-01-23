@@ -84,7 +84,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12">
                 <div class="button button-color-picker scroll_down">
-                    <a class="btn join-btn" >LET'S START</a>
+                    <button ng-click="$ctrl.showNumberOfColors()" class="btn join-btn" >LET'S START</button>
                 </div>
             </div>
         </div>
@@ -96,8 +96,8 @@
         <div class="row color-names-block">
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming">
-            37
+          <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames">
+            26
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -105,6 +105,9 @@
           <div class="triangle-with-shadow"></div>
           </div>
         </span>
+                    <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames === undefined ">
+                        0
+                    </span>
                     <div class="title-color-naming">
                         <span >COLOR  </span>
                         <span >  ASSOCIATION</span>
@@ -115,8 +118,8 @@
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming">
-            22
+          <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames">
+            {{$ctrl.colorNumberNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -124,6 +127,9 @@
           <div class="triangle-with-shadow"></div>
           </div>
           </span>
+                    <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames === undefined ">
+                        0
+                    </span>
                     <div class="title-color-naming">
                         <span >PAINT  </span>
                         <span >  COLOR</span>
@@ -135,7 +141,7 @@
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
           <span class="big-num-color-naming">
-            139
+            0
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -153,7 +159,7 @@
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
           <span class="big-num-color-naming">
-            18
+            0
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -172,7 +178,7 @@
         <div class="row">
             <div class="center-color-block">
                 <div class="button">
-                    <a class="btn join-btn" ui-sref='colorIndexAccordion'>NEXT</a>
+                    <a class="btn join-btn" ng-click="$ctrl.colorSearch()">NEXT</a>
                 </div>
             </div>
         </div>
