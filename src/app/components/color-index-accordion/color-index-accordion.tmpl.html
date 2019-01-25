@@ -45,11 +45,25 @@
                     </div>
                     <div uib-accordion-group class="color-index-accordion-title">
                         <uib-accordion-heading>
-                            {{$ctrl.colorsData.length}} PAINT COLOR NAMES <i class="pull-right glyphicon"></i>
+                            {{$ctrl.colorsData.length}} PAINT COLOR NAMES
+                            <!--<div>-->
+                                <!--Fruit List:-->
+                                <!--<select ng-model="cart.fruit" ng-options="num as num for num in numbers"></select>-->
+                                <!--<br/>-->
+                                <!--<tt>Cost & Fruit selected: {{cart.fruit}}</tt>-->
+                            <!--</div>-->
+                            <!--<div class="col-xs-4">-->
+                                <!--<label>items per page:</label>-->
+                                <!--<select ng-model="pageSize" ng-options="num for num in [5, 10, 15,20]" ></select>-->
+
+                            <!--</div>-->
+                            <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
                         <div class="color-index-accordion-items">
+                            <select ng-model="pageSize" ng-options="num for num in [80, 160, 320, 'ALL']" id="pageSize" class="form-control selectPerPage"></select>
+                            <ul>
                             <div class="color-index-accordion-item">
-                                <div class='checkboxes-accordion' ng-repeat="color in $ctrl.colorsData">
+                                <div class='checkboxes-accordion' ng-repeat="color in $ctrl.colorsData | limitTo:pageSize ">
                                     <div class="checkbox-accordion-item">
                                         <label class="title-checkbox-accordion"></label>
                                         <input type="checkbox" class="option-input checkbox"

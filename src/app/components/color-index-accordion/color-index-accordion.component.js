@@ -9,6 +9,16 @@ angular
       var colorRgb = searchColor.get()[2];
       console.log('colorRgb', colorRgb);
 
+			$scope.pageSize = 80;
+			// $scope.q = '';
+			// $scope.numbers = [1,2,3,4,5];
+
+			// $scope.cart = {
+			// 	'fruit': $scope.numbers[0]
+			// };
+			// $scope.getData = function () {
+			// 	return $filter('filter')(vm.colorsData);
+			// }
       if (colorRgb !== undefined) {
             // var regex = /[\d|,|.| |e|E|\+]+/g;
         colorRgb = colorRgb.split(',').map(function (item) {

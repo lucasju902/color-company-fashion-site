@@ -732,7 +732,47 @@ ui-view {
 //  border: solid 1px #bb0076;
 //  min-width: 134px;
 //}
-
+.selectPerPage {
+  width: 50px;
+  height: 40px;
+  display: inline-block;
+  margin: 0;
+  padding: 0 0 4px 10px;
+  font-weight: 100;
+  font-size: 14px;
+  border-radius: 0;
+}
+.optionPerPage {
+  padding: 15px;
+}
+//#mainselection select {
+//  border: 2px solid green;
+//  color: #000000;
+//  background: transparent;
+//  font-size: 20px;
+//  font-weight: bold;
+//  //padding: 2px 20px;
+//  //margin: 10px 10px;
+//  //*margin: 10px 10px;
+//  width: 50px;
+//  height: 50px;
+//  *height: 50px;
+//  *width: 50px;
+//  *background: rgba(76, 76, 76, 0.96);
+//  -webkit-appearance: none;
+//}
+//
+//#mainselection {
+//  width: 50px;
+//  height: 40px;
+//  display: inline-block;
+//  margin: 0;
+//  padding: 5px;
+//  font-weight: 100;
+//  font-size: 14px;
+//  border: 2px solid red;
+//  border-radius: 0;
+//}
 input.search {
   height: 33px !important;
   background-position: right 10px top 7px;
