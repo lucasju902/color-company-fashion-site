@@ -140,13 +140,14 @@ angular
 
         function select_color(e) {
             var x = e.pageX - color_picker.offsetLeft - 48,
-                y = e.pageY - color_picker.offsetTop - 665,
+                y = e.pageY - color_picker.offsetTop - 570,
                 pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
-
                 // pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1]+", "+ pixel[2]+ ")";
             color_id.style.backgroundColor = pixelColor;
-            // var rgbToHsl_var = rgbToHsl(pixel[0] , pixel[1], pixel[2]);
+					console.log('xxx',x, 'yyy', y);
+					console.log('color_picker.offsetLeft',color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+					// var rgbToHsl_var = rgbToHsl(pixel[0] , pixel[1], pixel[2]);
             // hsl_path = "hsl(" + rgbToHsl_var[0] + ", " + rgbToHsl_var[1]+", "+ rgbToHsl_var[2]+ ")";
             // console.log('hsl_path', hsl_path)
             // color_id.style.backgroundColor = hsl_path;
@@ -155,9 +156,9 @@ angular
             $scope.colorRGB_R = pixel[0];
             $scope.colorRGB_G = pixel[1];
             $scope.colorRGB_B = pixel[2];
-            console.log('select_color :: scope', $scope);
-            console.log('y  _select_color',y);
-            console.log('x  _select_color',x);
+            // console.log('select_color :: scope', $scope);
+            // console.log('y  _select_color',y);
+            // console.log('x  _select_color',x);
             // console.log('pixel  _select_color',pixel);
             // console.log('color_picker.getContext("2d") _select_color',color_picker.getContext("2d").getImageData(50,50,1,1).data);
             // console.log('$scope-color-picker_select_color', $scope);

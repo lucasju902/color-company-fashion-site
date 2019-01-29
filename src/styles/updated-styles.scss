@@ -5096,6 +5096,8 @@ footer {
 
 #s_color_picker_id {
   text-align: center;
+  min-width: 200px;
+  float: right;
 }
 .wrapper-color-picker {
   border-radius: 50%;
@@ -5231,7 +5233,7 @@ footer {
   }
 }
 .color-piker-item_canvas {
-padding-left: 20%;
+//padding-left: 20%;
 }
 .rgb-display {
   display: flex;
@@ -5574,7 +5576,7 @@ input#search-bar{
   margin-bottom: 150px;
 }
 #chart {
-  width: 750px;
+  width: 800px;
   height: 450px;
   margin: 0 auto;
 }

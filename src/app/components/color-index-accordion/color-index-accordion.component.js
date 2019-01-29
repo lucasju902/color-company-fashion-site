@@ -92,7 +92,8 @@ angular
           });
         }
         var svg_location = '#chart';
-        var width = 750;
+        console.log('innerWidth',innerWidth)
+        var width = 800;
         var height = 450;
 
         var word_entries = d3.entries(word_count);
@@ -102,11 +103,12 @@ angular
                   return d.value;
                 })
                 ])
-                .range([10, 100]);
+                .range([20, 100]);
         d3.layout.cloud().size([width, height])
                 .timeInterval(20)
                 .words(word_entries)
                 .fontSize(function (d) {
+                  console.log('xScale(Number(d.value)',xScale(Number(d.value)));
                   return xScale(Number(d.value)); 
                 })
                 .text(function (d) {
@@ -118,18 +120,22 @@ angular
                 .font('Impact')
                 .on('end', draw)
                 .start();
-
+				window.addEventListener("resize", draw(words));
         function draw(words) {
+					console.log("window.innerWidth", window.innerWidth);
           d3.select(svg_location).append('svg')
                     .attr('width', width)
                     .attr('height', height)
+						        // .attr("preserveAspectRatio", "xMidYMid meet")
+						        // .attr("viewBox", "0 0 1000 450")
                     .append('g')
-                    .attr('transform', 'translate(' + [width >> 1, height >> 1] + ')')
+                    .attr('transform', 'translate(' + [400, 225] + ')')
+                    // .attr('transform', 'scale(2)')
                     .selectAll('text')
                     .data(words)
                     .enter().append('text')
                     .style('font-size', function (d) {
-                      return xScale(d.value) + 'px'; 
+                      return xScale(d.value*0.5) + 'px';
                     })
                     .style('font-family', 'Impact')
                     .style('fill', function (d, i) {

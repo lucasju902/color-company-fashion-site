@@ -60,7 +60,7 @@
                             <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
                         <div class="color-index-accordion-items">
-                            <select ng-model="pageSize" ng-options="num for num in [80, 160, 320, 'ALL']" id="pageSize" class="form-control selectPerPage"></select>
+                            <select ng-model="pageSize" ng-options="num for num in [80, 160, 320, 'ALL']" id="pageSize" class="form-control selectPerPage" style="position: relative;left: 240px;top: -55px;"></select>
                             <ul>
                             <div class="color-index-accordion-item">
                                 <div class='checkboxes-accordion' ng-repeat="color in $ctrl.colorsData | limitTo:pageSize ">
