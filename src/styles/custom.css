@@ -383,7 +383,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, 
   z-index: 1;
   -moz-appearance: none;
   -webkit-appearance: none;
-  width: 95%;
   height: 50px;
 }
 
