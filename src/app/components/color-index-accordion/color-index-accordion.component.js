@@ -160,6 +160,21 @@ angular
       function rgbToHex(r, g, b) {
         return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
       }
+
+      $(document).ready(function() {
+        var widthContainer = window.innerWidth - 200;
+        var widthOneElement = $('.checkbox-accordion-item').width();
+        var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
+        var allElements = vm.colorsData.length;
+        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyElements = integerElementsOnRow - elementsOnRow;
+        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
+        
+        for(var i = 0; i < emptyElements; i++) {
+          $('.color-index-accordion-item').append(emptyBlock);
+        }
+        console.log(allElements);
+      });
     }
   });
 angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
