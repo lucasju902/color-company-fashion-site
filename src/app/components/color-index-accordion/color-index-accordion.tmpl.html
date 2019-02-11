@@ -60,7 +60,27 @@
                             <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
                         <div class="color-index-accordion-items">
-                            <select ng-model="pageSize" ng-options="num for num in [80, 160, 320, 'ALL']" id="pageSize" class="form-control selectPerPage" style="position: relative;left: 240px;top: -55px;"></select>
+                            <ul class="selectPerPage">
+                                <button ng-click="showSelect()" class="selectPerPage__btn">{{pageSize}}</button>
+                                <ul class="selectPerPage__list">
+                                    <li class="selectPerPage__item">
+                                        <label for="num-80" ng-click="showSelect()">80</label>
+                                        <input type="radio" id="num-80" name="pageSize" checked ng-model="pageSize" ng-value="80">
+                                    </li>
+                                    <li class="selectPerPage__item">
+                                        <label for="num-160" ng-click="showSelect()">160</label>
+                                        <input type="radio" id="num-160" name="pageSize" ng-model="pageSize" ng-value="160">
+                                    </li>
+                                    <li class="selectPerPage__item">
+                                        <label for="num-320" ng-click="showSelect()">320</label>
+                                        <input type="radio" id="num-320" name="pageSize" ng-model="pageSize" ng-value="320">
+                                    </li>
+                                    <li class="selectPerPage__item">
+                                        <label for="string-all" ng-click="showSelect()">ALL</label>
+                                        <input type="radio" id="string-all" name="pageSize" ng-model="pageSize" ng-value="'ALL'">
+                                    </li>
+                                </ul>
+                            </ul>
                             <ul>
                             <div class="color-index-accordion-item">
                                 <div class='checkboxes-accordion' ng-repeat="color in $ctrl.colorsData | limitTo:pageSize ">

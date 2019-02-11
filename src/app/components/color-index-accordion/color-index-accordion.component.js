@@ -174,7 +174,17 @@ angular
           $('.color-index-accordion-item').append(emptyBlock);
         }
         console.log(allElements);
+        
+        $(document).click(function(event) {
+          if ($(event.target).closest(".selectPerPage").length) return;
+          $('.selectPerPage__list').removeClass('show');          
+          event.stopPropagation();
+        });
       });
+
+      $scope.showSelect = function() {
+        $('.selectPerPage__list').toggleClass('show');
+      }
     }
   });
 angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
