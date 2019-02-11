@@ -32,15 +32,16 @@
                 <uib-accordion close-others="oneAtATime">
                     <div uib-accordion-group class="color-index-accordion-title">
                         <uib-accordion-heading>
-                            {{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>
+                            <!--{{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>-->
+                            COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
                         <div class="color-index-accordion-item">
-                            <div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">
-                                <div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>
-                            </div>
-                            <div ng-repeat="similarColor1 in $ctrl.similarSaturateColors">
-                                <div style="width: 40px; height: 40px; background: {{similarColor1}}"></div>
-                            </div>
+                            <!--<div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">-->
+                                <!--<div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>-->
+                            <!--</div>-->
+                            <!--<div ng-repeat="similarColor1 in $ctrl.similarSaturateColors">-->
+                                <!--<div style="width: 40px; height: 40px; background: {{similarColor1}}"></div>-->
+                            <!--</div>-->
                         </div>
                     </div>
                     <div uib-accordion-group class="color-index-accordion-title">
@@ -67,9 +68,9 @@
                                     <div class="checkbox-accordion-item">
                                         <label class="title-checkbox-accordion"></label>
                                         <input type="checkbox" class="option-input checkbox"
-                                               style="background: rgb({{color.rgb}});"/>
-                                        <span class="checkbox-accordion_text">{{color.name}}</span>
-                                        <span class="checkbox-accordion_small_text">{{color.rgb}}</span>
+                                               style="background: rgb({{color.RGB}});"/>
+                                        <span class="checkbox-accordion_text">{{color.colorName}}</span>
+                                        <span class="checkbox-accordion_small_text">{{color.RGB}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +85,7 @@
                     </div>
                     <div uib-accordion-group class="color-index-accordion-title">
                         <uib-accordion-heading>
-                            139 COLOURLOVERS COLOR NAMES <i class="pull-right glyphicon"></i>
+                            COLOURLOVERS COLOR NAMES <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
                         <div class="color-index-accordion-item">
                             This is just some content to illustrate fancy headings

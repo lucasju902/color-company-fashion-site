@@ -4,27 +4,14 @@ angular
     templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
     controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
       var vm = this;
-      vm.colorsData = searchColor.get()[0];
+      vm.colorsData = searchColor.get();
       vm.searchColorName = searchColor.get()[1];
       var colorRgb = searchColor.get()[2];
-      console.log('colorRgb', colorRgb);
+			var colors = vm.colorsData;
 
 			$scope.pageSize = 80;
-			// $scope.q = '';
-			// $scope.numbers = [1,2,3,4,5];
 
-			// $scope.cart = {
-			// 	'fruit': $scope.numbers[0]
-			// };
-			// $scope.getData = function () {
-			// 	return $filter('filter')(vm.colorsData);
-			// }
       if (colorRgb !== undefined) {
-            // var regex = /[\d|,|.| |e|E|\+]+/g;
-        colorRgb = colorRgb.split(',').map(function (item) {
-          return parseInt(item, 10);
-        });
-        console.log('colorRgb', colorRgb);
 
         var similarSaturateColors = [];
         var similarDarkenColors = [];
@@ -43,25 +30,18 @@ angular
         // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
       }
 
-      console.log('similarDarkenColors', vm.similarDarkenColors);
-      console.log('similarSaturateColors', vm.similarSaturateColors);
-      console.log('$scope', $scope);
-
       var colorNamesItems = [],
-        colorRgbItems = [];
+        		colorRgbItems = [];
 
       if (vm.colorsData !== undefined) {
         if (vm.colorsData.length > 0) {
           vm.colorsData.forEach(function (color) {
-            colorRgbItems.push(color.rgb);
-						colorNamesItems.push(color.name);
+            colorRgbItems.push(color.RGB);
+						colorNamesItems.push(color.colorName);
           });
-          console.log('222222222222222colorsDatacolorsDatacolorsDatacolorsDataRGB', vm.colorsData);
         }
       }
-			console.log("colorNames", colorNames);
       var colorNames = colorNamesItems.join(',');
-			console.log("colorNames", colorNames);
 
 			// word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud
 
@@ -76,7 +56,7 @@ angular
 
         var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
         // var words = text_string.split(',');
-				console.log("words", words);
+				// console.log("words", words);
         if (words.length === 1) {
           word_count[words[0]] = 1;
         } else {
