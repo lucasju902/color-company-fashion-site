@@ -1,7 +1,7 @@
 angular.module('app').service('searchColor', ['$location', function (location ) {
     var savedData = {}
-    function set(data, colorName, colorRGB) {
-        savedData = [data, colorName, colorRGB];
+    function set(data) {
+        savedData = data;
     }
     function get() {
         return savedData;

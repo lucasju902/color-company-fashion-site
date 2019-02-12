@@ -7,47 +7,21 @@ angular
       vm.colorsData = {};
 
         this.colorSearch = function () {
-            if (dataValidate.validate(vm.data)) {
-                var colorWithNum = parseInt(vm.data.color.replace(/[^0-9\.]/g, ''), 10);
-                // console.log("colorWithNum", colorWithNum);
-                // console.log("colorWithNum", isNaN(colorWithNum))
-                // console.log("vm.data.color", vm.data.color)
-                // console.log("colorWithNum", colorWithNum.toString().length );
-                if (isNaN(!colorWithNum) || colorWithNum) {
-                    var regex = /[\d|,|.| |e|E|\+]+/g;
-                    vm.data.color = vm.data.color.match(regex);
-                    // console.log("matches", vm.data.color);
-                    vm.data = {rgb: vm.data.color};
-                    // console.log("vm.data", vm.data);
-                } else {
-                    delete vm.data['rgb'];
-                }
-							$http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
-                    params: vm.data
-                }).then(function (res) {
-                    console.log("res", res)
-                    vm.validData = res.data.data;
-                    if (res && res.data.data.length > 0) {
-                        vm.colorsData = res.data.data.map(function (item) {
-                            // colors = item.data;
-                            return item.data;
-                        });
-                        searchColor.set(vm.colorsData, vm.data.color, vm.colorsData[0].rgb);
-                        $location.url('/color-index-accordion');
-                    }
-                });
-                console.log("vm.colorsData",vm.colorsData, vm.colorsData === {});
-            }
+							$http.get(appConfig.colorAPI + 'shortnamecontains=' + this.data.color, {})
+								.then(function (res) {
+								vm.validData = res.data;
+								if (res && res.data.length > 0) {
+									var RGB = '',
+											colorName = '';
+									vm.colorsData = res.data.map(function (item) {
+										RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+										colorName = item.ShortName;
+										return {colorName: colorName, RGB: RGB};
+									});
+									searchColor.set(vm.colorsData);
+									$location.url('/color-index-accordion');
+								}
+							});
         };
-
-            // $http.get(appConfig.dashboardServiceUrl + 'colors/index.json')
-            //     .then(function (res) {
-            //         console.log('res',res);
-            //         vm.pageData = res;
-            //     }).catch(function (err) {
-            //     if (err) {
-            //         console.log('err',err);
-            //     }
-            // });
     }
   });

@@ -57,6 +57,7 @@ angular.module('app').constant('appConfig', {
   authServiceUrl: '',
   // dashboardServiceUrl: 'http://localhost:3002/',
   dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  colorAPI: 'http://myperfectcolor.gndex.com//api/list?key=123456789&',
 
   repositories: {
     mainParams: ['region_id', 'designer_id', 'category_id', 'season_id', 'year', 'city_id']

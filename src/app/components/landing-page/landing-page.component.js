@@ -157,51 +157,41 @@ angular
             }
         }
 
+        this.colorWordSearchLanding = function () {
+					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
+					var colorAssociationName = '';
 
+					$http.get(appConfig.colorAPI +
+						'minred=' + $scope.colorRGB_R +
+						'&maxred=' + $scope.colorRGB_R +
+						'&mingreen=' + $scope.colorRGB_G +
+						'&maxgreen=' + $scope.colorRGB_G +
+						'&minblue=' + $scope.colorRGB_B +
+						'&maxblue=' + $scope.colorRGB_B, {})
+						.then(function (res) {
+							if (res.data.length > 0) {
+								vm.colorData = res.data.map(function (item) {
+									return item;
+								});
+								colorAssociationName = vm.colorData[0].ShortName.replace(' ', '%20');
 
-        this.colorSearch = function () {
-            // if (dataValidate.validate(vm.data)) {
-            //         var colorWithNum = parseInt(vm.data.color.replace(/[^0-9\.]/g, ''), 10);
-                // console.log("colorWithNum", colorWithNum);
-                // console.log("colorWithNum", isNaN(colorWithNum))
-                // console.log("vm.data.color", vm.data.color)
-                // console.log("colorWithNum", colorWithNum.toString().length );
-                // if (isNaN(!colorWithNum) || colorWithNum) {
-                //     var regex = /[\d|,|.| |e|E|\+]+/g;
-                //     vm.data.color = vm.data.color.match(regex);
-                //     console.log("matches", vm.data.color);
-                    // vm.data = {rgb: vm.data.color};
-                    // console.log("vm.data", vm.data);
-                // } else {
-                //     delete vm.data['rgb'];
-                // }
-                vm.data = { rgb: "" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + "" };
-            console.log("vm.data", vm.data)
-                $http.get(appConfig.dashboardServiceUrl + 'colors/search.json', {
-                    params: vm.data
-                }).then(function (res) {
-                    if (res && res.data) {
-                        vm.colorData = res.data.data.map(function (item) {
-                            colors = item.data;
-                            return item.data;
-                        });
-                        searchColor.set(vm.colorData, undefined, vm.data.rgb);
-                        $location.url('/color-index-accordion');
-                        // console.log("colorDatacolorDatacolorData", vm.colorData);
-                    }
-                });
-            // }
-
+								$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationName, {})
+									.then(function (res) {
+										vm.validData = res.data;
+										if (res && res.data.length > 0) {
+											var RGB = '',
+												colorName = '';
+											vm.colorsData = res.data.map(function (item) {
+												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+												colorName = item.ShortName;
+												return {colorName: colorName, RGB: RGB};
+											});
+											searchColor.set(vm.colorsData);
+											$location.url('/color-index-accordion');
+										}
+									});
+							}
+						});
         };
-
-
-        // $(document).ready(function() {
-        //     $(".scroll_down").click(function () {
-        //         $('html, body').animate({
-        //             scrollTop: $(".scroll-end").offset().top
-        //         }, 1500);
-        //     });
-        // });
-
     }
   });

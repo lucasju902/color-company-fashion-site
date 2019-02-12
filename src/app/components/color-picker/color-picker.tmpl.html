@@ -29,9 +29,9 @@
 
 
 <!--<div id="s_color_picker_id">-->
-    <!--<canvas id="color_picker" width="200" height="200"></canvas>-->
-    <!--<div id="color_id"></div>-->
-    <!--<div>{{pixelColor ? pixelColor : 'rgb(0,0,0)'}}</div>-->
+<!--<canvas id="color_picker" width="200" height="200"></canvas>-->
+<!--<div id="color_id"></div>-->
+<!--<div>{{pixelColor ? pixelColor : 'rgb(0,0,0)'}}</div>-->
 <!--</div>-->
 
 <section class="bg-color-picker-block">
@@ -42,49 +42,45 @@
                 <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/picker.png" alt=""></div>
             </div>
         </div>
-            <div class="row">
-
-                <div class="col-lg-4 col-md-4 color-piker-item_canvas">
-                    <div id="s_color_picker_id">
-                        <div class="wrapper-color-picker">
-                            <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>
+        <div class="row">
+            <div class="col-lg-4 col-md-4 color-piker-item_canvas">
+                <div id="s_color_picker_id">
+                    <div class="wrapper-color-picker">
+                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>
+                    </div>
+                    <div class="slidecontainer">
+                        <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
+                        <span class="slider-title-opacity">OPACITY</span>
+                        <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
+                        <label id="value_span"></label>
+                    </div>
+                    <div class="rgb-display">
+                        <div class="rgb-display_item">
+                            <span class="rgb-display-title">R</span>
+                            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
                         </div>
-
-                        <div class="slidecontainer">
-                            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
-                            <span class="slider-title-opacity">OPACITY</span>
-                            <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
-                            <label id="value_span"></label>
+                        <div class="rgb-display_item">
+                            <span class="rgb-display-title">G</span>
+                            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
                         </div>
-
-
-                        <div class="rgb-display">
-                            <div class="rgb-display_item">
-                                <span class="rgb-display-title">R</span>
-                                <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
-                            </div>
-                            <div class="rgb-display_item">
-                                <span class="rgb-display-title">G</span>
-                                <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
-                            </div>
-                            <div class="rgb-display_item">
-                                <span class="rgb-display-title">B</span>
-                                <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
-                            </div>
+                        <div class="rgb-display_item">
+                            <span class="rgb-display-title">B</span>
+                            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change='colorPickerRGB()' class="rgb-display-input" style="width: 45px">
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-4 color-piker-item">
-                    <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>
-                </div>
-                <div class="col-lg-4 col-md-4 color-piker-item">
-                    <div id="color_id"></div>
-                </div>
             </div>
+            <div class="col-lg-4 col-md-4 color-piker-item">
+                <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>
+            </div>
+            <div class="col-lg-4 col-md-4 color-piker-item">
+                <div id="color_id"></div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-lg-12 col-md-12">
                 <div class="button button-color-picker scroll_down">
-                    <button ng-click="$ctrl.showNumberOfColors()" class="btn join-btn" >LET'S START</button>
+                    <button ng-click="$ctrl.showNumberOfColors()" class="btn join-btn">LET'S START</button>
                 </div>
             </div>
         </div>
@@ -96,8 +92,8 @@
         <div class="row color-names-block">
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames">
-            26
+          <span class="big-num-color-naming" ng-if="$ctrl.colorAssociationNames">
+            {{$ctrl.colorAssociationNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -105,21 +101,21 @@
           <div class="triangle-with-shadow"></div>
           </div>
         </span>
-                    <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames === undefined ">
+                    <span class="big-num-color-naming" ng-if="$ctrl.colorAssociationNames == 0 ">
                         0
                     </span>
                     <div class="title-color-naming">
-                        <span >COLOR  </span>
-                        <span >  ASSOCIATION</span>
-                        <span >  NAMES</span>
+                        <span>COLOR  </span>
+                        <span>  ASSOCIATION</span>
+                        <span>  NAMES</span>
                     </div>
                 </div>
 
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames">
-            {{$ctrl.colorNumberNames}}
+          <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames">
+            {{$ctrl.paintColorNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -127,13 +123,13 @@
           <div class="triangle-with-shadow"></div>
           </div>
           </span>
-                    <span class="big-num-color-naming" ng-if="$ctrl.colorNumberNames === undefined ">
+                    <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames == 0 ">
                         0
                     </span>
                     <div class="title-color-naming">
-                        <span >PAINT  </span>
-                        <span >  COLOR</span>
-                        <span >  NAMES</span>
+                        <span>PAINT  </span>
+                        <span>  COLOR</span>
+                        <span>  NAMES</span>
                     </div>
                 </div>
 
@@ -150,16 +146,16 @@
           </div>
           </span>
                     <div class="title-color-naming">
-                        <span >COLOURLOVERS  </span>
-                        <span >  COLOR</span>
-                        <span >  NAMES</span>
+                        <span>COLOURLOVERS  </span>
+                        <span>  COLOR</span>
+                        <span>  NAMES</span>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming">
-            0
+          <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames">
+            {{$ctrl.paintColorNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -167,10 +163,13 @@
           <div class="triangle-with-shadow"></div>
           </div>
           </span>
+                    <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames == 0 ">
+                        0
+                    </span>
                     <div class="title-color-naming">
-                        <span >RESEARCH  </span>
-                        <span >  COLOR</span>
-                        <span >  NAMES</span>
+                        <span>RESEARCH  </span>
+                        <span>  COLOR</span>
+                        <span>  NAMES</span>
                     </div>
                 </div>
             </div>
@@ -178,7 +177,7 @@
         <div class="row">
             <div class="center-color-block">
                 <div class="button">
-                    <a class="btn join-btn" ng-click="$ctrl.colorSearch()">NEXT</a>
+                    <a class="btn join-btn" ng-click="$ctrl.colorWordSearch($ctrl.colorAssociationNameWord)">NEXT</a>
                 </div>
             </div>
         </div>
