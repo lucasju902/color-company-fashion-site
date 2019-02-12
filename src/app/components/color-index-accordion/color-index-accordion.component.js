@@ -140,6 +140,31 @@ angular
       function rgbToHex(r, g, b) {
         return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
       }
+
+      $(document).ready(function() {
+        var widthContainer = window.innerWidth - 200;
+        var widthOneElement = $('.checkbox-accordion-item').width();
+        var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
+        var allElements = vm.colorsData.length;
+        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyElements = integerElementsOnRow - elementsOnRow;
+        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
+        
+        for(var i = 0; i < emptyElements; i++) {
+          $('.color-index-accordion-item').append(emptyBlock);
+        }
+        console.log(allElements);
+        
+        $(document).click(function(event) {
+          if ($(event.target).closest(".selectPerPage").length) return;
+          $('.selectPerPage__list').removeClass('show');          
+          event.stopPropagation();
+        });
+      });
+
+      $scope.showSelect = function() {
+        $('.selectPerPage__list').toggleClass('show');
+      }
     }
   });
 angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
