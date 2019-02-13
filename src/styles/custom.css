@@ -23,7 +23,7 @@ body {
 
 #logo {
   /*margin-top: 5px;*/
-  padding: 10px 0;
+  padding: 5px 0;
   /*padding-right: 220px;*/
   /*padding-left: 25px;*/
 }
@@ -64,7 +64,7 @@ body {
   /*margin-left: 20px;*/
   /*margin-top: 5px;*/
   margin-left: auto;
-  padding: 16px 0;
+  padding: 10px 0;
   font-size: 13.5pt;
   font-weight: 400;
 
@@ -91,7 +91,7 @@ body {
   background-size: cover;
   background-position: center;
   margin-bottom: 50px;
-  margin-top: -50px;
+  margin-top: -60px;
 }
 
 .member-header {
@@ -538,8 +538,9 @@ form p {
 /* Add a gray background color and some padding to the footer */
 footer {
   background-color: white;
-  padding: 25px;
-  padding-top: 30px;
+  /* padding: 25px; */
+  /* padding-top: 30px; */
+  padding-bottom: 10px;
 }
 
 .gray {

@@ -3,7 +3,7 @@ body {
   position: relative;
   //padding-top: 135px;
   padding-top: 124px;
-  padding-bottom: 105px;
+  padding-bottom: 80px;
 }
 
 footer {
@@ -564,7 +564,7 @@ ui-view {
 .menu-client {
   width: 225px;
   display: inline-block;
-  padding: 10px 0 10px 15px!important;
+  padding: 5px 0 5px 15px!important;
 }
 .menu-client_item_test {
   font-size: 16px;
@@ -596,7 +596,7 @@ ui-view {
   width: 225px;
   display: flex;
   justify-content: flex-end;
-  padding: 16px 0 11px 15px !important;
+  padding: 10px 0 11px 15px !important;
 }
 .navbar .container-fluid .flexible-menu {
   display: flex!important;
