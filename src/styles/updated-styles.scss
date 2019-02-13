@@ -5719,10 +5719,7 @@ input#search-bar{
 }
 .landing-analytics-description {
   height: 780px;
-  padding: 0 48px;
-  @media (max-width: 1199px) {
-    padding: 0;
-  }
+  padding: 0;
 }
 .landing-analytics-description__img {
   width: 100%;
@@ -5785,16 +5782,17 @@ input#search-bar{
 .landing-reports-section {
   padding-top: 30px;
   min-height: 1076px;
-  padding: 0 48px;
-  @media (max-width: 1199px) {
-    padding: 0;
-  }
+  padding: 0;
 }
 .landing-color-picker-block {
   margin-top: 90px;
   padding-right: 0;
+  margin-right: -15px;
+  margin-left: -15px;
   @media (max-width: 1200px) {
     padding-right: 15px;
+    margin-right: 0;
+    margin-left: 0;
   }
 }
 .landing-color-picker {
