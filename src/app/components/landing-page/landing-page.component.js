@@ -167,7 +167,7 @@ angular
 						'&mingreen=' + $scope.colorRGB_G +
 						'&maxgreen=' + $scope.colorRGB_G +
 						'&minblue=' + $scope.colorRGB_B +
-						'&maxblue=' + $scope.colorRGB_B, {header: {'Content-Type':'application/json'}})
+						'&maxblue=' + $scope.colorRGB_B, {})
 						.then(function (res) {
 							if (res.data.length > 0) {
 								vm.paintColorNames = res.data.map(function (item) {

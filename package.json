@@ -57,8 +57,7 @@
     "test": "gulp test",
     "test:auto": "gulp test:auto",
     "bower": "bower",
-    "start": "node index.js",
-    "heroku-postbuild": "echo Skip build on Heroku"
+    "start": "node index.js"
   },
   "eslintConfig": {
     "globals": {
@@ -89,6 +88,5 @@
     "gulp-concat-css": "^2.3.0",
     "moment": "2.21.0",
     "request": "^2.83.0"
-  },
-  "heroku-run-build-script": true
+  }
 }
