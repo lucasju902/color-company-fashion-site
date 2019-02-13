@@ -3,7 +3,7 @@ body {
   position: relative;
   //padding-top: 135px;
   padding-top: 124px;
-  padding-bottom: 105px;
+  padding-bottom: 80px;
 }
 
 footer {
@@ -564,7 +564,7 @@ ui-view {
 .menu-client {
   width: 225px;
   display: inline-block;
-  padding: 10px 0 10px 15px!important;
+  padding: 5px 0 5px 15px!important;
 }
 .menu-client_item_test {
   font-size: 16px;
@@ -596,7 +596,7 @@ ui-view {
   width: 225px;
   display: flex;
   justify-content: flex-end;
-  padding: 16px 0 11px 15px !important;
+  padding: 10px 0 11px 15px !important;
 }
 .navbar .container-fluid .flexible-menu {
   display: flex!important;
@@ -743,14 +743,26 @@ ui-view {
 }
 
 .selectPerPage__btn {
-  width: 50px;
-  height: 40px;
+  width: 55px;
+  height: 34px;
   display: block;
   margin: 0;
   font-weight: 100;
   font-size: 14px;
   background-color: transparent;
   border: 1px solid grey;
+  text-align: left;
+  position: relative;
+  &::after {
+    position: absolute;
+    content: '∟';
+    font-size: 12px;
+    color: black;
+    right: 5px;
+    display: block;
+    top: 5px;
+    transform: rotate(-45deg);
+  }
 }
 
 .selectPerPage__list {
@@ -761,13 +773,13 @@ ui-view {
   border: 1px solid grey;
   border-top: none;
   position: absolute;
-  width: 50px;
+  width: 55px;
   z-index: 1;
   background-color: #fff;
 }
 
 .selectPerPage__item {
-  text-align: center;
+  // text-align: center;
   border-bottom: 1px solid grey;
   &:last-child {
     border-bottom: none;
@@ -776,7 +788,7 @@ ui-view {
 
 .selectPerPage__item > label {
   font-weight: 100;
-  padding: 10px 0;
+  padding: 7px 6px;
   display: block;
   margin: 0;
   &:hover {
@@ -5148,8 +5160,8 @@ footer {
 
 #s_color_picker_id {
   text-align: center;
-  min-width: 200px;
-  float: right;
+  width: 200px;
+  margin: 0 auto;
 }
 .wrapper-color-picker {
   border-radius: 50%;
@@ -5167,9 +5179,10 @@ footer {
 }
 #color_id {
   background-color: #000;
-  border: 2px solid white;
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
+  border: 2px solid #fff;
+  margin: 0 auto;
 }
 
 .color-picker-block {
@@ -5276,9 +5289,12 @@ footer {
   background-color: #f2f2f2;
 }
 .color-picker-title-img {
-  margin: 90px 0 0 0;
+  margin: 65px 0 0 0;
   display: flex;
   justify-content: center;
+  @media (max-width: 1200px) {
+    margin-left: 25px;
+  }
   .color-picker-img {
     width: 70px;
     height: 70px;
@@ -5327,12 +5343,15 @@ footer {
 }
 #value_span {
   position: absolute;
-  right: -20px;
+  right: -2%;
   bottom: 96px;
   border: 1px solid #cccccc;
   background: white;
   padding: 0px 5px;
   border-radius: 5px;
+  @media (max-width: 1200px) {
+    right: -45px;
+  }
 }
 .button-color-picker {
   text-align: center;
@@ -5700,6 +5719,10 @@ input#search-bar{
 }
 .landing-analytics-description {
   height: 780px;
+  padding: 0;
+}
+.landing-analytics-description__img {
+  width: 100%;
 }
 .landing-analytics_title {
   font-weight: 100;
@@ -5759,15 +5782,45 @@ input#search-bar{
 .landing-reports-section {
   padding-top: 30px;
   min-height: 1076px;
+  padding: 0;
 }
 .landing-color-picker-block {
-  margin-top: 40px;
+  margin-top: 90px;
+  padding-right: 0;
+  margin-right: -15px;
+  margin-left: -15px;
+  @media (max-width: 1200px) {
+    padding-right: 15px;
+    margin-right: 0;
+    margin-left: 0;
+  }
 }
 .landing-color-picker {
   margin-top: 40px;
   background: #f1f1f1;
+  padding: 0;
+}
+.landing-color-picker > .container-fluid {
+  max-width: 1250px;
+  padding: 0 15px;
+  @media (max-width: 1200px) {
+    width: 970px;
+    padding: 0;
+  }
 }
 .landing-color-picker-title {
+  padding-right: 0;
+  padding-left: 32px;
+  @media (max-width: 1200px) {
+    padding-left: 0;
+  }
+  &:last-child {
+    padding-left: 0;
+    padding-right: 32px;
+    @media (max-width: 1200px) {
+      padding-right: 0;
+    }
+  }
   p {
     font-size: 26px;
     text-align: center;
@@ -5778,10 +5831,11 @@ input#search-bar{
 
 }
 .landing-color-picker-button {
-  text-align: center;
+  margin-top: 148px;
 }
-.landing-color-piker-image {
-  padding: 0 0 0 40px;
+.landing-color-picker-button > .btn {
+  font-size: 13px;
+  padding: 15px 20px;
 }
 #color_id {
   border-radius: 50%;
