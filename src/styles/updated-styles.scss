@@ -736,21 +736,33 @@ ui-view {
   position: relative;
   display: block;
   left: 240px;
-  top: -55px;
-  width: 50px;
+  top: -52px;
+  width: 55px;
   margin: 0;
   padding: 0;
 }
 
 .selectPerPage__btn {
-  width: 50px;
-  height: 40px;
+  width: 55px;
+  height: 34px;
   display: block;
   margin: 0;
   font-weight: 100;
   font-size: 14px;
   background-color: transparent;
   border: 1px solid grey;
+  text-align: left;
+  position: relative;
+  &::after {
+    position: absolute;
+    content: '∟';
+    font-size: 12px;
+    color: black;
+    right: 5px;
+    display: block;
+    top: 5px;
+    transform: rotate(-45deg);
+  }
 }
 
 .selectPerPage__list {
@@ -761,13 +773,13 @@ ui-view {
   border: 1px solid grey;
   border-top: none;
   position: absolute;
-  width: 50px;
+  width: 55px;
   z-index: 1;
   background-color: #fff;
 }
 
 .selectPerPage__item {
-  text-align: center;
+  // text-align: center;
   border-bottom: 1px solid grey;
   &:last-child {
     border-bottom: none;
@@ -776,7 +788,7 @@ ui-view {
 
 .selectPerPage__item > label {
   font-weight: 100;
-  padding: 10px 0;
+  padding: 7px 6px;
   display: block;
   margin: 0;
   &:hover {
