@@ -5148,8 +5148,8 @@ footer {
 
 #s_color_picker_id {
   text-align: center;
-  min-width: 200px;
-  float: right;
+  width: 200px;
+  margin: 0 auto;
 }
 .wrapper-color-picker {
   border-radius: 50%;
@@ -5170,6 +5170,7 @@ footer {
   width: 200px;
   height: 200px;
   border: 2px solid #fff;
+  margin: 0 auto;
 }
 
 .color-picker-block {
@@ -5276,9 +5277,12 @@ footer {
   background-color: #f2f2f2;
 }
 .color-picker-title-img {
-  margin: 90px 0 0 0;
+  margin: 65px 0 0 0;
   display: flex;
   justify-content: center;
+  @media (max-width: 1200px) {
+    margin-left: 25px;
+  }
   .color-picker-img {
     width: 70px;
     height: 70px;
@@ -5327,12 +5331,15 @@ footer {
 }
 #value_span {
   position: absolute;
-  right: -20px;
+  right: -2%;
   bottom: 96px;
   border: 1px solid #cccccc;
   background: white;
   padding: 0px 5px;
   border-radius: 5px;
+  @media (max-width: 1200px) {
+    right: -45px;
+  }
 }
 .button-color-picker {
   text-align: center;
@@ -5761,13 +5768,38 @@ input#search-bar{
   min-height: 1076px;
 }
 .landing-color-picker-block {
-  margin-top: 40px;
+  margin-top: 90px;
+  padding-right: 0;
+  @media (max-width: 1200px) {
+    padding-right: 15px;
+  }
 }
 .landing-color-picker {
   margin-top: 40px;
   background: #f1f1f1;
+  padding: 0;
+}
+.landing-color-picker > .container-fluid {
+  max-width: 1250px;
+  padding: 0 15px;
+  @media (max-width: 1200px) {
+    width: 970px;
+    padding: 0;
+  }
 }
 .landing-color-picker-title {
+  padding-right: 0;
+  padding-left: 32px;
+  @media (max-width: 1200px) {
+    padding-left: 0;
+  }
+  &:last-child {
+    padding-left: 0;
+    padding-right: 32px;
+    @media (max-width: 1200px) {
+      padding-right: 0;
+    }
+  }
   p {
     font-size: 26px;
     text-align: center;
@@ -5779,9 +5811,7 @@ input#search-bar{
 }
 .landing-color-picker-button {
   text-align: center;
-}
-.landing-color-piker-image {
-  padding: 0 0 0 40px;
+  margin-top: 148px;
 }
 #color_id {
   border-radius: 50%;
