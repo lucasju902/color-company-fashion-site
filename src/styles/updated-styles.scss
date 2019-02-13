@@ -5831,8 +5831,11 @@ input#search-bar{
 
 }
 .landing-color-picker-button {
-  text-align: center;
   margin-top: 148px;
+}
+.landing-color-picker-button > .btn {
+  font-size: 13px;
+  padding: 15px 20px;
 }
 #color_id {
   border-radius: 50%;
