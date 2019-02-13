@@ -167,13 +167,15 @@ angular
 						'&mingreen=' + $scope.colorRGB_G +
 						'&maxgreen=' + $scope.colorRGB_G +
 						'&minblue=' + $scope.colorRGB_B +
-						'&maxblue=' + $scope.colorRGB_B, {})
+						'&maxblue=' + $scope.colorRGB_B, {header: {'Content-Type':'application/json'}})
 						.then(function (res) {
 							if (res.data.length > 0) {
-								vm.colorData = res.data.map(function (item) {
-									return item;
+								vm.paintColorNames = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
 								});
-								colorAssociationName = vm.colorData[0].ShortName.replace(' ', '%20');
+								colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
 
 								$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationName, {})
 									.then(function (res) {
@@ -181,12 +183,12 @@ angular
 										if (res && res.data.length > 0) {
 											var RGB = '',
 												colorName = '';
-											vm.colorsData = res.data.map(function (item) {
+											vm.colorAssociationNames = res.data.map(function (item) {
 												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
 												colorName = item.ShortName;
 												return {colorName: colorName, RGB: RGB};
 											});
-											searchColor.set(vm.colorsData);
+											searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
 											$location.url('/color-index-accordion');
 										}
 									});

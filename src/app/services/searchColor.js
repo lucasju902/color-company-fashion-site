@@ -1,13 +1,17 @@
-angular.module('app').service('searchColor', ['$location', function (location ) {
-    var savedData = {}
-    function set(data) {
-        savedData = data;
+angular.module('app').service('searchColor', ['$location', function (location) {
+    var savedData = [];
+    function set(paintColorNames = 0, colorAssociationNames = 0) {
+       savedData.push(paintColorNames, colorAssociationNames);
     }
-    function get() {
-        return savedData;
+    function getPaintColorNames() {
+        return savedData.shift();
+    }
+    function getColorAssociationNames() {
+        return savedData.pop();
     }
     return {
         set: set,
-        get: get
+			  getPaintColorNames: getPaintColorNames,
+			  getColorAssociationNames: getColorAssociationNames
     }
 }]);

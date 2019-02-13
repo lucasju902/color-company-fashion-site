@@ -4,45 +4,46 @@ angular
     templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
     controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
       var vm = this;
-      vm.colorsData = searchColor.get();
-      vm.searchColorName = searchColor.get()[1];
-      var colorRgb = searchColor.get()[2];
-			var colors = vm.colorsData;
+
+			vm.paintColorNames = searchColor.getPaintColorNames();
+      vm.colorAssociationNames = searchColor.getColorAssociationNames();
+
+      vm.searchColorName = [];
 
 			$scope.pageSize = 80;
 
-      if (colorRgb !== undefined) {
-
-        var similarSaturateColors = [];
-        var similarDarkenColors = [];
-
-        for (var i = 0; similarSaturateColors.length <= 12; ++i) {
-          similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
-          similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
-        }
-        // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
-        // notDuplicateColors(similarSaturateColors);
-        // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
-
-        vm.similarSaturateColors = similarSaturateColors;
-        // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
-        vm.similarDarkenColors = similarDarkenColors;
-        // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
-      }
+      // if (colorRgb !== undefined) {
+      //
+      //   var similarSaturateColors = [];
+      //   var similarDarkenColors = [];
+      //
+      //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
+      //     similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
+      //     similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
+      //   }
+      //   // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
+      //   // notDuplicateColors(similarSaturateColors);
+      //   // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
+      //
+      //   vm.similarSaturateColors = similarSaturateColors;
+      //   // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
+      //   vm.similarDarkenColors = similarDarkenColors;
+      //   // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
+      // }
 
       var colorNamesItems = [],
         		colorRgbItems = [];
 
-      if (vm.colorsData !== undefined) {
-        if (vm.colorsData.length > 0) {
-          vm.colorsData.forEach(function (color) {
+      if (vm.colorAssociationNames !== undefined) {
+        if (vm.colorAssociationNames.length > 0) {
+          vm.colorAssociationNames.forEach(function (color) {
             colorRgbItems.push(color.RGB);
 						colorNamesItems.push(color.colorName);
           });
         }
       }
-      var colorNames = colorNamesItems.join(',');
 
+      var colorNames = colorNamesItems.join(',');
 			// word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud
 
       if (colorNames.length > 1) {
@@ -50,13 +51,11 @@ angular
 			}
 
       function drawWordCloud(text_string) {
-        var common = 'poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,,says,said,shall';
+        var common = 'poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,says,said,shall';
 
         var word_count = {};
 
         var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
-        // var words = text_string.split(',');
-				// console.log("words", words);
         if (words.length === 1) {
           word_count[words[0]] = 1;
         } else {
@@ -72,8 +71,8 @@ angular
           });
         }
         var svg_location = '#chart';
-        console.log('innerWidth',innerWidth)
-        var width = 800;
+        var widthOf84per = innerWidth - innerWidth*16/100;
+        var width = widthOf84per;
         var height = 450;
 
         var word_entries = d3.entries(word_count);
@@ -88,7 +87,6 @@ angular
                 .timeInterval(20)
                 .words(word_entries)
                 .fontSize(function (d) {
-                  console.log('xScale(Number(d.value)',xScale(Number(d.value)));
                   return xScale(Number(d.value)); 
                 })
                 .text(function (d) {
@@ -109,7 +107,7 @@ angular
 						        // .attr("preserveAspectRatio", "xMidYMid meet")
 						        // .attr("viewBox", "0 0 1000 450")
                     .append('g')
-                    .attr('transform', 'translate(' + [400, 225] + ')')
+                    .attr('transform', 'translate(' + [widthOf84per/2, 225] + ')')
                     // .attr('transform', 'scale(2)')
                     .selectAll('text')
                     .data(words)
@@ -141,19 +139,19 @@ angular
         return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
       }
 
+      //                                                                                         SELECT FOR COLOR DATA
       $(document).ready(function() {
         var widthContainer = window.innerWidth - 200;
         var widthOneElement = $('.checkbox-accordion-item').width();
         var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
-        var allElements = vm.colorsData.length;
+        var allElements = vm.paintColorNames.length;
         var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
         var emptyElements = integerElementsOnRow - elementsOnRow;
         var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
         
         for(var i = 0; i < emptyElements; i++) {
-          $('.color-index-accordion-item').append(emptyBlock);
+          $('.color-index-accordion-item__last-line').append(emptyBlock);
         }
-        console.log(allElements);
         
         $(document).click(function(event) {
           if ($(event.target).closest(".selectPerPage").length) return;

@@ -10,12 +10,18 @@ angular
 				anchorSmoothScroll.scrollTo(eID);
 				$location.hash('');
 			};
+			// vm.paintColorNamesByPicker = [];
+			// vm.colorAssociationNamesByPicker = [];
 
-			var color_picker = document.getElementById("color_picker");
-			var color_id = document.getElementById("color_id");
-			vm.paintColorNames = 0;
-			vm.colorAssociationNames = 0;
-			vm.colorAssociationNameWord = ''
+			var color_picker = document.getElementById("color_picker"),
+							color_id = document.getElementById("color_id");
+			$scope.colorPickerGray = 100;
+			$scope.colorPickerOpacity = 1;
+			document.getElementById('value_span').innerHTML = '100%';
+
+			vm.numOfpaintColorNames = 0;
+			vm.numOfcolorAssociationNames = 0;
+			vm.colorAssociationNameWord = '';
 
 			$scope.changeColor = function () {
 				color_picker.onmousedown = select_color;
@@ -95,11 +101,8 @@ angular
 				}
 			}
 
-			var colorAssociationName = '';
-
-			this.showNumberOfColors = function () {
+			this.searchByRGB = function () {
 				vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
-				var colorAssociationName = '';
 				$http.get(appConfig.colorAPI +
 					'minred=' + $scope.colorRGB_R +
 					'&maxred=' + $scope.colorRGB_R +
@@ -109,33 +112,37 @@ angular
 					'&maxblue=' + $scope.colorRGB_B, {})
 					.then(function (res) {
 						if (res.data.length > 0) {
-							vm.colorData = res.data.map(function (item) {
-								return item;
+							vm.paintColorNamesByPicker = res.data.map(function (item) {
+								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+								colorName = item.ShortName;
+								return {colorName: colorName, RGB: RGB};
 							});
-							vm.colorAssociationNameWord = vm.colorData[0].ShortName.replace(' ', '%20');
+							if (vm.paintColorNamesByPicker) {
+								vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
+							}
 
 							$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
 								.then(function (res) {
-									vm.colorAssociationNames = res.data.length;
-									vm.paintColorNames = vm.colorData.length;
+									vm.numOfcolorAssociationNames = res.data.length;
+									vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
 								});
 						}
 					});
 			};
 
-			this.colorWordSearch = function (colorAssociationNameWord) {
+			this.searchByShortNames = function (colorAssociationNameWord) {
 				$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationNameWord, {})
 					.then(function (res) {
 						vm.validData = res.data;
 						if (res && res.data.length > 0) {
 							var RGB = '',
 								colorName = '';
-							vm.colorsData = res.data.map(function (item) {
+							vm.colorAssociationNamesByPicker = res.data.map(function (item) {
 								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
 								colorName = item.ShortName;
 								return {colorName: colorName, RGB: RGB};
 							});
-							searchColor.set(vm.colorsData);
+							searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
 							$location.url('/color-index-accordion');
 						}
 					});

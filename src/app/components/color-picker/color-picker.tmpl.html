@@ -80,7 +80,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12">
                 <div class="button button-color-picker scroll_down">
-                    <button ng-click="$ctrl.showNumberOfColors()" class="btn join-btn">LET'S START</button>
+                    <button ng-click="$ctrl.searchByRGB()" class="btn join-btn">LET'S START</button>
                 </div>
             </div>
         </div>
@@ -92,8 +92,8 @@
         <div class="row color-names-block">
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming" ng-if="$ctrl.colorAssociationNames">
-            {{$ctrl.colorAssociationNames}}
+          <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames">
+            {{$ctrl.numOfcolorAssociationNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -101,7 +101,7 @@
           <div class="triangle-with-shadow"></div>
           </div>
         </span>
-                    <span class="big-num-color-naming" ng-if="$ctrl.colorAssociationNames == 0 ">
+                    <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames == 0 ">
                         0
                     </span>
                     <div class="title-color-naming">
@@ -114,8 +114,8 @@
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames">
-            {{$ctrl.paintColorNames}}
+          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">
+            {{$ctrl.numOfpaintColorNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -123,7 +123,7 @@
           <div class="triangle-with-shadow"></div>
           </div>
           </span>
-                    <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames == 0 ">
+                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">
                         0
                     </span>
                     <div class="title-color-naming">
@@ -154,8 +154,8 @@
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3">
                 <div class="color-names-index_item">
-          <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames">
-            {{$ctrl.paintColorNames}}
+          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">
+            {{$ctrl.numOfpaintColorNames}}
           <div class="modal-color-naming">
             <div class="modal-color-naming_text">
               The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>
@@ -163,7 +163,7 @@
           <div class="triangle-with-shadow"></div>
           </div>
           </span>
-                    <span class="big-num-color-naming" ng-if="$ctrl.paintColorNames == 0 ">
+                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">
                         0
                     </span>
                     <div class="title-color-naming">
@@ -177,7 +177,7 @@
         <div class="row">
             <div class="center-color-block">
                 <div class="button">
-                    <a class="btn join-btn" ng-click="$ctrl.colorWordSearch($ctrl.colorAssociationNameWord)">NEXT</a>
+                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames($ctrl.colorAssociationNameWord)">NEXT</a>
                 </div>
             </div>
         </div>
