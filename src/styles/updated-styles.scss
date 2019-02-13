@@ -5719,6 +5719,13 @@ input#search-bar{
 }
 .landing-analytics-description {
   height: 780px;
+  padding: 0 48px;
+  @media (max-width: 1199px) {
+    padding: 0;
+  }
+}
+.landing-analytics-description__img {
+  width: 100%;
 }
 .landing-analytics_title {
   font-weight: 100;
@@ -5778,6 +5785,10 @@ input#search-bar{
 .landing-reports-section {
   padding-top: 30px;
   min-height: 1076px;
+  padding: 0 48px;
+  @media (max-width: 1199px) {
+    padding: 0;
+  }
 }
 .landing-color-picker-block {
   margin-top: 90px;
