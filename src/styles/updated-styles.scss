@@ -5288,6 +5288,12 @@ footer {
   padding-top: 60px;
   background-color: #f2f2f2;
 }
+.bg-color-picker-block #s_color_picker_id {
+  float: right;
+}
+.bg-color-picker-block #color_id {
+  float: left;
+}
 .color-picker-title-img {
   margin: 65px 0 0 0;
   display: flex;
@@ -5343,15 +5349,12 @@ footer {
 }
 #value_span {
   position: absolute;
-  right: -2%;
+  right: -20px;
   bottom: 96px;
   border: 1px solid #cccccc;
   background: white;
   padding: 0px 5px;
   border-radius: 5px;
-  @media (max-width: 1200px) {
-    right: -45px;
-  }
 }
 .button-color-picker {
   text-align: center;
@@ -5711,7 +5714,7 @@ input#search-bar{
 }
 .landing_vimeo_video {
   height: 470px;
-  width: 930px;
+  width: 855px;
   margin: 0 auto;
   position: relative;
   //overflow: hidden;
@@ -5795,6 +5798,12 @@ input#search-bar{
     margin-left: 0;
   }
 }
+.landing-color-picker-block #value_span {
+  right: -2%;
+  @media (max-width: 1200px) {
+    right: -45px;
+  }
+}
 .landing-color-picker {
   margin-top: 40px;
   background: #f1f1f1;
@@ -5836,6 +5845,7 @@ input#search-bar{
 .landing-color-picker-button > .btn {
   font-size: 13px;
   padding: 15px 20px;
+  min-width: 130px;
 }
 #color_id {
   border-radius: 50%;
