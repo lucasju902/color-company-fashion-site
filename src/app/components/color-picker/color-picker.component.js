@@ -69,13 +69,13 @@ angular
 
 			function select_color(e) {
 				var x = e.pageX - color_picker.offsetLeft - 48,
-					y = e.pageY - color_picker.offsetTop - 570,
-					pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
-					// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
-					pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
+						y = e.pageY - color_picker.offsetTop - 570,
+						pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+						// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
+						pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
 				color_id.style.backgroundColor = pixelColor;
-				console.log('xxx', x, 'yyy', y);
-				console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+				// console.log('xxx', x, 'yyy', y);
+				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
 
 				$scope.pixel = pixel;
 				$scope.colorRGB_R = pixel[0];
@@ -103,13 +103,34 @@ angular
 
 			this.searchByRGB = function () {
 				vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
-				$http.get(appConfig.colorAPI +
-					'minred=' + $scope.colorRGB_R +
-					'&maxred=' + $scope.colorRGB_R +
-					'&mingreen=' + $scope.colorRGB_G +
-					'&maxgreen=' + $scope.colorRGB_G +
-					'&minblue=' + $scope.colorRGB_B +
-					'&maxblue=' + $scope.colorRGB_B, {})
+				// $http.get(appConfig.colorAPI +
+				// 	'minred=' + $scope.colorRGB_R +
+				// 	'&maxred=' + $scope.colorRGB_R +
+				// 	'&mingreen=' + $scope.colorRGB_G +
+				// 	'&maxgreen=' + $scope.colorRGB_G +
+				// 	'&minblue=' + $scope.colorRGB_B +
+				// 	'&maxblue=' + $scope.colorRGB_B, {})
+				// 	.then(function (res) {
+				// 		if (res.data.length > 0) {
+				// 			vm.paintColorNamesByPicker = res.data.map(function (item) {
+				// 				RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+				// 				colorName = item.ShortName;
+				// 				return {colorName: colorName, RGB: RGB};
+				// 			});
+				// 			if (vm.paintColorNamesByPicker) {
+				// 				vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
+				// 			}
+				//
+				// 			$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
+				// 				.then(function (res) {
+				// 					vm.numOfcolorAssociationNames = res.data.length;
+				// 					vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+				// 				});
+				// 		}
+				// 	});
+				var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
 					.then(function (res) {
 						if (res.data.length > 0) {
 							vm.paintColorNamesByPicker = res.data.map(function (item) {
@@ -118,11 +139,11 @@ angular
 								return {colorName: colorName, RGB: RGB};
 							});
 							if (vm.paintColorNamesByPicker) {
-								vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
+								vm.colorAssociationNameWord = {'shortname': vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20')};
 							}
-
-							$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
+							$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
 								.then(function (res) {
+									vm.validData = res.data;
 									vm.numOfcolorAssociationNames = res.data.length;
 									vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
 								});
@@ -131,7 +152,7 @@ angular
 			};
 
 			this.searchByShortNames = function (colorAssociationNameWord) {
-				$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationNameWord, {})
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
 					.then(function (res) {
 						vm.validData = res.data;
 						if (res && res.data.length > 0) {

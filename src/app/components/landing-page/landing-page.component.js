@@ -125,8 +125,8 @@ angular
         }
 
         function select_color(e) {
-            var x = e.pageX - color_picker.offsetLeft - 664,
-                y = e.pageY - color_picker.offsetTop - 3622,
+            var x = e.pageX - color_picker.offsetLeft - 534,
+                y = e.pageY - color_picker.offsetTop - 3672,
                 pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
             color_id.style.backgroundColor = pixelColor;
@@ -145,8 +145,7 @@ angular
             this.sx = sx;
             this.sy = sy;
             this.draw = function() {
-                for(var i = 0; i < 360; i+=0.1)
-                {
+                for(var i = 0; i < 360; i+=0.1) {
                     var rad = (i-45) * (Math.PI) / 180;
                     color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
                     color_picker_.beginPath();
@@ -160,14 +159,10 @@ angular
         this.colorWordSearchLanding = function () {
 					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
 					var colorAssociationName = '';
+					// var str = [];
+					str = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
 
-					$http.get(appConfig.colorAPI +
-						'minred=' + $scope.colorRGB_R +
-						'&maxred=' + $scope.colorRGB_R +
-						'&mingreen=' + $scope.colorRGB_G +
-						'&maxgreen=' + $scope.colorRGB_G +
-						'&minblue=' + $scope.colorRGB_B +
-						'&maxblue=' + $scope.colorRGB_B, {})
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: str})
 						.then(function (res) {
 							if (res.data.length > 0) {
 								vm.paintColorNames = res.data.map(function (item) {
@@ -175,9 +170,11 @@ angular
 									colorName = item.ShortName;
 									return {colorName: colorName, RGB: RGB};
 								});
-								colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
 
-								$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationName, {})
+								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
+								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
+                //
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: colorAssociationName})
 									.then(function (res) {
 										vm.validData = res.data;
 										if (res && res.data.length > 0) {
