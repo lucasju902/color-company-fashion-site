@@ -733,10 +733,10 @@ ui-view {
 //  min-width: 134px;
 //}
 .selectPerPage {
-  position: relative;
+  position: absolute;
   display: block;
-  left: 315px;
-  top: -55px;
+  left: 400px;
+  top: 410px;
   width: 50px;
   margin: 0;
   padding: 0;
@@ -5086,7 +5086,7 @@ footer {
   height: 200px;
   padding-top: 30px;
   flex-direction: column;
-  
+
   p {
     line-height: 25px;
     font-weight: 700;

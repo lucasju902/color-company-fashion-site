@@ -87,8 +87,16 @@ angular
         color_picker_add();
 
         $scope.colorPickerSliderGray = function  () {
-            var value = document.getElementById('rg').value;
-            color_id.style.filter =  "saturate(" + value + "%)";
+					var value = document.getElementById('rg').value,
+						inputRGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B],
+						hsl = rgb2hsl(inputRGB);
+
+					color_id.style.background = 'hsl(' + hsl[0] + ',' + value + '%,' + hsl[2] + '%';
+					var rgbArr = color_id.style.background.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+
+					$scope.colorRGB_R = rgbArr[1];
+					$scope.colorRGB_G = rgbArr[2];
+					$scope.colorRGB_B = rgbArr[3];
         };
 
         $scope.colorPickerSliderOpacity = function  () {
@@ -155,6 +163,44 @@ angular
                 }
             }
         }
+
+			function rgb2hsl(rgbArr) {
+				var r1 = rgbArr[0] / 255;
+				var g1 = rgbArr[1] / 255;
+				var b1 = rgbArr[2] / 255;
+
+				var maxColor = Math.max(r1, g1, b1);
+				var minColor = Math.min(r1, g1, b1);
+				// Calculate L:
+				var L = (maxColor + minColor) / 2;
+				var S = 0;
+				var H = 0;
+				if (maxColor != minColor) {
+					// Calculate S:
+					if (L < 0.5) {
+						S = (maxColor - minColor) / (maxColor + minColor);
+					} else {
+						S = (maxColor - minColor) / (2.0 - maxColor - minColor);
+					}
+					// Calculate H:
+					if (r1 == maxColor) {
+						H = (g1 - b1) / (maxColor - minColor);
+					} else if (g1 == maxColor) {
+						H = 2.0 + (b1 - r1) / (maxColor - minColor);
+					} else {
+						H = 4.0 + (r1 - g1) / (maxColor - minColor);
+					}
+				}
+
+				L *= 100;
+				S *= 100;
+				H *= 60;
+				if (H < 0) {
+					H += 360;
+				}
+				var result = [H, S, L];
+				return result;
+			}
 
         this.colorWordSearchLanding = function () {
 					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
