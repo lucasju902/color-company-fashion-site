@@ -55,8 +55,8 @@ angular.module('app').constant('appConfig', {
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
   // authServiceUrl: 'http://localhost:5000',
   authServiceUrl: '',
-  dashboardServiceUrl: 'http://localhost:3002/',
-  // dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  // dashboardServiceUrl: 'http://localhost:3002/',
+  dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
   colorAPI: 'http://myperfectcolor.gndex.com//api/list?key=123456789&',
 
   repositories: {
