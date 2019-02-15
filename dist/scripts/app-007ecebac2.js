@@ -55,8 +55,8 @@ angular.module('app').constant('appConfig', {
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
   // authServiceUrl: 'http://localhost:5000',
   authServiceUrl: '',
-  dashboardServiceUrl: 'http://localhost:3002/',
-  // dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  // dashboardServiceUrl: 'http://localhost:3002/',
+  dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
   colorAPI: 'http://myperfectcolor.gndex.com//api/list?key=123456789&',
 
   repositories: {
@@ -418,30 +418,6 @@ angular.module('app').controller('brandBrandingController',
     };
   }]);
 
-angular.module('app').controller('attributeBrandingController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.mapExpanded = false;
-    scope.toggleMapExpandedMode = function () {
-      scope.mapExpanded = !scope.mapExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-  }]);
-
 angular.module('app').controller('yearAutoController',
   ['$scope', function (scope) {
     // Behaviour
@@ -458,6 +434,30 @@ angular.module('app').controller('yearAutoController',
     scope.colorFrequencyExpanded = false;
     scope.toggleColorFrequencyExpandedMode = function () {
       scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+  }]);
+
+angular.module('app').controller('attributeBrandingController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.mapExpanded = false;
+    scope.toggleMapExpandedMode = function () {
+      scope.mapExpanded = !scope.mapExpanded;
     };
 
     scope.colorPaletteExpanded = false;
@@ -2937,4651 +2937,6 @@ angular.module('app').controller('autoController',
     }
   ]);
 }());
-
-angular
-  .module('app')
-  .component('verticalCoverageComponent', {
-    templateUrl: 'app/components/vertical-coverage/vertical-coverage.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'about_vertical_coverages.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = angular.copy(res.data);
-              vm.pageData.forEach(function (item) {
-                item.editor = item.editor.split('</ul>');
-                item.editor = item.editor.map(function (t) {
-                  return t + '</ul>';
-                });
-              });
-            }
-          });
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('unsubscribeComponent', {
-    templateUrl: 'app/components/unsubscribe/unsubscribe.tmpl.html',
-    controller: function ($http, appConfig, $stateParams) {
-      var self = this;
-      self.success = true;
-      $http.get(appConfig.dashboardServiceUrl + 'unsubscribe.json', {params: {token: $stateParams.token}})
-        .then(function (res) {
-          if (res.data && res.data.success) {
-            self.success = res.data.success;
-          }
-        });
-    }
-  });
-
-angular
-  .module('app')
-  .component('thankYouComponent', {
-    templateUrl: 'app/components/thank-you/thank-you.tmpl.html',
-    controller: function ($stateParams) {
-      // this.membership = $stateParams.parFrom === 'membership';
-      // switch ($stateParams.parFrom) {
-      //   case 'press': {
-      //     this.text = 'press request';
-      //     break;
-      //   }
-      //   case 'speaking': {
-      //     this.text = 'Speaking Engagements request';
-      //     break;
-      //   }
-      //   case 'contact': {
-      //     this.text = 'contacting request';
-      //     break;
-      //   }
-      //   case 'data': {
-      //     this.text = 'inquire about Data Partnership';
-      //     break;
-      //   }
-      //   case 'edu': {
-      //     this.text = 'inquire about Education Partnership';
-      //     break;
-      //   }
-      //   case 'inquire': {
-      //     this.text = 'inquire';
-      //     break;
-      //   }
-      //   case 'membership': {
-      //     this.text = 'We received your membership request. Thank you for reaching out.';
-      //     break;
-      //   }
-      //   default: {
-      //     this.text = 'request';
-      //     break;
-      //   }
-      // }
-    }
-  });
-
-angular
-  .module('app')
-  .component('termsComponent', {
-    templateUrl: 'app/components/terms/terms.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.find(function (item) {
-                return item.name === 'Terms of Use';
-              })
-            }
-          });
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('teachingMaterialsDetailsComponent', {
-  templateUrl: 'app/components/teaching-materials-details/teaching-materials-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'teaching_materials/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser')? true : false
-    };
-
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.aggProduct = function () {
-      // localStorageService.remove('products');
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.teaching_materials) {
-        products.teaching_materials = {};
-      }
-      products.teaching_materials[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'teachingMaterials'});
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('teachingMaterialsComponent', {
-    templateUrl: 'app/components/teaching-materials/teaching-materials.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.topicModel = 'TOPIC';
-      vm.providerModel = 'PROVIDER';
-      vm.typeModel = 'TYPE';
-      vm.pageData = [];
-      vm.categories = [];
-      vm.cacheItems = [];
-      vm.topic = [];
-      vm.provider = [];
-      vm.type = [];
-      vm.items = [];
-      vm.flag = true;
-      var numberOfElements = 3;
-      var count = 1;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'teaching_materials.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                vm.cacheItems.push(angular.copy(item.data));
-                return item.data;
-              });
-              vm.pageData.forEach(function (t) {
-                if (t.teaching_material_provider && !vm.provider.includes(t.teaching_material_provider)) {
-                  vm.provider.push(t.teaching_material_provider);
-                }
-              });
-              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
-              vm.type = ['Beginner', 'Intermediate', 'Advanced'];
-              vm.select();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterDate.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.showMore = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.select = function () {
-        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.type.includes(vm.typeModel)) {
-          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
-            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.teaching_material_topic) &&
-              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.teaching_material_provider) &&
-              (!vm.type.includes(vm.typeModel) || vm.typeModel === t.teaching_material_type)) {
-              return t;
-            }
-          });
-        } else {
-          vm.filterDate = angular.copy(vm.cacheItems);
-        }
-        vm.items = [];
-        count = 1;
-        vm.sortItems();
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('staffLoginComponent', {
-    templateUrl: 'app/components/staff-login/staff-login.tmpl.html',
-    controller: function (authService, appConfig, $state) {
-      var self = this;
-      self.buttonGoogleUrl = appConfig.dashboardServiceUrl + 'auth/google_oauth2';
-      this.email = '';
-      this.password = '';
-      this.isRemembered = false;
-      this.error = '';
-
-      this.login = function () {
-        self.error = false;
-        authService.login(this.email, this.password, this.isRemembered)
-          .then(function (data) {
-            if (data && data.success) {
-              $state.go('landing');
-            } else {
-              self.error = true;
-            }
-          });
-      };
-    }
-  })
-angular
-  .module('app')
-  .component('speakingEngagementsComponent', {
-    templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-      vm.speakers = [];
-
-      vm.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        jobtitle: {value: '', required: true, name: 'job title', type: 'provide'},
-        request: {value: '', required: true, name: 'request', type: 'enter'},
-        message: {value: '', required: true, name: 'message', type: 'enter'}
-      };
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.speakers = angular.copy(res.data);
-            }
-            vm.groups = _.chunk(angular.copy(vm.speakers), 3);
-          });
-        $http.get(appConfig.dashboardServiceUrl + 'about_speaking_engagements.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData.title = res.data['0'].title;
-              vm.pageData.editor = res.data['0'].editor;
-            }
-          });
-      };
-
-      vm.send = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in this.data) {
-            data[item] = this.data[item].value;
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('reportsDetailsComponent', {
-  templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'reports/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'reports', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.addProduct = function () {
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.reports) {
-        products.reports = {};
-      }
-      products.reports[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'reports'});
-    };
-
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('reportsComponent', {
-    templateUrl: 'app/components/reports/reports.tmpl.html',
-    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.filters = {};
-      vm.hueModel = 'VERTICALS';
-      vm.reportModel = 'ALL';
-      vm.yearModel = 'YEAR';
-      vm.pageData = {};
-      vm.cacheItems = [];
-      vm.hue = categoryValues('hue');
-
-      vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
-      vm.year = [];
-      vm.items = [];
-      vm.dis = true;
-      vm.flag = true;
-      var lastYear = moment().year();
-      var count = 1;
-      var numberOfElements = 3;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                vm.cacheItems.push(angular.copy(item.data));
-                return item.data;
-              });
-              vm.pageData.forEach(function (t) {
-                if (t.hue && !vm.hue.includes(t.hue)) {
-                  vm.hue.push(t.hue);
-                }
-
-                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
-                  lastYear = Number(t.published_year);
-                }
-              });
-              vm.year = _.range(lastYear, moment().year() + 1);
-              vm.select();
-              vm.year = vm.year.reverse();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.select = function (obj) {
-        if (obj) {
-          if (obj.$ctrl.hueModel === 'Fashion') {
-            vm.dis = false;
-          } else {
-            vm.dis = true;
-          }
-        }
-        if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
-          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
-            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
-              (!vm.report.includes(vm.reportModel) || vm.reportModel === t.report_style) &&
-              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
-              return t;
-            }
-          });
-        } else {
-          vm.filterData = angular.copy(vm.cacheItems);
-        }
-        vm.items = [];
-        count = 1;
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('recoverComponent', {
-    templateUrl: 'app/components/recover/recover.tmpl.html',
-    controller: function ($state, $http, appConfig) {
-      var self = this;
-      this.successRequest = false;
-      this.email = '';
-      this.error = false;
-
-      this.onSendLoginClick = function () {
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.email) {
-          self.error = 'The Email field is required';
-        } else {
-          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
-            .then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('publicationScheduleComponent', {
-    templateUrl: 'app/components/publication-schedule/publication-schedule.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.result = [];
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'publication_schedules.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.quarter1 = _.groupBy(res.data, 'quater_year1');
-              vm.quarter2 = _.groupBy(res.data, 'quater_year2');
-
-              var quarters1 = [];
-              var quarters2 = [];
-              for (var year1 in vm.quarter1) {
-                var test1 = vm.quarter1[year1].reduce(function (acc, nv) {
-                  return acc + nv.editor1;
-                }, '');
-
-                quarters1.push({
-                  year: year1,
-                  q: 1,
-                  list: test1
-                });
-              }
-
-              for (var year2 in vm.quarter2) {
-                var test = vm.quarter2[year2].reduce(function (acc, nv) {
-                  return acc + nv.editor2;
-                }, '');
-
-                quarters2.push({
-                  year: year2,
-                  q: 2,
-                  list: test
-                });
-              }
-              vm.result = _.sortBy(quarters1.concat(quarters2), ['year', 'q']);
-            }
-          });
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('profileComponent', {
-    templateUrl: 'app/components/profile/profile.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout, Upload) {
-      var vm = this;
-      $scope.uploadFiles = function (file) {
-        if (file.$ngfBlobUrl) {
-          vm.userData.image_url = file.$ngfBlobUrl;
-          file.upload = Upload.upload({
-            url: appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json',
-            method: 'PUT',
-            fields: {'member[image]': file, flag: true},
-            file: file,
-            fileFormDataName: 'member[image]'
-          });
-        }
-      };
-
-      vm.job_function = categoryValues('job function');
-      vm.country = categoryValues('country');
-      vm.industry = categoryValues('industry');
-      vm.company_size = categoryValues('company size');
-      vm.editFlag = false;
-      vm.fileFlag = true;
-
-      vm.init = function () {
-        authService.loadCurrentUser().then(function (res) {
-          vm.userID = res.data.user.id;
-          $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json', {params: {token: authService.token}})
-            .then(function (res) {
-              if (res && res.data) {
-                vm.userData = res.data;
-                vm.date = moment(vm.userData.date_year + '-' + vm.userData.date_month + '-' + vm.userData.date_day).format('YYYY-MM-DD');
-
-                vm.indexes = {
-                  job_function: vm.searchIndex(vm.job_function, vm.userData.job_function),
-                  company_size: vm.searchIndex(vm.company_size, vm.userData.company_size),
-                  country: vm.searchIndex(vm.country, vm.userData.country),
-                  industry: vm.searchIndex(vm.industry, vm.userData.industry)
-                };
-                vm.intEditData();
-              }
-            });
-        });
-      };
-
-      vm.intEditData = function () {
-        vm.data = {
-          first_name: {value: vm.userData.first_name, required: true, name: 'first name', type: 'provide'},
-          last_name: {value: vm.userData.last_name, required: true, name: 'last name', type: 'provide'},
-          email: {value: vm.userData.email, required: true, name: 'email', type: 'provide'},
-          company: {value: vm.userData.company, required: true, name: 'company name', type: 'provide'},
-          job_title: {value: vm.userData.job_title, required: true, name: 'job title', type: 'provide'},
-          bio: {value: vm.userData.bio, name: 'bio', type: 'provide'},
-          job_function: {
-            value: vm.job_function[vm.indexes.job_function] || vm.userData.job_function,
-            required: true,
-            name: 'job function',
-            type: 'select'
-          },
-          company_size: {
-            value: vm.company_size[vm.indexes.company_size] || vm.userData.company_size,
-            required: true,
-            name: 'company size',
-            type: 'select'
-          },
-          industry: {
-            value: vm.industry[vm.indexes.country] || vm.userData.industry,
-            required: true,
-            name: 'industry',
-            type: 'select'
-          },
-          country: {
-            value: vm.country[vm.indexes.industry] || vm.userData.country,
-            required: true,
-            name: 'country',
-            type: 'select'
-          }
-        };
-      };
-
-      vm.searchIndex = function (arr, value) {
-        return _.findIndex(arr, function (item) {
-          return item.title === value;
-        });
-      };
-
-      vm.goCart = function () {
-        $state.go('cart-page', {wayBack: 'profile'});
-      };
-
-      vm.goPurchase = function () {
-        $state.go('my-purchases');
-      };
-
-      vm.cancel = function () {
-        vm.editFlag = false;
-        vm.intEditData();
-      };
-
-      vm.save = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in vm.data) {
-            if (vm.data[item].type === 'select') {
-              data[item] = vm.data[item].value.title;
-            } else {
-              data[item] = vm.data[item].value;
-            }
-          }
-          data.flag = 'profile';
-          data.token = authService.token;
-          $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, data)
-            .then(function (res) {
-              if (res.status !== 200) {
-                console.log(res);
-              }
-            });
-          vm.editFlag = false;
-        }
-      };
-
-      vm.editProfile = function () {
-        for (var key in vm.indexes) {
-          if (vm.indexes[key] < 0) {
-            vm.data[key].value = vm[key][0];
-          }
-        }
-        vm.editFlag = true;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('privacyComponent', {
-    templateUrl: 'app/components/privacy-policy/privacy-policy.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.find(function (item) {
-                return item.name === 'Privacy Policy';
-              })
-            }
-          });
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('pressComponent', {
-    templateUrl: 'app/components/press/press.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate) {
-      var vm = this;
-      vm.pageData = {};
-      vm.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        message: {value: '', required: true, name: 'message', type: 'enter'},
-        research: {value: '-'}
-      };
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'presses.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = angular.copy(res.data);
-            }
-          });
-        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData.reports = angular.copy(res.data.data);
-            }
-          });
-      };
-      vm.press = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in this.data) {
-            data[item] = this.data[item].value;
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
-            params: data
-          })
-            .then(function (res) {
-              if (res.status === 200) {
-                $state.go('thank-you');
-              }
-            });
-        }
-      };
-      vm.makeDate = function (item) {
-        return moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day).format('MMMM D, YYYY');
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('passwordRecoverCartComponent', {
-    templateUrl: 'app/components/password-recover-cart/password-recover-cart.tmpl.html',
-    controller: function ($state, $http, appConfig) {
-      var self = this;
-      self.successRequest = false;
-      self.email = '';
-      self.error = false;
-
-      self.onSendLoginClick = function () {
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.email) {
-          self.error = 'The Email field is required';
-        } else {
-          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
-            .then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            });
-        }
-      };
-
-      self.goBack = function () {
-        $state.go('cart-checkout');
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('passwordRecoverComponent', {
-    templateUrl: 'app/components/password-recover/password-recover.tmpl.html',
-    controller: function ($state, $http, appConfig, $stateParams) {
-      var self = this;
-      this.successRequest = false;
-      this.password = '';
-      this.passwordConfirm = '';
-      this.error = false;
-      this.type = $stateParams.token[0] || 'r';
-      this.token = $stateParams.token.slice(1);
-
-      this.onSendLoginClick = function () {
-        self.error = false;
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.password || !self.passwordConfirm) {
-          self.error = 'Password and Confirm Password fields are required';
-        } else {
-          if (self.password === self.passwordConfirm) {
-            $http.get(appConfig.dashboardServiceUrl + '/password_recover.json', {
-              params: {
-                password: self.password,
-                token: self.token
-              }
-            }).then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            }).catch(function (err) {
-              if (err) {
-                self.error = 'Your token is invalid';
-              }
-            });
-          } else {
-            self.error = 'Passwords are not identical';
-          }
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('orderEmailComponent', {
-    templateUrl: 'app/components/order-email/order-email.tmpl.html',
-    controller: function ($state, $http, appConfig, $stateParams) {
-      var vm = this;
-      vm.token = $stateParams.token;
-      vm.products = [];
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'order-email.json', {
-          params: {
-            token: vm.token
-          }
-        }).then(function (res) {
-          if (res.data) {
-            vm.success = res.data.success;
-            if (res.data.success) {
-              vm.orderId = res.data.orderId;
-              vm.products = res.data.products;
-            } else {
-              vm.error = 'We did not find email you provided in our base';
-            }
-          }
-        });
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('myPurchasesComponent', {
-    templateUrl: 'app/components/my-purchases/my-purchases.tmpl.html',
-    controller: function ($state, $http, appConfig, $scope, authService, localStorageService) {
-      var vm = this;
-      vm.data = [];
-
-      function init() {
-        if (vm.user && vm.user.id) {
-          $http.get(appConfig.dashboardServiceUrl + '/members/bought_items.json', {params: {id: vm.user.id, token: authService.token}})
-            .then(function (res) {
-              for (var key in res.data) {
-                res.data[key].forEach(function (item) {
-                  item.purchaseDate = moment(item.purchase_date).format('DD.MM.YYYY');
-                  if (key === 'teaching_materials') {
-                    item.type = 'color-teaching-materials';
-                  } else if (key === 'reports') {
-                    item.type = 'color-reports';
-                  } else if (key === 'courses') {
-                    item.type = 'color-education-courses';
-                  }
-                  vm.data.push(item);
-                });
-              }
-              vm.data.sort(vm.sortByDate);
-            });
-        }
-      }
-
-      vm.sortByDate = function(a, b) {
-        if (Date.parse(a.purchase_date) < Date.parse(b.purchase_date)) return 1;
-        if (Date.parse(a.purchase_date) > Date.parse(b.purchase_date)) return -1;
-      };
-
-
-
-      $scope.$watch(function () {
-        return authService.currentUser;
-      }, function (newVal) {
-        vm.user = localStorageService.get('currentUser');
-        init();
-      });
-    }
-  });
-
-angular
-  .module('app')
-  .component('membershipComponent', {
-    templateUrl: 'app/components/membership/membership.tmpl.html',
-    controller: function ($stateParams, $state, scrollService, categoryValues, $http, appConfig, modalService, dataValidate) {
-      scrollService.scrollMember();
-      var self = this;
-      this.jobs = categoryValues('job function');
-      this.countries = categoryValues('country');
-      this.industries = categoryValues('industry');
-      this.companySizes = categoryValues('company size');
-
-
-      this.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
-        permissions: {daily: true, research: true, edu: true},
-        relationship: {expert: true}
-      };
-
-      this.submitInquiry = function () {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          for (var item in this.data) {
-            if (item !== 'permissions' && item !== 'relationship') {
-              if (this.data[item].type === 'select') {
-                data[item] = this.data[item].value.title;
-              } else {
-                data[item] = this.data[item].value;
-              }
-            } else if (item === 'permissions') {
-              data.permissions = [];
-              _.forEach(this.data[item], function (i, k) {
-                if (i === true) {
-                  data.permissions.push(categoryValues('permissions')[k]);
-                }
-              });
-              data.permissions = JSON.stringify(data.permissions);
-            } else if (item === 'relationship' && this.data.relationship.expert) {
-              data.relationship = 'Expert Panelist';
-            }
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'new_member', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('membersAnalyticsComponent', {
-    templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService, localStorageService) {
-      var vm = this;
-      vm.searchModel = '';
-      vm.all = [];
-      vm.pageData = [];
-      vm.items = [];
-      var count = 0;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json', {params: {token: authService.token}})
-          .then(function (res) {
-            vm.pageData = angular.copy(res.data.data);
-            vm.all = angular.copy(res.data.data);
-            vm.search();
-          });
-      };
-      vm.more = function () {
-        vm.all[count++].forEach(function (i) {
-          vm.items.push(i);
-        });
-      };
-
-      vm.search = function () {
-        if (vm.searchModel) {
-          vm.filterData = [];
-          vm.pageData.forEach(function (t) {
-            if (new RegExp('^' + vm.searchModel, 'i').test(t.member_name)) {
-              vm.filterData.push(t);
-            }
-          });
-        } else {
-          vm.filterData = angular.copy(vm.pageData);
-        }
-        vm.items = [];
-        vm.all = _.chunk(angular.copy(vm.filterData), 5);
-        count = 0;
-        vm.more();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('membersComponent', {
-    templateUrl: 'app/components/members/members.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.filter = '';
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'members/names.json')
-          .then(function (res) {
-            if (res && res.data) {
-              var rows = res.data.length > 0 ? Math.ceil(res.data.length / 4) : 1;
-              vm.pageData = res.data;
-              vm.dataGroups = _.chunk(res.data, rows);
-            }
-          });
-      };
-
-      vm.filterChange = function () {
-        vm.dataGroups = _.chunk(vm.pageData.filter(function (item) {
-          var fullName = item.first_name + ' ' + item.last_name;
-          return fullName.toLowerCase().indexOf(vm.filter) >= 0;
-        }));
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-            return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('loginComponent', {
-    templateUrl: 'app/components/login/login.tmpl.html',
-    controller: function (authService, $state, localStorageService) {
-      var self = this;
-      this.email = '';
-      this.password = '';
-      this.isRemembered = false;
-      this.error = '';
-      var products = {courses: {}, reports: {}, teaching_materials: {}};
-      localStorageService.set('products', products);
-
-      this.login = function () {
-        self.error = false;
-        authService.login(this.email, this.password, this.isRemembered)
-          .then(function (data) {
-            if (data && data.success) {
-              $state.go('aboutPage');
-            } else {
-              self.error = true;
-            }
-          });
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('landingPageComponent', {
-    templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
-    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location) {
-    var vm =this;
-
-      $(document).ready(function () {
-        $("nav").find("li").on("click", "a", function () {
-          // $('.navbar-collapse.in').collapse('hide');
-        });
-      });
-
-      $(document).ready(function(){
-
-        $("#slideshow > div:gt(0)").hide();
-
-        var interval = setInterval(slide, 3000);
-
-        function intslide(func) {
-          if (func == 'start') {
-            interval = setInterval(slide, 3000);
-          } else {
-            clearInterval(interval);
-          }
-        }
-
-          function slide() {
-              sact('next', 0, 2000);
-          }
-
-          function sact(a, ix, it) {
-              var currentSlide = $('.current');
-              var nextSlide = currentSlide.next('.slideitem');
-              var prevSlide = currentSlide.prev('.slideitem');
-              var reqSlide = $('.slideitem').eq(ix);
-
-              var currentDot = $('.active-dot');
-              var nextDot = currentDot.next();
-              var prevDot = currentDot.prev();
-              var reqDot = $('.dot').eq(ix);
-
-              if (nextSlide.length == 0) {
-                  nextDot = $('.dot').first();
-                  nextSlide = $('.slideitem').first();
-              }
-
-              if (prevSlide.length == 0) {
-                  prevDot = $('.dot').last();
-                  prevSlide = $('.slideitem').last();
-              }
-
-              if (a == 'next') {
-                  var Slide = nextSlide;
-                  var Dot = nextDot;
-              }
-              else if (a == 'prev') {
-                  var Slide = prevSlide;
-                  var Dot = prevDot;
-              }
-              else {
-                  var Slide = reqSlide;
-                  var Dot = reqDot;
-              }
-              var it_before = it - 1500;
-              currentSlide.fadeOut(it_before).removeClass('current');
-              Slide.fadeIn(it).addClass('current');
-          }
-      });
-
-//                                                                                                          REPORTS ON LANDING
-			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
-				console.log("res", res.data.reports);
-				vm.reports_on_landing = res.data.reports
-			});
-
-//                                                                                                          COLOR-PICKER
-        var color_picker = document.getElementById("color_picker");
-        var color_id = document.getElementById("color_id");
-        $scope.colorPickerGray = 100;
-        $scope.colorPickerOpacity = 1;
-			  document.getElementById('value_span').innerHTML = '100%';
-
-        $scope.changeColor = function () {
-            color_picker.onmousedown = select_color;
-        };
-        color_picker_add();
-
-        $scope.colorPickerSliderGray = function  () {
-            var value = document.getElementById('rg').value;
-            color_id.style.filter =  "saturate(" + value + "%)";
-        };
-
-        $scope.colorPickerSliderOpacity = function  () {
-            var value = document.getElementById('range_opacity').value;
-            document.getElementById('value_span').innerHTML = value*100 + '%';
-            color_id.style.opacity =  value;
-        };
-
-        $scope.colorPickerRGB = function () {
-            var colorInputR = document.getElementById('colorInputR').value;
-            var colorInputG = document.getElementById('colorInputG').value;
-            var colorInputB = document.getElementById('colorInputB').value;
-
-            $scope.colorRGB_R = colorInputR;
-            $scope.colorRGB_G = colorInputG;
-            $scope.colorRGB_B = colorInputB;
-
-            var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
-            color_id.style.backgroundColor = inputRGB;
-        };
-
-        function color_picker_add() {
-            color_picker_ = color_picker.getContext("2d"),
-                center_x = (color_picker.width)/2,
-                center_y = (color_picker.height)/2,
-                sx = center_x,
-                sy = center_y;
-
-            $scope.colorRGB_R = 0;
-            $scope.colorRGB_G = 0;
-            $scope.colorRGB_B = 0;
-            palette = new color_picker_element(center_x, center_y, sx, sy);
-            palette.draw();
-        }
-
-        function select_color(e) {
-            var x = e.pageX - color_picker.offsetLeft - 534,
-                y = e.pageY - color_picker.offsetTop - 3672,
-                pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
-                pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
-            color_id.style.backgroundColor = pixelColor;
-
-            $scope.pixel = pixel;
-            $scope.colorRGB_R = pixel[0];
-            $scope.colorRGB_G = pixel[1];
-            $scope.colorRGB_B = pixel[2];
-            console.log('pixelColor _select_color', $scope);
-            console.log('y  _select_color',y);
-            console.log('x  _select_color',x);
-        }
-        function color_picker_element(center_x, center_y, sx, sy) {
-            this.center_x = center_x;
-            this.center_y = center_y;
-            this.sx = sx;
-            this.sy = sy;
-            this.draw = function() {
-                for(var i = 0; i < 360; i+=0.1) {
-                    var rad = (i-45) * (Math.PI) / 180;
-                    color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
-                    color_picker_.beginPath();
-                    color_picker_.moveTo(center_x, center_y);
-                    color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
-                    color_picker_.stroke();
-                }
-            }
-        }
-
-        this.colorWordSearchLanding = function () {
-					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
-					var colorAssociationName = '';
-					// var str = [];
-					var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
-
-					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
-						.then(function (res) {
-							if (res.data.length > 0) {
-								vm.paintColorNames = res.data.map(function (item) {
-									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-									colorName = item.ShortName;
-									return {colorName: colorName, RGB: RGB};
-								});
-								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
-								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
-                //
-								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: colorAssociationName})
-									.then(function (res) {
-										vm.validData = res.data;
-										if (res && res.data.length > 0) {
-											var RGB = '',
-												colorName = '';
-											vm.colorAssociationNames = res.data.map(function (item) {
-												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-												colorName = item.ShortName;
-												return {colorName: colorName, RGB: RGB};
-											});
-											searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
-											$location.url('/color-index-accordion');
-										}
-									});
-							}
-						});
-        };
-    }
-  });
-
-angular
-  .module('app')
-  .component('landingComponent', {
-    templateUrl: 'app/components/landing/landing.tmpl.html',
-    controller: function (authService, $state, localStorageService) {
-
-      $(document).ready(function () {
-        $("nav").find("li").on("click", "a", function () {
-          // $('.navbar-collapse.in').collapse('hide');
-        });
-      });
-
-      $(document).ready(function(){
-
-        $("#slideshow > div:gt(0)").hide();
-
-        var interval = setInterval(slide, 3000);
-
-        function intslide(func) {
-          if (func == 'start') {
-            interval = setInterval(slide, 3000);
-          } else {
-            clearInterval(interval);
-          }
-        }
-
-        function slide() {
-          sact('next', 0, 2000);
-        }
-
-        function sact(a, ix, it) {
-          var currentSlide = $('.current');
-          var nextSlide = currentSlide.next('.slideitem');
-          var prevSlide = currentSlide.prev('.slideitem');
-          var reqSlide = $('.slideitem').eq(ix);
-
-          var currentDot = $('.active-dot');
-          var nextDot = currentDot.next();
-          var prevDot = currentDot.prev();
-          var reqDot = $('.dot').eq(ix);
-
-          if (nextSlide.length == 0) {
-            nextDot = $('.dot').first();
-            nextSlide = $('.slideitem').first();
-          }
-
-          if (prevSlide.length == 0) {
-            prevDot = $('.dot').last();
-            prevSlide = $('.slideitem').last();
-          }
-
-          if (a == 'next') {
-            var Slide = nextSlide;
-            var Dot = nextDot;
-          }
-          else if (a == 'prev') {
-            var Slide = prevSlide;
-            var Dot = prevDot;
-          }
-          else {
-            var Slide = reqSlide;
-            var Dot = reqDot;
-          }
-          var it_before = it - 500;
-          currentSlide.fadeOut(it_before).removeClass('current');
-          Slide.fadeIn(it).addClass('current');
-          }
-      });
-    }
-  });
-
-angular
-  .module('app')
-  .component('inquiriesComponent', {
-    templateUrl: 'app/components/inquiries/inquiries.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
-      var currentName = $state.current.name;
-
-      var self = this;
-      this.jobs = categoryValues('job function');
-      this.companySizes = categoryValues('company size');
-      this.industries = categoryValues('industry');
-      this.countries = categoryValues('country');
-
-      this.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: self.countries[0], required: true, name: 'country', type: 'select'}
-      };
-
-      switch (currentName) {
-        case 'productInquiry':
-          this.title = 'Product Inquiry';
-          this.keywords = 'Color Product Inquiry, color database, color Product';
-          this.data.permissions = {daily: true, research: true, edu: true};
-          this.data.relationship = {expert: true};
-          this.caption = 'Product Inquiry';
-          this.inquire1 = true;
-          this.url = 'product_partner';
-          break;
-
-        case 'partnershipInquire':
-          this.title = 'Data Partnership Inquiry';
-          this.keywords = 'Color data partnership, color database, color dataset, color data points in r';
-          this.caption = 'Inquire about Data Partnership';
-          this.inquire2 = true;
-          this.url = 'new_data_partners';
-          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
-          break;
-
-        default:
-          this.title = 'Education Partnership Inquiry';
-          this.keywords = 'Color Education partnership, color database, color Education, color Education points in r';
-          this.caption = 'Inquire about Education Partnership';
-          this.url = 'new_education_partners';
-          this.inquire3 = true;
-          this.jobs.splice(1, 0, {id: 7, title: 'Educator'});
-          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
-          break;
-      }
-
-      this.send = function (inquiryType) {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          for (var item in this.data) {
-            if (item !== 'permissions' && item !== 'relationship') {
-              if (this.data[item].type === 'select') {
-                data[item] = this.data[item].value.title;
-              } else {
-                data[item] = this.data[item].value;
-              }
-            } else if (item === 'permissions') {
-              data.permissions = [];
-              _.forEach(this.data[item], function (i, k) {
-                if (i === true) {
-                  data.permissions.push(categoryValues('permissions')[k]);
-                }
-              });
-              data.permissions = JSON.stringify(data.permissions);
-            } else if (item === 'relationship' && this.data.relationship.expert) {
-              data.relationship = 'Expert Panelist';
-            }
-          }
-          $http.get(appConfig.dashboardServiceUrl + this.url, {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('infographicsDetailsComponent', {
-  templateUrl: 'app/components/infographics-details/infographics-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'infographics/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-      });
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('infographicsComponent', {
-    templateUrl: 'app/components/infographics/infographics.tmpl.html',
-    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll,
-                          localStorageService) {
-      var vm = this;
-      vm.hueModel = 'VERTICAL';
-      vm.yearModel = 'YEAR';
-      vm.year = [];
-      vm.hue = categoryValues('hue');
-      vm.pageData = {};
-      vm.items = [];
-      vm.flag = true;
-      var numberOfElements = 3;
-      var count = 1;
-      var lastYear = moment().year();
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'infographics.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                var b = res.data.picture.find(function (a) {
-                  return a.infographic_id === item.id;
-                });
-                if (b) {
-                  item.image_url = b.image_url;
-                }
-                return item;
-              });
-              vm.year.push(moment().format('YYYY'));
-              vm.pageData.map(function (t) {
-                t.date = moment(t.published_year + '-' + t.published_month + '-' + t.published_day).format(' MMMM D, YYYY');
-              });
-              vm.pageData.forEach(function (t) {
-                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
-                  lastYear = Number(t.published_year);
-                }
-              });
-              vm.year = _.range(lastYear, moment().year() + 1);
-              vm.select();
-              vm.year = vm.year.reverse();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.onGraphicClick = function (event) {
-        if (event) {
-          modalService.showModal(2, event);
-        }
-      };
-
-      vm.select = function () {
-        if (vm.hue.includes(vm.hueModel) || vm.year.includes(Number(vm.yearModel))) {
-          vm.filterData = angular.copy(vm.pageData.filter(function (t) {
-            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
-              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
-              return t;
-            }
-          }));
-        } else {
-          vm.filterData = angular.copy(vm.pageData);
-        }
-        count = 1;
-        vm.items = [];
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-
-
-      vm.makeDate = function (item) {
-          return moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('MMMM D, YYYY');
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('goodReadsDetailsComponent', {
-  templateUrl: 'app/components/good-reads-details/good-reads-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, localStorageService) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'good_reads/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-      });
-    };
-    vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('goodReadsComponent', {
-    templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.all = [];
-      vm.items = [];
-      vm.flag = true;
-      var count = 1;
-      var numberOfElements = 6;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                return item.data;
-              });
-            }
-            vm.sortItems();
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.pageData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('downloadExcerptPageComponent', {
-    templateUrl: 'app/components/download-excerpt-page/download-excerpt-page.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate, $stateParams, $window, $scope, localStorageService) {
-
-      var self = this;
-      this.jobs = categoryValues('job function');
-      this.companySizes = categoryValues('company size');
-      this.industries = categoryValues('industry');
-      this.countries = categoryValues('country');
-      self.flag = false;
-
-      switch ($stateParams.type) {
-        case 'reports':
-          self.wayBackName = 'reportsDetails';
-          break;
-        case 'courses':
-          self.wayBackName = 'coursesDetails';
-          break;
-        case 'teachingMaterials':
-          self.wayBackName = 'teachingDetailsMaterials';
-          break;
-        default:
-          self.wayBackName = 'profile';
-
-      }
-
-      this.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
-        relationship: {expert: true, daily: true, newReportNotification: true, emotionIndexInsights: true},
-        contact: {becoming: true}
-      };
-
-      this.send = function () {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          data.productType = $stateParams.type;
-          data.productID = $stateParams.id;
-          for (var item in this.data) {
-            if (item !== 'relationship' && item !== 'contact') {
-              if (this.data[item].type === 'select') {
-                data[item] = this.data[item].value.title;
-              } else {
-                data[item] = this.data[item].value;
-              }
-            } else if (item === 'relationship') {
-              data.relationship = [];
-              _.forEach(this.data[item], function (i, k) {
-                if (i === true) {
-                  data.relationship.push(categoryValues('downloadExcerpt')[k]);
-                }
-              });
-              data.relationship = JSON.stringify(data.relationship);
-            } else if (item === 'contact' && this.data.contact.becoming) {
-              data.contact = 'Contact about becoming a HUEDATA members';
-            }
-          }
-          $window.open(localStorageService.get('link'), '_blank');
-          $http.get(appConfig.dashboardServiceUrl + 'download-excerpt', {
-            params: data
-          }).then(function (res) {
-            $state.go(self.wayBackName, {id: $stateParams.id});
-          });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('detailedComponent', {
-    templateUrl: 'app/components/detailed-page/detailed.tmpl.html',
-    controller: function ($location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('partnersComponent', {
-    templateUrl: 'app/components/data-partners/partners.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
-      var vm = this;
-
-      vm.jobs = categoryValues('job function');
-      vm.companySizes = categoryValues('company size');
-      vm.industries = categoryValues('industry');
-      vm.countries = categoryValues('country');
-
-      vm.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: vm.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: vm.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: vm.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: vm.countries[0], required: true, name: 'country', type: 'select'},
-        description: {value: '', required: false, name: 'description', type: 'enter'}
-      };
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'top_data_partners.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data;
-            }
-          });
-      };
-
-      vm.send = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in vm.data) {
-            if (vm.data[item].type === 'select') {
-              data[item] = vm.data[item].value.title;
-            } else {
-              data[item] = vm.data[item].value;
-            }
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'new_data_partners', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('dailyInsightsComponent', {
-    templateUrl: 'app/components/daily-insights/daily-insights.tmpl.html',
-    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-      vm.items = [];
-      vm.allDailies = [];
-      vm.items = [];
-      vm.flag = true;
-      var count = 1;
-      var numberOfElements = 3;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'dailies.json')
-          .then(function (res) {
-            if (res && res.data) {
-              angular.forEach(res.data, function (item) {
-                item.date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('dddd, MMMM D, YYYY');
-                item.published_date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('YYYY-MM-DD');
-              });
-              vm.allDailies = _.sortBy(res.data, 'published_date').reverse();
-              vm.emptyData = Boolean(vm.allDailies[0]);
-              vm.pageData = vm.allDailies.shift();
-              vm.sortItems();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.allDailies.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          } else {
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.onGraphicClick = function (item) {
-        if (item) {
-          modalService.showModal(3, null, item);
-        }
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-(function (angular) {
-  'use strict';
-  var controllerName = 'CustomInfographicsController';
-  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'statsService', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
-    '$q', 'repo.meta', 'repo.designers', '$timeout', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository', 'anchorSmoothScroll',
-    function ($http, appConfig, statsService, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
-      var vm = this;
-
-      $scope.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.grayList = {};
-      vm.meta = {};
-      vm.filter = {};
-      vm.showDashboardOverlay = false;
-      vm.isUserAdmin = function () {
-        return authService.getCurrentUser().username === 'admin';
-      };
-
-      var groupTitlesTemplates = {
-        beige: {
-          name: '#f5f5dc',
-          template: '#f5f5{0}'
-        },
-        black: {
-          name: '#000000',
-          template: '#{0}{0}{0}'
-        },
-        blue: {
-          name: '#0000ff',
-          template: '#{0}{0}ff'
-        },
-        brown: {
-          name: '#964b00',
-          template: '#{0}{1}00'
-        },
-        cyan: {
-          name: '#00ffff',
-          template: '#{0}ffff'
-        },
-        gray: {
-          name: '#c0c0c0',
-          template: '#{0}{0}{0}'
-        },
-        green: {
-          name: '#008000',
-          template: '#{0}80{0}'
-        },
-        magenta: {
-          name: '#ff00ff',
-          template: '#ff{0}ff'
-        },
-        orange: {
-          name: '#ff7f00',
-          template: '#ff{0}00'
-        },
-        red: {
-          name: '#ff0000',
-          template: '#ff{0}{1}'
-        },
-        violet: {
-          name: '#8f00ff',
-          template: '#{0}00ff'
-        },
-        white: {
-          name: '#ffffff',
-          template: '#{0}{0}{0}'
-        },
-        yellow: {
-          name: '#ffff00',
-          template: '#ffff{0}'
-        },
-        yellowgreen: {
-          name: '#8db600',
-          template: '#8d{0}00'
-        }
-      };
-
-      var cache = {
-        designers: [],
-        categories: [],
-        regions: {},
-        cities: []
-      };
-
-      var loading = {
-        ready: false,
-        designersReady: $q.defer(),
-        metaLoaded: $q.defer(),
-        metaReady: $q.defer()
-      };
-
-      vm.scrollToLetter = function (anchor) {
-        $location.hash(anchor);
-        $anchorScroll();
-        $location.hash('');
-      };
-
-      vm.alphabet = [
-        "a",
-        "à",
-        "b",
-        "c",
-        "d",
-        "e",
-        "é",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "ö",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9"
-      ];
-
-      vm.prepareRequestParams = function () {
-        var reg = new RegExp('ALL ');
-        var city = reg.test(vm.filter.city.title) ? 'all' : vm.filter.city.title;
-        var season = reg.test(vm.filter.season.title) ? 'all' : vm.filter.season.title;
-        var category = reg.test(vm.filter.category.title) ? 'all' : vm.filter.category.title;
-        var designer = reg.test(vm.filter.designer.title) ? 'all' : vm.filter.designer.title.replace(/ /g, '_');
-
-        return {
-          city: city,
-          year: vm.filter.year.id,
-          season: season,
-          category: category,
-          region: vm.filter.region.id,
-          designer: designer
-        };
-      };
-
-      vm.prepareColorsParams = function () {
-        var reg = new RegExp('ALL ');
-        var param = {};
-        if (!reg.test(vm.filter.city.title)) {
-          param.city_id = vm.filter.city.id;
-        }
-        if (!reg.test(vm.filter.season.title)) {
-          param.season_id = vm.filter.season.id;
-        }
-        if (!reg.test(vm.filter.category.title)) {
-          param.category_id = vm.filter.category.id;
-        }
-        if (!reg.test(vm.filter.designer.title)) {
-          param.designer_id = vm.filter.designer.id;
-        }
-        param.year_id = vm.filter.year.id;
-        return param;
-      };
-
-      vm.prepareColors = function () {
-        var reg = new RegExp('ALL ');
-        if (!reg.test(vm.filter.season.title)) {
-          return {all: vm.filter.season, category: 'season'};
-        }
-        if (!reg.test(vm.filter.city.title)) {
-          return {all: vm.filter.city, category: 'city'};
-        }
-        if (!reg.test(vm.filter.category.title)) {
-          return {all: vm.filter.category, category: 'category'};
-        }
-        if (!reg.test(vm.filter.designer.title)) {
-          return {all: vm.filter.designer, category: 'designer'};
-        }
-        return {all: {id: 2018}, category: 'year'};
-      };
-
-      loading.metaLoadedStrongLink = loading.metaLoaded;
-      loading.filtersReady = $q.all([loading.designersReady.promise, loading.metaReady.promise]);
-
-      meta.objects().then(function (result) {
-        var years = [];
-        for (var i = result.years.to; i >= result.years.from; i--) {
-          years.push({id: i, title: i});
-        }
-
-        vm.meta.years = years;
-        vm.meta.colorGroups = result.colorGroups;
-        vm.meta.categories = result.categories;
-        vm.meta.seasons = result.seasons;
-        vm.meta.regions = common.generic.regions;
-        vm.meta.cities = result.cities;
-
-        _.each(vm.meta, function (item, key) {
-          var newTitle = 'All ' + key;
-          if (key !== 'colorGroups') {
-            item.unshift({id: 'all', title: newTitle.toUpperCase(), region: 'all', serverName: 'all', all: true})
-          }
-        });
-
-        angular.copy(vm.meta.cities, cache.cities);
-
-        vm.filter.color = vm.meta.colorGroups[0];
-        // vm.filter.year = _.find(vm.meta.years, {id: 2017}) || vm.meta.years[vm.meta.years.length - 1];
-        vm.filter.year = vm.meta.years[0];
-        vm.filter.season = vm.meta.seasons[0];
-        vm.filter.category = vm.meta.categories[0];
-        vm.filter.city = vm.meta.cities[0];
-        vm.filter.region = vm.meta.regions[0];
-
-        loading.metaLoaded.resolve();
-      });
-
-      designers.search().then(function (result) {
-        vm.meta.designers = result;
-        vm.meta.designers.unshift({id: 'all', title: 'ALL DESIGNERS', all: true});
-
-        vm.filter.designer = vm.meta.designers[0];
-
-        loading.designersReady.resolve();
-      });
-
-      vm.refresh = function () {
-        loadData();
-      };
-
-      var defaultDescription = {
-        years: '2015-2016',
-        colors: '45.567',
-        cities: '4',
-        region: '1',
-        designer: '234',
-        season: '3'
-      };
-
-      vm.cityOrRegionTitle = function () {
-        return vm.filter.city.all && vm.filter.region.all ? null : vm.filter.city.all ? vm.filter.region.title : vm.filter.city.title
-      };
-
-      var citiesAbbrevs = {
-        London: 'LN',
-        Milan: 'MI',
-        Paris: 'PR',
-        Berlin: 'BR',
-        NewYork: 'NY',
-        Mexico: 'MX',
-        RioDeJaneiro: 'RJ',
-        Seoul: 'SE',
-        Tokyo: 'TK',
-        SaoPaulo: 'SP',
-        Istanbul: 'IS',
-        Monaco: 'MN',
-        Florence: 'FL',
-        Rome: 'RO',
-        Kiev: 'KI',
-        LosAngeles: 'LA',
-        LakmeIndia: 'LI',
-        Copenhagen: 'CP',
-        Salzburg: 'SA',
-        Stockholm: 'ST',
-        Madrid: 'MA',
-        Sydney: 'SY',
-        Dubai: 'DU',
-        Kaliningrad: 'KA',
-        Moscow: 'MO',
-        PalmSprings: 'PS',
-        Cannes: 'CN',
-        Cambridge: 'CB',
-        Tbilisi: 'TB',
-        Havana: 'HA',
-        Kyoto: 'KO',
-        SaintPetersburg: 'SG',
-        Shanghai: 'SH'
-      };
-
-      var regionsAbbrevs = {
-        AsiaAndPacific: 'AP',
-        Europe: 'EU',
-        SouthAmerica: 'LA',
-        NorthAmerica: 'NA'
-      };
-
-      vm.getTitle = function (type) {
-        if (type === 'region') {
-          return vm.cityOrRegionTitle()
-        } else {
-          return !vm.filter[type].all ? vm.filter[type].title : null
-        }
-      };
-
-      vm.getAbbrv = function (type) {
-        var value;
-        if (type === 'category') {
-          value = vm.filter.category.title;
-          if (value === 'Couture') {
-            return 'CT';
-          } else if (value === 'Menswear') {
-            return 'MW';
-          } else {
-            return value;
-          }
-        } else if (type === 'season') {
-          value = vm.filter.season.title;
-          if (value === 'Fall') {
-            return 'FW';
-          } else if (value === 'Pre-Fall') {
-            return 'PF';
-          } else if (value === 'Spring') {
-            return 'SS';
-          } else if (value === 'Resort') {
-            return 'RS';
-          } else if (value === 'ALL SEASONS') {
-            return 'ALL';
-          } else {
-            return value;
-          }
-        } else if (type === 'city') {
-          value = vm.filter.city.title.replace(/\s/g, '').toLowerCase();
-          return _.find(citiesAbbrevs, function (item, key) {
-            return value == key.toLowerCase();
-          });
-        } else if (type === 'region') {
-          value = vm.filter.region.title.replace(/\s/g, '').toLowerCase();
-          return _.find(regionsAbbrevs, function (item, key) {
-            return value == key.toLowerCase();
-          });
-        }
-      };
-
-      vm.parseTitle = function (number) {
-        var divider = '';
-        var result = '';
-        _.map(vm.currentChart.titleGroups[number], function (title) {
-          if (vm.getTitle(title) !== null) {
-            divider = '//';
-          }
-          if (vm.getTitle(title)) {
-            result = result + ' ' + vm.getTitle(title)
-          }
-        });
-        return divider + result;
-      };
-
-      vm.charts = [
-        {
-          qNumber: 'CO1a',
-          id: 'colorsByCityPeriod',
-          group: 'colorsByCityPeriod',
-          title: 'Color Popularity Overview',
-          chartTitle: 'Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-              .then(function (results) {
-                return results;
-              });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CO1b',
-          id: 'colorsByCityPeriod1',
-          group: 'colorsByCityPeriod1',
-          title: 'Expanded Color Popularity Overview',
-          chartTitle: 'Expanded Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return $q(function (resolve) {
-              charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-                .then(function (results) {
-                  var param = vm.prepareColors();
-                  dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(results, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 17) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                        resolve(results);
-                      });
-                    });
-                });
-            });
-          },
-          filters: {
-            category: true,
-            region: true,
-            city: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CO2a',
-          id: 'colorsUniqueWithLevels',
-          group: 'colorsUniqueWithLevels',
-          title: 'Color Mosaic View With Popularity',
-          chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsUniqueGroups(vm.prepareRequestParams());
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'CO3a',
-          id: 'trends',
-          group: 'trends',
-          title: 'Five Year Color Comparison',
-          chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
-            var customParams = vm.prepareRequestParams();
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
-            }
-
-            return $q.all(_.map(yearsRange, function (year) {
-              customParams.year = year;
-              return charts.colorGroupsByCityPeriod(customParams);
-            })).then(function (results) {
-              return _.map(results, function (result, i) {
-                return {
-                  title: yearsRange[i],
-                  data: result
-                };
-              });
-            });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'RE1a',
-          id: 'colorsByRegionPeriodNA',
-          group: 'colorsByRegionPeriod',
-          title: 'Color Popularity By Region With City Breakdown',
-          chartTitle: 'Color Popularity By Region With City Breakdown {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsWithGroupsByRegionPeriod(vm.prepareRequestParams(), vm.filter.region.name);
-          },
-          filters: {
-            category: true,
-            region: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {}
-        },
-        {
-          qNumber: 'RE2a',
-          id: 'colorsPerRegions',
-          group: 'colorsPerRegions',
-          title: 'Cross Region Top Four Colors',
-          chartTitle: 'Cross Region Top Four Colors {{vm.parseTitle(0)}}',
-          api: function () {
-            return charts.colorsPerRegions(vm.prepareRequestParams());
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year']
-          ]
-        },
-        {
-          qNumber: 'SE1a',
-          id: 'colorsUniqueGroupsCommon',
-          group: 'colorsUniqueGroupsCommon',
-          title: 'Color Popularity By Season',
-          chartTitle: 'Color Popularity By Season {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsUniqueGroupsCommon(vm.prepareRequestParams());
-          },
-          apiAfter: function (model) {
-            model.season = vm.filter.season.title;
-            model.year = vm.filter.year.title;
-          },
-          filters: {
-            category: true,
-            region: true,
-            city: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'SE2a',
-          id: 'colorsUniqueByPeriodFiveYears',
-          group: 'colorsUniqueByPeriodFiveYears',
-          title: 'Five Year Comparison Of Seasons Colors',
-          chartTitle: 'Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
-            }
-            return charts.colorsByPeriodYearsRange(vm.prepareRequestParams(), yearsRange);
-          },
-          filters: {
-            category: true,
-            region: true,
-            city: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'SE2b',
-          id: 'colorsUniqueByPeriodFiveYears2',
-          group: 'colorsUniqueByPeriodFiveYears2',
-          title: 'Expanded Five Year Comparison Of Seasons Colors',
-          chartTitle: 'Expanded Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
-            }
-            var param = vm.prepareColors();
-            var palettes = {};
-            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-              .then(function (results) {
-                return $q.all(yearsRange.map(function (d) {
-                  return dashboardRepository['year'].getColorPalette(d, vm.prepareColorsParams(), 250);
-                }))
-                  .then(function (data) {
-                    _.each(data, function (r, i) {
-                      _.each(r, function (a) {
-                        a.colorHex = a.color.color.hex;
-                      });
-                      _.sortBy(r, 'percentage');
-                      palettes[vm.getAbbrv('season') + yearsRange[i]] = r;
-                    });
-                    results.push(palettes);
-                    return results;
-                  });
-              });
-          },
-          filters: {
-            category: true,
-            city: true,
-            season: true,
-            year: true,
-            region: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'SE3a',
-          id: 'uniqueWithGroupsPerSeason',
-          group: 'uniqueWithGroupsPerSeason',
-          title: 'Color Mosaic View By Season With Popularity',
-          chartTitle: 'Color Mosaic View By Season With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-            return charts.colorsUniqueGroupsPerSeason(customParams.year, customParams.city, customParams.category);
-          },
-          apiAfter: function (model) {
-            model.city = vm.cityOrRegionTitle();
-          },
-          filters: {
-            category: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'CA1a',
-          id: 'colorsByCategoryPeriod',
-          group: 'colorsByCategoryPeriod',
-          title: 'Color Popularity By Category',
-          chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'CA2a',
-          id: 'colorsByCategory',
-          group: 'colorsGridNails',
-          title: 'Cross Category Color Popularity',
-          chartTitle: 'Cross Category Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-            return $q.all(_.map(['couture', 'menswear', 'rtw'], function (category) {
-              customParams.category = category;
-              return charts.colorGroupsByCityPeriod(customParams)
-                .then(function (groups) {
-                  _.each(groups, function (gr) {
-                    gr.colors = _.map(_.range(3), function () {
-                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
-                    });
-                  });
-                  return {
-                    name: category,
-                    title: category,
-                    data: groups
-                  };
-                });
-            }));
-          },
-          filters: {
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CA2b',
-          id: 'colorsByCategory2',
-          group: 'colorsGridNails2',
-          title: 'Cross Category Top Three Colors',
-          chartTitle: 'Cross Category Top Three Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-
-            return $q(function (resolve) {
-              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
-                var groups = [
-                  {
-                    name: customParams.category + '\n' + 'couture',
-                    title: customParams.category + '\n' + 'couture',
-                    data: group
-                  },
-                  {
-                    name: customParams.category + '\n' + 'menswear',
-                    title: customParams.category + '\n' + 'menswear',
-                    data: group
-                  }, {
-                    name: customParams.category + '\n' + 'rtw',
-                    title: customParams.category + '\n' + 'rtw',
-                    data: group
-                  }];
-                async.waterfall([function (cb) {
-                  dashboardRepository["category"].getColorPalette(3, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[0].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["category"].getColorPalette(2, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[1].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["category"].getColorPalette(1, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[2].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }], function () {
-                  resolve(groups);
-                });
-              });
-            });
-          },
-          filters: {
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CA3a',
-          id: 'colorsByRtwCategory',
-          group: 'colorsGridNails',
-          title: 'Three Year Comparison Of Color Popularity',
-          chartTitle: 'Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
-            var customParams = vm.prepareRequestParams();
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
-            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
-            }
-
-            return $q.all(_.map(yearsRange, function (dy) {
-              customParams.year = dy;
-              return charts.colorGroupsByCityPeriod(customParams)
-                .then(function (groups) {
-                  _.each(groups, function (gr) {
-                    gr.colors = _.map(_.range(3), function () {
-                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
-                    });
-                  });
-
-                  return {
-                    name: customParams.category + '\n' + dy,
-                    title: customParams.category + '\n' + dy,
-                    data: groups
-                  };
-                });
-            }));
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CA3b',
-          id: 'colorsByRtwCategory2',
-          group: 'colorsGridNails2',
-          title: 'Expanded Three Year Comparison Of Color Popularity',
-          chartTitle: 'Expanded Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
-            var customParams = vm.prepareRequestParams();
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
-            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
-            }
-            return $q(function (resolve) {
-              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
-                var groups = [
-                  {
-                    name: customParams.category + '\n' + yearsRange[0],
-                    title: customParams.category + '\n' + yearsRange[0],
-                    data: group
-                  },
-                  {
-                    name: customParams.category + '\n' + yearsRange[1],
-                    title: customParams.category + '\n' + yearsRange[1],
-                    data: group
-                  }, {
-                    name: customParams.category + '\n' + yearsRange[2],
-                    title: customParams.category + '\n' + yearsRange[2],
-                    data: group
-                  }];
-                async.waterfall([function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[0].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[1].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[2], vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[2].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }], function () {
-                  resolve(groups);
-                });
-              });
-            });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CI1a',
-          id: 'citiesByColorPeriod',
-          group: 'citiesByColorPeriod',
-          title: 'Cross City Popularity By Color',
-          chartTitle: 'Cross City Popularity By Color {{vm.parseTitle(0)}} {{vm.parseTitle(1)}} {{vm.parseTitle(2)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-            customParams.color = vm.filter.color.hex.replace('#', '');
-            return charts.citiesByColorPeriod(customParams);
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            color: true
-          },
-          titleGroups: [
-            ['color'],
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'DE1a',
-          id: 'colorsGroupsCommon',
-          group: 'colorsGroupsCommon',
-          title: 'Color Popularity By Designer',
-          chartTitle: 'Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsGroupsCommon(vm.prepareRequestParams())
-              .then(function (results) {
-                return results;
-              });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE1b',
-          id: 'colorsGroupsCommon2',
-          group: 'colorsGroupsCommon2',
-          title: 'Expanded Color Popularity By Designer',
-          chartTitle: 'Expanded Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsGroupsCommon(vm.prepareRequestParams())
-              .then(function (results) {
-                return dashboardRepository['year'].getColorPalette(vm.filter.year.all ? 2018 : vm.filter.year.id, vm.prepareColorsParams(), 250)
-                  .then(function (data) {
-                    results['palettes'] = data;
-                    return results;
-                  });
-              });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE2a',
-          id: 'top4forDesigner',
-          group: 'top4forDesigner',
-          title: 'Two Year Comparison of Color Popularity By Designer',
-          chartTitle: 'Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
-            }
-
-            return $q.all([
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
-                .then(function (results) {
-                  return results;
-                }),
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
-                .then(function (results) {
-                  return results;
-                })
-            ]).then(function (results) {
-              return _.map(results, function (result, i) {
-                return {
-                  title: yearsRange[i],
-                  data: result
-                };
-              });
-            });
-          },
-          apiAfter: function (model) {
-            model.city = vm.filter.city.title;
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE2b',
-          id: 'top4forDesigner2',
-          group: 'top4forDesigner2',
-          title: 'Expanded Two Year Comparison of Color Popularity By Designer',
-          chartTitle: 'Expanded Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
-            }
-            return $q.all([
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
-                .then(function (results) {
-                  return results;
-                }),
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
-                .then(function (results) {
-                  return results;
-                }),
-              dashboardRepository['year'].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
-                .then(function (data) {
-                  return data;
-                }),
-              dashboardRepository['year'].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
-                .then(function (data) {
-                  return data;
-                })
-            ]).then(function (results) {
-              return _.map(results,
-                function (result, i) {
-                  return {
-                    title: yearsRange[i],
-                    data: result
-                  };
-                });
-            });
-          },
-          apiAfter: function (model) {
-            model.city = vm.filter.city.title;
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE3a',
-          id: 'top4Grid',
-          group: 'top4Grid',
-          title: 'Designers Top Four Colors',
-          chartTitle: 'Designers Top Four Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.designersWithTopColors(vm.prepareRequestParams());
-          },
-          filters: {
-            season: true,
-            year: true,
-            region: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['season', 'year']
-          ]
-        }
-        /*           {
-         id: 'colorsUniqueWithLevelsGrouped',
-         group: 'colorsUniqueWithLevels',
-         title: 'All colors with their distribution per region / city / season / year - GROUPED',
-         chartTitle: 'A Comparative View of All Colors used in {{vm.filter.region.title}} {{vm.filter.city.title}} And Their Distribution {{vm.getAbbrv("season")}} {{vm.filter.year.title}}',
-         api: function() {
-         return charts.colorsUniqueGroups(vm.filter.year.id, vm.filter.season.title, null, vm.filter.city.title);
-         },
-         apiAfter:  function(model, results) {
-         //                            vm.model.ordered = true;
-         model.grouped = true;
-         },
-         filters: {
-         seasons: true,
-         years: true,
-         regions: true,
-         cities: true
-         }
-         },
-         */
-      ];
-
-      vm.currentChart = vm.charts[0];
-      vm.chartsCurrentViewType = null;
-
-      $scope.$watch('[vm.currentChart, vm.filter]', loadData, true);
-
-      $scope.$watch('vm.filter.region', function (regionNewV) {
-        if (regionNewV) {
-          if (!regionNewV.all) {
-            vm.meta.cities = _.filter(cache.cities, function (city) {
-              if (city.region) {
-                return city.region.toLowerCase() === regionNewV.serverName.toLowerCase() || city.all
-              }
-            })
-          } else if (regionNewV.all) {
-            angular.copy(cache.cities, vm.meta.cities);
-          }
-          vm.filter.city = vm.meta.cities[0];
-        }
-
-        // var region = (cache.regions || {})[(vm.filter.region || {}).id] || {};
-        // vm.meta.cities = region.cities;
-        // vm.filter.city = (region.cities || [])[0];
-        //
-        // // city must be already selected before starting to filter
-
-        if (!loading.isMetaLoadedSetup) {
-          loading.metaLoaded.promise.then(function () {
-            loading.metaReady.resolve();
-          });
-          loading.isMetaLoadedSetup = true;
-        }
-      });
-
-      // $scope.$watch(function () {
-      //   return dashboardOverlayService.showOverlay;
-      // }, function (newValue, oldValue) {
-      //   vm.showDashboardOverlay = newValue;
-      // });
-
-      function loadData(newV, oldV) {
-        // dashboardOverlayService.loadingStart(10000);
-        loading.currentRequestId = Math.random();
-        if (newV && oldV) {
-          if (newV[0].qNumber !== oldV[0].qNumber) {
-            vm.filter.designer = vm.meta.designers[0];
-
-            if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
-              vm.meta.regions = _.filter(vm.meta.regions, function (item) {
-                return !item.all;
-              });
-              vm.filter.region = vm.meta.regions[0];
-            } else if (!_.find(vm.meta.regions, 'all')) {
-              vm.meta.regions.unshift({id: 'all', title: 'ALL REGIONS', region: 'all', serverName: 'all', all: true});
-              vm.filter.region = vm.meta.regions[0];
-            }
-          }
-        }
-
-        loading.filtersReady.then(function () {
-          vm.model = null;
-
-          (function (currentRequestId) {
-            vm.currentChart.api().then(function (result) {
-
-              if (currentRequestId !== loading.currentRequestId || !result) {
-                return;
-              }
-              vm.model = result;
-              if (vm.currentChart.apiAfter) {
-                vm.currentChart.apiAfter(vm.model, result);
-              }
-              vm.title = prepareTitle(vm.currentChart.chartTitle);
-              prepareDescription();
-            });
-            // dashboardOverlayService.loadingCompleted();
-          })(loading.currentRequestId);
-        });
-      }
-
-      function prepareTitle(title) {
-        var exp = $interpolate(title);
-        return exp($scope);
-      }
-
-      function prepareDescription() {
-        vm.description = vm.description || (vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
-          vm.filter.city.title + ' | REGIONS-' + vm.filter.region.title + ' | DESIGNER-' + vm.filter.designer.title +
-          ' | SEASONS-' + vm.filter.season.title);
-
-        var regionId = null;
-        switch (vm.filter.region.id) {
-          case 'europe':
-            regionId = 2;
-            break;
-          case 'north_america':
-            regionId = 3;
-            break;
-          case 'latin_america':
-            regionId = 4;
-            break;
-          case 'asia_pacific':
-            regionId = 1;
-            break;
-        }
-
-        var yearFrom = null;
-        var yearTo = vm.filter.year.id === 'all' ? vm.meta.years[1].title : vm.filter.year.id;
-        if (vm.currentChart.qNumber === 'CO3a' || vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b') {
-          yearFrom = yearTo - 4;
-        } else if (vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b') {
-          yearFrom = yearTo - 2;
-        } else if (vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b') {
-          yearFrom = yearTo - 1;
-        }
-
-        $http({
-          url: (appConfig.webServiceUrl + 'stats'),
-          method: 'GET',
-          params: {
-            fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
-            fashionDesigner: vm.filter.designer.id === 'all' ? null : vm.filter.designer.id,
-            fashionRegion: regionId || null,
-            fashionCity: vm.filter.city.id === 'all' ? null : vm.filter.city.id,
-            fashionCategory: vm.filter.category.id === 'all' ? null : vm.filter.category.id,
-            fashionYear: yearFrom || vm.filter.year.id === 'all' ? null : vm.filter.year.id,
-            yearFrom: yearFrom || null,
-            yearTo: yearFrom ? yearTo : null
-          }
-        }).then(function (res) {
-          vm.grayList = res.data.data;
-          vm.description = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
-            ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
-            ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
-        });
-      }
-
-      vm.labelToGray = function (selector, title) {
-        var result = true;
-
-        if (title.indexOf('ALL ') === -1) {
-          _.forEach(vm.grayList[selector], function (item) {
-            if (item.title === title) {
-              result = false;
-            }
-          });
-        }
-        return result;
-      };
-
-      vm.isFilterItems = function (selector, title) {
-        if (selector === 'regions') {
-          switch (title) {
-            case 'Europe':
-              title = 'Europe';
-              break;
-            case 'North America':
-              title = 'North America';
-              break;
-            case 'South America':
-              title = 'Latin America';
-              break;
-            case 'Asia and Pacific':
-              title = 'Asia Pacific';
-              break;
-          }
-        }
-
-        var result = true;
-
-        if (vm.grayList[selector] === undefined) {
-          result = false;
-        } else if (selector === 'years' && vm.filter.year.title === 'ALL YEARS' && (vm.currentChart.qNumber === 'CO3a' ||
-            vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
-            vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
-            vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
-          result = false;
-        } else if (selector === 'regions' && vm.currentChart.qNumber === 'RE1a') {
-          result = false;
-        } else if (vm.grayList === {} || title.toString().indexOf('ALL ') === -1) {
-          _.forEach(vm.grayList[selector], function (item) {
-            if (item.title === title.toString()) {
-              result = false;
-            }
-          });
-        } else {
-          result = false;
-        }
-        return result;
-      };
-
-      vm.isFilterVisible = function (filterId) {
-        var filterOptions = vm.currentChart.filters || {};
-
-        var filter = filterOptions.all;
-        if (!filter) {
-          filter = filterOptions[filterId];
-        }
-
-        if (filter === true) {
-          return true;
-        } else if (angular.isFunction(filter)) {
-          return filter();
-        }
-
-        return false;
-      };
-
-      vm.generateImgName = function (extension) {
-        var abbrevs = {
-          qNumber: vm.currentChart.qNumber,
-          category: vm.filter.category.all ? 'AllCa' : vm.getAbbrv('category'),
-          season: vm.filter.season.all ? 'AllSe' : vm.getAbbrv('season'),
-          year: vm.filter.year.all ? 'AllYe' : '17',
-          region: vm.filter.region.all ? 'AllRe' : vm.getAbbrv('region'),
-          city: vm.filter.city.all ? 'AllCi' : vm.getAbbrv('city')
-        };
-        var result = '';
-        var date = moment().format('L');
-
-        _.map(abbrevs, function (item) {
-          result += item + '.';
-        });
-
-        return result + date + '.jpg';
-      };
-
-      vm.exportJpg = function () {
-        statsService.infographics();
-        var captureEl = angular.element('#capture');
-        var footer = angular.element('.customized-infographics-footer');
-        var titles = angular.element('.graphic-titles');
-        footer.css({display: 'block'});
-        // titles.css({'text-align': 'left', 'font-size': '3em'});
-        captureEl.css({'padding-top': '30px'});
-        var captureElHeight = captureEl.height();
-        var captureElWidth = captureEl.width();
-
-        timeout(function () {
-          html2canvas(captureEl[0], {
-            height: captureElHeight + 20,
-            width: captureElWidth + 10,
-            background: '#fff'
-          }).then(function (canvas) {
-            var img = canvas.toDataURL("image/jpeg");
-            download(img, vm.generateImgName('jpg'), "image/jpg");
-            captureEl.css({'padding': '0'});
-            footer.css({display: 'none'});
-            titles.css({'font-size': '20px', 'text-align': 'center'});
-          });
-        }, 50);
-      };
-
-      vm.reportJpg = function () {
-        var captureEl = angular.element('#capture');
-        var captureElHeight = captureEl.height();
-        var captureElWidth = captureEl.width();
-        timeout(function () {
-          html2canvas(captureEl[0], {
-            height: captureElHeight + 20,
-            width: captureElWidth + 20,
-            background: '#fff'
-          }).then(function (canvas) {
-            var img = canvas.toDataURL("image/jpeg");
-            download(img, vm.generateImgName('jpg'), "image/jpg");
-          });
-        }, 50);
-      };
-
-      function generateRandomGroupColorByGroupTitle(title) {
-        title = (title || '').replace(/[^\w]/g, '').toLowerCase();
-        var group = (groupTitlesTemplates[title] || {}).template || '#{0}{1}{2}';
-
-        return String.format(group,
-          randomColorFraction() + randomColorFraction(),
-          randomColorFraction() + randomColorFraction(),
-          randomColorFraction() + randomColorFraction());
-
-        function randomColorFraction() {
-          return Math.round(Math.random() * 15).toString(16);
-        }
-      }
-    }
-
-  ]);
-}(angular));
-
-angular
-  .module('app')
-  .component('customizedInfographicsComponent', {
-    templateUrl: 'app/components/customized-infographics/customized-infographics.tmpl.html'
-  });
-
-angular
-.module('app')
-.component('coursesDetailsComponent', {
-  templateUrl: 'app/components/courses-details/courses-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, $state, localStorageService) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'courses/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'courses', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.aggProduct = function () {
-      // localStorageService.remove('products');
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.courses) {
-        products.courses = {};
-      }
-      products.courses[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'courses'});
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('coursesComponent', {
-    templateUrl: 'app/components/courses/courses.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.pageData = [];
-      vm.categories = [];
-      vm.cacheItems = [];
-      vm.level = [];
-      vm.topic = [];
-      vm.provider = [];
-      vm.topicModel = 'TOPIC';
-      vm.providerModel = 'PROVIDER';
-      vm.levelModel = 'LEVEL';
-      vm.items = [];
-      vm.flag = true;
-      var numberOfElements = 3;
-      var count = 1;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'courses.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                vm.cacheItems.push(angular.copy(item.data));
-                return item.data;
-              });
-              vm.pageData.forEach(function (t) {
-                if (t.course_provider && !vm.provider.includes(t.course_provider)) {
-                  vm.provider.push(t.course_provider);
-                }
-              });
-              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
-              vm.level = ['Beginner', 'Intermediate', 'Advanced'];
-              vm.select();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.select = function () {
-        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.level.includes(vm.levelModel)) {
-          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
-            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.course_topic) &&
-              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.course_provider) &&
-              (!vm.level.includes(vm.levelModel) || vm.levelModel === t.course_level)) {
-              return t;
-            }
-          });
-        } else {
-          vm.filterData = angular.copy(vm.cacheItems);
-        }
-        vm.items = [];
-        count = 1;
-        vm.sortItems();
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('contactUsComponent', {
-    templateUrl: 'app/components/contact-us/contact-us.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate) {
-      this.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
-        title: {value: '', required: true, name: 'title', type: ''},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        phone: {value: '', name: 'phone number', type: 'enter'},
-        companyEmail: {value: '', required: true, name: 'company email', type: 'provide'},
-        comments: {value: '', required: true, name: 'comments', type: 'enter'}
-      };
-
-      this.contactUs = function () {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          for (var item in this.data) {
-            data[item] = this.data[item].value;
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-	.module('app')
-	.component('colorPickerComponent', {
-		templateUrl: 'app/components/color-picker/color-picker.tmpl.html',
-		controller: function ($location, $scope, $http, appConfig, anchorSmoothScroll, searchColor) {
-			var vm = this;
-
-			vm.gotoElement = function (eID) {
-				$location.hash('prefooter');
-				anchorSmoothScroll.scrollTo(eID);
-				$location.hash('');
-			};
-			// vm.paintColorNamesByPicker = [];
-			// vm.colorAssociationNamesByPicker = [];
-
-			var color_picker = document.getElementById("color_picker"),
-							color_id = document.getElementById("color_id");
-			$scope.colorPickerGray = 100;
-			$scope.colorPickerOpacity = 1;
-			document.getElementById('value_span').innerHTML = '100%';
-
-			vm.numOfpaintColorNames = 0;
-			vm.numOfcolorAssociationNames = 0;
-			vm.colorAssociationNameWord = '';
-
-			$scope.changeColor = function () {
-				color_picker.onmousedown = select_color;
-			};
-
-			color_picker_add();
-
-			$scope.colorPickerSliderGray = function () {
-				var value = document.getElementById('rg').value;
-				color_id.style.filter = "saturate(" + value + "%)";
-			};
-
-			$scope.colorPickerSliderOpacity = function () {
-				var value = document.getElementById('range_opacity').value;
-				document.getElementById('value_span').innerHTML = value * 100 + '%';
-				color_id.style.opacity = value;
-			};
-
-			$scope.colorPickerRGB = function () {
-				var colorInputR = document.getElementById('colorInputR').value,
-						colorInputG = document.getElementById('colorInputG').value,
-						colorInputB = document.getElementById('colorInputB').value;
-
-				$scope.colorRGB_R = colorInputR;
-				$scope.colorRGB_G = colorInputG;
-				$scope.colorRGB_B = colorInputB;
-
-				var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + ")";
-				color_id.style.backgroundColor = inputRGB;
-			}
-
-			function color_picker_add() {
-				color_picker_ = color_picker.getContext("2d"),
-					center_x = (color_picker.width) / 2,
-					center_y = (color_picker.height) / 2,
-					sx = center_x,
-					sy = center_y;
-
-				$scope.colorRGB_R = 0;
-				$scope.colorRGB_G = 0;
-				$scope.colorRGB_B = 0;
-				palette = new color_picker_element(center_x, center_y, sx, sy);
-				palette.draw();
-			}
-
-			function select_color(e) {
-				var x = e.pageX - color_picker.offsetLeft - 48,
-						y = e.pageY - color_picker.offsetTop - 570,
-						pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
-						// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
-						pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
-				color_id.style.backgroundColor = pixelColor;
-				// console.log('xxx', x, 'yyy', y);
-				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
-
-				$scope.pixel = pixel;
-				$scope.colorRGB_R = pixel[0];
-				$scope.colorRGB_G = pixel[1];
-				$scope.colorRGB_B = pixel[2];;
-			}
-
-
-			function color_picker_element(center_x, center_y, sx, sy) {
-				this.center_x = center_x;
-				this.center_y = center_y;
-				this.sx = sx;
-				this.sy = sy;
-				this.draw = function () {
-					for (var i = 0; i < 360; i += 0.1) {
-						var rad = (i - 45) * (Math.PI) / 180;
-						color_picker_.strokeStyle = "hsla(" + i + ", 100%, 50%, 1.0)";
-						color_picker_.beginPath();
-						color_picker_.moveTo(center_x, center_y);
-						color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
-						color_picker_.stroke();
-					}
-				}
-			}
-
-			this.searchByRGB = function () {
-				vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
-				// $http.get(appConfig.colorAPI +
-				// 	'minred=' + $scope.colorRGB_R +
-				// 	'&maxred=' + $scope.colorRGB_R +
-				// 	'&mingreen=' + $scope.colorRGB_G +
-				// 	'&maxgreen=' + $scope.colorRGB_G +
-				// 	'&minblue=' + $scope.colorRGB_B +
-				// 	'&maxblue=' + $scope.colorRGB_B, {})
-				// 	.then(function (res) {
-				// 		if (res.data.length > 0) {
-				// 			vm.paintColorNamesByPicker = res.data.map(function (item) {
-				// 				RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-				// 				colorName = item.ShortName;
-				// 				return {colorName: colorName, RGB: RGB};
-				// 			});
-				// 			if (vm.paintColorNamesByPicker) {
-				// 				vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
-				// 			}
-				//
-				// 			$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
-				// 				.then(function (res) {
-				// 					vm.numOfcolorAssociationNames = res.data.length;
-				// 					vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
-				// 				});
-				// 		}
-				// 	});
-				var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
-
-				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
-					.then(function (res) {
-						if (res.data.length > 0) {
-							vm.paintColorNamesByPicker = res.data.map(function (item) {
-								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-								colorName = item.ShortName;
-								return {colorName: colorName, RGB: RGB};
-							});
-							if (vm.paintColorNamesByPicker) {
-								vm.colorAssociationNameWord = {'shortname': vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20')};
-							}
-							$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
-								.then(function (res) {
-									vm.validData = res.data;
-									vm.numOfcolorAssociationNames = res.data.length;
-									vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
-								});
-						}
-					});
-			};
-
-			this.searchByShortNames = function (colorAssociationNameWord) {
-				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: vm.colorAssociationNameWord})
-					.then(function (res) {
-						vm.validData = res.data;
-						if (res && res.data.length > 0) {
-							var RGB = '',
-								colorName = '';
-							vm.colorAssociationNamesByPicker = res.data.map(function (item) {
-								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-								colorName = item.ShortName;
-								return {colorName: colorName, RGB: RGB};
-							});
-							searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
-							$location.url('/color-index-accordion');
-						}
-					});
-			};
-
-			$(document).ready(function () {
-				$(".scroll_down").click(function () {
-					$('html, body').animate({
-						scrollTop: $(".scroll-end").offset().top
-					}, 1500);
-				});
-			});
-
-		}
-	});
-
-angular
-  .module('app')
-  .component('colorNamingInfoComponent', {
-    templateUrl: 'app/components/color-naming-info/color-naming-info.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-        var vm = this;
-
-        $(document).ready(function() {
-            $(".scroll_down").click(function() {
-                $('html, body').animate({
-                    scrollTop: $("#education-top").offset().top
-                }, 1500);
-            });
-        });
-    }
-  });
-
-angular
-  .module('app')
-  .component('colorNamingIndexComponent', {
-    templateUrl: 'app/components/color-naming-index/color-naming-index.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-      var vm = this;
-
-
-    }
-  });
-
-angular
-	.module('app')
-	.component('colorIndexSearchComponent', {
-		templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
-		controller: function (dataValidate, appConfig, $window, $location, anchorSmoothScroll, $http, $scope, searchColor) {
-			var vm = this;
-			vm.paintColorNamesData = [];
-			vm.colorAssociationNames = [];
-
-			this.colorSearch = function () {
-				if (this.data.color != ' ') {
-					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {
-						params: {shortname: vm.data.color}
-					})
-						.then(function (res) {
-							vm.colorValidDataShort = res.data;
-							if (res && res.data.length > 0) {
-								var RGB = '',
-									colorName = '';
-								vm.paintColorNamesData = res.data.map(function (item) {
-									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-									colorName = item.ShortName;
-									return {colorName: colorName, RGB: RGB};
-								});
-								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {
-									params: {shortname: vm.data.color}
-								})
-									.then(function (res) {
-										if (res && res.data.length > 0) {
-											var RGB = '',
-												colorName = '';
-											vm.colorAssociationNames = res.data.map(function (item) {
-												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-												colorName = item.ShortName;
-												return {colorName: colorName, RGB: RGB};
-											});
-											searchColor.set(vm.paintColorNamesData, vm.colorAssociationNames);
-											$location.url('/color-index-accordion');
-										}
-									});
-							}
-						});
-				}
-			};
-		}
-	});
-
-angular
-  .module('app')
-  .component('colorIndexAccordionComponent', {
-    templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
-    controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
-      var vm = this;
-
-			vm.paintColorNames = searchColor.getPaintColorNames();
-      vm.colorAssociationNames = searchColor.getColorAssociationNames();
-
-      vm.searchColorName = [];
-
-			$scope.pageSize = 80;
-
-      // if (colorRgb !== undefined) {
-      //
-      //   var similarSaturateColors = [];
-      //   var similarDarkenColors = [];
-      //
-      //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
-      //     similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
-      //     similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
-      //   }
-      //   // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
-      //   // notDuplicateColors(similarSaturateColors);
-      //   // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
-      //
-      //   vm.similarSaturateColors = similarSaturateColors;
-      //   // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
-      //   vm.similarDarkenColors = similarDarkenColors;
-      //   // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
-      // }
-
-      var colorNamesItems = [],
-        		colorRgbItems = [];
-
-      if (vm.colorAssociationNames !== undefined) {
-        if (vm.colorAssociationNames.length > 0) {
-          vm.colorAssociationNames.forEach(function (color) {
-            colorRgbItems.push(color.RGB);
-						colorNamesItems.push(color.colorName);
-          });
-        }
-      }
-
-      var colorNames = colorNamesItems.join(',');
-			// word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud
-
-      if (colorNames.length > 1) {
-				drawWordCloud(colorNames);
-			}
-
-      function drawWordCloud(text_string) {
-        var common = 'poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,says,said,shall';
-
-        var word_count = {};
-
-        var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
-        if (words.length === 1) {
-          word_count[words[0]] = 1;
-        } else {
-          words.forEach(function (word) {
-            var word = word.toLowerCase();
-            if (word !== '' && common.indexOf(word) === -1 && word.length > 1) {
-              if (word_count[word]) {
-                word_count[word]++;
-              } else {
-                word_count[word] = 1;
-              }
-            }
-          });
-        }
-        var svg_location = '#chart';
-        var widthOf84per = innerWidth - innerWidth*16/100;
-        var width = widthOf84per;
-        var height = 450;
-
-        var word_entries = d3.entries(word_count);
-
-        var xScale = d3.scale.linear()
-                .domain([0, d3.max(word_entries, function (d) {
-                  return d.value;
-                })
-                ])
-                .range([20, 100]);
-        d3.layout.cloud().size([width, height])
-                .timeInterval(20)
-                .words(word_entries)
-                .fontSize(function (d) {
-                  return xScale(Number(d.value)); 
-                })
-                .text(function (d) {
-                  return d.key; 
-                })
-                .rotate(function () {
-                  return ~~(Math.random() * 2) * 90; 
-                })
-                .font('Impact')
-                .on('end', draw)
-                .start();
-				window.addEventListener("resize", draw(words));
-        function draw(words) {
-					console.log("window.innerWidth", window.innerWidth);
-          d3.select(svg_location).append('svg')
-                    .attr('width', width)
-                    .attr('height', height)
-						        // .attr("preserveAspectRatio", "xMidYMid meet")
-						        // .attr("viewBox", "0 0 1000 450")
-                    .append('g')
-                    .attr('transform', 'translate(' + [widthOf84per/2, 225] + ')')
-                    // .attr('transform', 'scale(2)')
-                    .selectAll('text')
-                    .data(words)
-                    .enter().append('text')
-                    .style('font-size', function (d) {
-                      return xScale(d.value*0.5) + 'px';
-                    })
-                    .style('font-family', 'Impact')
-                    .style('fill', function (d, i) {
-                      return 'rgb(' + colorRgbItems[i] + ')';
-                    })
-                    .attr('text-anchor', 'middle')
-                    .attr('transform', function (d) {
-                      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
-                    })
-                    .text(function (d) {
-                      return d.key; 
-                    });
-        }
-        d3.layout.cloud().stop();
-      }
-                                                                                                    // METHOD RGB TO HEX
-      function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? '0' + hex : hex;
-      }
-
-      function rgbToHex(r, g, b) {
-        return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-      }
-
-      //                                                                                         SELECT FOR COLOR DATA
-      $(document).ready(function() {
-        var widthContainer = window.innerWidth - 200;
-        var widthOneElement = $('.checkbox-accordion-item').width();
-        var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
-        var allElements = vm.paintColorNames.length;
-        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
-        var emptyElements = integerElementsOnRow - elementsOnRow;
-        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
-        
-        for(var i = 0; i < emptyElements; i++) {
-          $('.color-index-accordion-item__last-line').append(emptyBlock);
-        }
-        
-        $(document).click(function(event) {
-          if ($(event.target).closest(".selectPerPage").length) return;
-          $('.selectPerPage__list').removeClass('show');          
-          event.stopPropagation();
-        });
-      });
-
-      $scope.showSelect = function() {
-        $('.selectPerPage__list').toggleClass('show');
-      }
-    }
-  });
-angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
-  $scope.oneAtATime = true;
-});
-
-angular
-  .module('app')
-  .component('colorIndexComponent', {
-    templateUrl: 'app/components/color-index/color-index.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-      var vm = this;
-
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('colorEmotionComponent', {
-    templateUrl: 'app/components/color-emotion/color-emotion.tmpl.html',
-    controller: function ($location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-
-
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartThankComponent', {
-    templateUrl: 'app/components/cart-thank/cart-thank.tmpl.html',
-    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
-      var vm = this;
-
-      vm.orderId = localStorageService.get('orderId');
-      localStorageService.remove('orderId');
-      localStorageService.remove('purchase');
-      localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
-      vm.products = localStorageService.get('purchaseItems');
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartPageComponent', {
-    templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
-    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService, $window) {
-      var vm = this;
-
-      vm.init = function () {
-        vm.wayBack = $stateParams.wayBack || 'profile';
-        vm.wayBackName = ' to ';
-
-        switch ($stateParams.wayBack) {
-          case 'reports':
-            vm.wayBackName += 'Color Reports';
-            break;
-          case 'courses':
-            vm.wayBackName += 'Color Courses';
-            break;
-          case 'teachingMaterials':
-            vm.wayBackName += 'Color Teaching Materials';
-            break;
-          case 'profile':
-            vm.wayBackName += 'Profile';
-            break;
-          default:
-            vm.wayBackName = '';
-        }
-
-        vm.products = [];
-        vm.all = 0;
-        vm.tax = 0;
-        vm.IDs = localStorageService.get('products');
-
-        vm.getProductItems(vm.IDs.reports, 'reports');
-        vm.getProductItems(vm.IDs.courses, 'courses');
-        vm.getProductItems(vm.IDs.teaching_materials, 'teaching_materials');
-      };
-
-      vm.getProductItems = function (obj, name) {
-        for (var key in obj) {
-          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
-            .then(function (res) {
-              vm.pageData = res.data.data.data;
-              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-              vm.pageData.file = res.data.data.files && res.data.data.files[0];
-              vm.pageData.analitics = angular.copy(res.data.data.analytics);
-              vm.pageData.count = obj[key];
-              vm.pageData.type = name;
-              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
-              vm.products.push(vm.pageData);
-            });
-        }
-      };
-
-      vm.goCheckout = function () {
-        var purchase = {IDs: {}};
-        purchase.amount = vm.all;
-        for (var type in vm.IDs) {
-          purchase.IDs[type] = {};
-          for (var id in vm.IDs[type]) {
-            if (vm.IDs[type][id] < 1) {
-              return;
-            } else {
-              purchase.IDs[type][id] = vm.IDs[type][id];
-            }
-          }
-        }
-
-        localStorageService.set('purchase', purchase);
-        $state.go('cart-checkout');
-      };
-
-      vm.removeProduct = function (id, type, index) {
-        modalService.showModal(4, function () {
-          delete vm.IDs[type][id];
-          vm.products.splice(index, 1);
-          localStorageService.set('products', vm.IDs);
-        });
-      };
-
-      vm.goWayBack = function () {
-        if ($window.history.length < 3) {
-          $state.go('about');
-        } else if (vm.wayBackName === '') {
-          $window.history.back();
-        } else {
-          $state.go(vm.wayBack);
-        }
-      };
-
-      vm.editCount = function (id, index, type, value) {
-        if (vm.products[index].count + value > 0) {
-          vm.products[index].count = vm.products[index].count + value;
-          vm.IDs[type][id] = vm.IDs[type][id] + value;
-          localStorageService.set('products', vm.IDs);
-          vm.all = vm.all + vm.products[index].price * value;
-        } else {
-          vm.removeProduct(id, type, index);
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartCheckoutMethodsComponent', {
-    templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope, $cookies) {
-      var vm = this;
-
-      function init() {
-        vm.userIsLoggedIn();
-
-        vm.methodNumber = 1;
-        vm.payError = false;
-        vm.nonce = false;
-        vm.errFlag = false;
-        vm.payDataFlag = false;
-        vm.placeOrderFlag = false;
-        vm.maxMethod = 1;
-        vm.tax = 0;
-        vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
-        vm.registerAndCheckout = false;
-        vm.checkoutAsGuest = false;
-        vm.country = categoryValues('country');
-        vm.states = categoryValues('states');
-
-        vm.email = '';
-        vm.password = '';
-        vm.error = '';
-
-        vm.data = {
-          first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-          last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-          email: {value: '', required: true, name: 'email', type: 'provide'},
-          middle_name: {value: '', name: 'middle name', type: 'provide'},
-          address: {value: '', required: true, name: 'address', type: 'provide'},
-          second_address: {value: '', name: 'second_address', type: 'provide'},
-          city: {value: '', required: true, name: 'city', type: 'provide'},
-          zip: {value: '', required: true, name: 'zip', type: 'numeric'},
-          telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
-          state: {
-            value: vm.states[0],
-            required: true,
-            name: 'state',
-            type: 'both'
-          },
-          country: {
-            value: vm.country[0],
-            required: true,
-            name: 'country',
-            type: 'select'
-          }
-        };
-
-        vm.products = [];
-        vm.all = 0;
-        vm.purchase = localStorageService.get('purchase');
-
-        vm.getProductItems(vm.purchase.IDs.reports, 'reports');
-        vm.getProductItems(vm.purchase.IDs.courses, 'courses');
-        vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
-        vm.editGrayList();
-      }
-
-      $scope.getStates = function (search) {
-        var newState = vm.states.slice();
-        if (search.length > 0 && newState.indexOf(search) === -1) {
-          newState.unshift(search);
-        }
-        return newState;
-      };
-
-      vm.getBillingData = function () {
-        if (vm.user && vm.user.id) {
-          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json', {params: {token: authService.token}})
-            .then(function (res) {
-              // console.log('res',res);
-              if (res && res.data && res.data[0]) {
-                // console.log('res',res);
-
-                for (var key in vm.data) {
-                  if (key === 'state') {
-                    var index = _.findIndex(vm.states, function (item) {
-                      return item.title === res.data[0][key];
-                    });
-                    vm.data[key].value = vm.states[index];
-                  }
-                  if (key === 'country') {
-                    var index2 = _.findIndex(vm.country, function (item) {
-                      return item.title === res.data[0][key];
-                    });
-                    vm.data[key].value = vm.country[index2];
-                  }
-                  vm.data[key].value = res.data[0][key] || '';
-                }
-              }
-              if (!vm.data.email.value && vm.user) {
-                vm.data.email.value = vm.user.email;
-              }
-              vm.continue();
-            })
-            .catch(function (err) {
-              // console.log('ERROR',err);
-            });
-        } else {
-          return false;
-        }
-      };
-
-      vm.login = function () {
-        vm.error = false;
-        authService.login(this.email, this.password)
-          .then(function (data) {
-            if (data && data.success) {
-              vm.user = localStorageService.get('currentUser');
-            } else {
-              vm.error = true;
-            }
-          });
-      };
-
-      vm.uploadBillingInfo = function () {
-        if (vm.user.id) {
-          if (dataValidate.validate(vm.data)) {
-            var data = {};
-            for (var item in vm.data) {
-              if (vm.data[item].type === 'select') {
-                data[item] = vm.data[item].value.title || vm.data[item].value;
-              } else {
-                data[item] = vm.data[item].value;
-              }
-            }
-            data.member_id = vm.user.id;
-            data.token = authService.token;
-            $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
-              .then(function (res) {
-                vm.continue();
-              })
-              .catch(function (err) {
-                // console.log('ERROR',err);
-              });
-          }
-        } else {
-          vm.continue();
-        }
-      };
-
-      vm.continue = function () {
-        if (vm.methodNumber === 2 && !dataValidate.validate(vm.data)) {
-          return;
-        }
-        vm.methodNumber = vm.methodNumber + 1;
-        if (vm.methodNumber === 3 && !vm.purchase.amount) {
-          vm.methodNumber = 4;
-        }
-        if (vm.maxMethod < vm.methodNumber) {
-          vm.maxMethod = vm.methodNumber;
-        }
-        vm.editGrayList();
-      };
-
-      vm.editGrayList = function () {
-        vm.methodStyle.forEach(function (value, index) {
-          if (index === vm.methodNumber - 1) {
-            vm.methodStyle[index] = 'black';
-          } else {
-            vm.methodStyle[index] = 'gray';
-          }
-        });
-      };
-
-      vm.getProductItems = function (obj, name) {
-        for (var key in obj) {
-          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
-            .then(function (res) {
-              vm.pageData = res.data.data.data;
-              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-              vm.pageData.analitics = angular.copy(res.data.data.analytics);
-              vm.pageData.count = obj[key];
-              vm.pageData.type = name;
-              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
-              vm.products.push(vm.pageData);
-            });
-        }
-      };
-
-      vm.goToMethod = function (number) {
-        vm.errFlag = false;
-        vm.methodNumber = number;
-        vm.editGrayList();
-      };
-
-      vm.passwordRecover = function () {
-        $state.go('password-recover-cart');
-      };
-
-      vm.userIsLoggedIn = function () {
-        vm.loginFlag = ($cookies.get('hg_session') !== undefined);
-        if (vm.loginFlag) {
-          vm.getBillingData();
-        } else {
-          vm.methodNumber = 1;
-        }
-      };
-
-      vm.stepBack = function () {
-        vm.methodNumber = vm.methodNumber - 1;
-        vm.editGrayList();
-      };
-
-      vm.goToThank = function () {
-        $timeout(function () {
-          vm.errFlag = false;
-          vm.placeOrderFlag = true;
-        }, 0);
-        var names = [];
-        var prices = [];
-        vm.products.forEach(function (item) {
-          names.push(item.header);
-          prices.push(item.price);
-        });
-        var data = {
-          id: vm.user.id || 0,
-          email: vm.data.email.value,
-          reports: vm.purchase.IDs.reports,
-          teaching_materials: vm.purchase.IDs.teaching_materials,
-          courses: vm.purchase.IDs.courses,
-          payment_method_nonce: vm.nonce,
-          name: vm.data.first_name.value + ' ' + vm.data.last_name.value,
-          address: vm.data.address.value,
-          zip: vm.data.zip.value,
-          city: vm.data.city.value,
-          productsNames: names,
-          productsPrices: prices
-        };
-        $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
-          .then(function (res) {
-            if (res) {
-              vm.info = res.data.info;
-              if (res.data.status === 'fail') {
-                vm.errFlag = true;
-                $timeout(function () {
-                  vm.placeOrderFlag = false;
-                }, 0);
-              } else {
-                vm.errFlag = false;
-                localStorageService.set('purchaseItems', res.data.items);
-                localStorageService.set('orderId', res.data.orderId);
-                $timeout(function () {
-                  vm.placeOrderFlag = false;
-                }, 0);
-                $state.go('cart-thank');
-              }
-            }
-          })
-          .catch(function (err) {
-            vm.placeOrderFlag = false;
-            vm.errFlag = true;
-          });
-      };
-
-      braintree.client.create({
-        authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
-      }, function (err, clientInstance) {
-        if (err) {
-          // console.error(err);
-          return;
-        }
-        braintree.hostedFields.create({
-          client: clientInstance,
-          styles: {
-            'input': {
-              'font-size': '14px',
-              'font-family': 'helvetica, tahoma, calibri, sans-serif',
-              'color': '#3a3a3a'
-            },
-            ':focus': {
-              'color': 'black'
-            }
-          },
-          fields: {
-            number: {
-              selector: '#card-number',
-              placeholder: 'CREDIT CARD NUMBER *'
-            },
-            cvv: {
-              selector: '#cvv',
-              placeholder: 'CVV *'
-            },
-            expirationMonth: {
-              selector: '#expiration-month',
-              placeholder: 'MONTH',
-              select: {
-                options: [
-                  '01',
-                  '02',
-                  '03',
-                  '04',
-                  '05',
-                  '06',
-                  '07',
-                  '08',
-                  '09',
-                  '10',
-                  '11',
-                  '12'
-                ]
-              }
-            },
-            expirationYear: {
-              selector: '#expiration-year',
-              placeholder: 'YEAR',
-              select: {
-                options: true
-              }
-            }
-          }
-        }, function (err, hostedFieldsInstance) {
-          if (err) {
-            // console.error(err);
-            return;
-          }
-          hostedFieldsInstance.on('validityChange', function (event) {
-            $timeout(function () {
-              vm.payError = false;
-            }, 0);
-            var field = event.fields[event.emittedBy];
-            if (field.isValid) {
-              if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear' || event.emittedBy === 'cvv') {
-                if (!event.fields.expirationMonth.isValid || !event.fields.expirationYear.isValid || !event.fields.cvv.isValid) {
-                  return;
-                }
-              } else if (event.emittedBy === 'number') {
-                $('#card-number').next('span').text('');
-              }
-              // Remove any previously applied error or warning classes
-              $(field.container).parents('.form-group').removeClass('has-warning');
-              $(field.container).parents('.form-group').removeClass('has-success');
-              // Apply styling for a valid field
-              $(field.container).parents('.form-group').addClass('has-success');
-            } else if (field.isPotentiallyValid) {
-              // Remove styling  from potentially valid fields
-              $(field.container).parents('.form-group').removeClass('has-warning');
-              $(field.container).parents('.form-group').removeClass('has-success');
-              if (event.emittedBy === 'number') {
-                $('#card-number').next('span').text('');
-              }
-            } else {
-              // Add styling to invalid fields
-              $(field.container).parents('.form-group').addClass('has-warning');
-              // Add helper text for an invalid card number
-              if (event.emittedBy === 'number') {
-                $('#card-number').next('span').text('Looks like this card number has an error.');
-              }
-            }
-          });
-          hostedFieldsInstance.on('cardTypeChange', function (event) {
-            // Handle a field's change, such as a change in validity or credit card type
-            if (event.cards.length === 1) {
-              $('#card-type').text(event.cards[0].niceType);
-            } else {
-              $('#card-type').text('Card');
-            }
-          });
-          $('.panel-body').submit(function (event) {
-            $timeout(function () {
-              vm.payDataFlag = true;
-            }, 0);
-
-            event.preventDefault();
-            hostedFieldsInstance.tokenize(function (err, payload) {
-              if (err) {
-                $timeout(function () {
-                  vm.payError = err.message;
-                  vm.payDataFlag = false;
-                  // console.error(err);
-                  return;
-                }, 0);
-              }
-              // This is where you would submit payload.nonce to your server
-              $timeout(function () {
-                if (payload && payload.nonce) {
-                  vm.nonce = payload.nonce;
-                  vm.continue();
-                  vm.payDataFlag = false;
-                }
-              }, 0);
-            });
-          });
-        });
-
-        braintree.paypalCheckout.create({
-          client: clientInstance
-        }, function (paypalCheckoutErr, paypalCheckoutInstance) {
-
-          // Stop if there was a problem creating PayPal Checkout.
-          // This could happen if there was a network error or if it's incorrectly
-          // configured.
-          if (paypalCheckoutErr) {
-            console.error('Error creating PayPal Checkout:', paypalCheckoutErr);
-            return;
-          }
-
-          // Set up PayPal with the checkout.js library
-          paypal.Button.render({
-            locale: 'en_US',
-            style: {
-              size: 'small',
-              color: 'blue',
-              shape: 'pill',
-              label: 'paypal',
-              tagline: 'false'
-            },
-            env: 'sandbox', // or 'sandbox'
-
-            payment: function () {
-              return paypalCheckoutInstance.createPayment({
-                flow: 'checkout',
-                amount: vm.all,
-                currency: 'USD',
-                intent: 'sale'
-                // Your PayPal options here. For available options, see
-                // http://braintree.github.io/braintree-web/current/PayPalCheckout.html#createPayment
-              });
-            },
-
-            onAuthorize: function (data, actions) {
-              return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
-                if (err) {
-                  $timeout(function () {
-                    vm.payError = err.message;
-                    // console.error(err);
-                    return;
-                  }, 0);
-                }
-                // This is where you would submit payload.nonce to your server
-                $timeout(function () {
-                  if (payload && payload.nonce) {
-                    vm.nonce = payload.nonce;
-                    vm.continue();
-                  }
-                }, 0);
-                // Submit `payload.nonce` to your server.
-              });
-            },
-
-            onCancel: function (data) {
-              console.log('checkout.js payment cancelled', JSON.stringify(data, 0, 2));
-            },
-
-            onError: function (err) {
-              console.error('checkout.js error', err);
-            }
-          }, '#paypal-button').then(function () {
-            // The PayPal button will be rendered in an html element with the id
-            // `paypal-button`. This function will be called when the PayPal button
-            // is set up and ready to be used.
-          });
-
-        });
-      });
-
-      $scope.$watch(function () {
-        return authService.currentUser;
-      }, function (newVal) {
-        vm.user = localStorageService.get('currentUser');
-        if (vm.user) {
-          init();
-        }
-
-      });
-    }
-  });
-angular
-  .module('app')
-  .component('aboutPage', {
-    templateUrl: 'app/components/about-page/about-page.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'abouts/1.json')
-          .then(function (res) {
-            if (res && res.data) {
-              // var keys = Object.keys(res.data).filter(function (item) {
-              //   return !!~item.indexOf('_url');
-              // });
-              //
-              // angular.forEach(keys, function (key) {
-              //   res.data[key] = appConfig.dashboardServiceUrl + res.data[key]
-              // });
-
-              vm.pageData = res.data;
-              vm.pageData.editor = $sce.trustAsHtml(vm.pageData.editor);
-            }
-          });
-      };
-
-      angular.element(window.scrollTo(0, 0));
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-
-      vm.playerAPI = function (action) {
-        vm.vimeoPlayer = angular.element('iframe#companyVimeoVideo')[0];
-        if (vm.vimeoPlayer) {
-          vm.vimeoAPI = $f(vm.vimeoPlayer).api(action);
-        }
-      };
-
-      vm.showVideoPopup = function () {
-        angular.element('#video-popup').show();
-        angular.element('body').addClass('modal-open');
-      };
-
-      vm.hideVideoPopup = function () {
-        vm.playerAPI('pause');
-        angular.element('#video-popup').hide();
-        angular.element('body').removeClass('modal-open');
-      };
-    }
-  })
 
 angular.module('app').directive('hueTrialExpiredMessage', function () {
   function link(scope, element, attrs) {
@@ -13599,6 +8954,4651 @@ angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', functi
     }
   };
 }]);
+
+angular
+  .module('app')
+  .component('verticalCoverageComponent', {
+    templateUrl: 'app/components/vertical-coverage/vertical-coverage.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'about_vertical_coverages.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = angular.copy(res.data);
+              vm.pageData.forEach(function (item) {
+                item.editor = item.editor.split('</ul>');
+                item.editor = item.editor.map(function (t) {
+                  return t + '</ul>';
+                });
+              });
+            }
+          });
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+
+    }
+  });
+
+angular
+  .module('app')
+  .component('unsubscribeComponent', {
+    templateUrl: 'app/components/unsubscribe/unsubscribe.tmpl.html',
+    controller: function ($http, appConfig, $stateParams) {
+      var self = this;
+      self.success = true;
+      $http.get(appConfig.dashboardServiceUrl + 'unsubscribe.json', {params: {token: $stateParams.token}})
+        .then(function (res) {
+          if (res.data && res.data.success) {
+            self.success = res.data.success;
+          }
+        });
+    }
+  });
+
+angular
+  .module('app')
+  .component('thankYouComponent', {
+    templateUrl: 'app/components/thank-you/thank-you.tmpl.html',
+    controller: function ($stateParams) {
+      // this.membership = $stateParams.parFrom === 'membership';
+      // switch ($stateParams.parFrom) {
+      //   case 'press': {
+      //     this.text = 'press request';
+      //     break;
+      //   }
+      //   case 'speaking': {
+      //     this.text = 'Speaking Engagements request';
+      //     break;
+      //   }
+      //   case 'contact': {
+      //     this.text = 'contacting request';
+      //     break;
+      //   }
+      //   case 'data': {
+      //     this.text = 'inquire about Data Partnership';
+      //     break;
+      //   }
+      //   case 'edu': {
+      //     this.text = 'inquire about Education Partnership';
+      //     break;
+      //   }
+      //   case 'inquire': {
+      //     this.text = 'inquire';
+      //     break;
+      //   }
+      //   case 'membership': {
+      //     this.text = 'We received your membership request. Thank you for reaching out.';
+      //     break;
+      //   }
+      //   default: {
+      //     this.text = 'request';
+      //     break;
+      //   }
+      // }
+    }
+  });
+
+angular
+  .module('app')
+  .component('termsComponent', {
+    templateUrl: 'app/components/terms/terms.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.find(function (item) {
+                return item.name === 'Terms of Use';
+              })
+            }
+          });
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('teachingMaterialsDetailsComponent', {
+  templateUrl: 'app/components/teaching-materials-details/teaching-materials-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'teaching_materials/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser')? true : false
+    };
+
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.teaching_materials) {
+        products.teaching_materials = {};
+      }
+      products.teaching_materials[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'teachingMaterials'});
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('teachingMaterialsComponent', {
+    templateUrl: 'app/components/teaching-materials/teaching-materials.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.topicModel = 'TOPIC';
+      vm.providerModel = 'PROVIDER';
+      vm.typeModel = 'TYPE';
+      vm.pageData = [];
+      vm.categories = [];
+      vm.cacheItems = [];
+      vm.topic = [];
+      vm.provider = [];
+      vm.type = [];
+      vm.items = [];
+      vm.flag = true;
+      var numberOfElements = 3;
+      var count = 1;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'teaching_materials.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                vm.cacheItems.push(angular.copy(item.data));
+                return item.data;
+              });
+              vm.pageData.forEach(function (t) {
+                if (t.teaching_material_provider && !vm.provider.includes(t.teaching_material_provider)) {
+                  vm.provider.push(t.teaching_material_provider);
+                }
+              });
+              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
+              vm.type = ['Beginner', 'Intermediate', 'Advanced'];
+              vm.select();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterDate.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.showMore = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.select = function () {
+        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.type.includes(vm.typeModel)) {
+          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
+            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.teaching_material_topic) &&
+              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.teaching_material_provider) &&
+              (!vm.type.includes(vm.typeModel) || vm.typeModel === t.teaching_material_type)) {
+              return t;
+            }
+          });
+        } else {
+          vm.filterDate = angular.copy(vm.cacheItems);
+        }
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('staffLoginComponent', {
+    templateUrl: 'app/components/staff-login/staff-login.tmpl.html',
+    controller: function (authService, appConfig, $state) {
+      var self = this;
+      self.buttonGoogleUrl = appConfig.dashboardServiceUrl + 'auth/google_oauth2';
+      this.email = '';
+      this.password = '';
+      this.isRemembered = false;
+      this.error = '';
+
+      this.login = function () {
+        self.error = false;
+        authService.login(this.email, this.password, this.isRemembered)
+          .then(function (data) {
+            if (data && data.success) {
+              $state.go('landing');
+            } else {
+              self.error = true;
+            }
+          });
+      };
+    }
+  })
+angular
+  .module('app')
+  .component('speakingEngagementsComponent', {
+    templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
+    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+      vm.speakers = [];
+
+      vm.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        jobtitle: {value: '', required: true, name: 'job title', type: 'provide'},
+        request: {value: '', required: true, name: 'request', type: 'enter'},
+        message: {value: '', required: true, name: 'message', type: 'enter'}
+      };
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.speakers = angular.copy(res.data);
+            }
+            vm.groups = _.chunk(angular.copy(vm.speakers), 3);
+          });
+        $http.get(appConfig.dashboardServiceUrl + 'about_speaking_engagements.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData.title = res.data['0'].title;
+              vm.pageData.editor = res.data['0'].editor;
+            }
+          });
+      };
+
+      vm.send = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('reportsDetailsComponent', {
+  templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'reports/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'reports', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.addProduct = function () {
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.reports) {
+        products.reports = {};
+      }
+      products.reports[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'reports'});
+    };
+
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('reportsComponent', {
+    templateUrl: 'app/components/reports/reports.tmpl.html',
+    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.filters = {};
+      vm.hueModel = 'VERTICALS';
+      vm.reportModel = 'ALL';
+      vm.yearModel = 'YEAR';
+      vm.pageData = {};
+      vm.cacheItems = [];
+      vm.hue = categoryValues('hue');
+
+      vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
+      vm.year = [];
+      vm.items = [];
+      vm.dis = true;
+      vm.flag = true;
+      var lastYear = moment().year();
+      var count = 1;
+      var numberOfElements = 3;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                vm.cacheItems.push(angular.copy(item.data));
+                return item.data;
+              });
+              vm.pageData.forEach(function (t) {
+                if (t.hue && !vm.hue.includes(t.hue)) {
+                  vm.hue.push(t.hue);
+                }
+
+                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
+                  lastYear = Number(t.published_year);
+                }
+              });
+              vm.year = _.range(lastYear, moment().year() + 1);
+              vm.select();
+              vm.year = vm.year.reverse();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.select = function (obj) {
+        if (obj) {
+          if (obj.$ctrl.hueModel === 'Fashion') {
+            vm.dis = false;
+          } else {
+            vm.dis = true;
+          }
+        }
+        if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
+          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
+            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
+              (!vm.report.includes(vm.reportModel) || vm.reportModel === t.report_style) &&
+              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
+              return t;
+            }
+          });
+        } else {
+          vm.filterData = angular.copy(vm.cacheItems);
+        }
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('recoverComponent', {
+    templateUrl: 'app/components/recover/recover.tmpl.html',
+    controller: function ($state, $http, appConfig) {
+      var self = this;
+      this.successRequest = false;
+      this.email = '';
+      this.error = false;
+
+      this.onSendLoginClick = function () {
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.email) {
+          self.error = 'The Email field is required';
+        } else {
+          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
+            .then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('publicationScheduleComponent', {
+    templateUrl: 'app/components/publication-schedule/publication-schedule.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.result = [];
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'publication_schedules.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.quarter1 = _.groupBy(res.data, 'quater_year1');
+              vm.quarter2 = _.groupBy(res.data, 'quater_year2');
+
+              var quarters1 = [];
+              var quarters2 = [];
+              for (var year1 in vm.quarter1) {
+                var test1 = vm.quarter1[year1].reduce(function (acc, nv) {
+                  return acc + nv.editor1;
+                }, '');
+
+                quarters1.push({
+                  year: year1,
+                  q: 1,
+                  list: test1
+                });
+              }
+
+              for (var year2 in vm.quarter2) {
+                var test = vm.quarter2[year2].reduce(function (acc, nv) {
+                  return acc + nv.editor2;
+                }, '');
+
+                quarters2.push({
+                  year: year2,
+                  q: 2,
+                  list: test
+                });
+              }
+              vm.result = _.sortBy(quarters1.concat(quarters2), ['year', 'q']);
+            }
+          });
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('profileComponent', {
+    templateUrl: 'app/components/profile/profile.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout, Upload) {
+      var vm = this;
+      $scope.uploadFiles = function (file) {
+        if (file.$ngfBlobUrl) {
+          vm.userData.image_url = file.$ngfBlobUrl;
+          file.upload = Upload.upload({
+            url: appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json',
+            method: 'PUT',
+            fields: {'member[image]': file, flag: true},
+            file: file,
+            fileFormDataName: 'member[image]'
+          });
+        }
+      };
+
+      vm.job_function = categoryValues('job function');
+      vm.country = categoryValues('country');
+      vm.industry = categoryValues('industry');
+      vm.company_size = categoryValues('company size');
+      vm.editFlag = false;
+      vm.fileFlag = true;
+
+      vm.init = function () {
+        authService.loadCurrentUser().then(function (res) {
+          vm.userID = res.data.user.id;
+          $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json', {params: {token: authService.token}})
+            .then(function (res) {
+              if (res && res.data) {
+                vm.userData = res.data;
+                vm.date = moment(vm.userData.date_year + '-' + vm.userData.date_month + '-' + vm.userData.date_day).format('YYYY-MM-DD');
+
+                vm.indexes = {
+                  job_function: vm.searchIndex(vm.job_function, vm.userData.job_function),
+                  company_size: vm.searchIndex(vm.company_size, vm.userData.company_size),
+                  country: vm.searchIndex(vm.country, vm.userData.country),
+                  industry: vm.searchIndex(vm.industry, vm.userData.industry)
+                };
+                vm.intEditData();
+              }
+            });
+        });
+      };
+
+      vm.intEditData = function () {
+        vm.data = {
+          first_name: {value: vm.userData.first_name, required: true, name: 'first name', type: 'provide'},
+          last_name: {value: vm.userData.last_name, required: true, name: 'last name', type: 'provide'},
+          email: {value: vm.userData.email, required: true, name: 'email', type: 'provide'},
+          company: {value: vm.userData.company, required: true, name: 'company name', type: 'provide'},
+          job_title: {value: vm.userData.job_title, required: true, name: 'job title', type: 'provide'},
+          bio: {value: vm.userData.bio, name: 'bio', type: 'provide'},
+          job_function: {
+            value: vm.job_function[vm.indexes.job_function] || vm.userData.job_function,
+            required: true,
+            name: 'job function',
+            type: 'select'
+          },
+          company_size: {
+            value: vm.company_size[vm.indexes.company_size] || vm.userData.company_size,
+            required: true,
+            name: 'company size',
+            type: 'select'
+          },
+          industry: {
+            value: vm.industry[vm.indexes.country] || vm.userData.industry,
+            required: true,
+            name: 'industry',
+            type: 'select'
+          },
+          country: {
+            value: vm.country[vm.indexes.industry] || vm.userData.country,
+            required: true,
+            name: 'country',
+            type: 'select'
+          }
+        };
+      };
+
+      vm.searchIndex = function (arr, value) {
+        return _.findIndex(arr, function (item) {
+          return item.title === value;
+        });
+      };
+
+      vm.goCart = function () {
+        $state.go('cart-page', {wayBack: 'profile'});
+      };
+
+      vm.goPurchase = function () {
+        $state.go('my-purchases');
+      };
+
+      vm.cancel = function () {
+        vm.editFlag = false;
+        vm.intEditData();
+      };
+
+      vm.save = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in vm.data) {
+            if (vm.data[item].type === 'select') {
+              data[item] = vm.data[item].value.title;
+            } else {
+              data[item] = vm.data[item].value;
+            }
+          }
+          data.flag = 'profile';
+          data.token = authService.token;
+          $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, data)
+            .then(function (res) {
+              if (res.status !== 200) {
+                console.log(res);
+              }
+            });
+          vm.editFlag = false;
+        }
+      };
+
+      vm.editProfile = function () {
+        for (var key in vm.indexes) {
+          if (vm.indexes[key] < 0) {
+            vm.data[key].value = vm[key][0];
+          }
+        }
+        vm.editFlag = true;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('privacyComponent', {
+    templateUrl: 'app/components/privacy-policy/privacy-policy.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.find(function (item) {
+                return item.name === 'Privacy Policy';
+              })
+            }
+          });
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('pressComponent', {
+    templateUrl: 'app/components/press/press.tmpl.html',
+    controller: function ($state, $http, appConfig, dataValidate) {
+      var vm = this;
+      vm.pageData = {};
+      vm.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        message: {value: '', required: true, name: 'message', type: 'enter'},
+        research: {value: '-'}
+      };
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'presses.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = angular.copy(res.data);
+            }
+          });
+        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData.reports = angular.copy(res.data.data);
+            }
+          });
+      };
+      vm.press = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
+            params: data
+          })
+            .then(function (res) {
+              if (res.status === 200) {
+                $state.go('thank-you');
+              }
+            });
+        }
+      };
+      vm.makeDate = function (item) {
+        return moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day).format('MMMM D, YYYY');
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('passwordRecoverCartComponent', {
+    templateUrl: 'app/components/password-recover-cart/password-recover-cart.tmpl.html',
+    controller: function ($state, $http, appConfig) {
+      var self = this;
+      self.successRequest = false;
+      self.email = '';
+      self.error = false;
+
+      self.onSendLoginClick = function () {
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.email) {
+          self.error = 'The Email field is required';
+        } else {
+          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
+            .then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            });
+        }
+      };
+
+      self.goBack = function () {
+        $state.go('cart-checkout');
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('passwordRecoverComponent', {
+    templateUrl: 'app/components/password-recover/password-recover.tmpl.html',
+    controller: function ($state, $http, appConfig, $stateParams) {
+      var self = this;
+      this.successRequest = false;
+      this.password = '';
+      this.passwordConfirm = '';
+      this.error = false;
+      this.type = $stateParams.token[0] || 'r';
+      this.token = $stateParams.token.slice(1);
+
+      this.onSendLoginClick = function () {
+        self.error = false;
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.password || !self.passwordConfirm) {
+          self.error = 'Password and Confirm Password fields are required';
+        } else {
+          if (self.password === self.passwordConfirm) {
+            $http.get(appConfig.dashboardServiceUrl + '/password_recover.json', {
+              params: {
+                password: self.password,
+                token: self.token
+              }
+            }).then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            }).catch(function (err) {
+              if (err) {
+                self.error = 'Your token is invalid';
+              }
+            });
+          } else {
+            self.error = 'Passwords are not identical';
+          }
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('orderEmailComponent', {
+    templateUrl: 'app/components/order-email/order-email.tmpl.html',
+    controller: function ($state, $http, appConfig, $stateParams) {
+      var vm = this;
+      vm.token = $stateParams.token;
+      vm.products = [];
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'order-email.json', {
+          params: {
+            token: vm.token
+          }
+        }).then(function (res) {
+          if (res.data) {
+            vm.success = res.data.success;
+            if (res.data.success) {
+              vm.orderId = res.data.orderId;
+              vm.products = res.data.products;
+            } else {
+              vm.error = 'We did not find email you provided in our base';
+            }
+          }
+        });
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('myPurchasesComponent', {
+    templateUrl: 'app/components/my-purchases/my-purchases.tmpl.html',
+    controller: function ($state, $http, appConfig, $scope, authService, localStorageService) {
+      var vm = this;
+      vm.data = [];
+
+      function init() {
+        if (vm.user && vm.user.id) {
+          $http.get(appConfig.dashboardServiceUrl + '/members/bought_items.json', {params: {id: vm.user.id, token: authService.token}})
+            .then(function (res) {
+              for (var key in res.data) {
+                res.data[key].forEach(function (item) {
+                  item.purchaseDate = moment(item.purchase_date).format('DD.MM.YYYY');
+                  if (key === 'teaching_materials') {
+                    item.type = 'color-teaching-materials';
+                  } else if (key === 'reports') {
+                    item.type = 'color-reports';
+                  } else if (key === 'courses') {
+                    item.type = 'color-education-courses';
+                  }
+                  vm.data.push(item);
+                });
+              }
+              vm.data.sort(vm.sortByDate);
+            });
+        }
+      }
+
+      vm.sortByDate = function(a, b) {
+        if (Date.parse(a.purchase_date) < Date.parse(b.purchase_date)) return 1;
+        if (Date.parse(a.purchase_date) > Date.parse(b.purchase_date)) return -1;
+      };
+
+
+
+      $scope.$watch(function () {
+        return authService.currentUser;
+      }, function (newVal) {
+        vm.user = localStorageService.get('currentUser');
+        init();
+      });
+    }
+  });
+
+angular
+  .module('app')
+  .component('membershipComponent', {
+    templateUrl: 'app/components/membership/membership.tmpl.html',
+    controller: function ($stateParams, $state, scrollService, categoryValues, $http, appConfig, modalService, dataValidate) {
+      scrollService.scrollMember();
+      var self = this;
+      this.jobs = categoryValues('job function');
+      this.countries = categoryValues('country');
+      this.industries = categoryValues('industry');
+      this.companySizes = categoryValues('company size');
+
+
+      this.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
+        permissions: {daily: true, research: true, edu: true},
+        relationship: {expert: true}
+      };
+
+      this.submitInquiry = function () {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            if (item !== 'permissions' && item !== 'relationship') {
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
+            } else if (item === 'permissions') {
+              data.permissions = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.permissions.push(categoryValues('permissions')[k]);
+                }
+              });
+              data.permissions = JSON.stringify(data.permissions);
+            } else if (item === 'relationship' && this.data.relationship.expert) {
+              data.relationship = 'Expert Panelist';
+            }
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'new_member', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('membersAnalyticsComponent', {
+    templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService, localStorageService) {
+      var vm = this;
+      vm.searchModel = '';
+      vm.all = [];
+      vm.pageData = [];
+      vm.items = [];
+      var count = 0;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json', {params: {token: authService.token}})
+          .then(function (res) {
+            vm.pageData = angular.copy(res.data.data);
+            vm.all = angular.copy(res.data.data);
+            vm.search();
+          });
+      };
+      vm.more = function () {
+        vm.all[count++].forEach(function (i) {
+          vm.items.push(i);
+        });
+      };
+
+      vm.search = function () {
+        if (vm.searchModel) {
+          vm.filterData = [];
+          vm.pageData.forEach(function (t) {
+            if (new RegExp('^' + vm.searchModel, 'i').test(t.member_name)) {
+              vm.filterData.push(t);
+            }
+          });
+        } else {
+          vm.filterData = angular.copy(vm.pageData);
+        }
+        vm.items = [];
+        vm.all = _.chunk(angular.copy(vm.filterData), 5);
+        count = 0;
+        vm.more();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('membersComponent', {
+    templateUrl: 'app/components/members/members.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.filter = '';
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'members/names.json')
+          .then(function (res) {
+            if (res && res.data) {
+              var rows = res.data.length > 0 ? Math.ceil(res.data.length / 4) : 1;
+              vm.pageData = res.data;
+              vm.dataGroups = _.chunk(res.data, rows);
+            }
+          });
+      };
+
+      vm.filterChange = function () {
+        vm.dataGroups = _.chunk(vm.pageData.filter(function (item) {
+          var fullName = item.first_name + ' ' + item.last_name;
+          return fullName.toLowerCase().indexOf(vm.filter) >= 0;
+        }));
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+            return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('loginComponent', {
+    templateUrl: 'app/components/login/login.tmpl.html',
+    controller: function (authService, $state, localStorageService) {
+      var self = this;
+      this.email = '';
+      this.password = '';
+      this.isRemembered = false;
+      this.error = '';
+      var products = {courses: {}, reports: {}, teaching_materials: {}};
+      localStorageService.set('products', products);
+
+      this.login = function () {
+        self.error = false;
+        authService.login(this.email, this.password, this.isRemembered)
+          .then(function (data) {
+            if (data && data.success) {
+              $state.go('aboutPage');
+            } else {
+              self.error = true;
+            }
+          });
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('landingPageComponent', {
+    templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
+    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location) {
+    var vm =this;
+
+      $(document).ready(function () {
+        $("nav").find("li").on("click", "a", function () {
+          // $('.navbar-collapse.in').collapse('hide');
+        });
+      });
+
+      $(document).ready(function(){
+
+        $("#slideshow > div:gt(0)").hide();
+
+        var interval = setInterval(slide, 3000);
+
+        function intslide(func) {
+          if (func == 'start') {
+            interval = setInterval(slide, 3000);
+          } else {
+            clearInterval(interval);
+          }
+        }
+
+          function slide() {
+              sact('next', 0, 2000);
+          }
+
+          function sact(a, ix, it) {
+              var currentSlide = $('.current');
+              var nextSlide = currentSlide.next('.slideitem');
+              var prevSlide = currentSlide.prev('.slideitem');
+              var reqSlide = $('.slideitem').eq(ix);
+
+              var currentDot = $('.active-dot');
+              var nextDot = currentDot.next();
+              var prevDot = currentDot.prev();
+              var reqDot = $('.dot').eq(ix);
+
+              if (nextSlide.length == 0) {
+                  nextDot = $('.dot').first();
+                  nextSlide = $('.slideitem').first();
+              }
+
+              if (prevSlide.length == 0) {
+                  prevDot = $('.dot').last();
+                  prevSlide = $('.slideitem').last();
+              }
+
+              if (a == 'next') {
+                  var Slide = nextSlide;
+                  var Dot = nextDot;
+              }
+              else if (a == 'prev') {
+                  var Slide = prevSlide;
+                  var Dot = prevDot;
+              }
+              else {
+                  var Slide = reqSlide;
+                  var Dot = reqDot;
+              }
+              var it_before = it - 1500;
+              currentSlide.fadeOut(it_before).removeClass('current');
+              Slide.fadeIn(it).addClass('current');
+          }
+      });
+
+//                                                                                                          REPORTS ON LANDING
+			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
+				console.log("res", res.data.reports);
+				vm.reports_on_landing = res.data.reports
+			});
+
+//                                                                                                          COLOR-PICKER
+        var color_picker = document.getElementById("color_picker");
+        var color_id = document.getElementById("color_id");
+        $scope.colorPickerGray = 100;
+        $scope.colorPickerOpacity = 1;
+			  document.getElementById('value_span').innerHTML = '100%';
+
+        $scope.changeColor = function () {
+            color_picker.onmousedown = select_color;
+        };
+        color_picker_add();
+
+        $scope.colorPickerSliderGray = function  () {
+            var value = document.getElementById('rg').value;
+            color_id.style.filter =  "saturate(" + value + "%)";
+        };
+
+        $scope.colorPickerSliderOpacity = function  () {
+            var value = document.getElementById('range_opacity').value;
+            document.getElementById('value_span').innerHTML = value*100 + '%';
+            color_id.style.opacity =  value;
+        };
+
+        $scope.colorPickerRGB = function () {
+            var colorInputR = document.getElementById('colorInputR').value;
+            var colorInputG = document.getElementById('colorInputG').value;
+            var colorInputB = document.getElementById('colorInputB').value;
+
+            $scope.colorRGB_R = colorInputR;
+            $scope.colorRGB_G = colorInputG;
+            $scope.colorRGB_B = colorInputB;
+
+            var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
+            color_id.style.backgroundColor = inputRGB;
+        };
+
+        function color_picker_add() {
+            color_picker_ = color_picker.getContext("2d"),
+                center_x = (color_picker.width)/2,
+                center_y = (color_picker.height)/2,
+                sx = center_x,
+                sy = center_y;
+
+            $scope.colorRGB_R = 0;
+            $scope.colorRGB_G = 0;
+            $scope.colorRGB_B = 0;
+            palette = new color_picker_element(center_x, center_y, sx, sy);
+            palette.draw();
+        }
+
+        function select_color(e) {
+            var x = e.pageX - color_picker.offsetLeft - 534,
+                y = e.pageY - color_picker.offsetTop - 3672,
+                pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+                pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
+            color_id.style.backgroundColor = pixelColor;
+
+            $scope.pixel = pixel;
+            $scope.colorRGB_R = pixel[0];
+            $scope.colorRGB_G = pixel[1];
+            $scope.colorRGB_B = pixel[2];
+            console.log('pixelColor _select_color', $scope);
+            console.log('y  _select_color',y);
+            console.log('x  _select_color',x);
+        }
+        function color_picker_element(center_x, center_y, sx, sy) {
+            this.center_x = center_x;
+            this.center_y = center_y;
+            this.sx = sx;
+            this.sy = sy;
+            this.draw = function() {
+                for(var i = 0; i < 360; i+=0.1) {
+                    var rad = (i-45) * (Math.PI) / 180;
+                    color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
+                    color_picker_.beginPath();
+                    color_picker_.moveTo(center_x, center_y);
+                    color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+                    color_picker_.stroke();
+                }
+            }
+        }
+
+        this.colorWordSearchLanding = function () {
+					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
+					var colorAssociationName = '';
+					// var str = [];
+					var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
+						.then(function (res) {
+							if (res.data.length > 0) {
+								vm.paintColorNames = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
+								});
+								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
+								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
+                //
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: colorAssociationName})
+									.then(function (res) {
+										vm.validData = res.data;
+										if (res && res.data.length > 0) {
+											var RGB = '',
+												colorName = '';
+											vm.colorAssociationNames = res.data.map(function (item) {
+												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+												colorName = item.ShortName;
+												return {colorName: colorName, RGB: RGB};
+											});
+											searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
+											$location.url('/color-index-accordion');
+										}
+									});
+							}
+						});
+        };
+    }
+  });
+
+angular
+  .module('app')
+  .component('landingComponent', {
+    templateUrl: 'app/components/landing/landing.tmpl.html',
+    controller: function (authService, $state, localStorageService) {
+
+      $(document).ready(function () {
+        $("nav").find("li").on("click", "a", function () {
+          // $('.navbar-collapse.in').collapse('hide');
+        });
+      });
+
+      $(document).ready(function(){
+
+        $("#slideshow > div:gt(0)").hide();
+
+        var interval = setInterval(slide, 3000);
+
+        function intslide(func) {
+          if (func == 'start') {
+            interval = setInterval(slide, 3000);
+          } else {
+            clearInterval(interval);
+          }
+        }
+
+        function slide() {
+          sact('next', 0, 2000);
+        }
+
+        function sact(a, ix, it) {
+          var currentSlide = $('.current');
+          var nextSlide = currentSlide.next('.slideitem');
+          var prevSlide = currentSlide.prev('.slideitem');
+          var reqSlide = $('.slideitem').eq(ix);
+
+          var currentDot = $('.active-dot');
+          var nextDot = currentDot.next();
+          var prevDot = currentDot.prev();
+          var reqDot = $('.dot').eq(ix);
+
+          if (nextSlide.length == 0) {
+            nextDot = $('.dot').first();
+            nextSlide = $('.slideitem').first();
+          }
+
+          if (prevSlide.length == 0) {
+            prevDot = $('.dot').last();
+            prevSlide = $('.slideitem').last();
+          }
+
+          if (a == 'next') {
+            var Slide = nextSlide;
+            var Dot = nextDot;
+          }
+          else if (a == 'prev') {
+            var Slide = prevSlide;
+            var Dot = prevDot;
+          }
+          else {
+            var Slide = reqSlide;
+            var Dot = reqDot;
+          }
+          var it_before = it - 500;
+          currentSlide.fadeOut(it_before).removeClass('current');
+          Slide.fadeIn(it).addClass('current');
+          }
+      });
+    }
+  });
+
+angular
+  .module('app')
+  .component('inquiriesComponent', {
+    templateUrl: 'app/components/inquiries/inquiries.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
+      var currentName = $state.current.name;
+
+      var self = this;
+      this.jobs = categoryValues('job function');
+      this.companySizes = categoryValues('company size');
+      this.industries = categoryValues('industry');
+      this.countries = categoryValues('country');
+
+      this.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'}
+      };
+
+      switch (currentName) {
+        case 'productInquiry':
+          this.title = 'Product Inquiry';
+          this.keywords = 'Color Product Inquiry, color database, color Product';
+          this.data.permissions = {daily: true, research: true, edu: true};
+          this.data.relationship = {expert: true};
+          this.caption = 'Product Inquiry';
+          this.inquire1 = true;
+          this.url = 'product_partner';
+          break;
+
+        case 'partnershipInquire':
+          this.title = 'Data Partnership Inquiry';
+          this.keywords = 'Color data partnership, color database, color dataset, color data points in r';
+          this.caption = 'Inquire about Data Partnership';
+          this.inquire2 = true;
+          this.url = 'new_data_partners';
+          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
+          break;
+
+        default:
+          this.title = 'Education Partnership Inquiry';
+          this.keywords = 'Color Education partnership, color database, color Education, color Education points in r';
+          this.caption = 'Inquire about Education Partnership';
+          this.url = 'new_education_partners';
+          this.inquire3 = true;
+          this.jobs.splice(1, 0, {id: 7, title: 'Educator'});
+          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
+          break;
+      }
+
+      this.send = function (inquiryType) {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            if (item !== 'permissions' && item !== 'relationship') {
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
+            } else if (item === 'permissions') {
+              data.permissions = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.permissions.push(categoryValues('permissions')[k]);
+                }
+              });
+              data.permissions = JSON.stringify(data.permissions);
+            } else if (item === 'relationship' && this.data.relationship.expert) {
+              data.relationship = 'Expert Panelist';
+            }
+          }
+          $http.get(appConfig.dashboardServiceUrl + this.url, {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('infographicsDetailsComponent', {
+  templateUrl: 'app/components/infographics-details/infographics-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'infographics/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+      });
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('infographicsComponent', {
+    templateUrl: 'app/components/infographics/infographics.tmpl.html',
+    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll,
+                          localStorageService) {
+      var vm = this;
+      vm.hueModel = 'VERTICAL';
+      vm.yearModel = 'YEAR';
+      vm.year = [];
+      vm.hue = categoryValues('hue');
+      vm.pageData = {};
+      vm.items = [];
+      vm.flag = true;
+      var numberOfElements = 3;
+      var count = 1;
+      var lastYear = moment().year();
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'infographics.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                var b = res.data.picture.find(function (a) {
+                  return a.infographic_id === item.id;
+                });
+                if (b) {
+                  item.image_url = b.image_url;
+                }
+                return item;
+              });
+              vm.year.push(moment().format('YYYY'));
+              vm.pageData.map(function (t) {
+                t.date = moment(t.published_year + '-' + t.published_month + '-' + t.published_day).format(' MMMM D, YYYY');
+              });
+              vm.pageData.forEach(function (t) {
+                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
+                  lastYear = Number(t.published_year);
+                }
+              });
+              vm.year = _.range(lastYear, moment().year() + 1);
+              vm.select();
+              vm.year = vm.year.reverse();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.onGraphicClick = function (event) {
+        if (event) {
+          modalService.showModal(2, event);
+        }
+      };
+
+      vm.select = function () {
+        if (vm.hue.includes(vm.hueModel) || vm.year.includes(Number(vm.yearModel))) {
+          vm.filterData = angular.copy(vm.pageData.filter(function (t) {
+            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
+              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
+              return t;
+            }
+          }));
+        } else {
+          vm.filterData = angular.copy(vm.pageData);
+        }
+        count = 1;
+        vm.items = [];
+        vm.sortItems();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+
+
+      vm.makeDate = function (item) {
+          return moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('MMMM D, YYYY');
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('goodReadsDetailsComponent', {
+  templateUrl: 'app/components/good-reads-details/good-reads-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, localStorageService) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'good_reads/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+      });
+    };
+    vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('goodReadsComponent', {
+    templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.all = [];
+      vm.items = [];
+      vm.flag = true;
+      var count = 1;
+      var numberOfElements = 6;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                return item.data;
+              });
+            }
+            vm.sortItems();
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.pageData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('downloadExcerptPageComponent', {
+    templateUrl: 'app/components/download-excerpt-page/download-excerpt-page.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate, $stateParams, $window, $scope, localStorageService) {
+
+      var self = this;
+      this.jobs = categoryValues('job function');
+      this.companySizes = categoryValues('company size');
+      this.industries = categoryValues('industry');
+      this.countries = categoryValues('country');
+      self.flag = false;
+
+      switch ($stateParams.type) {
+        case 'reports':
+          self.wayBackName = 'reportsDetails';
+          break;
+        case 'courses':
+          self.wayBackName = 'coursesDetails';
+          break;
+        case 'teachingMaterials':
+          self.wayBackName = 'teachingDetailsMaterials';
+          break;
+        default:
+          self.wayBackName = 'profile';
+
+      }
+
+      this.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
+        relationship: {expert: true, daily: true, newReportNotification: true, emotionIndexInsights: true},
+        contact: {becoming: true}
+      };
+
+      this.send = function () {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          data.productType = $stateParams.type;
+          data.productID = $stateParams.id;
+          for (var item in this.data) {
+            if (item !== 'relationship' && item !== 'contact') {
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
+            } else if (item === 'relationship') {
+              data.relationship = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.relationship.push(categoryValues('downloadExcerpt')[k]);
+                }
+              });
+              data.relationship = JSON.stringify(data.relationship);
+            } else if (item === 'contact' && this.data.contact.becoming) {
+              data.contact = 'Contact about becoming a HUEDATA members';
+            }
+          }
+          $window.open(localStorageService.get('link'), '_blank');
+          $http.get(appConfig.dashboardServiceUrl + 'download-excerpt', {
+            params: data
+          }).then(function (res) {
+            $state.go(self.wayBackName, {id: $stateParams.id});
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('detailedComponent', {
+    templateUrl: 'app/components/detailed-page/detailed.tmpl.html',
+    controller: function ($location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('partnersComponent', {
+    templateUrl: 'app/components/data-partners/partners.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
+      var vm = this;
+
+      vm.jobs = categoryValues('job function');
+      vm.companySizes = categoryValues('company size');
+      vm.industries = categoryValues('industry');
+      vm.countries = categoryValues('country');
+
+      vm.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: vm.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: vm.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: vm.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: vm.countries[0], required: true, name: 'country', type: 'select'},
+        description: {value: '', required: false, name: 'description', type: 'enter'}
+      };
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'top_data_partners.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data;
+            }
+          });
+      };
+
+      vm.send = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in vm.data) {
+            if (vm.data[item].type === 'select') {
+              data[item] = vm.data[item].value.title;
+            } else {
+              data[item] = vm.data[item].value;
+            }
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'new_data_partners', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('dailyInsightsComponent', {
+    templateUrl: 'app/components/daily-insights/daily-insights.tmpl.html',
+    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+      vm.items = [];
+      vm.allDailies = [];
+      vm.items = [];
+      vm.flag = true;
+      var count = 1;
+      var numberOfElements = 3;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'dailies.json')
+          .then(function (res) {
+            if (res && res.data) {
+              angular.forEach(res.data, function (item) {
+                item.date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('dddd, MMMM D, YYYY');
+                item.published_date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('YYYY-MM-DD');
+              });
+              vm.allDailies = _.sortBy(res.data, 'published_date').reverse();
+              vm.emptyData = Boolean(vm.allDailies[0]);
+              vm.pageData = vm.allDailies.shift();
+              vm.sortItems();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.allDailies.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          } else {
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.onGraphicClick = function (item) {
+        if (item) {
+          modalService.showModal(3, null, item);
+        }
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+(function (angular) {
+  'use strict';
+  var controllerName = 'CustomInfographicsController';
+  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'statsService', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
+    '$q', 'repo.meta', 'repo.designers', '$timeout', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository', 'anchorSmoothScroll',
+    function ($http, appConfig, statsService, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
+      var vm = this;
+
+      $scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.grayList = {};
+      vm.meta = {};
+      vm.filter = {};
+      vm.showDashboardOverlay = false;
+      vm.isUserAdmin = function () {
+        return authService.getCurrentUser().username === 'admin';
+      };
+
+      var groupTitlesTemplates = {
+        beige: {
+          name: '#f5f5dc',
+          template: '#f5f5{0}'
+        },
+        black: {
+          name: '#000000',
+          template: '#{0}{0}{0}'
+        },
+        blue: {
+          name: '#0000ff',
+          template: '#{0}{0}ff'
+        },
+        brown: {
+          name: '#964b00',
+          template: '#{0}{1}00'
+        },
+        cyan: {
+          name: '#00ffff',
+          template: '#{0}ffff'
+        },
+        gray: {
+          name: '#c0c0c0',
+          template: '#{0}{0}{0}'
+        },
+        green: {
+          name: '#008000',
+          template: '#{0}80{0}'
+        },
+        magenta: {
+          name: '#ff00ff',
+          template: '#ff{0}ff'
+        },
+        orange: {
+          name: '#ff7f00',
+          template: '#ff{0}00'
+        },
+        red: {
+          name: '#ff0000',
+          template: '#ff{0}{1}'
+        },
+        violet: {
+          name: '#8f00ff',
+          template: '#{0}00ff'
+        },
+        white: {
+          name: '#ffffff',
+          template: '#{0}{0}{0}'
+        },
+        yellow: {
+          name: '#ffff00',
+          template: '#ffff{0}'
+        },
+        yellowgreen: {
+          name: '#8db600',
+          template: '#8d{0}00'
+        }
+      };
+
+      var cache = {
+        designers: [],
+        categories: [],
+        regions: {},
+        cities: []
+      };
+
+      var loading = {
+        ready: false,
+        designersReady: $q.defer(),
+        metaLoaded: $q.defer(),
+        metaReady: $q.defer()
+      };
+
+      vm.scrollToLetter = function (anchor) {
+        $location.hash(anchor);
+        $anchorScroll();
+        $location.hash('');
+      };
+
+      vm.alphabet = [
+        "a",
+        "à",
+        "b",
+        "c",
+        "d",
+        "e",
+        "é",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "ö",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ];
+
+      vm.prepareRequestParams = function () {
+        var reg = new RegExp('ALL ');
+        var city = reg.test(vm.filter.city.title) ? 'all' : vm.filter.city.title;
+        var season = reg.test(vm.filter.season.title) ? 'all' : vm.filter.season.title;
+        var category = reg.test(vm.filter.category.title) ? 'all' : vm.filter.category.title;
+        var designer = reg.test(vm.filter.designer.title) ? 'all' : vm.filter.designer.title.replace(/ /g, '_');
+
+        return {
+          city: city,
+          year: vm.filter.year.id,
+          season: season,
+          category: category,
+          region: vm.filter.region.id,
+          designer: designer
+        };
+      };
+
+      vm.prepareColorsParams = function () {
+        var reg = new RegExp('ALL ');
+        var param = {};
+        if (!reg.test(vm.filter.city.title)) {
+          param.city_id = vm.filter.city.id;
+        }
+        if (!reg.test(vm.filter.season.title)) {
+          param.season_id = vm.filter.season.id;
+        }
+        if (!reg.test(vm.filter.category.title)) {
+          param.category_id = vm.filter.category.id;
+        }
+        if (!reg.test(vm.filter.designer.title)) {
+          param.designer_id = vm.filter.designer.id;
+        }
+        param.year_id = vm.filter.year.id;
+        return param;
+      };
+
+      vm.prepareColors = function () {
+        var reg = new RegExp('ALL ');
+        if (!reg.test(vm.filter.season.title)) {
+          return {all: vm.filter.season, category: 'season'};
+        }
+        if (!reg.test(vm.filter.city.title)) {
+          return {all: vm.filter.city, category: 'city'};
+        }
+        if (!reg.test(vm.filter.category.title)) {
+          return {all: vm.filter.category, category: 'category'};
+        }
+        if (!reg.test(vm.filter.designer.title)) {
+          return {all: vm.filter.designer, category: 'designer'};
+        }
+        return {all: {id: 2018}, category: 'year'};
+      };
+
+      loading.metaLoadedStrongLink = loading.metaLoaded;
+      loading.filtersReady = $q.all([loading.designersReady.promise, loading.metaReady.promise]);
+
+      meta.objects().then(function (result) {
+        var years = [];
+        for (var i = result.years.to; i >= result.years.from; i--) {
+          years.push({id: i, title: i});
+        }
+
+        vm.meta.years = years;
+        vm.meta.colorGroups = result.colorGroups;
+        vm.meta.categories = result.categories;
+        vm.meta.seasons = result.seasons;
+        vm.meta.regions = common.generic.regions;
+        vm.meta.cities = result.cities;
+
+        _.each(vm.meta, function (item, key) {
+          var newTitle = 'All ' + key;
+          if (key !== 'colorGroups') {
+            item.unshift({id: 'all', title: newTitle.toUpperCase(), region: 'all', serverName: 'all', all: true})
+          }
+        });
+
+        angular.copy(vm.meta.cities, cache.cities);
+
+        vm.filter.color = vm.meta.colorGroups[0];
+        // vm.filter.year = _.find(vm.meta.years, {id: 2017}) || vm.meta.years[vm.meta.years.length - 1];
+        vm.filter.year = vm.meta.years[0];
+        vm.filter.season = vm.meta.seasons[0];
+        vm.filter.category = vm.meta.categories[0];
+        vm.filter.city = vm.meta.cities[0];
+        vm.filter.region = vm.meta.regions[0];
+
+        loading.metaLoaded.resolve();
+      });
+
+      designers.search().then(function (result) {
+        vm.meta.designers = result;
+        vm.meta.designers.unshift({id: 'all', title: 'ALL DESIGNERS', all: true});
+
+        vm.filter.designer = vm.meta.designers[0];
+
+        loading.designersReady.resolve();
+      });
+
+      vm.refresh = function () {
+        loadData();
+      };
+
+      var defaultDescription = {
+        years: '2015-2016',
+        colors: '45.567',
+        cities: '4',
+        region: '1',
+        designer: '234',
+        season: '3'
+      };
+
+      vm.cityOrRegionTitle = function () {
+        return vm.filter.city.all && vm.filter.region.all ? null : vm.filter.city.all ? vm.filter.region.title : vm.filter.city.title
+      };
+
+      var citiesAbbrevs = {
+        London: 'LN',
+        Milan: 'MI',
+        Paris: 'PR',
+        Berlin: 'BR',
+        NewYork: 'NY',
+        Mexico: 'MX',
+        RioDeJaneiro: 'RJ',
+        Seoul: 'SE',
+        Tokyo: 'TK',
+        SaoPaulo: 'SP',
+        Istanbul: 'IS',
+        Monaco: 'MN',
+        Florence: 'FL',
+        Rome: 'RO',
+        Kiev: 'KI',
+        LosAngeles: 'LA',
+        LakmeIndia: 'LI',
+        Copenhagen: 'CP',
+        Salzburg: 'SA',
+        Stockholm: 'ST',
+        Madrid: 'MA',
+        Sydney: 'SY',
+        Dubai: 'DU',
+        Kaliningrad: 'KA',
+        Moscow: 'MO',
+        PalmSprings: 'PS',
+        Cannes: 'CN',
+        Cambridge: 'CB',
+        Tbilisi: 'TB',
+        Havana: 'HA',
+        Kyoto: 'KO',
+        SaintPetersburg: 'SG',
+        Shanghai: 'SH'
+      };
+
+      var regionsAbbrevs = {
+        AsiaAndPacific: 'AP',
+        Europe: 'EU',
+        SouthAmerica: 'LA',
+        NorthAmerica: 'NA'
+      };
+
+      vm.getTitle = function (type) {
+        if (type === 'region') {
+          return vm.cityOrRegionTitle()
+        } else {
+          return !vm.filter[type].all ? vm.filter[type].title : null
+        }
+      };
+
+      vm.getAbbrv = function (type) {
+        var value;
+        if (type === 'category') {
+          value = vm.filter.category.title;
+          if (value === 'Couture') {
+            return 'CT';
+          } else if (value === 'Menswear') {
+            return 'MW';
+          } else {
+            return value;
+          }
+        } else if (type === 'season') {
+          value = vm.filter.season.title;
+          if (value === 'Fall') {
+            return 'FW';
+          } else if (value === 'Pre-Fall') {
+            return 'PF';
+          } else if (value === 'Spring') {
+            return 'SS';
+          } else if (value === 'Resort') {
+            return 'RS';
+          } else if (value === 'ALL SEASONS') {
+            return 'ALL';
+          } else {
+            return value;
+          }
+        } else if (type === 'city') {
+          value = vm.filter.city.title.replace(/\s/g, '').toLowerCase();
+          return _.find(citiesAbbrevs, function (item, key) {
+            return value == key.toLowerCase();
+          });
+        } else if (type === 'region') {
+          value = vm.filter.region.title.replace(/\s/g, '').toLowerCase();
+          return _.find(regionsAbbrevs, function (item, key) {
+            return value == key.toLowerCase();
+          });
+        }
+      };
+
+      vm.parseTitle = function (number) {
+        var divider = '';
+        var result = '';
+        _.map(vm.currentChart.titleGroups[number], function (title) {
+          if (vm.getTitle(title) !== null) {
+            divider = '//';
+          }
+          if (vm.getTitle(title)) {
+            result = result + ' ' + vm.getTitle(title)
+          }
+        });
+        return divider + result;
+      };
+
+      vm.charts = [
+        {
+          qNumber: 'CO1a',
+          id: 'colorsByCityPeriod',
+          group: 'colorsByCityPeriod',
+          title: 'Color Popularity Overview',
+          chartTitle: 'Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
+              .then(function (results) {
+                return results;
+              });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CO1b',
+          id: 'colorsByCityPeriod1',
+          group: 'colorsByCityPeriod1',
+          title: 'Expanded Color Popularity Overview',
+          chartTitle: 'Expanded Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return $q(function (resolve) {
+              charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
+                .then(function (results) {
+                  var param = vm.prepareColors();
+                  dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(results, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 17) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                        resolve(results);
+                      });
+                    });
+                });
+            });
+          },
+          filters: {
+            category: true,
+            region: true,
+            city: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CO2a',
+          id: 'colorsUniqueWithLevels',
+          group: 'colorsUniqueWithLevels',
+          title: 'Color Mosaic View With Popularity',
+          chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsUniqueGroups(vm.prepareRequestParams());
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'CO3a',
+          id: 'trends',
+          group: 'trends',
+          title: 'Five Year Color Comparison',
+          chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
+            var customParams = vm.prepareRequestParams();
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+            }
+
+            return $q.all(_.map(yearsRange, function (year) {
+              customParams.year = year;
+              return charts.colorGroupsByCityPeriod(customParams);
+            })).then(function (results) {
+              return _.map(results, function (result, i) {
+                return {
+                  title: yearsRange[i],
+                  data: result
+                };
+              });
+            });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'RE1a',
+          id: 'colorsByRegionPeriodNA',
+          group: 'colorsByRegionPeriod',
+          title: 'Color Popularity By Region With City Breakdown',
+          chartTitle: 'Color Popularity By Region With City Breakdown {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsWithGroupsByRegionPeriod(vm.prepareRequestParams(), vm.filter.region.name);
+          },
+          filters: {
+            category: true,
+            region: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {}
+        },
+        {
+          qNumber: 'RE2a',
+          id: 'colorsPerRegions',
+          group: 'colorsPerRegions',
+          title: 'Cross Region Top Four Colors',
+          chartTitle: 'Cross Region Top Four Colors {{vm.parseTitle(0)}}',
+          api: function () {
+            return charts.colorsPerRegions(vm.prepareRequestParams());
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year']
+          ]
+        },
+        {
+          qNumber: 'SE1a',
+          id: 'colorsUniqueGroupsCommon',
+          group: 'colorsUniqueGroupsCommon',
+          title: 'Color Popularity By Season',
+          chartTitle: 'Color Popularity By Season {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsUniqueGroupsCommon(vm.prepareRequestParams());
+          },
+          apiAfter: function (model) {
+            model.season = vm.filter.season.title;
+            model.year = vm.filter.year.title;
+          },
+          filters: {
+            category: true,
+            region: true,
+            city: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'SE2a',
+          id: 'colorsUniqueByPeriodFiveYears',
+          group: 'colorsUniqueByPeriodFiveYears',
+          title: 'Five Year Comparison Of Seasons Colors',
+          chartTitle: 'Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+            }
+            return charts.colorsByPeriodYearsRange(vm.prepareRequestParams(), yearsRange);
+          },
+          filters: {
+            category: true,
+            region: true,
+            city: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'SE2b',
+          id: 'colorsUniqueByPeriodFiveYears2',
+          group: 'colorsUniqueByPeriodFiveYears2',
+          title: 'Expanded Five Year Comparison Of Seasons Colors',
+          chartTitle: 'Expanded Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+            }
+            var param = vm.prepareColors();
+            var palettes = {};
+            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
+              .then(function (results) {
+                return $q.all(yearsRange.map(function (d) {
+                  return dashboardRepository['year'].getColorPalette(d, vm.prepareColorsParams(), 250);
+                }))
+                  .then(function (data) {
+                    _.each(data, function (r, i) {
+                      _.each(r, function (a) {
+                        a.colorHex = a.color.color.hex;
+                      });
+                      _.sortBy(r, 'percentage');
+                      palettes[vm.getAbbrv('season') + yearsRange[i]] = r;
+                    });
+                    results.push(palettes);
+                    return results;
+                  });
+              });
+          },
+          filters: {
+            category: true,
+            city: true,
+            season: true,
+            year: true,
+            region: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'SE3a',
+          id: 'uniqueWithGroupsPerSeason',
+          group: 'uniqueWithGroupsPerSeason',
+          title: 'Color Mosaic View By Season With Popularity',
+          chartTitle: 'Color Mosaic View By Season With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+            return charts.colorsUniqueGroupsPerSeason(customParams.year, customParams.city, customParams.category);
+          },
+          apiAfter: function (model) {
+            model.city = vm.cityOrRegionTitle();
+          },
+          filters: {
+            category: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'CA1a',
+          id: 'colorsByCategoryPeriod',
+          group: 'colorsByCategoryPeriod',
+          title: 'Color Popularity By Category',
+          chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'CA2a',
+          id: 'colorsByCategory',
+          group: 'colorsGridNails',
+          title: 'Cross Category Color Popularity',
+          chartTitle: 'Cross Category Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+            return $q.all(_.map(['couture', 'menswear', 'rtw'], function (category) {
+              customParams.category = category;
+              return charts.colorGroupsByCityPeriod(customParams)
+                .then(function (groups) {
+                  _.each(groups, function (gr) {
+                    gr.colors = _.map(_.range(3), function () {
+                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
+                    });
+                  });
+                  return {
+                    name: category,
+                    title: category,
+                    data: groups
+                  };
+                });
+            }));
+          },
+          filters: {
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CA2b',
+          id: 'colorsByCategory2',
+          group: 'colorsGridNails2',
+          title: 'Cross Category Top Three Colors',
+          chartTitle: 'Cross Category Top Three Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+
+            return $q(function (resolve) {
+              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
+                var groups = [
+                  {
+                    name: customParams.category + '\n' + 'couture',
+                    title: customParams.category + '\n' + 'couture',
+                    data: group
+                  },
+                  {
+                    name: customParams.category + '\n' + 'menswear',
+                    title: customParams.category + '\n' + 'menswear',
+                    data: group
+                  }, {
+                    name: customParams.category + '\n' + 'rtw',
+                    title: customParams.category + '\n' + 'rtw',
+                    data: group
+                  }];
+                async.waterfall([function (cb) {
+                  dashboardRepository["category"].getColorPalette(3, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[0].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["category"].getColorPalette(2, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[1].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["category"].getColorPalette(1, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[2].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }], function () {
+                  resolve(groups);
+                });
+              });
+            });
+          },
+          filters: {
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CA3a',
+          id: 'colorsByRtwCategory',
+          group: 'colorsGridNails',
+          title: 'Three Year Comparison Of Color Popularity',
+          chartTitle: 'Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
+            var customParams = vm.prepareRequestParams();
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
+            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
+            }
+
+            return $q.all(_.map(yearsRange, function (dy) {
+              customParams.year = dy;
+              return charts.colorGroupsByCityPeriod(customParams)
+                .then(function (groups) {
+                  _.each(groups, function (gr) {
+                    gr.colors = _.map(_.range(3), function () {
+                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
+                    });
+                  });
+
+                  return {
+                    name: customParams.category + '\n' + dy,
+                    title: customParams.category + '\n' + dy,
+                    data: groups
+                  };
+                });
+            }));
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CA3b',
+          id: 'colorsByRtwCategory2',
+          group: 'colorsGridNails2',
+          title: 'Expanded Three Year Comparison Of Color Popularity',
+          chartTitle: 'Expanded Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
+            var customParams = vm.prepareRequestParams();
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
+            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
+            }
+            return $q(function (resolve) {
+              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
+                var groups = [
+                  {
+                    name: customParams.category + '\n' + yearsRange[0],
+                    title: customParams.category + '\n' + yearsRange[0],
+                    data: group
+                  },
+                  {
+                    name: customParams.category + '\n' + yearsRange[1],
+                    title: customParams.category + '\n' + yearsRange[1],
+                    data: group
+                  }, {
+                    name: customParams.category + '\n' + yearsRange[2],
+                    title: customParams.category + '\n' + yearsRange[2],
+                    data: group
+                  }];
+                async.waterfall([function (cb) {
+                  dashboardRepository["year"].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[0].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["year"].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[1].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["year"].getColorPalette(yearsRange[2], vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[2].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }], function () {
+                  resolve(groups);
+                });
+              });
+            });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CI1a',
+          id: 'citiesByColorPeriod',
+          group: 'citiesByColorPeriod',
+          title: 'Cross City Popularity By Color',
+          chartTitle: 'Cross City Popularity By Color {{vm.parseTitle(0)}} {{vm.parseTitle(1)}} {{vm.parseTitle(2)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+            customParams.color = vm.filter.color.hex.replace('#', '');
+            return charts.citiesByColorPeriod(customParams);
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            color: true
+          },
+          titleGroups: [
+            ['color'],
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'DE1a',
+          id: 'colorsGroupsCommon',
+          group: 'colorsGroupsCommon',
+          title: 'Color Popularity By Designer',
+          chartTitle: 'Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsGroupsCommon(vm.prepareRequestParams())
+              .then(function (results) {
+                return results;
+              });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE1b',
+          id: 'colorsGroupsCommon2',
+          group: 'colorsGroupsCommon2',
+          title: 'Expanded Color Popularity By Designer',
+          chartTitle: 'Expanded Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsGroupsCommon(vm.prepareRequestParams())
+              .then(function (results) {
+                return dashboardRepository['year'].getColorPalette(vm.filter.year.all ? 2018 : vm.filter.year.id, vm.prepareColorsParams(), 250)
+                  .then(function (data) {
+                    results['palettes'] = data;
+                    return results;
+                  });
+              });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE2a',
+          id: 'top4forDesigner',
+          group: 'top4forDesigner',
+          title: 'Two Year Comparison of Color Popularity By Designer',
+          chartTitle: 'Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
+            }
+
+            return $q.all([
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
+                .then(function (results) {
+                  return results;
+                }),
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
+                .then(function (results) {
+                  return results;
+                })
+            ]).then(function (results) {
+              return _.map(results, function (result, i) {
+                return {
+                  title: yearsRange[i],
+                  data: result
+                };
+              });
+            });
+          },
+          apiAfter: function (model) {
+            model.city = vm.filter.city.title;
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE2b',
+          id: 'top4forDesigner2',
+          group: 'top4forDesigner2',
+          title: 'Expanded Two Year Comparison of Color Popularity By Designer',
+          chartTitle: 'Expanded Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
+            }
+            return $q.all([
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
+                .then(function (results) {
+                  return results;
+                }),
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
+                .then(function (results) {
+                  return results;
+                }),
+              dashboardRepository['year'].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
+                .then(function (data) {
+                  return data;
+                }),
+              dashboardRepository['year'].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
+                .then(function (data) {
+                  return data;
+                })
+            ]).then(function (results) {
+              return _.map(results,
+                function (result, i) {
+                  return {
+                    title: yearsRange[i],
+                    data: result
+                  };
+                });
+            });
+          },
+          apiAfter: function (model) {
+            model.city = vm.filter.city.title;
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE3a',
+          id: 'top4Grid',
+          group: 'top4Grid',
+          title: 'Designers Top Four Colors',
+          chartTitle: 'Designers Top Four Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.designersWithTopColors(vm.prepareRequestParams());
+          },
+          filters: {
+            season: true,
+            year: true,
+            region: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['season', 'year']
+          ]
+        }
+        /*           {
+         id: 'colorsUniqueWithLevelsGrouped',
+         group: 'colorsUniqueWithLevels',
+         title: 'All colors with their distribution per region / city / season / year - GROUPED',
+         chartTitle: 'A Comparative View of All Colors used in {{vm.filter.region.title}} {{vm.filter.city.title}} And Their Distribution {{vm.getAbbrv("season")}} {{vm.filter.year.title}}',
+         api: function() {
+         return charts.colorsUniqueGroups(vm.filter.year.id, vm.filter.season.title, null, vm.filter.city.title);
+         },
+         apiAfter:  function(model, results) {
+         //                            vm.model.ordered = true;
+         model.grouped = true;
+         },
+         filters: {
+         seasons: true,
+         years: true,
+         regions: true,
+         cities: true
+         }
+         },
+         */
+      ];
+
+      vm.currentChart = vm.charts[0];
+      vm.chartsCurrentViewType = null;
+
+      $scope.$watch('[vm.currentChart, vm.filter]', loadData, true);
+
+      $scope.$watch('vm.filter.region', function (regionNewV) {
+        if (regionNewV) {
+          if (!regionNewV.all) {
+            vm.meta.cities = _.filter(cache.cities, function (city) {
+              if (city.region) {
+                return city.region.toLowerCase() === regionNewV.serverName.toLowerCase() || city.all
+              }
+            })
+          } else if (regionNewV.all) {
+            angular.copy(cache.cities, vm.meta.cities);
+          }
+          vm.filter.city = vm.meta.cities[0];
+        }
+
+        // var region = (cache.regions || {})[(vm.filter.region || {}).id] || {};
+        // vm.meta.cities = region.cities;
+        // vm.filter.city = (region.cities || [])[0];
+        //
+        // // city must be already selected before starting to filter
+
+        if (!loading.isMetaLoadedSetup) {
+          loading.metaLoaded.promise.then(function () {
+            loading.metaReady.resolve();
+          });
+          loading.isMetaLoadedSetup = true;
+        }
+      });
+
+      // $scope.$watch(function () {
+      //   return dashboardOverlayService.showOverlay;
+      // }, function (newValue, oldValue) {
+      //   vm.showDashboardOverlay = newValue;
+      // });
+
+      function loadData(newV, oldV) {
+        // dashboardOverlayService.loadingStart(10000);
+        loading.currentRequestId = Math.random();
+        if (newV && oldV) {
+          if (newV[0].qNumber !== oldV[0].qNumber) {
+            vm.filter.designer = vm.meta.designers[0];
+
+            if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
+              vm.meta.regions = _.filter(vm.meta.regions, function (item) {
+                return !item.all;
+              });
+              vm.filter.region = vm.meta.regions[0];
+            } else if (!_.find(vm.meta.regions, 'all')) {
+              vm.meta.regions.unshift({id: 'all', title: 'ALL REGIONS', region: 'all', serverName: 'all', all: true});
+              vm.filter.region = vm.meta.regions[0];
+            }
+          }
+        }
+
+        loading.filtersReady.then(function () {
+          vm.model = null;
+
+          (function (currentRequestId) {
+            vm.currentChart.api().then(function (result) {
+
+              if (currentRequestId !== loading.currentRequestId || !result) {
+                return;
+              }
+              vm.model = result;
+              if (vm.currentChart.apiAfter) {
+                vm.currentChart.apiAfter(vm.model, result);
+              }
+              vm.title = prepareTitle(vm.currentChart.chartTitle);
+              prepareDescription();
+            });
+            // dashboardOverlayService.loadingCompleted();
+          })(loading.currentRequestId);
+        });
+      }
+
+      function prepareTitle(title) {
+        var exp = $interpolate(title);
+        return exp($scope);
+      }
+
+      function prepareDescription() {
+        vm.description = vm.description || (vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
+          vm.filter.city.title + ' | REGIONS-' + vm.filter.region.title + ' | DESIGNER-' + vm.filter.designer.title +
+          ' | SEASONS-' + vm.filter.season.title);
+
+        var regionId = null;
+        switch (vm.filter.region.id) {
+          case 'europe':
+            regionId = 2;
+            break;
+          case 'north_america':
+            regionId = 3;
+            break;
+          case 'latin_america':
+            regionId = 4;
+            break;
+          case 'asia_pacific':
+            regionId = 1;
+            break;
+        }
+
+        var yearFrom = null;
+        var yearTo = vm.filter.year.id === 'all' ? vm.meta.years[1].title : vm.filter.year.id;
+        if (vm.currentChart.qNumber === 'CO3a' || vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b') {
+          yearFrom = yearTo - 4;
+        } else if (vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b') {
+          yearFrom = yearTo - 2;
+        } else if (vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b') {
+          yearFrom = yearTo - 1;
+        }
+
+        $http({
+          url: (appConfig.webServiceUrl + 'stats'),
+          method: 'GET',
+          params: {
+            fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
+            fashionDesigner: vm.filter.designer.id === 'all' ? null : vm.filter.designer.id,
+            fashionRegion: regionId || null,
+            fashionCity: vm.filter.city.id === 'all' ? null : vm.filter.city.id,
+            fashionCategory: vm.filter.category.id === 'all' ? null : vm.filter.category.id,
+            fashionYear: yearFrom || vm.filter.year.id === 'all' ? null : vm.filter.year.id,
+            yearFrom: yearFrom || null,
+            yearTo: yearFrom ? yearTo : null
+          }
+        }).then(function (res) {
+          vm.grayList = res.data.data;
+          vm.description = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
+            ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
+            ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
+        });
+      }
+
+      vm.labelToGray = function (selector, title) {
+        var result = true;
+
+        if (title.indexOf('ALL ') === -1) {
+          _.forEach(vm.grayList[selector], function (item) {
+            if (item.title === title) {
+              result = false;
+            }
+          });
+        }
+        return result;
+      };
+
+      vm.isFilterItems = function (selector, title) {
+        if (selector === 'regions') {
+          switch (title) {
+            case 'Europe':
+              title = 'Europe';
+              break;
+            case 'North America':
+              title = 'North America';
+              break;
+            case 'South America':
+              title = 'Latin America';
+              break;
+            case 'Asia and Pacific':
+              title = 'Asia Pacific';
+              break;
+          }
+        }
+
+        var result = true;
+
+        if (vm.grayList[selector] === undefined) {
+          result = false;
+        } else if (selector === 'years' && vm.filter.year.title === 'ALL YEARS' && (vm.currentChart.qNumber === 'CO3a' ||
+            vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
+            vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
+            vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
+          result = false;
+        } else if (selector === 'regions' && vm.currentChart.qNumber === 'RE1a') {
+          result = false;
+        } else if (vm.grayList === {} || title.toString().indexOf('ALL ') === -1) {
+          _.forEach(vm.grayList[selector], function (item) {
+            if (item.title === title.toString()) {
+              result = false;
+            }
+          });
+        } else {
+          result = false;
+        }
+        return result;
+      };
+
+      vm.isFilterVisible = function (filterId) {
+        var filterOptions = vm.currentChart.filters || {};
+
+        var filter = filterOptions.all;
+        if (!filter) {
+          filter = filterOptions[filterId];
+        }
+
+        if (filter === true) {
+          return true;
+        } else if (angular.isFunction(filter)) {
+          return filter();
+        }
+
+        return false;
+      };
+
+      vm.generateImgName = function (extension) {
+        var abbrevs = {
+          qNumber: vm.currentChart.qNumber,
+          category: vm.filter.category.all ? 'AllCa' : vm.getAbbrv('category'),
+          season: vm.filter.season.all ? 'AllSe' : vm.getAbbrv('season'),
+          year: vm.filter.year.all ? 'AllYe' : '17',
+          region: vm.filter.region.all ? 'AllRe' : vm.getAbbrv('region'),
+          city: vm.filter.city.all ? 'AllCi' : vm.getAbbrv('city')
+        };
+        var result = '';
+        var date = moment().format('L');
+
+        _.map(abbrevs, function (item) {
+          result += item + '.';
+        });
+
+        return result + date + '.jpg';
+      };
+
+      vm.exportJpg = function () {
+        statsService.infographics();
+        var captureEl = angular.element('#capture');
+        var footer = angular.element('.customized-infographics-footer');
+        var titles = angular.element('.graphic-titles');
+        footer.css({display: 'block'});
+        // titles.css({'text-align': 'left', 'font-size': '3em'});
+        captureEl.css({'padding-top': '30px'});
+        var captureElHeight = captureEl.height();
+        var captureElWidth = captureEl.width();
+
+        timeout(function () {
+          html2canvas(captureEl[0], {
+            height: captureElHeight + 20,
+            width: captureElWidth + 10,
+            background: '#fff'
+          }).then(function (canvas) {
+            var img = canvas.toDataURL("image/jpeg");
+            download(img, vm.generateImgName('jpg'), "image/jpg");
+            captureEl.css({'padding': '0'});
+            footer.css({display: 'none'});
+            titles.css({'font-size': '20px', 'text-align': 'center'});
+          });
+        }, 50);
+      };
+
+      vm.reportJpg = function () {
+        var captureEl = angular.element('#capture');
+        var captureElHeight = captureEl.height();
+        var captureElWidth = captureEl.width();
+        timeout(function () {
+          html2canvas(captureEl[0], {
+            height: captureElHeight + 20,
+            width: captureElWidth + 20,
+            background: '#fff'
+          }).then(function (canvas) {
+            var img = canvas.toDataURL("image/jpeg");
+            download(img, vm.generateImgName('jpg'), "image/jpg");
+          });
+        }, 50);
+      };
+
+      function generateRandomGroupColorByGroupTitle(title) {
+        title = (title || '').replace(/[^\w]/g, '').toLowerCase();
+        var group = (groupTitlesTemplates[title] || {}).template || '#{0}{1}{2}';
+
+        return String.format(group,
+          randomColorFraction() + randomColorFraction(),
+          randomColorFraction() + randomColorFraction(),
+          randomColorFraction() + randomColorFraction());
+
+        function randomColorFraction() {
+          return Math.round(Math.random() * 15).toString(16);
+        }
+      }
+    }
+
+  ]);
+}(angular));
+
+angular
+  .module('app')
+  .component('customizedInfographicsComponent', {
+    templateUrl: 'app/components/customized-infographics/customized-infographics.tmpl.html'
+  });
+
+angular
+.module('app')
+.component('coursesDetailsComponent', {
+  templateUrl: 'app/components/courses-details/courses-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, $state, localStorageService) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'courses/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'courses', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.courses) {
+        products.courses = {};
+      }
+      products.courses[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'courses'});
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('contactUsComponent', {
+    templateUrl: 'app/components/contact-us/contact-us.tmpl.html',
+    controller: function ($state, $http, appConfig, dataValidate) {
+      this.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        title: {value: '', required: true, name: 'title', type: ''},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        phone: {value: '', name: 'phone number', type: 'enter'},
+        companyEmail: {value: '', required: true, name: 'company email', type: 'provide'},
+        comments: {value: '', required: true, name: 'comments', type: 'enter'}
+      };
+
+      this.contactUs = function () {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('coursesComponent', {
+    templateUrl: 'app/components/courses/courses.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.pageData = [];
+      vm.categories = [];
+      vm.cacheItems = [];
+      vm.level = [];
+      vm.topic = [];
+      vm.provider = [];
+      vm.topicModel = 'TOPIC';
+      vm.providerModel = 'PROVIDER';
+      vm.levelModel = 'LEVEL';
+      vm.items = [];
+      vm.flag = true;
+      var numberOfElements = 3;
+      var count = 1;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'courses.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                vm.cacheItems.push(angular.copy(item.data));
+                return item.data;
+              });
+              vm.pageData.forEach(function (t) {
+                if (t.course_provider && !vm.provider.includes(t.course_provider)) {
+                  vm.provider.push(t.course_provider);
+                }
+              });
+              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
+              vm.level = ['Beginner', 'Intermediate', 'Advanced'];
+              vm.select();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.select = function () {
+        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.level.includes(vm.levelModel)) {
+          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
+            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.course_topic) &&
+              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.course_provider) &&
+              (!vm.level.includes(vm.levelModel) || vm.levelModel === t.course_level)) {
+              return t;
+            }
+          });
+        } else {
+          vm.filterData = angular.copy(vm.cacheItems);
+        }
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
+      };
+    }
+  });
+
+angular
+	.module('app')
+	.component('colorPickerComponent', {
+		templateUrl: 'app/components/color-picker/color-picker.tmpl.html',
+		controller: function ($location, $scope, $http, appConfig, anchorSmoothScroll, searchColor) {
+			var vm = this;
+
+			vm.gotoElement = function (eID) {
+				$location.hash('prefooter');
+				anchorSmoothScroll.scrollTo(eID);
+				$location.hash('');
+			};
+			// vm.paintColorNamesByPicker = [];
+			// vm.colorAssociationNamesByPicker = [];
+
+			var color_picker = document.getElementById("color_picker"),
+							color_id = document.getElementById("color_id");
+			$scope.colorPickerGray = 100;
+			$scope.colorPickerOpacity = 1;
+			document.getElementById('value_span').innerHTML = '100%';
+
+			vm.numOfpaintColorNames = 0;
+			vm.numOfcolorAssociationNames = 0;
+			vm.colorAssociationNameWord = '';
+
+			$scope.changeColor = function () {
+				color_picker.onmousedown = select_color;
+			};
+
+			color_picker_add();
+
+			$scope.colorPickerSliderGray = function () {
+				var value = document.getElementById('rg').value;
+				color_id.style.filter = "saturate(" + value + "%)";
+			};
+
+			$scope.colorPickerSliderOpacity = function () {
+				var value = document.getElementById('range_opacity').value;
+				document.getElementById('value_span').innerHTML = value * 100 + '%';
+				color_id.style.opacity = value;
+			};
+
+			$scope.colorPickerRGB = function () {
+				var colorInputR = document.getElementById('colorInputR').value,
+						colorInputG = document.getElementById('colorInputG').value,
+						colorInputB = document.getElementById('colorInputB').value;
+
+				$scope.colorRGB_R = colorInputR;
+				$scope.colorRGB_G = colorInputG;
+				$scope.colorRGB_B = colorInputB;
+
+				var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + ")";
+				color_id.style.backgroundColor = inputRGB;
+			}
+
+			function color_picker_add() {
+				color_picker_ = color_picker.getContext("2d"),
+					center_x = (color_picker.width) / 2,
+					center_y = (color_picker.height) / 2,
+					sx = center_x,
+					sy = center_y;
+
+				$scope.colorRGB_R = 0;
+				$scope.colorRGB_G = 0;
+				$scope.colorRGB_B = 0;
+				palette = new color_picker_element(center_x, center_y, sx, sy);
+				palette.draw();
+			}
+
+			function select_color(e) {
+				var x = e.pageX - color_picker.offsetLeft - 48,
+						y = e.pageY - color_picker.offsetTop - 570,
+						pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+						// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
+						pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
+				color_id.style.backgroundColor = pixelColor;
+				// console.log('xxx', x, 'yyy', y);
+				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+
+				$scope.pixel = pixel;
+				$scope.colorRGB_R = pixel[0];
+				$scope.colorRGB_G = pixel[1];
+				$scope.colorRGB_B = pixel[2];;
+			}
+
+
+			function color_picker_element(center_x, center_y, sx, sy) {
+				this.center_x = center_x;
+				this.center_y = center_y;
+				this.sx = sx;
+				this.sy = sy;
+				this.draw = function () {
+					for (var i = 0; i < 360; i += 0.1) {
+						var rad = (i - 45) * (Math.PI) / 180;
+						color_picker_.strokeStyle = "hsla(" + i + ", 100%, 50%, 1.0)";
+						color_picker_.beginPath();
+						color_picker_.moveTo(center_x, center_y);
+						color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+						color_picker_.stroke();
+					}
+				}
+			}
+
+			this.searchByRGB = function () {
+				vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
+				// $http.get(appConfig.colorAPI +
+				// 	'minred=' + $scope.colorRGB_R +
+				// 	'&maxred=' + $scope.colorRGB_R +
+				// 	'&mingreen=' + $scope.colorRGB_G +
+				// 	'&maxgreen=' + $scope.colorRGB_G +
+				// 	'&minblue=' + $scope.colorRGB_B +
+				// 	'&maxblue=' + $scope.colorRGB_B, {})
+				// 	.then(function (res) {
+				// 		if (res.data.length > 0) {
+				// 			vm.paintColorNamesByPicker = res.data.map(function (item) {
+				// 				RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+				// 				colorName = item.ShortName;
+				// 				return {colorName: colorName, RGB: RGB};
+				// 			});
+				// 			if (vm.paintColorNamesByPicker) {
+				// 				vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
+				// 			}
+				//
+				// 			$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
+				// 				.then(function (res) {
+				// 					vm.numOfcolorAssociationNames = res.data.length;
+				// 					vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+				// 				});
+				// 		}
+				// 	});
+				var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
+					.then(function (res) {
+						if (res.data.length > 0) {
+							vm.paintColorNamesByPicker = res.data.map(function (item) {
+								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+								colorName = item.ShortName;
+								return {colorName: colorName, RGB: RGB};
+							});
+							if (vm.paintColorNamesByPicker) {
+								vm.colorAssociationNameWord = {'shortname': vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20')};
+							}
+							$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
+								.then(function (res) {
+									vm.validData = res.data;
+									vm.numOfcolorAssociationNames = res.data.length;
+									vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+								});
+						}
+					});
+			};
+
+			this.searchByShortNames = function (colorAssociationNameWord) {
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: vm.colorAssociationNameWord})
+					.then(function (res) {
+						vm.validData = res.data;
+						if (res && res.data.length > 0) {
+							var RGB = '',
+								colorName = '';
+							vm.colorAssociationNamesByPicker = res.data.map(function (item) {
+								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+								colorName = item.ShortName;
+								return {colorName: colorName, RGB: RGB};
+							});
+							searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
+							$location.url('/color-index-accordion');
+						}
+					});
+			};
+
+			$(document).ready(function () {
+				$(".scroll_down").click(function () {
+					$('html, body').animate({
+						scrollTop: $(".scroll-end").offset().top
+					}, 1500);
+				});
+			});
+
+		}
+	});
+
+angular
+  .module('app')
+  .component('colorNamingInfoComponent', {
+    templateUrl: 'app/components/color-naming-info/color-naming-info.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+        var vm = this;
+
+        $(document).ready(function() {
+            $(".scroll_down").click(function() {
+                $('html, body').animate({
+                    scrollTop: $("#education-top").offset().top
+                }, 1500);
+            });
+        });
+    }
+  });
+
+angular
+  .module('app')
+  .component('colorNamingIndexComponent', {
+    templateUrl: 'app/components/color-naming-index/color-naming-index.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+      var vm = this;
+
+
+    }
+  });
+
+angular
+	.module('app')
+	.component('colorIndexSearchComponent', {
+		templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
+		controller: function (dataValidate, appConfig, $window, $location, anchorSmoothScroll, $http, $scope, searchColor) {
+			var vm = this;
+			vm.paintColorNamesData = [];
+			vm.colorAssociationNames = [];
+
+			this.colorSearch = function () {
+				if (this.data.color != ' ') {
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {
+						params: {shortname: vm.data.color}
+					})
+						.then(function (res) {
+							vm.colorValidDataShort = res.data;
+							if (res && res.data.length > 0) {
+								var RGB = '',
+									colorName = '';
+								vm.paintColorNamesData = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
+								});
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {
+									params: {shortname: vm.data.color}
+								})
+									.then(function (res) {
+										if (res && res.data.length > 0) {
+											var RGB = '',
+												colorName = '';
+											vm.colorAssociationNames = res.data.map(function (item) {
+												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+												colorName = item.ShortName;
+												return {colorName: colorName, RGB: RGB};
+											});
+											searchColor.set(vm.paintColorNamesData, vm.colorAssociationNames);
+											$location.url('/color-index-accordion');
+										}
+									});
+							}
+						});
+				}
+			};
+		}
+	});
+
+angular
+  .module('app')
+  .component('colorIndexAccordionComponent', {
+    templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
+    controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
+      var vm = this;
+
+			vm.paintColorNames = searchColor.getPaintColorNames();
+      vm.colorAssociationNames = searchColor.getColorAssociationNames();
+
+      vm.searchColorName = [];
+
+			$scope.pageSize = 80;
+
+      // if (colorRgb !== undefined) {
+      //
+      //   var similarSaturateColors = [];
+      //   var similarDarkenColors = [];
+      //
+      //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
+      //     similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
+      //     similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
+      //   }
+      //   // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
+      //   // notDuplicateColors(similarSaturateColors);
+      //   // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
+      //
+      //   vm.similarSaturateColors = similarSaturateColors;
+      //   // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
+      //   vm.similarDarkenColors = similarDarkenColors;
+      //   // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
+      // }
+
+      var colorNamesItems = [],
+        		colorRgbItems = [];
+
+      if (vm.colorAssociationNames !== undefined) {
+        if (vm.colorAssociationNames.length > 0) {
+          vm.colorAssociationNames.forEach(function (color) {
+            colorRgbItems.push(color.RGB);
+						colorNamesItems.push(color.colorName);
+          });
+        }
+      }
+
+      var colorNames = colorNamesItems.join(',');
+			// word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud
+
+      if (colorNames.length > 1) {
+				drawWordCloud(colorNames);
+			}
+
+      function drawWordCloud(text_string) {
+        var common = 'poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,says,said,shall';
+
+        var word_count = {};
+
+        var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
+        if (words.length === 1) {
+          word_count[words[0]] = 1;
+        } else {
+          words.forEach(function (word) {
+            var word = word.toLowerCase();
+            if (word !== '' && common.indexOf(word) === -1 && word.length > 1) {
+              if (word_count[word]) {
+                word_count[word]++;
+              } else {
+                word_count[word] = 1;
+              }
+            }
+          });
+        }
+        var svg_location = '#chart';
+        var widthOf84per = innerWidth - innerWidth*16/100;
+        var width = widthOf84per;
+        var height = 450;
+
+        var word_entries = d3.entries(word_count);
+
+        var xScale = d3.scale.linear()
+                .domain([0, d3.max(word_entries, function (d) {
+                  return d.value;
+                })
+                ])
+                .range([20, 100]);
+        d3.layout.cloud().size([width, height])
+                .timeInterval(20)
+                .words(word_entries)
+                .fontSize(function (d) {
+                  return xScale(Number(d.value)); 
+                })
+                .text(function (d) {
+                  return d.key; 
+                })
+                .rotate(function () {
+                  return ~~(Math.random() * 2) * 90; 
+                })
+                .font('Impact')
+                .on('end', draw)
+                .start();
+				window.addEventListener("resize", draw(words));
+        function draw(words) {
+					console.log("window.innerWidth", window.innerWidth);
+          d3.select(svg_location).append('svg')
+                    .attr('width', width)
+                    .attr('height', height)
+						        // .attr("preserveAspectRatio", "xMidYMid meet")
+						        // .attr("viewBox", "0 0 1000 450")
+                    .append('g')
+                    .attr('transform', 'translate(' + [widthOf84per/2, 225] + ')')
+                    // .attr('transform', 'scale(2)')
+                    .selectAll('text')
+                    .data(words)
+                    .enter().append('text')
+                    .style('font-size', function (d) {
+                      return xScale(d.value*0.5) + 'px';
+                    })
+                    .style('font-family', 'Impact')
+                    .style('fill', function (d, i) {
+                      return 'rgb(' + colorRgbItems[i] + ')';
+                    })
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', function (d) {
+                      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
+                    })
+                    .text(function (d) {
+                      return d.key; 
+                    });
+        }
+        d3.layout.cloud().stop();
+      }
+                                                                                                    // METHOD RGB TO HEX
+      function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? '0' + hex : hex;
+      }
+
+      function rgbToHex(r, g, b) {
+        return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+      }
+
+      //                                                                                         SELECT FOR COLOR DATA
+      $(document).ready(function() {
+        var widthContainer = window.innerWidth - 200;
+        var widthOneElement = $('.checkbox-accordion-item').width();
+        var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
+        var allElements = vm.paintColorNames.length;
+        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyElements = integerElementsOnRow - elementsOnRow;
+        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
+        
+        for(var i = 0; i < emptyElements; i++) {
+          $('.color-index-accordion-item__last-line').append(emptyBlock);
+        }
+        
+        $(document).click(function(event) {
+          if ($(event.target).closest(".selectPerPage").length) return;
+          $('.selectPerPage__list').removeClass('show');          
+          event.stopPropagation();
+        });
+      });
+
+      $scope.showSelect = function() {
+        $('.selectPerPage__list').toggleClass('show');
+      }
+    }
+  });
+angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
+  $scope.oneAtATime = true;
+});
+
+angular
+  .module('app')
+  .component('colorIndexComponent', {
+    templateUrl: 'app/components/color-index/color-index.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+      var vm = this;
+
+
+    }
+  });
+
+angular
+  .module('app')
+  .component('colorEmotionComponent', {
+    templateUrl: 'app/components/color-emotion/color-emotion.tmpl.html',
+    controller: function ($location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+
+
+
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartThankComponent', {
+    templateUrl: 'app/components/cart-thank/cart-thank.tmpl.html',
+    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
+      var vm = this;
+
+      vm.orderId = localStorageService.get('orderId');
+      localStorageService.remove('orderId');
+      localStorageService.remove('purchase');
+      localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
+      vm.products = localStorageService.get('purchaseItems');
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartPageComponent', {
+    templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
+    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService, $window) {
+      var vm = this;
+
+      vm.init = function () {
+        vm.wayBack = $stateParams.wayBack || 'profile';
+        vm.wayBackName = ' to ';
+
+        switch ($stateParams.wayBack) {
+          case 'reports':
+            vm.wayBackName += 'Color Reports';
+            break;
+          case 'courses':
+            vm.wayBackName += 'Color Courses';
+            break;
+          case 'teachingMaterials':
+            vm.wayBackName += 'Color Teaching Materials';
+            break;
+          case 'profile':
+            vm.wayBackName += 'Profile';
+            break;
+          default:
+            vm.wayBackName = '';
+        }
+
+        vm.products = [];
+        vm.all = 0;
+        vm.tax = 0;
+        vm.IDs = localStorageService.get('products');
+
+        vm.getProductItems(vm.IDs.reports, 'reports');
+        vm.getProductItems(vm.IDs.courses, 'courses');
+        vm.getProductItems(vm.IDs.teaching_materials, 'teaching_materials');
+      };
+
+      vm.getProductItems = function (obj, name) {
+        for (var key in obj) {
+          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
+            .then(function (res) {
+              vm.pageData = res.data.data.data;
+              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+              vm.pageData.file = res.data.data.files && res.data.data.files[0];
+              vm.pageData.analitics = angular.copy(res.data.data.analytics);
+              vm.pageData.count = obj[key];
+              vm.pageData.type = name;
+              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
+              vm.products.push(vm.pageData);
+            });
+        }
+      };
+
+      vm.goCheckout = function () {
+        var purchase = {IDs: {}};
+        purchase.amount = vm.all;
+        for (var type in vm.IDs) {
+          purchase.IDs[type] = {};
+          for (var id in vm.IDs[type]) {
+            if (vm.IDs[type][id] < 1) {
+              return;
+            } else {
+              purchase.IDs[type][id] = vm.IDs[type][id];
+            }
+          }
+        }
+
+        localStorageService.set('purchase', purchase);
+        $state.go('cart-checkout');
+      };
+
+      vm.removeProduct = function (id, type, index) {
+        modalService.showModal(4, function () {
+          delete vm.IDs[type][id];
+          vm.products.splice(index, 1);
+          localStorageService.set('products', vm.IDs);
+        });
+      };
+
+      vm.goWayBack = function () {
+        if ($window.history.length < 3) {
+          $state.go('about');
+        } else if (vm.wayBackName === '') {
+          $window.history.back();
+        } else {
+          $state.go(vm.wayBack);
+        }
+      };
+
+      vm.editCount = function (id, index, type, value) {
+        if (vm.products[index].count + value > 0) {
+          vm.products[index].count = vm.products[index].count + value;
+          vm.IDs[type][id] = vm.IDs[type][id] + value;
+          localStorageService.set('products', vm.IDs);
+          vm.all = vm.all + vm.products[index].price * value;
+        } else {
+          vm.removeProduct(id, type, index);
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartCheckoutMethodsComponent', {
+    templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
+    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope, $cookies) {
+      var vm = this;
+
+      function init() {
+        vm.userIsLoggedIn();
+
+        vm.methodNumber = 1;
+        vm.payError = false;
+        vm.nonce = false;
+        vm.errFlag = false;
+        vm.payDataFlag = false;
+        vm.placeOrderFlag = false;
+        vm.maxMethod = 1;
+        vm.tax = 0;
+        vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
+        vm.registerAndCheckout = false;
+        vm.checkoutAsGuest = false;
+        vm.country = categoryValues('country');
+        vm.states = categoryValues('states');
+
+        vm.email = '';
+        vm.password = '';
+        vm.error = '';
+
+        vm.data = {
+          first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+          last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+          email: {value: '', required: true, name: 'email', type: 'provide'},
+          middle_name: {value: '', name: 'middle name', type: 'provide'},
+          address: {value: '', required: true, name: 'address', type: 'provide'},
+          second_address: {value: '', name: 'second_address', type: 'provide'},
+          city: {value: '', required: true, name: 'city', type: 'provide'},
+          zip: {value: '', required: true, name: 'zip', type: 'numeric'},
+          telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
+          state: {
+            value: vm.states[0],
+            required: true,
+            name: 'state',
+            type: 'both'
+          },
+          country: {
+            value: vm.country[0],
+            required: true,
+            name: 'country',
+            type: 'select'
+          }
+        };
+
+        vm.products = [];
+        vm.all = 0;
+        vm.purchase = localStorageService.get('purchase');
+
+        vm.getProductItems(vm.purchase.IDs.reports, 'reports');
+        vm.getProductItems(vm.purchase.IDs.courses, 'courses');
+        vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
+        vm.editGrayList();
+      }
+
+      $scope.getStates = function (search) {
+        var newState = vm.states.slice();
+        if (search.length > 0 && newState.indexOf(search) === -1) {
+          newState.unshift(search);
+        }
+        return newState;
+      };
+
+      vm.getBillingData = function () {
+        if (vm.user && vm.user.id) {
+          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json', {params: {token: authService.token}})
+            .then(function (res) {
+              // console.log('res',res);
+              if (res && res.data && res.data[0]) {
+                // console.log('res',res);
+
+                for (var key in vm.data) {
+                  if (key === 'state') {
+                    var index = _.findIndex(vm.states, function (item) {
+                      return item.title === res.data[0][key];
+                    });
+                    vm.data[key].value = vm.states[index];
+                  }
+                  if (key === 'country') {
+                    var index2 = _.findIndex(vm.country, function (item) {
+                      return item.title === res.data[0][key];
+                    });
+                    vm.data[key].value = vm.country[index2];
+                  }
+                  vm.data[key].value = res.data[0][key] || '';
+                }
+              }
+              if (!vm.data.email.value && vm.user) {
+                vm.data.email.value = vm.user.email;
+              }
+              vm.continue();
+            })
+            .catch(function (err) {
+              // console.log('ERROR',err);
+            });
+        } else {
+          return false;
+        }
+      };
+
+      vm.login = function () {
+        vm.error = false;
+        authService.login(this.email, this.password)
+          .then(function (data) {
+            if (data && data.success) {
+              vm.user = localStorageService.get('currentUser');
+            } else {
+              vm.error = true;
+            }
+          });
+      };
+
+      vm.uploadBillingInfo = function () {
+        if (vm.user.id) {
+          if (dataValidate.validate(vm.data)) {
+            var data = {};
+            for (var item in vm.data) {
+              if (vm.data[item].type === 'select') {
+                data[item] = vm.data[item].value.title || vm.data[item].value;
+              } else {
+                data[item] = vm.data[item].value;
+              }
+            }
+            data.member_id = vm.user.id;
+            data.token = authService.token;
+            $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
+              .then(function (res) {
+                vm.continue();
+              })
+              .catch(function (err) {
+                // console.log('ERROR',err);
+              });
+          }
+        } else {
+          vm.continue();
+        }
+      };
+
+      vm.continue = function () {
+        if (vm.methodNumber === 2 && !dataValidate.validate(vm.data)) {
+          return;
+        }
+        vm.methodNumber = vm.methodNumber + 1;
+        if (vm.methodNumber === 3 && !vm.purchase.amount) {
+          vm.methodNumber = 4;
+        }
+        if (vm.maxMethod < vm.methodNumber) {
+          vm.maxMethod = vm.methodNumber;
+        }
+        vm.editGrayList();
+      };
+
+      vm.editGrayList = function () {
+        vm.methodStyle.forEach(function (value, index) {
+          if (index === vm.methodNumber - 1) {
+            vm.methodStyle[index] = 'black';
+          } else {
+            vm.methodStyle[index] = 'gray';
+          }
+        });
+      };
+
+      vm.getProductItems = function (obj, name) {
+        for (var key in obj) {
+          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
+            .then(function (res) {
+              vm.pageData = res.data.data.data;
+              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+              vm.pageData.analitics = angular.copy(res.data.data.analytics);
+              vm.pageData.count = obj[key];
+              vm.pageData.type = name;
+              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
+              vm.products.push(vm.pageData);
+            });
+        }
+      };
+
+      vm.goToMethod = function (number) {
+        vm.errFlag = false;
+        vm.methodNumber = number;
+        vm.editGrayList();
+      };
+
+      vm.passwordRecover = function () {
+        $state.go('password-recover-cart');
+      };
+
+      vm.userIsLoggedIn = function () {
+        vm.loginFlag = ($cookies.get('hg_session') !== undefined);
+        if (vm.loginFlag) {
+          vm.getBillingData();
+        } else {
+          vm.methodNumber = 1;
+        }
+      };
+
+      vm.stepBack = function () {
+        vm.methodNumber = vm.methodNumber - 1;
+        vm.editGrayList();
+      };
+
+      vm.goToThank = function () {
+        $timeout(function () {
+          vm.errFlag = false;
+          vm.placeOrderFlag = true;
+        }, 0);
+        var names = [];
+        var prices = [];
+        vm.products.forEach(function (item) {
+          names.push(item.header);
+          prices.push(item.price);
+        });
+        var data = {
+          id: vm.user.id || 0,
+          email: vm.data.email.value,
+          reports: vm.purchase.IDs.reports,
+          teaching_materials: vm.purchase.IDs.teaching_materials,
+          courses: vm.purchase.IDs.courses,
+          payment_method_nonce: vm.nonce,
+          name: vm.data.first_name.value + ' ' + vm.data.last_name.value,
+          address: vm.data.address.value,
+          zip: vm.data.zip.value,
+          city: vm.data.city.value,
+          productsNames: names,
+          productsPrices: prices
+        };
+        $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
+          .then(function (res) {
+            if (res) {
+              vm.info = res.data.info;
+              if (res.data.status === 'fail') {
+                vm.errFlag = true;
+                $timeout(function () {
+                  vm.placeOrderFlag = false;
+                }, 0);
+              } else {
+                vm.errFlag = false;
+                localStorageService.set('purchaseItems', res.data.items);
+                localStorageService.set('orderId', res.data.orderId);
+                $timeout(function () {
+                  vm.placeOrderFlag = false;
+                }, 0);
+                $state.go('cart-thank');
+              }
+            }
+          })
+          .catch(function (err) {
+            vm.placeOrderFlag = false;
+            vm.errFlag = true;
+          });
+      };
+
+      braintree.client.create({
+        authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
+      }, function (err, clientInstance) {
+        if (err) {
+          // console.error(err);
+          return;
+        }
+        braintree.hostedFields.create({
+          client: clientInstance,
+          styles: {
+            'input': {
+              'font-size': '14px',
+              'font-family': 'helvetica, tahoma, calibri, sans-serif',
+              'color': '#3a3a3a'
+            },
+            ':focus': {
+              'color': 'black'
+            }
+          },
+          fields: {
+            number: {
+              selector: '#card-number',
+              placeholder: 'CREDIT CARD NUMBER *'
+            },
+            cvv: {
+              selector: '#cvv',
+              placeholder: 'CVV *'
+            },
+            expirationMonth: {
+              selector: '#expiration-month',
+              placeholder: 'MONTH',
+              select: {
+                options: [
+                  '01',
+                  '02',
+                  '03',
+                  '04',
+                  '05',
+                  '06',
+                  '07',
+                  '08',
+                  '09',
+                  '10',
+                  '11',
+                  '12'
+                ]
+              }
+            },
+            expirationYear: {
+              selector: '#expiration-year',
+              placeholder: 'YEAR',
+              select: {
+                options: true
+              }
+            }
+          }
+        }, function (err, hostedFieldsInstance) {
+          if (err) {
+            // console.error(err);
+            return;
+          }
+          hostedFieldsInstance.on('validityChange', function (event) {
+            $timeout(function () {
+              vm.payError = false;
+            }, 0);
+            var field = event.fields[event.emittedBy];
+            if (field.isValid) {
+              if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear' || event.emittedBy === 'cvv') {
+                if (!event.fields.expirationMonth.isValid || !event.fields.expirationYear.isValid || !event.fields.cvv.isValid) {
+                  return;
+                }
+              } else if (event.emittedBy === 'number') {
+                $('#card-number').next('span').text('');
+              }
+              // Remove any previously applied error or warning classes
+              $(field.container).parents('.form-group').removeClass('has-warning');
+              $(field.container).parents('.form-group').removeClass('has-success');
+              // Apply styling for a valid field
+              $(field.container).parents('.form-group').addClass('has-success');
+            } else if (field.isPotentiallyValid) {
+              // Remove styling  from potentially valid fields
+              $(field.container).parents('.form-group').removeClass('has-warning');
+              $(field.container).parents('.form-group').removeClass('has-success');
+              if (event.emittedBy === 'number') {
+                $('#card-number').next('span').text('');
+              }
+            } else {
+              // Add styling to invalid fields
+              $(field.container).parents('.form-group').addClass('has-warning');
+              // Add helper text for an invalid card number
+              if (event.emittedBy === 'number') {
+                $('#card-number').next('span').text('Looks like this card number has an error.');
+              }
+            }
+          });
+          hostedFieldsInstance.on('cardTypeChange', function (event) {
+            // Handle a field's change, such as a change in validity or credit card type
+            if (event.cards.length === 1) {
+              $('#card-type').text(event.cards[0].niceType);
+            } else {
+              $('#card-type').text('Card');
+            }
+          });
+          $('.panel-body').submit(function (event) {
+            $timeout(function () {
+              vm.payDataFlag = true;
+            }, 0);
+
+            event.preventDefault();
+            hostedFieldsInstance.tokenize(function (err, payload) {
+              if (err) {
+                $timeout(function () {
+                  vm.payError = err.message;
+                  vm.payDataFlag = false;
+                  // console.error(err);
+                  return;
+                }, 0);
+              }
+              // This is where you would submit payload.nonce to your server
+              $timeout(function () {
+                if (payload && payload.nonce) {
+                  vm.nonce = payload.nonce;
+                  vm.continue();
+                  vm.payDataFlag = false;
+                }
+              }, 0);
+            });
+          });
+        });
+
+        braintree.paypalCheckout.create({
+          client: clientInstance
+        }, function (paypalCheckoutErr, paypalCheckoutInstance) {
+
+          // Stop if there was a problem creating PayPal Checkout.
+          // This could happen if there was a network error or if it's incorrectly
+          // configured.
+          if (paypalCheckoutErr) {
+            console.error('Error creating PayPal Checkout:', paypalCheckoutErr);
+            return;
+          }
+
+          // Set up PayPal with the checkout.js library
+          paypal.Button.render({
+            locale: 'en_US',
+            style: {
+              size: 'small',
+              color: 'blue',
+              shape: 'pill',
+              label: 'paypal',
+              tagline: 'false'
+            },
+            env: 'sandbox', // or 'sandbox'
+
+            payment: function () {
+              return paypalCheckoutInstance.createPayment({
+                flow: 'checkout',
+                amount: vm.all,
+                currency: 'USD',
+                intent: 'sale'
+                // Your PayPal options here. For available options, see
+                // http://braintree.github.io/braintree-web/current/PayPalCheckout.html#createPayment
+              });
+            },
+
+            onAuthorize: function (data, actions) {
+              return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
+                if (err) {
+                  $timeout(function () {
+                    vm.payError = err.message;
+                    // console.error(err);
+                    return;
+                  }, 0);
+                }
+                // This is where you would submit payload.nonce to your server
+                $timeout(function () {
+                  if (payload && payload.nonce) {
+                    vm.nonce = payload.nonce;
+                    vm.continue();
+                  }
+                }, 0);
+                // Submit `payload.nonce` to your server.
+              });
+            },
+
+            onCancel: function (data) {
+              console.log('checkout.js payment cancelled', JSON.stringify(data, 0, 2));
+            },
+
+            onError: function (err) {
+              console.error('checkout.js error', err);
+            }
+          }, '#paypal-button').then(function () {
+            // The PayPal button will be rendered in an html element with the id
+            // `paypal-button`. This function will be called when the PayPal button
+            // is set up and ready to be used.
+          });
+
+        });
+      });
+
+      $scope.$watch(function () {
+        return authService.currentUser;
+      }, function (newVal) {
+        vm.user = localStorageService.get('currentUser');
+        if (vm.user) {
+          init();
+        }
+
+      });
+    }
+  });
+angular
+  .module('app')
+  .component('aboutPage', {
+    templateUrl: 'app/components/about-page/about-page.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'abouts/1.json')
+          .then(function (res) {
+            if (res && res.data) {
+              // var keys = Object.keys(res.data).filter(function (item) {
+              //   return !!~item.indexOf('_url');
+              // });
+              //
+              // angular.forEach(keys, function (key) {
+              //   res.data[key] = appConfig.dashboardServiceUrl + res.data[key]
+              // });
+
+              vm.pageData = res.data;
+              vm.pageData.editor = $sce.trustAsHtml(vm.pageData.editor);
+            }
+          });
+      };
+
+      angular.element(window.scrollTo(0, 0));
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+
+      vm.playerAPI = function (action) {
+        vm.vimeoPlayer = angular.element('iframe#companyVimeoVideo')[0];
+        if (vm.vimeoPlayer) {
+          vm.vimeoAPI = $f(vm.vimeoPlayer).api(action);
+        }
+      };
+
+      vm.showVideoPopup = function () {
+        angular.element('#video-popup').show();
+        angular.element('body').addClass('modal-open');
+      };
+
+      vm.hideVideoPopup = function () {
+        vm.playerAPI('pause');
+        angular.element('#video-popup').hide();
+        angular.element('body').removeClass('modal-open');
+      };
+    }
+  })
 
 angular.module('app').service('userDataRepository',
   ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
@@ -51433,60 +51433,6 @@ angular
 angular.module('app').run(['$templateCache', function($templateCache) {$templateCache.put('app/footer.html','<section ng-class="{\'hide\': $ctrl.hidePrefooter()}" class="prefooter" id="prefooter">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-12">\r\n        <div class="box">\r\n          <h4>Stay Connected</h4>\r\n          <form name="subscriber">\r\n            <div id="stay-connected">\r\n              <input placeholder="Email Address" name="email" id="emailSub" type="text" ng-model="$ctrl.email" ng-class="\'ng-dirty\' && subscriber.email.$invalid ?  \'error\' :\'\'" required>\r\n            </div>\r\n            <div class="button submit" style="">\r\n              <button class="btn white-hover submit-btn" ng-click="$ctrl.submitEmail()">Submit</button>\r\n            </div>\r\n            <div class="stay-connected-checkboxes">\r\n              <p>\r\n                <input type="checkbox" id="test1" ng-model="$ctrl.permissions[\'Daily Insights\']">\r\n                <label for="test1">Daily Insight</label>\r\n              </p>\r\n              <p><input type="checkbox" id="test2" ng-model="$ctrl.permissions[\'Research Partner\']">\r\n                <label for="test2">Research Reports</label>\r\n              </p>\r\n              <p>\r\n                <input type="checkbox" id="test3" ng-model="$ctrl.permissions[\'Education Offerings\']">\r\n                <label for="test3">Education Offerings</label>\r\n              </p>\r\n              <p>\r\n                <input type="checkbox" id="test4" ng-model="$ctrl.relationship[\'Expert Panelist\']">\r\n                <label for="test4">Join Expert Panel</label>\r\n              </p></div>\r\n          </form>\r\n          <div style="clear:both;margin-top:10px"></div>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-6 col-md-12">\r\n        <div class="box" id="qwe"><h4>Become a Member</h4>\r\n          <p>Members use our color analytics and insights to benchmark their color decisions and\r\n            maximize the business impact of color in their offerings</p>\r\n          <div class="button learn-more submit">\r\n            <button class="btn white-hover submit-btn" ui-sref="membership({scrollTo: true})" ng-click="$ctrl.scroll()">Learn more</button>\r\n          </div>\r\n          <div style="clear:both;margin-top:10px"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n<footer class="container-fluid">\r\n  <div class="row">\r\n    <div class="col-lg-2 col-md-12 text-center">\r\n      <img src="../assets/images/logo-black.png" id="logo" alt="logo">\r\n    </div>\r\n\r\n    <div class="col-lg-10 col-md-12 text-center">\r\n      <p id="copyrights">\xA9 2018 HUEDATA. All Rights Reserved</p>\r\n      <ul>\r\n        <li><a ui-sref="contact">Contact</a></li>\r\n        <li><a ui-sref="terms">Terms</a></li>\r\n        <li><a ui-sref="privacy">Privacy</a></li>\r\n        <li><a ui-sref="aboutPage">About</a></li>\r\n        <li><a ui-sref="dailyInsights">Color Daily</a></li>\r\n        <li><a ui-sref="infographics">Color Research</a></li>\r\n        <li><a ui-sref="fashion">Color Trends</a></li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</footer>\r\n');
 $templateCache.put('app/header.html','<!--<div ng-class="{\'hide\': $ctrl.hideHeader()}" class="container-fluid" id="top-menu">-->\r\n\r\n  <!--<ul>-->\r\n    <!--<li><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>-->\r\n    <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->\r\n    <!--<li>-->\r\n      <!--<a class="pointer" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>-->\r\n      <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->\r\n    <!--</li>-->\r\n\r\n    <!--<li class="left-header">The World\'s Color Intelligence Platform</li>-->\r\n  <!--</ul>-->\r\n<!--</div>-->\r\n\r\n<nav ng-class="{\'hide\': $ctrl.hideHeader()}" class="navbar navbar-inverse">\r\n  <div class="container-fluid">\r\n\r\n    <!--data-toggle="collapse" data-target="#myNavbar"-->\r\n\r\n    <div class="collapse navbar-collapse flexible-menu" data-toggle="collapse" id="myNavbar">\r\n      <div class="navbar-header">\r\n          <a href="/">\r\n          <img class="pointer" ng-click="$ctrl.goToLanding()" src="../assets/images/logo.png" id="logo" alt="logo">\r\n          </a>\r\n        <button type="button" ng-click="$ctrl.open()" class="navbar-toggle collapsed" aria-expanded="false">\r\n          <span class="icon-bar"></span>\r\n          <span class="icon-bar"></span>\r\n          <span class="icon-bar"></span>\r\n        </button>\r\n      </div>\r\n      <ul class="nav navbar-nav">\r\n\r\n        <li class="dropdown" ng-mouseleave="$ctrl.selectedTab=false" ng-mouseover="$ctrl.selectedTab=true" ui-sref-active="active" ng-class="$ctrl.getActiveMainNav(mainNav.name) && !$ctrl.selectedTab || $ctrl.selectedSubTab[mainNav.name] ? \'active\' : \'\'" ng-repeat="mainNav in $ctrl.navigations">\r\n\r\n          <a ng-if="!mainNav.state" class="dropdown-toggle">\r\n            {{mainNav.name}}\r\n          </a>\r\n          <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref="{{mainNav.state}}\r\n             " class="dropdown-toggle" data-toggle="dropdown">\r\n            {{mainNav.name}}\r\n          </a>\r\n          <ul class="dropdown-menu" ng-if="mainNav.subNavs && mainNav.subNavs.length > 0" ng-mouseleave="$ctrl.selectedSubTab[mainNav.name]=false" ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">\r\n            <li ng-click="$ctrl.toggleMenu(subNav.name)" ng-repeat="subNav in mainNav.subNavs">\r\n              <a ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref="{{subNav.state}}">{{subNav.name}}</a>\r\n            </li>\r\n          </ul>\r\n        </li>\r\n      </ul>\r\n\r\n\r\n\r\n\r\n      <ul class="nav navbar-nav main-nav navbar-right login" ng-class="{true: \'menu-client-logged\', false: \'menu-client\'}[$ctrl.userIsLoggedIn()]">\r\n        <!--<ul ng-show="$ctrl.userIsLoggedIn()" class="menu-client-logged">-->\r\n        <!--</ul>-->\r\n        <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->\r\n          <li ng-show="$ctrl.user.is_admin">\r\n              <a class="menu-client_item_test" ng-href="https://gentle-bastion-76293.herokuapp.com/abouts" style="padding-right: 50px!important;">\r\n                  ADMIN</a>\r\n          </li>\r\n          <li class="dropdown" ng-show="$ctrl.userIsLoggedIn()" ng-mouseleave="$ctrl.selectedTab=false" ng-mouseover="$ctrl.selectedTab=true" ui-sref-active="active" ng-class="$ctrl.getActiveMainNav(mainNav.name) && !$ctrl.selectedTab || $ctrl.selectedSubTab[mainNav.name] ? \'active\' : \'\'" ng-repeat="mainNav in $ctrl.navigation_profile">\r\n\r\n              <a ng-if="!mainNav.state" class="dropdown-toggle menu-client_item_test full-name-menu-link" style="font-size: 16px;">\r\n                  {{mainNav.name}} {{$ctrl.user.first_name}}\r\n              </a>\r\n              <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref="{{mainNav.state}}\r\n                 " class="dropdown-toggle menu-client_item_test" data-toggle="dropdown">\r\n                  {{mainNav.name}}\r\n              </a>\r\n              <ul class="dropdown-menu" ng-if="mainNav.subNavs && mainNav.subNavs.length > 0" ng-mouseleave="$ctrl.selectedSubTab[mainNav.name]=false" ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">\r\n                  <li ng-click="$ctrl.toggleMenu(subNav.name)" ng-repeat="subNav in mainNav.subNavs">\r\n                      <a class="menu-client_item_test" ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref="{{subNav.state}}">{{subNav.name}}</a>\r\n                  </li>\r\n              </ul>\r\n          </li>\r\n          <li>\r\n              <a class="pointer" style="padding: 0 0 0 47px!important;" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>\r\n              <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->\r\n          </li>\r\n          <li>\r\n              <a ng-show="!$ctrl.userIsLoggedIn()" ng-click="$ctrl.toggleMenu()" ui-sref="login" style="padding: 0 0 12px 47px!important;">\r\n                  Member Login\r\n                  <img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 6px;margin-top: -5px;width: 27px;">\r\n              </a>\r\n              <a class="menu-client_item_test" ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="min-width: 60px;font-size: 16px;">\r\n                  Logout\r\n                  <!--<img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 2px; margin-top:-4px;">-->\r\n              </a>\r\n          </li>\r\n          <li ng-show="$ctrl.userIsLoggedIn()">\r\n              <a class="lighter-grey-color" ui-sref="cart-page" style="padding-top: 6px!important;height: 40px;padding-right: 12px!important;">\r\n                  <!--<i style="display: inline-block" class="fa fa-shopping-cart fa-2x cart-img-header" aria-hidden="true"></i>-->\r\n                  <img src="../assets/images/cart_TH.png" alt="cart" style="margin-top: 2px;width: 24px;">\r\n              </a>\r\n          </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</nav>\r\n');
 $templateCache.put('app/main.html','');
-$templateCache.put('app/components/about-page/about-page.tmpl.html','<update-title title="About Us"></update-title>\r\n<update-meta name="description" content="Inform, inspire and validate color design decisions"></update-meta>\r\n<update-meta name="keywords" content="Color, Color Data, Color Insights, Color Trends, Color Forecasting, Color Analysis"></update-meta>\r\n\r\n<div class="container-fluid header text-center" ng-init="$ctrl.init()">\r\n  <div class="text-header">\r\n    <h1>The World\u2019s Color Intelligence Platform</h1>\r\n    <img id="show-video-popup" ng-click="$ctrl.showVideoPopup()" class="play-btn" src="../assets/images/play-icon.png" alt="play">\r\n    <div class="button">\r\n      <button ng-click="$ctrl.gotoElement(\'prefooter\')" class="btn">STAY CONNECTED</button>\r\n    </div>\r\n    <div class="popup full-screen video" id="video-popup">\r\n      <header>\r\n        <button ng-click="$ctrl.hideVideoPopup()" type="button" class="btn close-btn">X</button>\r\n      </header>\r\n      <main>\r\n        <iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo" id="companyVimeoVideo" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>\r\n      </main>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<div class="clear"></div>\r\n\r\n<section>\r\n  <div class="container-fluid text-center">\r\n    <h3>{{$ctrl.pageData.title}}</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n\r\n  <div class="container-fluid bg-3">\r\n    <div class="row about-us-min-h">\r\n      <div class="col-lg-6 col-md-6">\r\n        <img ng-src="{{$ctrl.pageData.image_url}}" class="img-responsive shadow img50" alt="Image">\r\n      </div>\r\n      <div class="del-padding" ng-bind-html="$ctrl.pageData.editor"></div>\r\n    </div>\r\n\r\n\r\n    <div class="row text-center equal">\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/search.png" alt="Image" style="padding-top:30px">\r\n          <h5>SEARCH</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Search for any color data point you need!</p>\r\n          <ol class="list-huegroup">\r\n            <li>Find what are the new colors showing on the world\u2019s runways;</li>\r\n            <li>View furniture colors of leading interior designers;</li>\r\n            <li>Check the colors of logos for the world\u2019s 100,000 global companies</li>\r\n          </ol>\r\n          <p class="text-align-left padding-left-3"> \u2026 and so much more!</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/discover.png" alt="Image" style="padding-top:30px">\r\n          <h5>DISCOVER</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Discover the value of real time color analytics.</p>\r\n          <ol class="list-huegroup">\r\n            <li>What are the RTW color trends this season?  </li>\r\n            <li>What colors do celebrities wearing this month?</li>\r\n            <li>Which colors are most twitted about this week?</li>\r\n          </ol>\r\n          <p class="text-align-left">Discover how color is used across products, industries geographies, and over time!</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/analyze.png" alt="Image" style="padding-top:30px">\r\n          <h5>ANALYZE</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Analyze the frequency , uniqueness, relevance & timeliness of color.</p>\r\n          <ol class="list-huegroup">\r\n            <li>Track global and local color trends</li>\r\n            <li>Analyze the color portfolio of specific designers over time</li>\r\n            <li>Identify specific color-emotion associations</li>\r\n          </ol>\r\n          <p class="text-align-left padding-left-3"> \u2026 in short, focus on analytics that best support your color decision needs.</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/Leverage.png" alt="Image" style="padding-top:30px">\r\n          <h5>LEVERAGE</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Let the confidence in analytics and insights amplify  your decisions.</p>\r\n          <ol class="list-huegroup">\r\n            <li>Substantiated creative choices</li>\r\n            <li>Minimize color risks</li>\r\n            <li>Rationalize color decisions to gain support</li>\r\n          </ol>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>');
-$templateCache.put('app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html','<update-title title="Checkout"></update-title>\n<update-meta name="description" content="HUEDATA checkout page"></update-meta>\n<update-meta name="keywords" content="Checkout, Checkout page, HUEDATA checkout"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n        <!--<div class="line"></div>-->\n      </div>\n    </div>\n  </div>\n</section>\n<div class="purchase-body-min-h">\n  <section class="subtitle purchase-head-min-h" ng-show="$ctrl.loginFlag !== undefined">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12">\n          <div class="method-1">\n            <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECKOUT METHOD</h4>\n            <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 2" class="method-2">\n            <h4 style="color: {{$ctrl.methodStyle[1]}}"><span>2. </span>BILLING INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(2)" ng-show="$ctrl.methodNumber !== 2" class="edit-btn">EDIT</button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 3" class="method-3">\n            <h4 style="color: {{$ctrl.methodStyle[2]}}"><span>3. </span>PAYMENT INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3 && !!$ctrl.purchase.amount" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 4" class="method-4">\n            <h4 style="color: {{$ctrl.methodStyle[3]}}"><span>4. </span>ORDER REVIEW</h4>\n            <button ng-click="$ctrl.goToMethod(4)" ng-show="$ctrl.methodNumber !== 4" class="edit-btn">EDIT</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 1 && !$ctrl.loginFlag" class="check-out-method">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 login">\n          <h4>HUEDATA MEMBERS</h4>\n          <form>\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\n            <div class="err">\n              <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>\n            </div>\n            <div class="reset-password">\n              <a ng-click="$ctrl.passwordRecover()" class="reset-your-password pointer">RESET YOUR PASSWORD</a>\n            </div>\n            <div class="button login-btn">\n              <button ng-click="$ctrl.login()" class="btn">LOGIN</button>\n            </div>\n          </form>\n        </div>\n        <div class="col-lg-4 col-md-6 guest">\n          <h4>CHECKOUT AS GUEST</h4>\n          <div class="login-btn">\n            <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 2" class="billing-information">\n    <div class="container-fluid text-left">\n      <div class="row">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 col-sm-6 billing-1">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'">\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.middle_name.value" ng-value="$ctrl.data.middle_name.value" type="text" id="middle_name" name="middle_name" ng-class="\'ng-dirty\' && membership.middle_name.$invalid ?  \'error\' :\'\'">\n            <label for="middle_name">MIDDLE NAME/INITIAL</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'">\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail" name="email" ng-class="\'ng-dirty\' && membership.Email.$invalid ?  \'error\' :\'\'">\n            <label for="billingEmail">EMAIL(WORK-RELATED) <span class="red-text">*</span></label>\n          </div>\n        </div>\n        <div class="col-lg-4 col-md-6 col-sm-6 billing-2">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.address.value" ng-value="$ctrl.data.address.value" type="text" id="address" name="address" ng-class="\'ng-dirty\' && membership.address.$invalid ?  \'error\' :\'\'">\n            <label for="address">ADDRESS <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.second_address.value" ng-value="$ctrl.data.second_address.value" type="text" id="second_address" name="second_address" ng-class="\'ng-dirty\' && membership.second_address.$invalid ?  \'error\' :\'\'">\n            <label for="second_address">SECOND ADDRESS</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.city.value" ng-value="$ctrl.data.city.value" type="text" id="city" name="city" ng-class="\'ng-dirty\' && membership.city.$invalid ?  \'error\' :\'\'">\n            <label for="city">CITY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.state.value" theme="selectize">\n              <ui-select-match placeholder="STATE/PROVINCE *">\n              <span style="{{($ctrl.data.state.value && $select.selected != $ctrl.states[0])? \'color: black\' : \'\'}}" ng-bind-html="$select.selected || $ctrl.data.state.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="state in getStates($select.search) | filter:$select.search">\n                <span ng-bind-html="state"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.zip.value" ng-value="$ctrl.data.zip.value" type="text" id="zip" name="zip" ng-class="\'ng-dirty\' && membership.zip.$invalid ?  \'error\' :\'\'">\n            <label for="zip">ZIP <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize">\n              <ui-select-match placeholder="PLEASE SELECT COUNTRY *">\n              <span style="{{($ctrl.data.country.value && $select.selected.title != $ctrl.country[0].title)? \'color: black\' : \'\'}}" ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="country in ($ctrl.country | sortFilter:$select.search)">\n                <span ng-bind-html="country.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.telephone.value" ng-value="$ctrl.data.telephone.value" type="text" id="telephone" name="telephone" ng-class="\'ng-dirty\' && membership.telephone.$invalid ?  \'error\' :\'\'">\n            <label for="telephone">TELEPHONE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="button login-btn">\n            <button ng-click="$ctrl.uploadBillingInfo()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 3" class="payment-information">\n    <div class="cart-checkout">\n      <div class="panel panel-default bootstrap-basic">\n        <div class="panel-heading">\n          <h3 class="panel-title">CREDIT CARD</h3>\n          <div id="paypal-button" class="paypal-btn" style="z-index: 1"></div>\n        </div>\n        <form class="panel-body">\n          <div class="row">\n            <div class="form-group col-sm-12">\n              <!--<label class="control-label">Card Number</label>-->\n              <!--  Hosted Fields div container -->\n              <div class="form-control" id="card-number"></div>\n              <span class="helper-text"></span>\n            </div>\n            <div class="form-group col-sm-12">\n              <div class="row payment-item-row">\n                <label class="control-label col-xs-12 payment-item">EXPIRATION DATE <span class="red-text">*</span></label>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-month"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-year"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <div class="form-control" id="cvv"></div>\n                </div>\n              </div>\n            </div>\n          </div>\n          <div ng-show="$ctrl.payError" class="error-message afade text-left">\n            {{$ctrl.payError}}\n          </div>\n          <button ng-disabled="$ctrl.payDataFlag" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE\n          </button>\n          <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>\n        </form>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 4" class="products-cart order-review">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12 products-table">\n          <table>\n            <tr class="product-row" ng-repeat="item in $ctrl.products">\n              <td class="product-img">\n                <img ng-src="{{item.image_url}}">\n              </td>\n              <td class="product-name">\n                <h4>{{item.header}}</h4>\n                <div ng-show="$ctrl.methodNumber === 4" class="justify margin-zero-p">\n                  <p ng-show="$ctrl.methodNumber === 4" class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n                </div>\n              </td>\n              <td class="product-count">\n                <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->\n                <h4 style="display: inline-block">{{item.count}}</h4>\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-minus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-plus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n              </td>\n              <td class="product-prise">\n                <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n              </td>\n              <td class="price-for-all">\n                <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n              </td>\n            </tr>\n          </table>\n          <div class="err-massage">\n            <h4 ng-show="$ctrl.errFlag">We are unable to process your payment at this time. Please provide an alternate\n              method to payment.</h4>\n          </div>\n        </div>\n        <div class="col-sm-4 col-xs-4">\n        </div>\n        <div class="col-sm-offset-4 col-lg-3 col-sm-4 col-xs-8 text-right">\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4>TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n          <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n            <button ng-disabled="$ctrl.placeOrderFlag" ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">\n              PLACE ORDER\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
-$templateCache.put('app/components/cart-page/cart-page.tmpl.html','<update-title title="My Cart"></update-title>\n<update-meta name="description" content="HUEDATA cart page"></update-meta>\n<update-meta name="keywords" content="Cart, HUEDATA cart, cart page"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n      </div>\n    </div>\n  </div>\n</section>\n<section class="products-cart products-table-min-h">\n  <div class="container-fluid text-center title">\n    <div class="row equal">\n      <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 col-xs-12 empty-cart">\n        <h3>Your cart is empty</h3>\n        <div class="go-to-reports pointer">\n          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">Back{{$ctrl.wayBackName}}</button>\n        </div>\n      </div>\n      <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table width-100">\n        <table>\n          <tr class="product-row" ng-repeat="item in $ctrl.products">\n            <td class="product-img">\n              <div class="img-box">\n                <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n                <img ng-src="{{item.image_url}}">\n              </div>\n            </td>\n            <td class="product-name">\n              <h4>{{item.header}}</h4>\n              <div class="justify margin-zero-p">\n                <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n              </div>\n            </td>\n            <td class="product-count">\n              <h4 style="display: inline-block">{{item.count}}</h4>\n              <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">\n                <i class="fa fa-minus fa-1x pointer" aria-hidden="true"></i>\n              </div>\n            </td>\n            <td class="product-prise">\n              <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n            </td>\n            <td class="price-for-all">\n              <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n            </td>\n            <!--<td class="basket-icon">-->\n            <!--<i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>-->\n            <!--</td>-->\n          </tr>\n        </table>\n      </div>\n      <div class="col-sm-4 col-xs-4 go-back">\n        <div ng-show="$ctrl.products.length" ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">\n          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">BACK</button>\n        </div>\n      </div>\n      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-8">\n        <div>\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">\n                  <h4>SUBTOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + $ctrl.all}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4 class="pointer">TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n        </div>\n        <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n          <button style="margin-top: 0" class="btn">CHECKOUT</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>');
-$templateCache.put('app/components/cart-thank/cart-thank.tmpl.html','<update-title title="Thank You for Your Purchase"></update-title>\n<update-meta name="description" content="Thanks page after purchase"></update-meta>\n<update-meta name="keywords" content="Thank you page, download"></update-meta>\n\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n      </div>\n    </div>\n  </div>\n</section>\n<section class="cart-thank-page">\n  <div class="cart-thank">\n    <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>\n    <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId || \'UNKNOWN\'}}</span></h4>\n    <div class="thank-text">\n      <span>YOU WILL RECEIVE AN ORDER CONFORMATION EMAIL WITH DETAILS OF YOUR PURCHASE</span>\n    </div>\n    <div class="thank-text">\n      <span>CLICK HERE TO DOWNLOAD</span>\n    </div>\n  </div>\n</section>\n<section class="download-page">\n  <div class="container-fluid text-center">\n    <div class="row download-row">\n      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">\n        <div>\n        <img class="download-img" ng-src="{{item.image}}">\n        </div>\n        <div ng-show="item.file">\n        <a href="{{item.file}}" download><button class="btn">DOWNLOAD</button></a>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</section>');
-$templateCache.put('app/components/color-emotion/color-emotion.tmpl.html','<update-title title="Color Indices"></update-title>\r\n<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>\r\n<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,\r\ncolor and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,\r\nColor Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n      <div class="col-lg-6 col-md-12 col-sm-12 buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <img src="../assets/images/indices1.png" class="img-responsive shadow" alt="Image">\r\n      </div>\r\n\r\n      <div class="col-lg-6 col-md-6">\r\n        <p>Color is strongly linked to emotional and non-emotional attributes. Research indicates that some of these\r\n          associations are universal while others are product and cultural sensitive.\r\n          Designing for a global customer base we need to account for the color connotations we evoke and ensure\r\n          alignment between the color choice, preferences of the target audience and various contextual (cultural,\r\n          genderspecific\r\n          and product related) aspects.<br><br>\r\n          HUEDATA Color Emotion Index (CEI) parses through thousands of research articles comprising the body of\r\n          research conducted on color, to mine and surface these associations and carefully map them agains colors\r\n          within\r\n          the context of demographics, psychographics a product-related attributes when relevant. The CEI is further\r\n          enriched by our active social listening on Twitter that monitor the popular voice on color and contrast it\r\n          with\r\n          research findings for further calibration and validation.<br><br>\r\n          This Members-Only product allows you to benchmark and further modify your color choices against desired\r\n          attributes to ensure your color massage is indeed on massage! </p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>Performance Analysis</h5>\r\n        <p>Search for the meaning of colors using the two available color\r\n          - attribute associations classifications:<br><br></p>\r\n        <div class="left">\r\n          <div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">\r\n            <span>EMOTIONAL ATTRIBUTES INDEX</span>\r\n          </div>\r\n\r\n          <div class="color-ind-bar"><img src="../assets/images/non-emontional.png" alt="Image">\r\n            <span>NON-EMOTIONAL ATTRIBUTES INDEX</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>CEI Interactive Color Upload</h5>\r\n        <p>Stress-test the colors you\u2019re considering agains the CEI to validate the\r\n          colors evoke the attributes you\u2019re looking for within the relevant\r\n          product and demographic context. Simply upload your colors and we\u2019ll\r\n          analyze them for you.</p>\r\n        <img src="../assets/images/indices2.png" class="img-responsive" alt="Image">\r\n      </div>\r\n\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>COLOR NAMING INDEX</h5>\r\n        <p>With nearly 10 million color names in our system, HUEDATA\r\n          can help you name your color right. Explore our color naming\r\n          visualizations to identify best ways to communicate your color\r\n          selection.<br><br></p>\r\n        <img src="../assets/images/indices3.png" class="img-responsive text-center" alt="Image">\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/color-index/color-index.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n\r\n\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM THINKING OF THIS COLOR AND WANT TO LEARN NOW ITS CALLED </h5>\r\n          <img id="color-naming-block-desc_img_2" src="../assets/images/picker.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorPicker">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n\r\n     <div class="col-lg-6 col-md-6">\r\n      <div class="color-naming-block-desc">\r\n        <h5 class="title-link-color-picker h-data ng-binding">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>\r\n        <img id="color-naming-block-desc_img_1" src="../assets/images/pen.png" alt="">\r\n        <div class="button">\r\n          <a class="btn join-btn color-index-btn" ui-sref="colorIndexSearch">LET\'S START</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<!--<section id="education">-->\r\n  <!--<div class="container-fluid">-->\r\n    <!--<div class="row">-->\r\n      <!--<div class="col-lg-4 col-md-4  col-sm-12 indices-block">-->\r\n        <!--<h5>Performance Analysis</h5>-->\r\n        <!--<p>Search for the meaning of colors using the two available color-->\r\n          <!-- - attribute associations classifications:<br><br></p>-->\r\n        <!--<div class="left">-->\r\n          <!--<div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">-->\r\n            <!--<span>EMOTIONAL ATTRIBUTES INDEX</span>-->\r\n          <!--</div>-->\r\n\r\n          <!--<div class="color-ind-bar"><img src="../assets/images/non-emontional.png"-->\r\n                                <!--alt="Image">-->\r\n            <!--<span>NON-EMOTIONAL ATTRIBUTES INDEX</span>-->\r\n          <!--</div>-->\r\n        <!--</div>-->\r\n      <!--</div>-->\r\n\r\n      <!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->\r\n        <!--<h5>CEI Interactive Color Upload</h5>-->\r\n        <!--<p>Stress-test the colors you\u2019re considering agains the CEI to validate the-->\r\n          <!--colors evoke the attributes you\u2019re looking for within the relevant-->\r\n          <!--product and demographic context. Simply upload your colors and we\u2019ll-->\r\n          <!--analyze them for you.</p>-->\r\n        <!--<img src="../assets/images/indices2.png" class="img-responsive " alt="Image">-->\r\n      <!--</div>-->\r\n\r\n      <!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->\r\n        <!--<h5>COLOR NAMING INDEX</h5>-->\r\n        <!--<p>With nearly 10 million color names in our system, HUEDATA-->\r\n          <!--can help you name your color right. Explore our color naming-->\r\n          <!--visualizations to identify best ways to communicate your color-->\r\n          <!--selection.<br><br></p>-->\r\n        <!--<img src="../assets/images/indices3.png" class="img-responsive  text-center" alt="Image">-->\r\n      <!--</div>-->\r\n    <!--</div>-->\r\n  <!--</div>-->\r\n<!--</section>-->\r\n');
-$templateCache.put('app/components/color-index-accordion/color-index-accordion.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n<section id="color-emotion-header">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-6">\r\n                <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n\r\n            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n                <div class="title-color-index">The Color Naming Index</div>\r\n                <div class="button membership">\r\n                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n                </div>\r\n                <div class="line"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section class="bg-color-picker-block">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div ng-controller="AccordionCtrl">\r\n                <uib-accordion close-others="oneAtATime">\r\n                    <div uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            <!--{{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>-->\r\n                            {{$ctrl.colorAssociationNames.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item">\r\n                            <!--<div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">-->\r\n                                <!--<div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>-->\r\n                            <!--</div>-->\r\n                            <!--<div ng-repeat="similarColor1 in $ctrl.similarSaturateColors">-->\r\n                                <!--<div style="width: 40px; height: 40px; background: {{similarColor1}}"></div>-->\r\n                            <!--</div>-->\r\n                            <ul class="selectPerPage" ng-if="$ctrl.colorAssociationNames !== undefined || $ctrl.colorAssociationNames !== 0">\r\n                                <button ng-click="showSelect()" class="selectPerPage__btn">{{pageSize}}</button>\r\n                                <ul class="selectPerPage__list">\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="num-80" ng-click="showSelect()">80</label>\r\n                                        <input type="radio" id="num-80" name="pageSize" checked="checked" ng-model="pageSize" ng-value="80">\r\n                                    </li>\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="num-160" ng-click="showSelect()">160</label>\r\n                                        <input type="radio" id="num-160" name="pageSize" ng-model="pageSize" ng-value="160">\r\n                                    </li>\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="num-320" ng-click="showSelect()">320</label>\r\n                                        <input type="radio" id="num-320" name="pageSize" ng-model="pageSize" ng-value="320">\r\n                                    </li>\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="string-all" ng-click="showSelect()">ALL</label>\r\n                                        <input type="radio" id="string-all" name="pageSize" ng-model="pageSize" ng-value="\'ALL\'">\r\n                                    </li>\r\n                                </ul>\r\n                            </ul>\r\n                            <ul>\r\n                                <div class="color-index-accordion-item color-index-accordion-item__last-line" ng-if="$ctrl.colorAssociationNames">\r\n                                    <div class="checkboxes-accordion" ng-repeat="color in $ctrl.colorAssociationNames | limitTo:pageSize ">\r\n                                        <div class="checkbox-accordion-item">\r\n                                            <label class="title-checkbox-accordion"></label>\r\n                                            <input type="checkbox" class="option-input checkbox" style="background: rgb({{color.RGB}});">\r\n                                            <span class="checkbox-accordion_text">{{color.colorName}}</span>\r\n                                            <div class="checkbox-accordion-tooltip">\r\n                                                <span class="checkbox-accordion-tooltip_text">{{color.colorName}}</span>\r\n                                                <div class="checkbox-accordion-tooltip_triangle-with-shadow"></div>\r\n                                            </div>\r\n                                            <span class="checkbox-accordion_small_text">{{color.RGB}}</span>\r\n                                        </div>\r\n                                    </div>\r\n                                </div>\r\n                        </ul></div>\r\n                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined">Not found</div>\r\n                    </div>\r\n                    <div uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            {{$ctrl.paintColorNames.length}} PAINT COLOR NAMES\r\n                            <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-items">\r\n                            <ul>\r\n                            <div class="color-index-accordion-item color-index-accordion-item__last-line" ng-if="$ctrl.paintColorNames !== 0">\r\n                                <div class="checkboxes-accordion" ng-repeat="color in $ctrl.paintColorNames | limitTo:pageSize ">\r\n                                    <div class="checkbox-accordion-item">\r\n                                        <label class="title-checkbox-accordion"></label>\r\n                                        <input type="checkbox" class="option-input checkbox" style="background: rgb({{color.RGB}});">\r\n                                        <span class="checkbox-accordion_text">{{color.colorName}}</span>\r\n                                        <div class="checkbox-accordion-tooltip">\r\n                                                <span class="checkbox-accordion-tooltip_text">{{color.colorName}}</span>\r\n                                                <div class="checkbox-accordion-tooltip_triangle-with-shadow"></div>\r\n                                        </div>\r\n                                        <span class="checkbox-accordion_small_text">{{color.RGB}}</span>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                            </ul>\r\n                                <div class="color-index-accordion-item" ng-if="$ctrl.paintColorNames == undefined || $ctrl.paintColorNames == 0">Not found</div>\r\n                        </div>\r\n                    </div>\r\n                    <div uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            COLOURLOVERS COLOR NAMES <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item">\r\n                            Not found\r\n                        </div>\r\n                    </div>\r\n                    <!--<div uib-accordion-group class="color-index-accordion-title">-->\r\n                    <!--<uib-accordion-heading>-->\r\n                    <!--18 RESEARCH COLOR NAMES <i class="pull-right glyphicon"></i>-->\r\n                    <!--</uib-accordion-heading>-->\r\n                    <!--<div class="color-index-accordion-item">-->\r\n                    <!--<img class="img-accordion img-responsive img50" alt="Image" src="../../../assets/images/accordion-color-music.png">-->\r\n                    <!--</div>-->\r\n                    <!--</div>-->\r\n\r\n                    <div ng-if="$ctrl.searchColorName === undefined" uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            COLOR MOSAIC FOR (COLOR NAME) <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item">\r\n                        </div>\r\n                    </div>\r\n                    <div ng-if="$ctrl.searchColorName" uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            COLOR WORD CLOUD <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames">\r\n                            <div id="chart"></div>\r\n                        </div>\r\n                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined">Not found</div>\r\n                    </div>\r\n                </uib-accordion>\r\n            <div class="container">\r\n                <div class="row">\r\n                    <div class="button accordion-button">\r\n                        <a class="btn join-btn" ui-sref="colorIndex">NEW SEARCH</a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div></section>\r\n');
-$templateCache.put('app/components/color-index-search/color-index-search.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="color-naming-info">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-md-12 col-lg-12 text-center">\r\n        <img class="color-search-pen-img" src="../assets/images/pen.png" alt="">\r\n        <h5 class="color-search-title">WHAT COLOR NAME DO YOU HAVE IN MIND?</h5>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="col-lg-2 col-md-2"></div>\r\n      <div class="col-md-8 col-lg-8 center">\r\n        <form class="search-container">\r\n          <input ng-model="$ctrl.data.color" ng-value="$ctrl.data.color" type="text" id="search-bar" placeholder="TYPE HERE">\r\n          <button class="btn-color-search" ng-click="$ctrl.colorSearch()"></button>\r\n        </form>\r\n\r\n        <div ng-if="$ctrl.colorValidDataShort.length === 0" class="msg-inf" style="height: 0px!important;">\r\n          <p style="text-align: center"> Not found.</p>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-2 col-md-2"></div>\r\n    </div>\r\n      <div class="row equal" style="margin-top: 100px"></div>\r\n  </div>\r\n</section>');
-$templateCache.put('app/components/color-naming-index/color-naming-index.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n\r\n\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top" class="">\r\n  <div class="container-fluid">\r\n    <div class="row color-names-block">\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            37\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n          <div class="title-color-naming">\r\n            <span>COLOR  </span>\r\n            <span>  ASSOCIATION</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            22\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>PAINT  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            139\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>COLOURLOVERS  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            18\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>RESEARCH  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="center-color-block">\r\n        <div class="button">\r\n          <a class="btn join-btn" ui-sref="colorIndexAccordion">NEXT</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/color-naming-info/color-naming-info.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="color-naming-info">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-md-2 col-lg-2"></div>\r\n      <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2 center-block text-center color-naming-info-part_text">\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="col-md-12 col-lg-12">\r\n        <div class="button center-block scroll_down" style="width: 153px;">\r\n          <a class="btn join-btn color-index-btn">CLICK TO START</a>\r\n        </div>\r\n    </div>\r\n  </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM THINKING OF THIS COLOR AND WANT TO LEARN NOW ITS CALLED </h5>\r\n          <img id="color-naming-block-desc_img_2" src="../assets/images/picker.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorPicker">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM LOOKING TO LEARN WHAT COLORS ARE ASSOCIATED WITH THIS WORD /NAME </h5>\r\n          <img id="color-naming-block-desc_img_1" src="../assets/images/pen.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorNamingIndex">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>');
-$templateCache.put('app/components/color-picker/color-picker.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-6">\r\n                <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n\r\n            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n                <div class="title-color-index">The Color Naming Index</div>\r\n                <div class="button membership">\r\n                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n                </div>\r\n                <div class="line"></div>\r\n            </div>\r\n\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n\r\n<!--<div id="s_color_picker_id">-->\r\n<!--<canvas id="color_picker" width="200" height="200"></canvas>-->\r\n<!--<div id="color_id"></div>-->\r\n<!--<div>{{pixelColor ? pixelColor : \'rgb(0,0,0)\'}}</div>-->\r\n<!--</div>-->\r\n\r\n<section class="bg-color-picker-block">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <h5 class="title-link-color-picker h-data ng-binding color-picker-title">WHAT COLOR NAMES ARE ASSOCIATED WITH MY COLOR SELECTION? </h5>\r\n                <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/picker.png" alt=""></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-4 col-md-4 color-piker-item_canvas">\r\n                <div id="s_color_picker_id">\r\n                    <div class="wrapper-color-picker">\r\n                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\r\n                    </div>\r\n                    <div class="slidecontainer">\r\n                        <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\r\n                        <span class="slider-title-opacity">OPACITY</span>\r\n                        <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\r\n                        <label id="value_span"></label>\r\n                    </div>\r\n                    <div class="rgb-display">\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">R</span>\r\n                            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">G</span>\r\n                            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">B</span>\r\n                            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div id="color_id"></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <div class="button button-color-picker scroll_down">\r\n                    <button ng-click="$ctrl.searchByRGB()" class="btn join-btn">LET\'S START</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section id="education-top" class="scroll-end">\r\n    <div class="container-fluid">\r\n        <div class="row color-names-block">\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames">\r\n            {{$ctrl.numOfcolorAssociationNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOR  </span>\r\n                        <span>  ASSOCIATION</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>PAINT  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            0\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOURLOVERS  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>RESEARCH  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="center-color-block">\r\n                <div class="button">\r\n                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames($ctrl.colorAssociationNameWord)">NEXT</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>');
-$templateCache.put('app/components/contact-us/contact-us.tmpl.html','<update-title title="Contact Us"></update-title>\r\n<update-meta name="description" content="Contact form for HUEDATA"></update-meta>\r\n<update-meta name="keywords" content="Contact us"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Contact Us</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="contact-us-page">\r\n  <form name="contact">\r\n    <div class="container-fluid text-center">\r\n      <div class="row">\r\n        <div class="contact-us-form membership-form">\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && contact.firstName.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && contact.lastName.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="lastName">LAST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.title.value" ng-value="$ctrl.data.title.value" type="text" id="title" name="title" ng-class="\'ng-dirty\' && contact.title.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="title">TITLE <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && contact.company.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="company">COMPANY <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.phone.value" ng-value="$ctrl.data.phone.value" type="text" id="phone" name="phone" ng-class="\'ng-dirty\' && contact.phone.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="phone">PHONE</label>\r\n          </div>\r\n\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.companyEmail.value" ng-value="$ctrl.data.companyEmail.value" type="text" id="companyEmail" name="companyEmail" ng-class="\'ng-dirty\' && contact.companyEmail.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="companyEmail">COMPANY EMAIL <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="form-item">\r\n          <textarea ng-model="$ctrl.data.comments.value" ng-value="$ctrl.data.comments.value" type="text" id="comments" name="comments" ng-class="\'ng-dirty\' && contact.comments.$invalid ?  \'error\' :\'\'" required></textarea>\r\n            <label for="comments">COMMENTS <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="button">\r\n            <button class="btn" ng-click="$ctrl.contactUs()">SUBMIT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </form>\r\n</section>\r\n');
-$templateCache.put('app/components/courses/courses.tmpl.html','<update-title title="Color Courses"></update-title>\n<update-meta name="description" content="Online color education platform to teach various color subjects"></update-meta>\n<update-meta name="keywords" content="Color Fundamentals, Color Education, color theory courses, color courses online,\ncolor theory and application, foundations of color, Theory of color, color preferences"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()" )>\n    <div class="row">\n      <div class="col-lg-6 col-lg-offset-3"><h3>Color Courses</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-3 buttons-group">\n        <div class="button membership">\n          <button class="btn" ui-sref="educationInquire">BECOME AN EDUCATION PARTNER</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-center">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3 search-fields2">\n        <div class="select-style">\n          <select ng-model="$ctrl.topicModel" ng-change="$ctrl.select()">\n            <option>TOPIC</option>\n            <option ng-repeat="item in $ctrl.topic">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.providerModel" ng-change="$ctrl.select()">\n            <option>PROVIDER</option>\n            <option ng-repeat="item in $ctrl.provider">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.levelModel" ng-change="$ctrl.select()">\n            <option>LEVEL</option>\n            <option ng-repeat="item in $ctrl.level">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left course course-items-min-h">\n    <div class="row equal">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item text-dn" ng-repeat="item in $ctrl.items">\n        <a style="text-decoration: none" ng-href="#!/color-education-courses/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class="row" ng-if="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/courses-details/courses-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Course"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA course, detailed page"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Education</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD\n              EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section class="detailed-content-min-h">\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section class="detailed-bottom-content detailed-bottom-content-min-h" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;;\n                    background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
-$templateCache.put('app/components/customized-infographics/customized-infographics.tmpl.html','<update-title title="Customized Color Infographics"></update-title>\r\n<update-meta name="description" content="HUEDATA members create their own color analysis and inforgroahics"></update-meta>\r\n<update-meta name="keywords" content="Color Analytics, Color visualization, Color Data, Color insights,\r\ncolor theory infographics, infographics color scheme"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="CustomInfographicsController as vm">\r\n  <div class="container-fluid infographics text-center title customized-infographics-top-container">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-12 col-lg-offset-3">\r\n        <h3>Color Customized Infographics</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-3 col-md-12 text-right buttons-group">\r\n        <div class="button membership btn-space-left">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn btn-no-space-right" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid text-left title">\r\n    <!--<div class="dashboard-overlay" hue-dashboard-overlay ng-if="vm.showDashboardOverlay"></div>-->\r\n    <div class="customized-infographics-controls">\r\n      <div style="max-width: none" class="select-style custom-select">\r\n        <ui-select class="chart-type" ng-model="vm.currentChart" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title" class="to-uppercase"></ui-select-match>\r\n          <ui-select-choices repeat="item in vm.charts track by item.id">\r\n            <span class="to-uppercase" ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'designer\')">\r\n        <ui-select id="designers" ng-model="vm.filter.designer" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL DESIGNERS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'designers\', item.title)" repeat="item in vm.meta.designers track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'color\')">\r\n        <ui-select id="color" class="colors" ng-model="vm.filter.color" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL COLORS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'colorGroups\', item.title)" repeat="item in vm.meta.colorGroups track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'category\')">\r\n        <ui-select id="categories" class="categories" ng-model="vm.filter.category" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL CATEGORIES\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'categories\', item.title)" repeat="item in vm.meta.categories track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'season\')">\r\n        <ui-select id="seasons" class="seasons" ng-model="vm.filter.season" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL SEASONS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'seasons\', item.title)" repeat="item in vm.meta.seasons track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'year\')">\r\n        <ui-select id="years" class="years" ng-model="vm.filter.year" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL YEARS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'years\', item.title)" repeat="item in vm.meta.years track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'region\')">\r\n        <ui-select id="regions" class="regions" ng-model="vm.filter.region" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL REGIONS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'regions\', item.title)" repeat="item in vm.meta.regions track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'city\')">\r\n        <ui-select id="cities" class="cities" ng-model="vm.filter.city" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL CITIES\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'cities\', item.title)" repeat="item in vm.meta.cities track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n      <button class="btn customized-infographics-controls-btn" style="margin-top: 0" ng-click="vm.refresh()">LOAD</button>\r\n      <div style="padding-left: 10px">\r\n        <button class="btn" style="margin-top: 0" ng-click="vm.exportJpg()">\r\n          EXPORT\r\n        </button>\r\n      </div>\r\n      <!--<div style="padding-left: 10px" ng-if="vm.isUserAdmin()">-->\r\n        <!--<button class="btn" style="margin-top: 0" ng-click="vm.reportJpg()">-->\r\n          <!--REPORT-->\r\n        <!--</button>-->\r\n      <!--</div>-->\r\n\r\n\r\n      <!--<div style="display: inline-block">-->\r\n      <!--</div>-->\r\n    </div>\r\n\r\n    <section class="customized-infographics">\r\n      <div id="capture">\r\n        <div class="graphic-titles">\r\n          <div class="letters-anchors" ng-if="vm.currentChart.group === \'top4Grid\' && vm.title">\r\n            <a ng-click="vm.scrollToLetter(\'anchor-\'+letter)" ng-repeat="letter in vm.alphabet">{{letter}}</a>\r\n          </div>\r\n          <h2 ng-bind-html="vm.title">\r\n          </h2>\r\n          <h4>{{vm.description}}</h4>\r\n        </div>\r\n\r\n        <hue-chart-by-city-period hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.qNumber === \'CO1a\'">\r\n        </hue-chart-by-city-period>\r\n\r\n        <hue-chart-by-city-period-colors hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.qNumber === \'CO1b\'">\r\n        </hue-chart-by-city-period-colors>\r\n\r\n        <hue-chart-colors-unique-with-levels hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsUniqueWithLevels\'">\r\n        </hue-chart-colors-unique-with-levels>\r\n\r\n        <hue-chart-trends hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'trends\'">\r\n        </hue-chart-trends>\r\n\r\n        <hue-chart-by-region-period hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsByRegionPeriod\'">\r\n        </hue-chart-by-region-period>\r\n\r\n        <hue-chart-colors-per-region hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsPerRegions\'">\r\n        </hue-chart-colors-per-region>\r\n\r\n        <hue-chart-unique-with-groups hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsUniqueGroupsCommon\'">\r\n        </hue-chart-unique-with-groups>\r\n\r\n        <hue-chart-by-season-five-years hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsUniqueByPeriodFiveYears\'">\r\n        </hue-chart-by-season-five-years>\r\n\r\n        <hue-chart-by-season-five-years-colors hue-chart data="vm.model" mode="true" ng-if="vm.currentChart.group === \'colorsUniqueByPeriodFiveYears2\'">\r\n        </hue-chart-by-season-five-years-colors>\r\n\r\n        <hue-chart-colors-unique-with-groups-per-season hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'uniqueWithGroupsPerSeason\'">\r\n        </hue-chart-colors-unique-with-groups-per-season>\r\n\r\n        <hue-chart-nails hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsByCategoryPeriod\'">\r\n        </hue-chart-nails>\r\n\r\n        <hue-chart-grid-nails hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsGridNails\'">\r\n        </hue-chart-grid-nails>\r\n\r\n        <hue-chart-grid-nails hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.group === \'colorsGridNails2\'">\r\n        </hue-chart-grid-nails>\r\n\r\n        <hue-chart-cities-by-color-period hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'citiesByColorPeriod\'">\r\n        </hue-chart-cities-by-color-period>\r\n\r\n        <!--Designers <DE**>-->\r\n        <hue-chart-common-with-groups hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsGroupsCommon\'">\r\n        </hue-chart-common-with-groups>\r\n\r\n        <hue-chart-common-with-groups hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.group === \'colorsGroupsCommon2\'">\r\n        </hue-chart-common-with-groups>\r\n\r\n        <hue-chart-colors-with-groups-for-two hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'top4forDesigner\'">\r\n        </hue-chart-colors-with-groups-for-two>\r\n\r\n        <hue-chart-colors-with-groups-for-two hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.group === \'top4forDesigner2\'">\r\n        </hue-chart-colors-with-groups-for-two>\r\n\r\n        <hue-top4-grid hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'top4Grid\'">\r\n        </hue-top4-grid>\r\n\r\n        <div class="customized-infographics-footer">\r\n          <a></a>\r\n          <h5 style="padding-top: 9px;">HUEDATA is a color intelligence company, providing color analytics and insights across industries,\r\n            product categories, geographies and time to inspire, inform and validate color decisions. Visit us at: <a href="http://www.hue-data.com">www.hue-data.com</a>\r\n          </h5>\r\n          <p style="margin-top: -8px;">&#169 HUEDATA Inc. 2018</p>\r\n        </div>\r\n      </div>\r\n    </section>\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/daily-insights/daily-insights.tmpl.html','<update-title title="Daily Insight"></update-title>\r\n<update-meta name="description" content="Color daily insight blog"></update-meta>\r\n<update-meta name="keywords" content="Color social media, color blog, color design blog, color insights, color daily insights"></update-meta>\r\n\r\n<section id="daily-insight" ng-if="$ctrl.emptyData">\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-12">\r\n        <h1 class="h1-daily"><strong style="color:black;">DAILY </strong>{{$ctrl.pageData.header}}\r\n        </h1>\r\n        <button ng-if="$ctrl.getUser()" class="btn-daily-join btn daily-btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n      </div>\r\n    </div>\r\n    <div class="dailyinsights"></div>\r\n\r\n    <div class="row" style="margin-bottom:50px;">\r\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">\r\n        <h4 style="padding-top:0; margin-top:0">{{$ctrl.pageData.date}}</h4>\r\n      </div>\r\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 social-icons">\r\n        <a href="https://www.linkedin.com/company/huedata/" target="_blank"><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://www.facebook.com/pg/Huedata-1287083448095980/" target="_blank"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://twitter.com/huedata1" target="_blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://www.instagram.com/huedata/" target="_blank"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://www.pinterest.com/huedatainc" target="_blank"><i class="fa fa-pinterest fa-2x" aria-hidden="true"></i></a>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="daily-insights-min-h" ng-if="$ctrl.emptyData">\r\n  <div class="container-fluid" style="border-bottom: solid 2px;\r\n    border-color: #bb0076;\r\n    padding-bottom: 50px;">\r\n    <div class="row">\r\n\r\n      <div class="col-lg-5 col-md-5" ng-bind-html="$ctrl.pageData.description">\r\n\r\n      </div>\r\n\r\n      <div class="col-lg-7 col-md-7">\r\n        <img ng-src="{{$ctrl.pageData.image_url || \'../assets/images/insights.jpg\'}}" class="img-responsive shadow" style="width:100%" alt="Image">\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section ng-init="$ctrl.init()" ng-if="!$ctrl.emptyData">\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h1 style="padding-bottom:0px; margin-top:0px; color:#bb0076"><strong style="color:black;">DAILY </strong>\r\n        </h1>\r\n      </div>\r\n    </div>\r\n    <div class="dailyinsights"></div>\r\n\r\n    <div class="row" style="margin-bottom:50px;">\r\n      <div class="col-lg-6">\r\n        <h4 style="padding-top:0px; margin-top:0px"><em>Nothing found. Please try later</em></h4>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section ng-if="$ctrl.emptyData">\r\n  <div class="container-fluid text-left course">\r\n    <div class="row equal daily-list-min-h">\r\n      <a style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\r\n        <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\r\n        <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item)" style="background: {{\'url(\' + item.image_url +\') top center\'}};\r\n                    background-repeat: no-repeat;\r\n                    background-size: cover;\r\n                    padding-bottom: 56%;\r\n                    background-color: #e1e1e126;\r\n                    cursor: pointer;">\r\n        </div>\r\n        <h5>{{item.header}}</h5>\r\n        <div class="justify">\r\n          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\r\n        </div>\r\n      </a>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="row" ng-if="!$ctrl.flag">\r\n    <div class="col-lg-12 text-center">\r\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/data-partners/partners.tmpl.html','<update-title title="Data Partnership Inquiry"></update-title>\r\n<update-meta name="description" content="Inquire about Data Partnership"></update-meta>\r\n<update-meta name="keywords" content="Color data partnership, Color design partnership, Color data partners, color database,\r\ncolor dataset, color data points in r,color coding data analysis, color big data"></update-meta>\r\n\r\n<div class="container-fluid header data-partners-header text-center" ng-init="$ctrl.init()">\r\n  <div class="text-header">\r\n    <h1>Our Data Partners</h1>\r\n    <div class="button">\r\n      <button class="btn" ui-sref="partnershipInquire">Inquire about Data Partnership</button>\r\n    </div>\r\n  </div>\r\n</div>\r\n<section>\r\n  <div class="container-fluid text-left partners partners-min-h">\r\n    <div class="row equal">\r\n      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 partner" ng-repeat="item in $ctrl.pageData">\r\n        <img class="partners-logo-min-h" ng-if="item.image_url" ng-src="{{item.image_url}}">\r\n        <h5>{{item.partner_name}}</h5>\r\n        <div class="justify">\r\n          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n<section style="margin-top: 0" class="inquiries">\r\n  <div class="container-fluid text-center">\r\n    <h3>Inquire about Data Partnership</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n  <div class="row">\r\n    <div class="container-fluid">\r\n      <div class="col-lg-4 col-md-4" style="font-size: 17px">\r\n        <p class="text-align-left padding-bottom-20">Typical ways in which Data partners collaborate with HUEDATA include:</p>\r\n        <ol class="list-huegroup">\r\n          <li>Seeking help structuring company color data</li>\r\n          <li>Looking to benchmark company color data against\r\n            HUEDATA specific color datasets for comparative and\r\n            competitive insights</li>\r\n          <li>Participate in invited research</li>\r\n          <li>Customize color dashboards and infographics using HUEDATA API</li>\r\n          <li>Co-Promoting unique color datasets\r\n            on HUEDATA\u2019s growing Color Intelligence Platform</li>\r\n        </ol>\r\n      </div>\r\n      <form name="inquiries" class="inq">\r\n        <div class="col-lg-4 col-md-4 membership-form">\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="email">EMAIL <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.company.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="Company">COMPANY<span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\r\n                <span ng-bind-html="job.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\r\n                <span ng-bind-html="companySize.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\r\n                <span ng-bind-html="ind.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\r\n                <span ng-bind-html="cntry.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <textarea ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>\r\n\r\n          <div class="button">\r\n            <button ng-click="$ctrl.send()" class="btn pull-right">\r\n              SUBMIT INQUIRY\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </form>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n');
-$templateCache.put('app/components/detailed-page/detailed.tmpl.html','<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<div class="detailed-page-wrapper">\r\n  <section class="top">\r\n    <div class="container-fluid text-left title">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="list-item">\r\n            <div>\r\n              <span class="list-category">Category</span>\r\n              <span class="list-date">September 11, 2017</span>\r\n            </div>\r\n            <div class="list-text">China: Online Video</div>\r\n          </div>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\r\n          <div class="button membership">\r\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n          </div>\r\n          <div class="button membership white">\r\n            <button class="btn white-btn">DOWNLOAD EXCERPT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <div class="border"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left">\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left report detailed-content">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <div class="category Beauty text-center"><p>HUEBEAUTY</p></div>\r\n          <img class="img-responsive" src="../assets/images/report.jpg">\r\n        </div>\r\n\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <p class="text">Lorem ipsum dolor sit amet, ne nam nibh iriure, ad sea graece nemore repudiare. Nam no debet\r\n            perpetua, usu\r\n            movet scripta et. Eos everti iracundia id, munere placerat no vis. Ex decore aliquam vix, eos et doming\r\n            sanctus persequeris. No quo deterruisset delicatissimi, in novum omnesque voluptatum per.</p>\r\n\r\n          <a>Download Excerpt</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section class="detailed-bottom-content">\r\n    <div class="container-fluid">\r\n      <div class="row top-row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <h4>Key Analytics</h4>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="button membership white">\r\n            <button class="btn white-btn">VIEW ALL FROM THIS REPORT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row slider-images">\r\n        <a>\r\n          <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\r\n            <img src="../assets/images/slider-1.jpg" alt="slider-image" class="img-responsive shadow">\r\n          </div>\r\n          <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\r\n            <h5>SS17</h5>\r\n            <div class="short-line"></div>\r\n          </div>\r\n        </a>\r\n\r\n        <a>\r\n          <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\r\n            <img src="../assets/images/slider-1.jpg" alt="slider-image" class="img-responsive shadow">\r\n          </div>\r\n          <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\r\n            <h5>Pink is in again</h5>\r\n            <div class="short-line"></div>\r\n          </div>\r\n        </a>\r\n\r\n        <a>\r\n          <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\r\n            <img src="../assets/images/slider-1.jpg" alt="slider-image" class="img-responsive shadow">\r\n          </div>\r\n          <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\r\n            <h5>RTW SS18</h5>\r\n            <div class="short-line"></div>\r\n          </div>\r\n        </a>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
-$templateCache.put('app/components/download-excerpt-page/download-excerpt-page.tmpl.html','<update-title title="Download Excerpt"></update-title>\n<update-meta name="description" content="Download excerpt form"></update-meta>\n<update-meta name="keywords" content="download excerpt"></update-meta>\n\n<section class="inquiries">\n  <div class="container-fluid text-center">\n    <h3>DOWNLOAD EXCERPT</h3>\n    <div class="line"></div>\n  </div>\n  <div class="row">\n    <div class="container-fluid">\n      <form name="inquiries" class="inq">\n        <div class="col-lg-offset-1 col-lg-5 col-md-6 membership-form">\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="email">EMAIL(MUST BE BUSINESS ADDRESS) <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="Company">COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <!--<textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value"-->\n                    <!--placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>-->\n          <!--<textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value"-->\n                    <!--placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" style="border: 0px"></textarea>-->\n\n          <!--<div class="button">-->\n            <!--<button ng-click="$ctrl.send(\'data\')" class="btn pull-right">-->\n              <!--DOWNLOAD EXCERPT-->\n            <!--</button>-->\n          <!--</div>-->\n        </div>\n\n        <div class="col-lg-5 col-md-6 membership-form">\n          <h4>Join our Email list</h4>\n          <div>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.daily" type="checkbox" id="dailyInsight">\n              <label for="dailyInsight">THE DAILY</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.newReportNotification" type="checkbox" id="newReportNotification">\n              <label for="newReportNotification">HUEDATA NEW REPORT NOTIFICATION</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.expert" type="checkbox" id="joinPanel">\n              <label for="joinPanel">EXPERT PANEL INVITE</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.emotionIndexInsights" type="checkbox" id="emotionIndexInsights">\n              <label for="emotionIndexInsights">COLOR - EMOTION INDEX INSIGHTS</label>\n            </p>\n          </div>\n\n          <div class="button">\n            <p style="float: none">\n              <input ng-model="$ctrl.data.contact.becoming" type="checkbox" id="becoming">\n              <label for="becoming">PLEASE CONTACT ME ABOUT BECOMING A HUEDATA MEMBER</label>\n            </p>\n            <button ng-click="$ctrl.send()" class="btn">\n              DOWNLOAD EXCERPT\n            </button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>');
-$templateCache.put('app/components/good-reads/good-reads.tmpl.html','<update-title title="Good Reads"></update-title>\n<update-meta name="description" content="Relevant color news and publications we follow"></update-meta>\n<update-meta name="keywords" content=""></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n    <div class="row">\n      <div class="col-lg-8 col-lg-offset-2">\n        <h3>Goods Reads</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-2">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n<section>\n  <div class="container-fluid text-left course">\n    <div class="row equal goods-reads-min-h">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n        <a ng-href="{{item.link}}" target="_blank" rel="nofollow">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="two_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n    <div class="row" ng-if="!$ctrl.flag">\n      <div class="col-lg-12 text-center">\n        <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n      </div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/good-reads-details/good-reads-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Good Read"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA good read, detailed page, good read"></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Goods Reads</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>HUE{{$ctrl.pageData.hue}}</p>\n          </div>\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n');
-$templateCache.put('app/components/infographics/infographics.tmpl.html','<update-title title="Color Infographics"></update-title>\n<update-meta name="description" content="color analytics and color visualization of fashion colors, color use in product,\ncolor use in brands and color use in environments"></update-meta>\n<update-meta name="keywords" content="Color Analytics, Color visualization, Color Data, Color insights,\ncolor theory infographics, infographics color scheme, color data visualization"></update-meta>\n\n<section>\n    <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n        <div class="row">\n            <div class="col-lg-8 col-lg-offset-2"><h3>Color Infographics</h3>\n                <div class="line"></div>\n            </div>\n            <div class="col-lg-2 buttons-group">\n                <div class="button membership">\n                    <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n                </div>\n            </div>\n        </div>\n    </div>\n</section>\n\n<section>\n    <div class="container-fluid text-left">\n        <div class="row search-fields">\n            <div class="col-lg-2 col-lg-offset-4 search-fields">\n                <div class="select-style">\n                    <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select()">\n                        <option>VERTICAL</option>\n                        <option ng-repeat="item in $ctrl.hue">{{item}}</option>\n                    </select>\n                </div>\n            </div>\n            <div class="col-lg-2">\n                <div class="select-style">\n                    <select ng-model="$ctrl.yearModel" ng-change="$ctrl.select()">\n                        <option>YEAR</option>\n                        <option ng-repeat="time in $ctrl.year">{{time}}</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n</section>\n\n<section class="min-h">\n    <div class="container-fluid text-left course infographics-min-h" style="margin-bottom: 0px">\n        <div ng-if="$ctrl.items.length === 0" class="msg-inf">\n            <p>Building this massive color database takes\n                time and we\'re working diligently to</p>\n            <p>introduce color analytics for this topic area.\n                Check again towards end of Fall 2018</p>\n        </div>\n        <div class="row equal">\n            <a style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n                <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n                <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item.image_url)" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;\n                    cursor: pointer;">\n                </div>\n                <h6 class="text-14">{{ $ctrl.makeDate(item) }}</h6>\n                <h5 class="h-data">{{item.header}}</h5>\n                <div class="justify">\n                    <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n                </div>\n            </a>\n        </div>\n    </div>\n\n    <div class="row" ng-if="!$ctrl.flag && $ctrl.items.length > 3">\n        <div class="col-lg-12 text-center">\n            <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n        </div>\n    </div>\n</section>\n');
-$templateCache.put('app/components/infographics-details/infographics-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Infographic"></update-title>\r\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\r\n<update-meta name="keywords" content="HUEDATA infographic, detailed page, infographic"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\r\n  <section class="top">\r\n    <div class="container-fluid text-left title">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="list-item">\r\n            <div>\r\n              <span class="list-category">HUEDATA Infographics</span>\r\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\r\n            </div>\r\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\r\n          </div>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\r\n          <div class="button membership">\r\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <div class="border"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left">\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left report detailed-content">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>HUE{{$ctrl.pageData.hue}}</p>\r\n          </div>\r\n          <img class="img-responsive" src="{{$ctrl.pageData.image_url}}">\r\n        </div>\r\n\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <span ng-bind-html="$ctrl.pageData.description"></span>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
-$templateCache.put('app/components/inquiries/inquiries.tmpl.html','<update-title title="{{$ctrl.title}}"></update-title>\n<update-meta name="description" content="{{$ctrl.caption}}"></update-meta>\n<update-meta name="keywords" content="{{$ctrl.keywords}}"></update-meta>\n\n\n<section class="inquiries">\n  <div class="container-fluid text-center">\n    <h3>{{$ctrl.caption}}</h3>\n    <div class="line"></div>\n  </div>\n  <div class="row">\n    <div class="container-fluid">\n      <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 justify" style="font-size: 17px">\n        <p>HUEDATA color intelligence helps you benchmark your color performance relative to trends and competitors,\n          inspires your color innovation, optimizes color decisions for your customer segment and supports rationalizing\n          your color decisions.</p>\n      </div>\n      <div ng-if="$ctrl.inquire2" class="col-lg-4 col-md-4" style="font-size: 17px">\n        <p>Typical ways in which Data partners collaborate with HUEDATA include:</p>\n        <ol class="list-huegroup">\n          <li>Seeking help structuring company color data</li>\n          <li>Looking to benchmark company color data against\n            HUEDATA specific color datasets for comparative and\n            competitive insights</li>\n          <li>Participate in invited research</li>\n          <li>Customize color dashboards and infographics using HUEDATA API</li>\n          <li>Co-Promoting unique color datasets\n            on HUEDATA\u2019s growing Color Intelligence Platform</li>\n        </ol>\n      </div>\n\n      <div ng-if="$ctrl.inquire3" class="col-lg-4 col-md-4 justify" style="font-size: 17px">\n        <p>HUEDATA collaborates with Academic Partners (Institutions and Faculty)\n          to develop, accredit, host and deliver educational offerings from\n          various online color courses to customize color training programs\n          and teaching materials leveraging HUEDATA rich color datasets,\n          analytics and insights.</p>\n      </div>\n      <form name="inquiries" class="inq">\n        <div class="col-lg-4 col-md-4 membership-form">\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="email">EMAIL <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-if="$ctrl.inquire3" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="institute" name="institute" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="institute">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-if="$ctrl.inquire1 || $ctrl.inquire2" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="Company">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>\n          <textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" style="border: 0px"></textarea>\n\n          <div ng-if="$ctrl.inquire2" class="button">\n            <button ng-click="$ctrl.send(\'data\')" class="btn pull-right">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n          <div ng-if="$ctrl.inquire3" class="button">\n            <button ng-click="$ctrl.send(\'edu\')" class="btn pull-right">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n        </div>\n\n        <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 membership-form">\n          <h4>Join our Email list</h4>\n          <div>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.daily" type="checkbox" id="dailyInsight">\n              <label for="dailyInsight">Daily Insight</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.research" type="checkbox" id="researchReport">\n              <label for="researchReport">Research Reports</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.edu" ng-value="$ctrl.educationOfferings" type="checkbox" id="educationOfferings">\n              <label for="educationOfferings">Education Offerings</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.expert" type="checkbox" id="joinPanel">\n              <label for="joinPanel">Join Expert Panel</label>\n            </p>\n          </div>\n\n          <div ng-if="$ctrl.inquire1" class="button">\n            <button ng-click="$ctrl.send(\'inquire\')" class="btn">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n\n\n\n');
-$templateCache.put('app/components/landing/landing.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n  <div class="container-fluid text-center">\n    <div class="logo">\n      <a style="padding-left: 40px; position: relative">\n        <svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">\n          <g>\n          \t<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>\n          </g>\n          <line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>\n        </svg>\n        <img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">\n      </a>\n    </div>\n  </div>\n\n  <div class="container-fluid menu text-center">\n    <ul>\n      <li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>\n        <p>Our Color Intelligence</p>\n      </li>\n      <li><a href="#!/color-research" class="outline-style">Color<br>Research</a>\n        <p>Color Reports & Infographic</p>\n      </li>\n      <li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>\n        <p>Who we are</p>\n      </li>\n      <li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>\n        <p>Our Blog</p>\n      </li>\n      <li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>\n        <p>Say Hi!</p>\n      </li>\n    </ul>\n  </div>\n\n  <!--</div>-->\n  <div class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/landing-page/landing-page.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n  \n  <!--<div class="container-fluid  text-center">-->\n    <!--<div class="logo">-->\n      <!--<a style="padding-left: 40px; position: relative">-->\n        <!--<svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"-->\n\t        <!--width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">-->\n          <!--<g>-->\n          \t<!--<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>-->\n          <!--</g>-->\n          <!--<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>-->\n        <!--</svg>-->\n        <!--<img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">-->\n      <!--</a>-->\n    <!--</div>-->\n  <!--</div>-->\n\n  <!--<div class="container-fluid  menu text-center">-->\n    <!--<ul>-->\n      <!--<li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>-->\n        <!--<p>Our Color Intelligence</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-research" class="outline-style">Color<br>Research</a>-->\n        <!--<p>Color Reports & Infographic</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>-->\n        <!--<p>Who we are</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>-->\n        <!--<p>Our Blog</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>-->\n        <!--<p>Say Hi!</p>-->\n      <!--</li>-->\n    <!--</ul>-->\n  <!--</div>-->\n\n  <!--</div>-->\n  <div class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n<section class="landing-video">\n    <div class="container">\n      <div class="row center">\n        <div class="landing_vimeo_video">\n          <video width="855" height="480" controls poster="../../../assets/img/landing/video_preview_HD.jpg">\n            <source src="../../../assets/img/landing/HueData_2018.mp4" type="video/mp4">\n            <!--<source src="movie.ogg" type="video/ogg">-->\n            Your browser does not support the video tag.\n          </video>\n          <!--<iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo"-->\n                  <!--id="companyVimeoVideo"-->\n                  <!--frameborder="0" webkitallowfullscreen mozallowfullscreen-->\n                  <!--allowfullscreen>-->\n          <!--</iframe>-->\n        </div>\n      </div>\n    </div>\n</section>\n\n<section class="landing-analytics-description">\n  <div class="container">\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">We love <br> colors analytics</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_1.jpg" alt="img">\n      </div>\n    </div>\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">..and publish 100s <br> of color reports <br> and infographic <br> every year</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_2.jpg" alt="">\n\n      </div>\n    </div>\n  </div>\n</section>\n<section class="landing-reports-section">\n  <div class="container">\n    <div class="row flex landing-reports">\n      <div class="landing-report-item" ng-repeat="report in $ctrl.reports_on_landing">\n        <img class="download-img" ng-src="{{report.image}}">\n        <span>{{report.hue}}</span>\n        <p>{{report.header}}</p>\n      </div>\n    </div>\n    <div class="landing-color-index-title">\n      <p>Check out our propraitery</p>\n      <p>Color Naming Index</p>\n      <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n    </div>\n  </div>\n</section>\n\n<section class="landing-color-picker">\n  <div class="container-fluid">\n    <div class="row landing-color-picker-block">\n    <div class="col-md-2 col-lg-2 landing-color-picker-title">\n      <p>SELECT A COLOR TO&nbsp;START</p>\n    </div>\n      <div class="col-lg-3 col-md-3">\n        <div id="s_color_picker_id">\n          <div class="wrapper-color-picker">\n            <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\n          </div>\n\n          <div class="slidecontainer">\n            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\n            <span class="slider-title-opacity">OPACITY</span>\n            <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\n            <label id="value_span"></label>\n          </div>\n\n\n          <div class="rgb-display">\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">R</span>\n              <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">G</span>\n              <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">B</span>\n              <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n          </div>\n        </div>\n      </div>\n      <div class="col-lg-2 col-md-2 color-piker-item">\n        <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/arrow_picker.png" alt=""></div>\n      </div>\n      <div class="col-lg-3 col-md-3 landing-color-piker-image">\n        <div id="color_id"></div>\n      </div>\n      <div class="col-md-2 col-lg-2 landing-color-picker-title">\n        <p>HOW IS THIS&nbsp;COLOR CALLED</p>\n        <div class="button landing-color-picker-button">\n          <a class="btn join-btn" ng-click="$ctrl.colorWordSearchLanding()">FIND OUT</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/login/login.tmpl.html','<update-title title="Login"></update-title>\r\n<update-meta name="description" content="HUEDATA login page"></update-meta>\r\n<update-meta name="keywords" content="HUEDATA, login, login page"></update-meta>\r\n\r\n\r\n<div class="login-page">\r\n  <div class="container-fluid text-center">\r\n    <h3>Member Login</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n\r\n  <section>\r\n    <div class="container-fluid">\r\n      <div class="row">\r\n        <div class="login-container text-center">\r\n          <div ng-show="$ctrl.error" class="error-message afade text-left">\r\n            <span>ERROR: </span><a>The username or password you entered is incorrect</a>\r\n          </div>\r\n          <form>\r\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\r\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\r\n            <div class="remember-checkbox">\r\n              <p>\r\n                <input type="checkbox" id="rememberMe" ng-model="$ctrl.isRemembered">\r\n                <label for="rememberMe">Remember Me</label>\r\n              </p>\r\n            </div>\r\n            <div class="button login-btn">\r\n              <button ng-click="$ctrl.login()" class="btn">MEMBER LOGIN</button>\r\n            </div>\r\n          </form>\r\n\r\n          <div class="additional-links text-left">\r\n            <a ng-href="#!/recover">Forgot your password</a>\r\n            <p>Not a HUEDATA member? <a ui-sref="membership({scrollTo: true})">Learn more about Huedata Membership</a></p>\r\n            <a ng-href="#!/staff-login">HUEDATA Staff - Login here</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
-$templateCache.put('app/components/members/members.tmpl.html','<update-title title="HUEDATA Members"></update-title>\r\n<update-meta name="description" content="HUEDATA members"></update-meta>\r\n<update-meta name="keywords" content="Our members"></update-meta>\r\n\r\n<section id="members">\r\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>HUEDATA Members</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-3 col-md-12">\r\n        <input ng-model="$ctrl.filter" ng-change="$ctrl.filterChange()" class="search" placeholder="A-Z" type="text">\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid members-list" style="padding-top:20px">\r\n    <div class="row members-list-min-h">\r\n      <div class="col-lg-3 col-md-4 col-sm-4" ng-repeat="group in $ctrl.dataGroups">\r\n        <ul>\r\n          <li ng-repeat="item in group">{{item.first_name}} {{item.last_name}}</li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/members-analytics/members-analytics.tmpl.html','<update-title title="Members Analytics"></update-title>\n<update-meta name="description" content="HUEDATA members private area"></update-meta>\n<update-meta name="keywords" content=""></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n<section ng-init="$ctrl.init()">\n\n  <div class="container-fluid text-center title">\n    <div class="row">\n\n      <div class="col-lg-4 col-lg-offset-4">\n\n        <h3>Members Analytics</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12 buttons-group">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n        <div class="button membership">\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</section>\n\n<section>\n  <div class="container-fluid text-left">\n    <div class="row">\n      <div class="col-lg-3 col-md-12">\n        <input class="search" placeholder="A-Z" type="text" ng-model="$ctrl.searchModel" ng-change="$ctrl.search()">\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="analytics-section min-h analytics-min-h">\n  <div class="group">\n    <div class="item" ng-repeat="item in $ctrl.items" style="padding: 0">\n      <div class="img-container">\n        <div class="img" style="background: {{\'url(\' + item.logo_url +\') center center\'}};\n                    background-repeat: no-repeat;\n                    background-size: contain;">\n        </div>\n      </div>\n      <h6 class="analytic-title">{{item.member_name}}</h6>\n    </div>\n  </div>\n\n  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.items.length">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/membership/membership.tmpl.html','<update-title title="HUEDATA Members Use Color Analytics and Insights to: AND HUEDATA Membership Benefits"></update-title>\n<update-meta name="description" content="Membership form for HUEDATA"></update-meta>\n<update-meta name="keywords" content="Color subscription"></update-meta>\n\n<div class="container-fluid header member-header text-center">\n  <div class="text-header">\n    <h1>Become a HUEDATA Member</h1>\n\n  </div>\n</div>\n\n<div class="clear"></div>\n\n<section>\n\n  <div class="container-fluid text-center">\n    <h3>HUEDATA Members Use Color Analytics and Insights to:</h3>\n    <div class="line"></div>\n\n  </div>\n  <div class="container-fluid bg-3">\n\n    <div class="row equal text-center">\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/stay-informed.png" alt="Image" style="padding-top:30px">\n          <h5>STAY INFORMED</h5>\n          <p>Enjoy real time color analytics\n            and insights and never miss on\n            new color introduction,\n            emerging trends and deep dive analyses\n            to enhance your color decisions.</p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/Innovation.png" alt="Image" style="padding-top:30px">\n          <h5>GET INSPIRED</h5>\n          <p>Identify new color opportunities not always\n            visible to the naked eye! Let the data leads\n            you to new understandings and opportunities to\n            create, differentiate, and lead with color innovation.\n          </p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/customization.png" alt="Image" style="padding-top:30px">\n          <h5>OPTIMIZE</h5>\n          <p>Leverage color intelligence to better\n            customize your color offering to your\n            audience, within the context of competitive\n            offerings and emerging trends.\n          </p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/Efficiences.png" alt="Image" style="padding-top:30px">\n          <h5>RATIONALIZE</h5>\n          <p>Use HUEDATA\u2019s comprehensive and always\n            updated data to support your color\n            designs / innovations, validate your\n            choices and communicate the strategic\n            value of your color decisions.\n          </p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n    </div>\n  </div>\n\n</section>\n<hr>\n\n<section>\n  <div class="container-fluid text-center">\n    <h3 class="padding-top-0">HUEDATA Membership Benefits</h3>\n    <div class="line" style="margin-bottom:25px"></div>\n\n  </div>\n  <div class="container-fluid">\n    <div class="row equal">\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>BENCHMARK</h5>\n            <p>Members enjoy access to HUEDATA\u2019s Indices,\n              Reports and Customized Infographics with\n              industry-specific analytics and actionable insights\n              to benchmark and improve their color performance.\n            </p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>RESEARCH REPORTS</h5>\n            <p>HUEDATA publishes 100+ member-only\n              reports and infographics annually providing\n              deep cross- sector insight into color\n              performance of thousands of brands,\n              products and built environments.</p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>MEMBER SUPPORT</h5>\n            <p>Access to HUEDATA experts with\n              cross-industry color depth provide\n              an opportunity for customized\n              strategic guidance on key color\n              decisions and effective color execution.\n            </p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>EXECUTIVE EDUCATION</h5>\n            <p>HUEDATA growing library of educational\n              offerings from online color courses\n              to color teaching materials is open\n              to both industry and academic members.</p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n\n<section id="becomeMember" class="become-member">\n  <div class="container-fluid text-center">\n    <h3>Inquire about Membership</h3>\n    <div class="line"></div>\n  </div>\n\n  <div class="container-fluid">\n    <div class="row">\n      <div class="col-lg-4 col-md-4 justify">\n        <p class="padding-bottom-20">HUEDATA color intelligence helps you benchmark\n          your color performance relative to trends and\n          competitors, inspires your color innovation,\n          optimizes color choices for your customer\n          segment and supports rationalizing your\n          color decisions.<br>\n        </p><ul class="indented-line padding-left-0">\n          <li>&emsp;Vertical-specific analytics to benchmark color performance</li>\n          <li>&emsp;Access to HUEDATA color experts with cross-industry depth</li>\n          <li>&emsp;Access to HUEDATA 100+ reports and infographics annually</li>\n          <li>&emsp;A growing library of educational color courses and teaching materials</li>\n        </ul>\n      </div>\n      <form name="membership">\n        <div class="col-lg-4 col-md-4 membership-form">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && membership.Email.$invalid ?  \'error\' :\'\'" required>\n            <label for="email">EMAIL <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && membership.company.$invalid ?  \'error\' :\'\'" required>\n            <label for="company">COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && membership.job_title.$invalid ?  \'error\' :\'\'" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n        </div>\n\n        <div class="col-lg-4 col-md-4 membership-form">\n          <div>\n            <p style="float: none">\n              <input type="checkbox" id="test5" ng-model="$ctrl.data.permissions.daily">\n              <label for="test5">Daily Insight</label>\n            </p>\n            <p style="float: none">\n              <input type="checkbox" id="test6" ng-model="$ctrl.data.permissions.research">\n              <label for="test6">Research Reports</label>\n            </p>\n            <p style="float: none">\n              <input type="checkbox" id="test7" ng-model="$ctrl.data.permissions.edu">\n              <label for="test7">Education Offerings</label>\n            </p>\n            <p style="float: none">\n              <input type="checkbox" id="test8" ng-model="$ctrl.data.relationship.expert">\n              <label for="test8">Join Expert Panel</label>\n            </p>\n          </div>\n\n          <div class="button">\n            <button class="btn" ng-click="$ctrl.submitInquiry()">SUBMIT INQUIRY</button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/modal/cat-survey-modal.tmpl.html','<div class="cart-surve-modal">\n  <div class="container-fluid">\n    <button class="close" ng-click="cancel()" style="outline: none;">\n      <span aria-hidden="true">&times;</span>\n    </button>\n  </div>\n  <div class="row">\n    <div class="col-sm-12">\n      <h4 class="memberOnlyTitle">Remove item from cart</h4>\n    </div>\n  </div>\n  <div class="row">\n    <div>\n      <div class="col-sm-12">\n        <h4>Are you sure you want to delete this product?</h4>\n        <div id="test-test" class="cart-modal-btn-group">\n          <button class="btn white-btn" ng-click="cancel()">NO</button>\n          <button class="btn" ng-click="img();cancel();">YES</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>');
-$templateCache.put('app/components/modal/dailyModal.tmpl.html','<div class="modal-header">\n  <button class="close" ng-click="cancel()" style="outline: none;">\n    <span aria-hidden="true">&times;</span>\n  </button>\n</div>\n<section>\n  <div class="container-fluid text-left">\n    <div class="row">\n      <div class="col-lg-12">\n        <h1 class="h1-modal-daily"><strong style="color:black;">DAILY </strong>{{item.header}}\n        </h1>\n      </div>\n\n    </div>\n    <div class="dailyinsights"></div>\n\n    <div class="row" style="margin-bottom:50px;">\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">\n        <h4 style="padding-top:0px; margin-top:0px">{{item.date}}</h4>\n      </div>\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 social-icons">\n        <a href="https://www.linkedin.com/company/huedata/" target="_blank"><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.facebook.com/pg/Huedata-1287083448095980/" target="_blank"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>\n        <a href="https://twitter.com/huedata1" target="_blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.instagram.com/huedata/" target="_blank"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.pinterest.com/huedatainc" target="_blank"><i class="fa fa-pinterest fa-2x" aria-hidden="true"></i></a>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid" style="padding-bottom: 50px">\n    <div class="row">\n      <div class="col-lg-5 col-md-5" ng-bind-html="item.description">\n      </div>\n      <div class="col-lg-7 col-md-7">\n        <img ng-src="{{item.image_url || \'../assets/images/infographic2.jpg\'}}" class="img-responsive shadow" style="width:100%" alt="Image">\n      </div>\n    </div>\n  </div>\n</section>');
-$templateCache.put('app/components/modal/graphic-modal.tmpl.html','<div class="modal-header">\n  <button class="close" ng-click="cancel()" style="outline: none;">\n    <span aria-hidden="true">&times;</span>\n  </button>\n</div>\n\n<div class="image-container" style="background: url({{img}}) no-repeat center; background-size: contain; margin-bottom: 38px">\n</div>\n');
-$templateCache.put('app/components/modal/membersOnlyModal.tmpl.html','<div class="container-fluid">\r\n  <button class="close" ng-click="cancel()" style="outline: none;">\r\n    <span aria-hidden="true">&times;</span>\r\n  </button>\r\n</div>\r\n<div class="row">\r\n  <div class="col-lg-6 col-md-6 col-sm-12">\r\n    <h3 class="memberOnlyTitle">Members Only Feature</h3>\r\n  </div>\r\n</div>\r\n<div class="row">\r\n  <div>\r\n    <div class="col-lg-6 col-md-6 col-sm-12">\r\n      <p class="">HUEDATA member? Log-in to use this feature</p>\r\n      <button class="btn" ui-sref="login" ng-click="cancel()">MEMBER LOGIN</button>\r\n    </div>\r\n  </div>\r\n  <div>\r\n    <div class="white col-lg-6 col-md-6 col-sm-12">\r\n      <p>Not a HUEDATA member? Learn more about HUEDATA Membership</p>\r\n      <button class="btn white-btn" ui-sref="membership({scrollTo: true})" ng-click="cancel()">Learn more</button>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
-$templateCache.put('app/components/modal/modal.tmpl.html','<div class="modal-err">\r\n  <h4>www.hue-data.com says:</h4>\r\n  <p ng-show="flag != true && flag !== false">Please correct the following problem(s):</p>\r\n  <ul ng-show="flag != true && flag !== false">\r\n    <li ng-repeat="str in item">{{str}}</li>\r\n  </ul>\r\n  <p ng-show="flag === false">Error! This email is already in Use.</p>\r\n  <p ng-show="flag === false" style="min-height: 150px">{{item[0]}}</p>\r\n\r\n  <p ng-show="flag == true" style="text-align: center; min-height: 150px">\r\n    {{item[0]}}\r\n  </p>\r\n</div>\r\n<div class="div-but">\r\n  <button class="btn" style="outline: none;" ng-click="cancel()">OK</button>\r\n</div>');
-$templateCache.put('app/components/my-purchases/my-purchases.tmpl.html','<update-title title="My Purchases"></update-title>\n<update-meta name="description" content="My purchases"></update-meta>\n<update-meta name="keywords" content="My purchases, purchases, bought items, HUEDATA purchases"></update-meta>\n\n<div class="my-purchase">\n  <section class="my-purchase-header">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-4 col-md-12 col-lg-offset-4 my-purchase-title">\n          <!--<i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>-->\n          <h3 style="display: inline-block">MY PURCHASES</h3>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section class="my-purchase-items">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div style="{{item.style}}" class="col-lg-3 col-md-4 col-sm-6 col-xs-12 item text-dn" ng-repeat="item in $ctrl.data">\n          <a style="text-decoration: none" ng-href="#!/{{item.type}}/{{item.item.id}}">\n            <div class="category {{item.item.hue}} text-center"><p>{{item.item.hue}}</p></div>\n            <div class="img-responsive background-image" style="background: {{\'url(\' + item.images[0].image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n            </div>\n          </a>\n          <div class="purchase-name">\n            <h5>{{item.item.header}}</h5>\n          </div>\n          <div class="price">\n            <p><span>Price:</span> {{item.item.price === 0 ? \'Free\' : \'$\' + item.item.price}}</p>\n          </div>\n          <div class="date-purchase">\n            <p>Date of purchase: {{item.purchaseDate}}</p>\n          </div>\n          <div class="download-btn">\n            <a href="{{item.files[0].image_url}}" download><button class="btn">DOWNLOAD</button></a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
-$templateCache.put('app/components/order-email/order-email.tmpl.html','<update-title title="Thank You for Your Purchase"></update-title>\n<update-meta name="description" content="Thanks page after purchase"></update-meta>\n<update-meta name="keywords" content="Thank you page, download"></update-meta>\n\n\n<section ng-init="$ctrl.init()" style="min-height: 500px; padding-top: 60px;">\n  <div ng-show="$ctrl.success === true">\n    <div class="cart-thank-page cart-thank">\n      <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>\n      <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId || \'UNKNOWN\'}}</span></h4>\n      <div class="thank-text">\n        <span>CLICK HERE TO DOWNLOAD</span>\n      </div>\n    </div>\n    <div class="download-page">\n      <div class="container-fluid text-center">\n        <div class="row download-row">\n          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">\n            <div>\n              <img class="download-img" ng-src="{{item.image}}">\n            </div>\n            <div ng-show="item.file">\n              <a href="{{item.file}}" download>\n                <button class="btn">DOWNLOAD</button>\n              </a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show="$ctrl.success === false">\n    <div class="cart-thank-page cart-thank">\n      <h4 class="thank-title"><strong>YOUR LINK IS BROKEN, PLEASE CHECK AGAIN AND CONTACT US, IF LINK STILL NOT\n        WORKING</strong></h4>\n    </div>\n  </div>\n</section>');
-$templateCache.put('app/components/password-recover/password-recover.tmpl.html','<update-title title="Password Recover"></update-title>\n<update-meta name="description" content="Recover password for HUEDATA account"></update-meta>\n<update-meta name="keywords" content="Password recover, password, HUEDATA recover password"></update-meta>\n\n\n<div class="login-page">\n  <section>\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-12">\n          <h3 ng-if="$ctrl.type === \'s\'">Set the Password on Your HUEDATA Account</h3>\n          <h3 ng-if="$ctrl.type !== \'s\'">Recover the Password on Your HUEDATA Account</h3>\n          <div class="line"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid">\n      <div class="row">\n        <div class="success afade text-center" ng-show="$ctrl.successRequest">\n          <div class="col-lg-12">\n            <b class="black-text" ng-if="$ctrl.type === \'set\'">Password on Your HUEDATA Account has been successfully\n              changed</b>\n            <b class="black-text" ng-if="$ctrl.type !== \'set\'">Password on Your HUEDATA Account has been successfully\n              set</b>\n          </div>\n        </div>\n\n        <div class="login-container text-center">\n          <div ng-hide="$ctrl.successRequest">\n            <div ng-show="$ctrl.error" class="error-message afade text-left">\n              <span>ERROR: </span>{{$ctrl.error}}\n            </div>\n            <input type="password" ng-model="$ctrl.password" name="password" placeholder="ENTER YOUR PASSWORD">\n            <input type="password" ng-focus="$ctrl.error = false" ng-model="$ctrl.passwordConfirm" name="passwordConfirm" placeholder="CONFIRM YOUR PASSWORD">\n          </div>\n          <div class="login-btn" style="padding: 30px 0 40px; text-align: center">\n            <button ng-click="$ctrl.onSendLoginClick()" class="btn" style="padding: 15px 50px;">\n              {{$ctrl.successRequest ? \'LOGIN\' : \'SEND\'}}\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
-$templateCache.put('app/components/password-recover-cart/password-recover-cart.tmpl.html','<update-title title="Password Recover"></update-title>\n<update-meta name="description" content="Recover password for HUEDATA account"></update-meta>\n<update-meta name="keywords" content="Password recover, password, HUEDATA recover password"></update-meta>\n\n<div class="login-page">\n  <section>\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n          <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n          &emsp;<h3 style="display: inline-block">MY CART</h3>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid reset-password-cart">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-10">\n          <div style="border-bottom: #d0d0d0 1px solid">\n            <h4 class="subTitle">RESET YOUR PASSWORD</h4>\n          </div>\n        </div>\n\n        <div class="col-lg-offset-1 col-lg-10 col-md-10 instruction">\n          <div class="info-text">\n            <span>PLEASE ENTER YOUR EMAIL ADDRESS BELOW, YOU WILL RECEIVE A LINK TO RESET YOUR PASSWORD</span>\n          </div>\n          <div class="login-container text-left">\n            <div ng-hide="$ctrl.successRequest">\n              <!--<input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email"-->\n                     <!--placeholder="EMAIL ADDRESS">-->\n              <div class="membr-block">\n                <input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email" id="email" ng-value="$ctrl.email">\n                <label for="email">EMAIL ADDRESS <span class="red-text">*</span></label>\n              </div>\n              <div ng-show="$ctrl.error" class="error-message afade text-left">\n                {{$ctrl.error}}\n              </div>\n            </div>\n            <div class="login-btn" style="padding: 30px 0 40px;">\n              <button ng-click="$ctrl.onSendLoginClick()" class="btn">\n                SUBMIT\n              </button>\n              <button ng-click="$ctrl.goBack()" class="btn btn-success btn-lg center-block white-btn">GO BACK</button>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
-$templateCache.put('app/components/press/press.tmpl.html','<update-title title="Request content AND HUEDATA Media Mentions"></update-title>\n<update-meta name="description" content="Press Inquiries about HUEDATA"></update-meta>\n<update-meta name="keywords" content="Color media, Color news, Color of the year, Best Colors for the season, New colors,\ncolor innovation, color in the news"></update-meta>\n\n<div class="press-page-wrapper">\n  <div class="container-fluid header text-center press-header">\n    <div class="text-header">\n      <h1>Press</h1>\n      <h2>HUEDATA is a member-based Color Intelligence Company</h2>\n\n      <div class="col-lg-12 col-md-12 text-center buttons-group">\n        <div class="clearfix" style="display: inline-block; margin-top: 30px">\n          <div class="button membership white" ng-if="$ctrl.pageData.file">\n            <a class="btn white-btn" target="_self" href="{{$ctrl.pageData.file.image_url}}" download="foo.pdf">Download Brand Assets</a>\n          </div>\n          <div class="button membership m-r-10">\n            <button class="btn" ui-sref="membership({scrollTo: true})" ng-click="$ctrl.scroll()">Learn more</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <section class="from-container" ng-init="$ctrl.init()">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-4 col-md-4">\n          <h3 class="padding-bottom-20">Request content</h3>\n          <p class="padding-bottom-20">Selected research reports are available to members\n            of the media to support the development of color news stories.</p>\n          <p class="padding-bottom-20">Please complete to following form for your request. </p>\n          <p>HUEDATA empowers brands with the data and insights to benchmark\n            their color performance relative to competitors, inspire\n            and rationalize color design decisions, and optimize\n            the impact of their color strategy over time.</p>\n        </div>\n        <form name="press">\n          <div class="col-lg-4 col-md-4 press-form form membership-form">\n            <div class="form-item">\n              <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && press.firstName.$invalid ?  \'error\' :\'\'" required>\n              <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n              <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && press.lastName.$invalid ?  \'error\' :\'\'" required>\n              <label for="lastName">LAST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n              <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && press.email.$invalid ?  \'error\' :\'\'" required>\n              <label for="email">EMAIL <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n              <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && press.company.$invalid ?  \'error\' :\'\'" required>\n              <label for="company">COMPANY <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n            <textarea ng-value="$ctrl.data.message.value" name="message" id="message" ng-model="$ctrl.data.message.value" ng-class="\'ng-dirty\' && press.message.$invalid ?  \'error\' :\'\'" required></textarea>\n              <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>\n            </div>\n          </div>\n\n          <div class="col-lg-4 col-md-4 membership-form">\n            <div>\n              <p>Looking for specific research? Select below:</p>\n              <div class="select-style">\n                <select ng-model="$ctrl.data.research.value" name="research" ng-class="\'ng-dirty\' && press.email.$invalid ?  \'error\' :\'\'" required>\n                  <option value="-">SEARCH RESEARCH REPORT</option>\n                  <option ng-repeat="report in $ctrl.pageData.reports" value="{{report.data.header}}">{{report.data.header}}</option>\n                </select>\n              </div>\n            </div>\n            <div class="button text-right">\n              <button class="btn" ng-click="$ctrl.press()">SUBMIT REQUEST</button>\n            </div>\n          </div>\n        </form>\n      </div>\n    </div>\n  </section>\n\n  <section class="press-page-bottom-list">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-12">\n          <h3>HUEDATA Media Mentions</h3>\n\n          <div class="list-item" ng-repeat="item in $ctrl.pageData.data">\n            <div>\n              <span class="list-category">{{item.data.publication}}</span>\n              <span class="list-date">{{$ctrl.makeDate(item)}}</span>\n            </div>\n              <a href="{{item.data.url}}" class="list-text link-for-list-items" target="_blank">{{item.data.header}}</a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n');
-$templateCache.put('app/components/privacy-policy/privacy-policy.tmpl.html','<update-title title="Privacy Policy"></update-title>\r\n<update-meta name="description" content="HUEDATA Privacy Policy"></update-meta>\r\n<update-meta name="keywords" content="Privacy Policy"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3><b>{{$ctrl.pageData.title}}</b></h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section>\r\n  <div ng-bind-html="$ctrl.pageData.editor" style="text-align: justify">\r\n\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/profile/profile.tmpl.html','<update-title title="My Profile"></update-title>\n<update-meta name="description" content="HUEDATA member profile"></update-meta>\n<update-meta name="keywords" content="HUEDATA member profile, profile, my profile"></update-meta>\n\n<section>\n  <div class="staffs-container container-fluid profile-page min-h" ng-init="$ctrl.init()">\n    <div class="row profile-page-rows">\n      <div class="col-lg-12 col-md-12 profile_header">\n        <h3 ng-show="!$ctrl.editFlag">My profile</h3>\n        <h3 ng-show="$ctrl.editFlag">Profile Update</h3>\n        <div class="line"></div>\n        <br>\n      </div>\n      <div class="col-md-offset-2 col-lg-5 col-md-5 col-sm-6 col-xs-6 text-center staff-item user-data" ng-show="!$ctrl.editFlag">\n        <div class="profile-data-text">\n          <p>FIRST NAME: <span>{{$ctrl.data.first_name.value}}</span>\n        </p></div>\n        <div class="profile-data-text">\n          <p>LAST NAME: <span>{{$ctrl.data.last_name.value}}</span>\n        </p></div>\n        <div class="profile-data-text">\n          <p>Email: <span>{{$ctrl.data.email.value}}</span></p>\n        </div>\n        <div class="profile-data-text">\n          <p>\n            COMPANY: <span>{{$ctrl.data.company.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>\n            JOB TITLE: <span>{{$ctrl.data.job_title.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>\n            JOB FUNCTION: <span>{{$ctrl.data.job_function.value.title || $ctrl.data.job_function.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>COMPANY SIZE: <span>{{$ctrl.data.company_size.value.title || $ctrl.data.company_size.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>INDUSTRY: <span>{{$ctrl.data.industry.value.title || $ctrl.data.industry.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>COUNTRY: <span>{{$ctrl.data.country.value.title || $ctrl.data.country.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>BIO: <span>{{$ctrl.data.bio.value}}</span>\n          </p>\n        </div>\n        <button ng-click="$ctrl.editProfile()" class="btn basket-btn update-btn" style="display: inline-block">\n          UPDATE\n        </button>\n      </div>\n      <div class="col-md-offset-2 col-lg-5 col-md-5 col-sm-6 col-xs-6 text-center staff-item user-data" ng-show="$ctrl.editFlag">\n        <div class="profile-data-text">\n\n          <div class="membr-block">\n            <label for="first_name">FIRST NAME</label>\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="membr-block">\n            <label for="last_name">LAST NAME</label>\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="membr-block">\n            <label for="company">COMPANY</label>\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && membership.company.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="membr-block">\n            <label for="job_title">JOB TITLE</label>\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && membership.job_title.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="job_function">JOB FUNCTION</label>\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false" id="job_function">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="job in $ctrl.job_function">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="company_size">COMPANY SIZE</label>\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false" id="company_size">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="companySize in $ctrl.company_size">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="industry">INDUSTRY</label>\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false" id="industry">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="ind in $ctrl.industry">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="country">COUNTRY</label>\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false" id="country">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="cntry in $ctrl.country">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <label class="for-textarea" for="bio">BIO</label>\n            <textarea ng-show="$ctrl.editFlag" id="bio" ng-model="$ctrl.data.bio.value" ng-value="$ctrl.data.bio.value">\n            </textarea>\n          </div>\n          <div class="profile-btn-group">\n            <button ng-click="$ctrl.cancel()" class="btn white-btn basket-btn" style="display: inline-block">\n              CANCEL\n            </button>\n            <button ng-click="$ctrl.save()" class="btn basket-btn save-btn" style="display: inline-block">\n              SAVE\n            </button>\n          </div>\n        </div>\n      </div>\n      <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 text-center staff-item">\n        <div class="profile-photo">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + ($ctrl.userData.image_url || \'http://www.hue-data.com/assets/images/course.jpg\') + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    height: 250px;\n                    width: 250px;\n                    border-radius: 50%;\n                    background-color: #000;\n                    margin: auto">\n            <div ng-show="$ctrl.editFlag" class="edit-photo">\n              <label class="file-upload">\n                <button type="file" ngf-select="uploadFiles($file, $invalidFiles)" accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">\n                  Select File</button>\n              </label>\n              <br>\n              <span ng-show="$ctrl.fileFlag">{{$ctrl.file.name}}</span>\n              <br>\n            </div>\n          </div>\n        </div>\n        <div class="speaking_item" style="padding-top: 15px">\n          <div class="speaking_item_header profile-name"><a>{{$ctrl.data.first_name.value}} {{$ctrl.data.last_name.value}}</a>\n          </div>\n          <div ng-click="$ctrl.goCart()" class="cart-button btn white-btn">\n            <i class="fa fa-shopping-cart fa-2x pointer" aria-hidden="true"></i>\n            <p>&emsp;MY CART</p>\n          </div>\n          <div ng-click="$ctrl.goPurchase()" class="purchase-btn btn white-btn">\n            <p>MY PURCHASES</p>\n          </div>\n          <a ng-show="$ctrl.editFlag" ng-href="#!/recover">Change password</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>');
-$templateCache.put('app/components/publication-schedule/publication-schedule.tmpl.html','<update-title title="Publication Schedule"></update-title>\r\n<update-meta name="description" content="HUEDATA publications by quarter"></update-meta>\r\n<update-meta name="keywords" content="Color forecasting reports, Color Analytics, Color Data, Color insights"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-8 col-lg-offset-2"><h3>Publication Schedule</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-2">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n  <div class="container-fluid text-center schedule schedule-min-h">\r\n    <div class="row equal">\r\n      <div class="col-lg-6 col-md-6" ng-repeat="item in $ctrl.result">\r\n        <h3 class="pad-t-13"><b style="color:#bb0076">Q{{item.q}}</b> {{item.year}}</h3>\r\n        <div style="padding-bottom: 13px" ng-bind-html="item.list">\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n');
-$templateCache.put('app/components/recover/recover.tmpl.html','<update-title title="Recover Password Request"></update-title>\r\n<update-meta name="description" content="Recover Password Request"></update-meta>\r\n<update-meta name="keywords" content="Recover password, recover request"></update-meta>\r\n\r\n<div class="login-page">\r\n  <section>\r\n    <div class="container-fluid text-center title">\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <h3>Recover the Password to Your HUEDATA Account</h3>\r\n          <div class="line"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid">\r\n      <div class="row">\r\n        <div class="success afade text-center" ng-show="$ctrl.successRequest">\r\n          <div class="col-lg-12">\r\n            <b class="black-text">A password recovery link has been sent to Your email</b>\r\n          </div>\r\n        </div>\r\n\r\n        <div class="login-container text-center">\r\n          <div ng-hide="$ctrl.successRequest">\r\n            <div ng-show="$ctrl.error" class="error-message afade text-left">\r\n              <span>ERROR: </span>{{$ctrl.error}}\r\n            </div>\r\n            <input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email" placeholder="ENTER YOUR EMAIL ADDRESS">\r\n          </div>\r\n          <div class="login-btn" style="padding: 30px 0 40px; text-align: center">\r\n            <button ng-click="$ctrl.onSendLoginClick()" class="btn" style="padding: 15px 50px;">\r\n              {{$ctrl.successRequest ? \'LOGIN\' : \'SEND\'}}\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>');
-$templateCache.put('app/components/reports/reports.tmpl.html','<update-title title="Color Reports"></update-title>\n<update-meta name="description" content="color reports on trends in fashion colors, color use in product, color use in brands and color use in environments"></update-meta>\n<update-meta name="keywords" content="Color forecasting report, Color Research Report, Color Trend report,\nfall color reports, spring color reports, winter color reports, fashion color reports"></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\n        <h3>Color Reports</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n        <div class="button membership">\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-left">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3">\n        <div class="select-style">\n          <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select(this)">\n            <option>VERTICALS</option>\n            <option ng-repeat="item in $ctrl.hue">{{item}}</option>\n          </select>\n        </div>\n      </div>\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.reportModel" ng-change="$ctrl.select()" ng-disabled="$ctrl.dis">\n            <option>ALL</option>\n            <option ng-repeat="item in $ctrl.report">{{item}}</option>\n          </select>\n        </div>\n      </div>\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.yearModel" ng-change="$ctrl.select()">\n            <option>YEAR</option>\n            <option ng-repeat="item in $ctrl.year">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left report reports-min-h">\n    <div class="row equal">\n      <div style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n        <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n        <a style="text-decoration: none" ng-href="#!/color-reports/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n        <span>{{item.date}}</span><a ng-href="#!/color-reports/{{item.id}}">Learn more</a>\n      </div>\n    </div>\n  </div>\n  <div class="row" ng-if="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n\n');
-$templateCache.put('app/components/reports-details/reports-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Report"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA report, detailed page, report"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Reports</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>{{$ctrl.pageData.hue}}</p>\n          </div>\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.addProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section class="detailed-bottom-content" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
-$templateCache.put('app/components/speaking-engagements/speaking-engagements.tmpl.html','<update-title title="Speaking Engagements"></update-title>\n<update-meta name="description" content="HUEDATA speakers and how to invite us to talk on your color event"></update-meta>\n<update-meta name="keywords" content="Anat Lechner, Leslie Harrington, Color lectures, Color Strategy, Color research,\nlectures on Color, Color presentations, color conference speakers, color meeting speakers, color event speakers,\ncolor conference keynote speaker, design conference speakers, design conference keynote speakers"></update-meta>\n\n<section>\n  <div class="staffs-container container-fluid min-h" ng-init="$ctrl.init()">\n    <div class="row" ng-repeat="group in $ctrl.groups">\n      <div class="col-lg-4 col-md-4 text-center staff-item" ng-repeat="item in group">\n        <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    height: 170px;\n                    width: 170px;\n                    border-radius: 50%;\n                    background-color: #000;\n                    margin: auto">\n        </div>\n        <div class="speaking_item" style="padding-top: 15px">\n          <div class="speaking_item_header"><a>{{item.first_name}} {{item.last_name}}</a>\n            <span style="color: black"> \u2014 {{item.title}}</span>\n          </div>\n          <div class="justify">\n            <p class="three_line_height" style="display: block" data-ng-bind-html="item.bio" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n          </div>\n          <div class="line"></div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="speaking_engagements">\n  <div class="container-fluid text-center">\n    <h3>{{$ctrl.pageData.title}}</h3>\n    <div class="line"></div>\n  </div>\n\n\n  <div class="container-fluid">\n    <div class="row">\n      <div class="col-lg-3 col-md-3 justify speaking-text" ng-bind-html="$ctrl.pageData.editor">\n      </div>\n      <form name="speaking">\n        <div class="col-lg-6 col-md-6 membership-form">\n          <div class="forms">\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && speaking.FirstName.$invalid ?  \'error\' :\'\'" required>\n              <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && speaking.Email.$invalid ?  \'error\' :\'\'" required>\n              <label for="email">EMAIL <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.jobtitle.value" ng-value="$ctrl.data.jobtitle.value" type="text" id="jobtitle" name="jobtitle" ng-class="\'ng-dirty\' && speaking.jobtitle.$invalid ?  \'error\' :\'\'" required>\n              <label for="jobtitle">JOB TITLE <span class="red-text">*</span></label>\n            </div>\n          </div>\n\n          <div class="forms-right">\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && speaking.LastName.$invalid ?  \'error\' :\'\'" required>\n              <label for="lastName">LAST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && speaking.company.$invalid ?  \'error\' :\'\'" required>\n              <label for="company">COMPANY <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.request.value" ng-value="$ctrl.data.request.value" type="text" id="request" name="request" ng-class="\'ng-dirty\' && speaking.request.$invalid ?  \'error\' :\'\'" required>\n              <label for="request">REQUEST A SPECIFIC SPEAKER <span class="red-text">*</span></label>\n            </div>\n          </div>\n\n          <div class="membr-block" style="width:100%; float:left">\n            <textarea rows="20" cols="1" ng-value="$ctrl.data.message.value" name="message" id="message" ng-model="$ctrl.data.message.value" ng-class="\'ng-dirty\' && speaking.message.$invalid ?  \'error\' :\'\'" required></textarea>\n            <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>\n          </div>\n        </div>\n\n        <div class="col-lg-3 col-md-3">\n          <div class="button membership" style="float:left; margin-right:10px; margin-bottom: 10px">\n            <button class="btn white-btn without-margins" ng-click="$ctrl.send()">\n              SUBMIT\n            </button>\n          </div>\n          <div class="button membership" style="float:left;">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/staff-login/staff-login.tmpl.html','<update-title title="Staff Login"></update-title>\n<update-meta name="description" content="HUEDATA Staff Login"></update-meta>\n<update-meta name="keywords" content="HUEDATA staff, staff login, login"></update-meta>\n\n<div class="login-page">\n  <div class="container-fluid text-center">\n    <h3>Staff Login</h3>\n    <div class="line"></div>\n  </div>\n\n  <section>\n    <div class="container-fluid">\n      <div class="row">\n        <div class="login-container text-center">\n          <div ng-show="$ctrl.error" class="error-message-staff afade text-left">\n            <span>ERROR: </span><a>The username or password you entered is incorrect</a>\n          </div>\n          <a href="" id="ign_in">\n            <div class="google-auth-button">LOGIN WITH GOOGLE</div>\n          </a>\n          <p><b>OR</b></p>\n\n          <form>\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\n            <div class="remember-checkbox">\n              <p>\n                <input type="checkbox" id="rememberMe" ng-model="$ctrl.isRemembered">\n                <label for="rememberMe">Remember Me</label>\n              </p>\n            </div>\n            <div class="button login-btn">\n              <button ng-click="$ctrl.login()" class="btn">STAFF LOGIN</button>\n            </div>\n          </form>\n\n          <div class="additional-links text-left">\n            <a ng-href="#!/recover">Forgot your password</a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
-$templateCache.put('app/components/teaching-materials/teaching-materials.tmpl.html','<update-title title="Color Teaching Materials"></update-title>\n<update-meta name="description" content="Color teaching materials repository of color templates, color tools and color tests"></update-meta>\n<update-meta name="keywords" content="color teaching ppt, color teaching aids, teaching color, teaching about color,\nteaching color concepts, color wheel template for teaching, color teaching activities, color blind texts"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n    <div class="row">\n      <div class="col-lg-6 col-lg-offset-3"><h3>Color Teaching Materials</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-3 buttons-group">\n        <div class="button membership">\n          <button class="btn" ui-sref="educationInquire">BECOME AN EDUCATION PARTNER</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-center">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3 search-fields2">\n        <div class="select-style">\n          <select ng-model="$ctrl.topicModel" ng-change="$ctrl.select()">\n            <option>TOPIC</option>\n            <option ng-repeat="item in $ctrl.topic">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.providerModel" ng-change="$ctrl.select()">\n            <option>PROVIDER</option>\n            <option ng-repeat="item in $ctrl.provider">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.typeModel" ng-change="$ctrl.select()">\n            <option>TYPE</option>\n            <option ng-repeat="item in $ctrl.type">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left course teaching-materials-min-h" style="margin-bottom: 0px;">\n    <div class="row equal">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n        <a style="text-decoration: none" ng-href="#!/color-teaching-materials/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class="row" ng-show="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.showMore()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/teaching-materials-details/teaching-materials-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Teaching Material"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA teaching material, detailed page, teaching material"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Education</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD\n              EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url + \') top center\'}};\n                      background-repeat: no-repeat;\n                      background-size: cover;\n                      padding-bottom: 56%;\n                      background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section class="detailed-bottom-content" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                          background-repeat: no-repeat;\n                          background-size: cover;\n                          padding-bottom: 56%;\n                          background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
-$templateCache.put('app/components/terms/terms.tmpl.html','<update-title title="Terms of Use"></update-title>\r\n<update-meta name="description" content="HUEDATA terms of Use"></update-meta>\r\n<update-meta name="keywords" content="Terms of Use, HUEDATA terms"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3><b>{{$ctrl.pageData.title}}</b></h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section>\r\n  <div ng-bind-html="$ctrl.pageData.editor" style="text-align: justify">\r\n\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/thank-you/thank-you.tmpl.html','<update-title title="Thank You"></update-title>\n<update-meta name="description" content="Thank you for inquiry"></update-meta>\n<update-meta name="keywords" content="Thank you, thank page"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" style="padding-bottom: 1px">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\n        <h3>Thank You</h3>\n        <div class="line"></div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-left" style="min-height: 400px;">\n    <h3 ng-if="!$ctrl.membership" style="font-size: 19pt; text-align: center">Thank you for contacting HUEDATA. We`ll get back to you shortly!</h3>\n    <!--<h3 ng-if="$ctrl.membership">{{$ctrl.text}}</h3>-->\n    <!--<div class="thanksDiv">-->\n      <!--<div class="thanksText">-->\n        <!--<strong>Not a member? Learn more about HUEDATA Membership.</strong>-->\n      <!--</div>-->\n      <!--<div>-->\n        <!--<button class="thanksBtn" ui-sref="membership({scrollTo: true})">-->\n          <!--Learn More-->\n        <!--</button>-->\n      <!--</div>-->\n    <!--</div>-->\n    <!--<div>-->\n      <!--<div class="thanksText">-->\n        <!--<strong>Stay current on HUEDATA news and insights.</strong>-->\n      <!--</div>-->\n      <!--<div>-->\n        <!--<button class="btn" style="font-size: 13px; padding: 15px 20px 15px 20px; min-width: 134px;">Email Sign Up-->\n        <!--</button>-->\n      <!--</div>-->\n    <!--</div>-->\n</div></section>');
-$templateCache.put('app/components/unsubscribe/unsubscribe.tmpl.html','<update-title title="Unsubscribe"></update-title>\n<update-meta name="description" content="Unsubscribe page"></update-meta>\n<update-meta name="keywords" content="Unsubscribe, unsubscribe page"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" style="padding-bottom: 1px">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 unsubscribe-div">\n        <h3>{{$ctrl.success ? \'Your email was successfully unsubscribe\' : \'Something wrong, please try again later\'}}</h3>\n        <div class="line"></div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n\n</section>');
-$templateCache.put('app/components/vertical-coverage/vertical-coverage.tmpl.html','<update-title title="HUEDATA verticals"></update-title>\n<update-meta name="description" content="The color industries HUEDATA covers"></update-meta>\n<update-meta name="keywords" content="Color in Industry, Color Design, Color in Fashion, Color in Brands, Color in Auto,\nColor in Beauty, Color Trends, Color Forecasting, Color Analysis"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\n        <h3>HUEDATA Verticals</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section ng-repeat="item in $ctrl.pageData" class="vertical-coverage {{($index + 1)% 2 == 0 ? \'gray\' :\'\'}}">\n  <div class="container-fluid">\n    <div class="row">\n      <div class="col-lg-6 col-md-6">\n        <div class="category_form"><strong>{{item.category_name.toUpperCase()}}</strong></div>\n      </div>\n\n    </div>\n  </div>\n\n  <div class="container-fluid verticals-min-h" style="padding-top:30px">\n    <div class="row">\n      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6" ng-repeat="editor in item.editor track by $index" ng-bind-html="editor">\n      </div>\n    </div>\n    <div class="row slider-images">\n      <a> <!--style="height: 100px"-->\n        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 verticals-item">\n          <div class="img-responsive background-image test-img" style="background: {{\'url(\' + item.image1_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 40%;\n                    background-color: #e1e1e126;">\n          </div>\n          <div class="test-title">\n            <h5>{{item.image1_name}}</h5>\n            <div class="short-line"></div>\n          </div>\n        </div>\n      </a>\n\n      <a>\n        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 verticals-item">\n          <div class="img-responsive background-image test-img" style="background: {{\'url(\' + item.image2_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 40%;\n                    background-color: #e1e1e126;">\n          </div>\n        <!--</div>-->\n\n        <!--<div class="col-lg-1 col-md-12 col-sm-12 col-xs-12 slider">-->\n          <div class="test-title">\n            <h5>{{item.image2_name}}</h5>\n            <div class="short-line"></div>\n          </div>\n        </div>\n      </a>\n\n      <a>\n        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 verticals-item">\n          <div class="img-responsive background-image test-img" style="background: {{\'url(\' + item.image3_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 40%;\n                    background-color: #e1e1e126;">\n          </div>\n        <!--</div>-->\n\n        <!--<div class="col-lg-1 col-md-12 col-sm-12 col-xs-12 slider">-->\n          <div class="test-title">\n            <h5>{{item.image3_name}}</h5>\n            <div class="short-line"></div>\n          </div>\n        </div>\n      </a>\n    </div>\n  </div>\n</section>\n');
 $templateCache.put('app/directives/colorFrequencyPieChart/dbColorFrequencyPieChartView.html','<div class="chart-container">\r\n  <ng-transclude ng-show="showTitle"></ng-transclude>\r\n  <div class="color-title" ng-show="!showTitle"><span>{{selectedColorTitle}}<br>{{selectedColorNcs}}</span></div>\r\n  <div class="pie-chart" hue-pie-chart="{diameter: 160}" data="pieData" selected-index="selectedIndex" on-color-click="colorClickHandler" on-collapse-click="collapseClickHandler" on-animation-complete="animationCompleteHandler"></div>\r\n  <div class="designers-label-container">\r\n    <span class="designers-count" ng-bind="data.designerCount"></span>\r\n    <span class="designers-label">Designers</span>\r\n  </div>\r\n</div>\r\n<div class="color-legend" ng-class="{\'item-selected\': isItemSelected()}">\r\n  <div class="carousel-button-up" id="{{getButtonId(\'p\')}}"></div>\r\n  <div hue-carousel="{items: 4, scroll: {items: 1, play: false}, direction: \'down\', width: \'45px\', buttonNextId: getButtonId(\'n\'), buttonPrevId: getButtonId(\'p\')}" initialized="initialized">\r\n    <div class="color-legend-item" ng-repeat="color in data.colors" ng-style="{\'border-color\': color.color.hex}" ng-class="{active: isItemSelected($index)}" ng-click="selectItem($index)">{{color.percentage.toFixed()}}<span class="legend-item-unit">%</span></div>\r\n  </div>\r\n  <div class="carousel-button-down" id="{{getButtonId(\'n\')}}"></div>\r\n</div>\r\n');
 $templateCache.put('app/directives/custom-infographics-directives/chart-by-city-period-colors.html','<div class="chart c-chart-by-city-period-colors">\r\n  <div>\r\n    <div class="colors">\r\n      <div ng-repeat="group in groups">\r\n        <div>\r\n          <div class="color-brick" ng-repeat="color in group.colors" ng-class="{ empty: color.isEmpty }">\r\n            <span style="background: {{ color.color }}"></span>\r\n          </div>\r\n        </div>\r\n        <label>{{ group.title }}</label>\r\n      </div>\r\n    </div>\r\n    <div chart-type="bottom">\r\n    </div>\r\n  </div>\r\n</div>\r\n');
 $templateCache.put('app/directives/custom-infographics-directives/chart-by-city-period.html','<div class="chart c-bubbled-lines"></div>\r\n');
@@ -51547,6 +51493,60 @@ $templateCache.put('app/directives/siteHeader/mainMenuView.html','<div class="to
 $templateCache.put('app/directives/siteHeader/searchMenuTrendingView.html','<!--<div class="search-menu-trending">-->\r\n<!--<div class="trending-title">-->\r\n<!--<div class="title-line"></div>-->\r\n<!--<div class="title-text">What\'s trending</div>-->\r\n<!--<div class="title-line"></div>-->\r\n<!--</div>-->\r\n<!--<div class="trending-container">-->\r\n<!--<div class="trending-cell"><hue-svg source="assets/img/icons/categories/1.svg"></hue-svg></div>-->\r\n<!--<div class="trending-cell">Chanel</div>-->\r\n<!--<div class="trending-cell"><hue-svg source="assets/img/icons/cities/1.svg"></hue-svg></div>-->\r\n<!--<div class="trending-cell">Resort</div>-->\r\n<!--<div class="trending-cell" ng-style="{\'background-color\': \'#F00\'}"></div>-->\r\n<!--<div class="trending-cell">2014</div>-->\r\n<!--</div>-->\r\n<!--</div>-->\r\n');
 $templateCache.put('app/directives/siteHeader/searchMenuView.html','<div class="top-menu menu-search" ng-show="show">\r\n  <ul class="menu-tabs disable-text-selection">\r\n    <li ng-repeat="item in tabs" ng-class="{active: isTabActive($index)}" ng-click="setTab($index)" ng-bind="item.title"></li>\r\n  </ul>\r\n\r\n  <!--<div class="search-tab search-message" ng-show="isTabActive(null)">-->\r\n  <!--<p>-->\r\n  <!--Each and every one of the 16.8 million colors out there is unique in its own right!<br />-->\r\n  <!--HUEFASHION is designed to database new color introductions from runways of<br />-->\r\n  <!--across all major fashion shows around the world, to demonstrate how color is being used in this industry-->\r\n  <!--</p>-->\r\n  <!--<p>-->\r\n  <!--QUESTIONS WE CAN ANSWER<br />-->\r\n  <!--What were the major colors for Paris SS 2015?<br />-->\r\n  <!--What is the global color palette for FW 2015-16?<br />-->\r\n  <!--What are the colors Gucci (or any design house) used in their latest collection?<br />-->\r\n  <!--...and many more...-->\r\n  <!--</p>-->\r\n  <!--<p class="label-start" ng-click="showTrending()">-->\r\n  <!--Start your search by selecting from one of the categories above or check what is trending <i class="fa fa-caret-right"></i>-->\r\n  <!--</p>-->\r\n  <!--</div>-->\r\n\r\n  <div class="search-tab search-seasons" ng-show="isTabActive(0)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="season-item-container">\r\n        <div class="season-item" ng-repeat="item in seasonsData" ng-click="selectSeason(item)">\r\n          <hue-svg source="assets/img/icons/seasons/{{item.id}}.svg"></hue-svg>\r\n          <div class="season-title" ng-bind="item.menu"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected season: {{selectedSeason.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        {{selectLists[item]}}\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[0]">\r\n\r\n        </hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-years" ng-show="isTabActive(1)">\r\n    <div ng-show="isStepActive(0)">\r\n      <hue-search-menu-year-selector years="yearsData" selected-year="selectedYear"></hue-search-menu-year-selector>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected year: {{selectedYear.title}}</div>\r\n      {{selectedYear.title}}\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[1]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-categories" ng-show="isTabActive(2)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="category-item-container">\r\n        <div class="category-item" ng-repeat="item in categoriesData" ng-click="selectCategory(item)">\r\n          <hue-svg source="assets/img/icons/categories/menu/{{item.id}}.svg"></hue-svg>\r\n          <div class="category-title" ng-bind="item.title"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected category: {{selectedCategory.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[2]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-regions" ng-show="isTabActive(3)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="region-item-container">\r\n        <div class="region-item" ng-repeat="item in regionsData" ng-click="selectRegion(item)">\r\n          <img ng-src="assets/img/icons/regions/{{item.id}}.svg">\r\n          <div class="region-title"><span ng-bind="item.title"></span></div>\r\n          <ul class="region-cities">\r\n            <li ng-repeat="city in item.cities" ng-bind="city"></li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected region: {{selectedRegion.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[3]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-cities" ng-show="isTabActive(4)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="city-item-container">\r\n        <div class="city-item" ng-repeat="item in citiesData" ng-click="selectCity(item)">\r\n          <hue-svg ng-source="assets/img/icons/cities/menu/{{item.id}}.svg"></hue-svg>\r\n          <div class="city-title" ng-bind="item.title"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected city: {{selectedCity.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[4]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-colors" ng-show="isTabActive(5)">\r\n    <div ng-show="isStepActive(0)">\r\n      <table class="color-list">\r\n        <tbody>\r\n        <tr>\r\n          <td ng-repeat="item in colorsData" ng-style="{background: item.hex}" ng-attr-title="{{item.title}}" ng-click="selectColor(item)"></td>\r\n        </tr>\r\n        </tbody>\r\n      </table>\r\n      <div class="search-by-notation">Search by NCS notation: <span><angucomplete localdata="data.colors" searchfields="ncs" titlefield="ncs" minlength="2" selectedobject="selectedColor"></angucomplete></span>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected color: {{selectedColor.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[5]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-alphanumeric" ng-show="isTabActive(6)">\r\n    <div ng-show="isStepActive(0)">\r\n      <hue-search-menu-alphanumeric-selector tabs="letterTabs" data="designersData" on-item-select="selectDesigner"></hue-search-menu-alphanumeric-selector>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected designer: {{selectedDesigner.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[6]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <hue-search-menu-trending ng-show="isTrendingVisible"></hue-search-menu-trending>\r\n</div>\r\n');
 $templateCache.put('app/directives/siteHeader/siteHeaderView.html','<div class="site-header">\r\n  <div class="pull-right right-container">\r\n    <div class="header-control user" ng-if="isUserLoggedIn()">Welcome {{currentUser.full_name}} <span ng-if="showTrialTime">{{daysLeft}} days left </span><i class="fa fa-times" ng-click="logOff()"></i></div>\r\n    <div class="header-control search disable-text-selection" ng-class="{active: isControlActive(\'search\')}" ng-click="toggleControl(\'search\')"><i class="fa fa-search"></i></div>\r\n    <div class="header-control menu disable-text-selection" ng-class="{active: isControlActive(\'menu\')}" ng-click="toggleControl(\'menu\')"><i class="fa fa-bars"></i></div>\r\n  </div>\r\n</div>\r\n\r\n<hue-search-menu show="isControlActive(\'search\')" hide="turnOffControl(\'search\')"></hue-search-menu>\r\n<hue-main-menu show="isControlActive(\'menu\')" hide="turnOffControl(\'menu\')"></hue-main-menu>\r\n');
+$templateCache.put('app/components/about-page/about-page.tmpl.html','<update-title title="About Us"></update-title>\r\n<update-meta name="description" content="Inform, inspire and validate color design decisions"></update-meta>\r\n<update-meta name="keywords" content="Color, Color Data, Color Insights, Color Trends, Color Forecasting, Color Analysis"></update-meta>\r\n\r\n<div class="container-fluid header text-center" ng-init="$ctrl.init()">\r\n  <div class="text-header">\r\n    <h1>The World\u2019s Color Intelligence Platform</h1>\r\n    <img id="show-video-popup" ng-click="$ctrl.showVideoPopup()" class="play-btn" src="../assets/images/play-icon.png" alt="play">\r\n    <div class="button">\r\n      <button ng-click="$ctrl.gotoElement(\'prefooter\')" class="btn">STAY CONNECTED</button>\r\n    </div>\r\n    <div class="popup full-screen video" id="video-popup">\r\n      <header>\r\n        <button ng-click="$ctrl.hideVideoPopup()" type="button" class="btn close-btn">X</button>\r\n      </header>\r\n      <main>\r\n        <iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo" id="companyVimeoVideo" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>\r\n      </main>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<div class="clear"></div>\r\n\r\n<section>\r\n  <div class="container-fluid text-center">\r\n    <h3>{{$ctrl.pageData.title}}</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n\r\n  <div class="container-fluid bg-3">\r\n    <div class="row about-us-min-h">\r\n      <div class="col-lg-6 col-md-6">\r\n        <img ng-src="{{$ctrl.pageData.image_url}}" class="img-responsive shadow img50" alt="Image">\r\n      </div>\r\n      <div class="del-padding" ng-bind-html="$ctrl.pageData.editor"></div>\r\n    </div>\r\n\r\n\r\n    <div class="row text-center equal">\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/search.png" alt="Image" style="padding-top:30px">\r\n          <h5>SEARCH</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Search for any color data point you need!</p>\r\n          <ol class="list-huegroup">\r\n            <li>Find what are the new colors showing on the world\u2019s runways;</li>\r\n            <li>View furniture colors of leading interior designers;</li>\r\n            <li>Check the colors of logos for the world\u2019s 100,000 global companies</li>\r\n          </ol>\r\n          <p class="text-align-left padding-left-3"> \u2026 and so much more!</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/discover.png" alt="Image" style="padding-top:30px">\r\n          <h5>DISCOVER</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Discover the value of real time color analytics.</p>\r\n          <ol class="list-huegroup">\r\n            <li>What are the RTW color trends this season?  </li>\r\n            <li>What colors do celebrities wearing this month?</li>\r\n            <li>Which colors are most twitted about this week?</li>\r\n          </ol>\r\n          <p class="text-align-left">Discover how color is used across products, industries geographies, and over time!</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/analyze.png" alt="Image" style="padding-top:30px">\r\n          <h5>ANALYZE</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Analyze the frequency , uniqueness, relevance & timeliness of color.</p>\r\n          <ol class="list-huegroup">\r\n            <li>Track global and local color trends</li>\r\n            <li>Analyze the color portfolio of specific designers over time</li>\r\n            <li>Identify specific color-emotion associations</li>\r\n          </ol>\r\n          <p class="text-align-left padding-left-3"> \u2026 in short, focus on analytics that best support your color decision needs.</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/Leverage.png" alt="Image" style="padding-top:30px">\r\n          <h5>LEVERAGE</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Let the confidence in analytics and insights amplify  your decisions.</p>\r\n          <ol class="list-huegroup">\r\n            <li>Substantiated creative choices</li>\r\n            <li>Minimize color risks</li>\r\n            <li>Rationalize color decisions to gain support</li>\r\n          </ol>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>');
+$templateCache.put('app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html','<update-title title="Checkout"></update-title>\n<update-meta name="description" content="HUEDATA checkout page"></update-meta>\n<update-meta name="keywords" content="Checkout, Checkout page, HUEDATA checkout"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n        <!--<div class="line"></div>-->\n      </div>\n    </div>\n  </div>\n</section>\n<div class="purchase-body-min-h">\n  <section class="subtitle purchase-head-min-h" ng-show="$ctrl.loginFlag !== undefined">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12">\n          <div class="method-1">\n            <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECKOUT METHOD</h4>\n            <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 2" class="method-2">\n            <h4 style="color: {{$ctrl.methodStyle[1]}}"><span>2. </span>BILLING INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(2)" ng-show="$ctrl.methodNumber !== 2" class="edit-btn">EDIT</button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 3" class="method-3">\n            <h4 style="color: {{$ctrl.methodStyle[2]}}"><span>3. </span>PAYMENT INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3 && !!$ctrl.purchase.amount" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 4" class="method-4">\n            <h4 style="color: {{$ctrl.methodStyle[3]}}"><span>4. </span>ORDER REVIEW</h4>\n            <button ng-click="$ctrl.goToMethod(4)" ng-show="$ctrl.methodNumber !== 4" class="edit-btn">EDIT</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 1 && !$ctrl.loginFlag" class="check-out-method">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 login">\n          <h4>HUEDATA MEMBERS</h4>\n          <form>\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\n            <div class="err">\n              <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>\n            </div>\n            <div class="reset-password">\n              <a ng-click="$ctrl.passwordRecover()" class="reset-your-password pointer">RESET YOUR PASSWORD</a>\n            </div>\n            <div class="button login-btn">\n              <button ng-click="$ctrl.login()" class="btn">LOGIN</button>\n            </div>\n          </form>\n        </div>\n        <div class="col-lg-4 col-md-6 guest">\n          <h4>CHECKOUT AS GUEST</h4>\n          <div class="login-btn">\n            <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 2" class="billing-information">\n    <div class="container-fluid text-left">\n      <div class="row">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 col-sm-6 billing-1">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'">\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.middle_name.value" ng-value="$ctrl.data.middle_name.value" type="text" id="middle_name" name="middle_name" ng-class="\'ng-dirty\' && membership.middle_name.$invalid ?  \'error\' :\'\'">\n            <label for="middle_name">MIDDLE NAME/INITIAL</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'">\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail" name="email" ng-class="\'ng-dirty\' && membership.Email.$invalid ?  \'error\' :\'\'">\n            <label for="billingEmail">EMAIL(WORK-RELATED) <span class="red-text">*</span></label>\n          </div>\n        </div>\n        <div class="col-lg-4 col-md-6 col-sm-6 billing-2">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.address.value" ng-value="$ctrl.data.address.value" type="text" id="address" name="address" ng-class="\'ng-dirty\' && membership.address.$invalid ?  \'error\' :\'\'">\n            <label for="address">ADDRESS <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.second_address.value" ng-value="$ctrl.data.second_address.value" type="text" id="second_address" name="second_address" ng-class="\'ng-dirty\' && membership.second_address.$invalid ?  \'error\' :\'\'">\n            <label for="second_address">SECOND ADDRESS</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.city.value" ng-value="$ctrl.data.city.value" type="text" id="city" name="city" ng-class="\'ng-dirty\' && membership.city.$invalid ?  \'error\' :\'\'">\n            <label for="city">CITY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.state.value" theme="selectize">\n              <ui-select-match placeholder="STATE/PROVINCE *">\n              <span style="{{($ctrl.data.state.value && $select.selected != $ctrl.states[0])? \'color: black\' : \'\'}}" ng-bind-html="$select.selected || $ctrl.data.state.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="state in getStates($select.search) | filter:$select.search">\n                <span ng-bind-html="state"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.zip.value" ng-value="$ctrl.data.zip.value" type="text" id="zip" name="zip" ng-class="\'ng-dirty\' && membership.zip.$invalid ?  \'error\' :\'\'">\n            <label for="zip">ZIP <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize">\n              <ui-select-match placeholder="PLEASE SELECT COUNTRY *">\n              <span style="{{($ctrl.data.country.value && $select.selected.title != $ctrl.country[0].title)? \'color: black\' : \'\'}}" ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="country in ($ctrl.country | sortFilter:$select.search)">\n                <span ng-bind-html="country.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.telephone.value" ng-value="$ctrl.data.telephone.value" type="text" id="telephone" name="telephone" ng-class="\'ng-dirty\' && membership.telephone.$invalid ?  \'error\' :\'\'">\n            <label for="telephone">TELEPHONE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="button login-btn">\n            <button ng-click="$ctrl.uploadBillingInfo()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 3" class="payment-information">\n    <div class="cart-checkout">\n      <div class="panel panel-default bootstrap-basic">\n        <div class="panel-heading">\n          <h3 class="panel-title">CREDIT CARD</h3>\n          <div id="paypal-button" class="paypal-btn" style="z-index: 1"></div>\n        </div>\n        <form class="panel-body">\n          <div class="row">\n            <div class="form-group col-sm-12">\n              <!--<label class="control-label">Card Number</label>-->\n              <!--  Hosted Fields div container -->\n              <div class="form-control" id="card-number"></div>\n              <span class="helper-text"></span>\n            </div>\n            <div class="form-group col-sm-12">\n              <div class="row payment-item-row">\n                <label class="control-label col-xs-12 payment-item">EXPIRATION DATE <span class="red-text">*</span></label>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-month"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-year"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <div class="form-control" id="cvv"></div>\n                </div>\n              </div>\n            </div>\n          </div>\n          <div ng-show="$ctrl.payError" class="error-message afade text-left">\n            {{$ctrl.payError}}\n          </div>\n          <button ng-disabled="$ctrl.payDataFlag" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE\n          </button>\n          <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>\n        </form>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 4" class="products-cart order-review">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12 products-table">\n          <table>\n            <tr class="product-row" ng-repeat="item in $ctrl.products">\n              <td class="product-img">\n                <img ng-src="{{item.image_url}}">\n              </td>\n              <td class="product-name">\n                <h4>{{item.header}}</h4>\n                <div ng-show="$ctrl.methodNumber === 4" class="justify margin-zero-p">\n                  <p ng-show="$ctrl.methodNumber === 4" class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n                </div>\n              </td>\n              <td class="product-count">\n                <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->\n                <h4 style="display: inline-block">{{item.count}}</h4>\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-minus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-plus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n              </td>\n              <td class="product-prise">\n                <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n              </td>\n              <td class="price-for-all">\n                <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n              </td>\n            </tr>\n          </table>\n          <div class="err-massage">\n            <h4 ng-show="$ctrl.errFlag">We are unable to process your payment at this time. Please provide an alternate\n              method to payment.</h4>\n          </div>\n        </div>\n        <div class="col-sm-4 col-xs-4">\n        </div>\n        <div class="col-sm-offset-4 col-lg-3 col-sm-4 col-xs-8 text-right">\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4>TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n          <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n            <button ng-disabled="$ctrl.placeOrderFlag" ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">\n              PLACE ORDER\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
+$templateCache.put('app/components/cart-page/cart-page.tmpl.html','<update-title title="My Cart"></update-title>\n<update-meta name="description" content="HUEDATA cart page"></update-meta>\n<update-meta name="keywords" content="Cart, HUEDATA cart, cart page"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n      </div>\n    </div>\n  </div>\n</section>\n<section class="products-cart products-table-min-h">\n  <div class="container-fluid text-center title">\n    <div class="row equal">\n      <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 col-xs-12 empty-cart">\n        <h3>Your cart is empty</h3>\n        <div class="go-to-reports pointer">\n          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">Back{{$ctrl.wayBackName}}</button>\n        </div>\n      </div>\n      <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table width-100">\n        <table>\n          <tr class="product-row" ng-repeat="item in $ctrl.products">\n            <td class="product-img">\n              <div class="img-box">\n                <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n                <img ng-src="{{item.image_url}}">\n              </div>\n            </td>\n            <td class="product-name">\n              <h4>{{item.header}}</h4>\n              <div class="justify margin-zero-p">\n                <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n              </div>\n            </td>\n            <td class="product-count">\n              <h4 style="display: inline-block">{{item.count}}</h4>\n              <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">\n                <i class="fa fa-minus fa-1x pointer" aria-hidden="true"></i>\n              </div>\n            </td>\n            <td class="product-prise">\n              <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n            </td>\n            <td class="price-for-all">\n              <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n            </td>\n            <!--<td class="basket-icon">-->\n            <!--<i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>-->\n            <!--</td>-->\n          </tr>\n        </table>\n      </div>\n      <div class="col-sm-4 col-xs-4 go-back">\n        <div ng-show="$ctrl.products.length" ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">\n          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">BACK</button>\n        </div>\n      </div>\n      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-8">\n        <div>\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">\n                  <h4>SUBTOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + $ctrl.all}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4 class="pointer">TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n        </div>\n        <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n          <button style="margin-top: 0" class="btn">CHECKOUT</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/cart-thank/cart-thank.tmpl.html','<update-title title="Thank You for Your Purchase"></update-title>\n<update-meta name="description" content="Thanks page after purchase"></update-meta>\n<update-meta name="keywords" content="Thank you page, download"></update-meta>\n\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n      </div>\n    </div>\n  </div>\n</section>\n<section class="cart-thank-page">\n  <div class="cart-thank">\n    <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>\n    <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId || \'UNKNOWN\'}}</span></h4>\n    <div class="thank-text">\n      <span>YOU WILL RECEIVE AN ORDER CONFORMATION EMAIL WITH DETAILS OF YOUR PURCHASE</span>\n    </div>\n    <div class="thank-text">\n      <span>CLICK HERE TO DOWNLOAD</span>\n    </div>\n  </div>\n</section>\n<section class="download-page">\n  <div class="container-fluid text-center">\n    <div class="row download-row">\n      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">\n        <div>\n        <img class="download-img" ng-src="{{item.image}}">\n        </div>\n        <div ng-show="item.file">\n        <a href="{{item.file}}" download><button class="btn">DOWNLOAD</button></a>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/color-emotion/color-emotion.tmpl.html','<update-title title="Color Indices"></update-title>\r\n<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>\r\n<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,\r\ncolor and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,\r\nColor Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n      <div class="col-lg-6 col-md-12 col-sm-12 buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <img src="../assets/images/indices1.png" class="img-responsive shadow" alt="Image">\r\n      </div>\r\n\r\n      <div class="col-lg-6 col-md-6">\r\n        <p>Color is strongly linked to emotional and non-emotional attributes. Research indicates that some of these\r\n          associations are universal while others are product and cultural sensitive.\r\n          Designing for a global customer base we need to account for the color connotations we evoke and ensure\r\n          alignment between the color choice, preferences of the target audience and various contextual (cultural,\r\n          genderspecific\r\n          and product related) aspects.<br><br>\r\n          HUEDATA Color Emotion Index (CEI) parses through thousands of research articles comprising the body of\r\n          research conducted on color, to mine and surface these associations and carefully map them agains colors\r\n          within\r\n          the context of demographics, psychographics a product-related attributes when relevant. The CEI is further\r\n          enriched by our active social listening on Twitter that monitor the popular voice on color and contrast it\r\n          with\r\n          research findings for further calibration and validation.<br><br>\r\n          This Members-Only product allows you to benchmark and further modify your color choices against desired\r\n          attributes to ensure your color massage is indeed on massage! </p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>Performance Analysis</h5>\r\n        <p>Search for the meaning of colors using the two available color\r\n          - attribute associations classifications:<br><br></p>\r\n        <div class="left">\r\n          <div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">\r\n            <span>EMOTIONAL ATTRIBUTES INDEX</span>\r\n          </div>\r\n\r\n          <div class="color-ind-bar"><img src="../assets/images/non-emontional.png" alt="Image">\r\n            <span>NON-EMOTIONAL ATTRIBUTES INDEX</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>CEI Interactive Color Upload</h5>\r\n        <p>Stress-test the colors you\u2019re considering agains the CEI to validate the\r\n          colors evoke the attributes you\u2019re looking for within the relevant\r\n          product and demographic context. Simply upload your colors and we\u2019ll\r\n          analyze them for you.</p>\r\n        <img src="../assets/images/indices2.png" class="img-responsive" alt="Image">\r\n      </div>\r\n\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>COLOR NAMING INDEX</h5>\r\n        <p>With nearly 10 million color names in our system, HUEDATA\r\n          can help you name your color right. Explore our color naming\r\n          visualizations to identify best ways to communicate your color\r\n          selection.<br><br></p>\r\n        <img src="../assets/images/indices3.png" class="img-responsive text-center" alt="Image">\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/color-index/color-index.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n\r\n\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM THINKING OF THIS COLOR AND WANT TO LEARN NOW ITS CALLED </h5>\r\n          <img id="color-naming-block-desc_img_2" src="../assets/images/picker.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorPicker">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n\r\n     <div class="col-lg-6 col-md-6">\r\n      <div class="color-naming-block-desc">\r\n        <h5 class="title-link-color-picker h-data ng-binding">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>\r\n        <img id="color-naming-block-desc_img_1" src="../assets/images/pen.png" alt="">\r\n        <div class="button">\r\n          <a class="btn join-btn color-index-btn" ui-sref="colorIndexSearch">LET\'S START</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<!--<section id="education">-->\r\n  <!--<div class="container-fluid">-->\r\n    <!--<div class="row">-->\r\n      <!--<div class="col-lg-4 col-md-4  col-sm-12 indices-block">-->\r\n        <!--<h5>Performance Analysis</h5>-->\r\n        <!--<p>Search for the meaning of colors using the two available color-->\r\n          <!-- - attribute associations classifications:<br><br></p>-->\r\n        <!--<div class="left">-->\r\n          <!--<div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">-->\r\n            <!--<span>EMOTIONAL ATTRIBUTES INDEX</span>-->\r\n          <!--</div>-->\r\n\r\n          <!--<div class="color-ind-bar"><img src="../assets/images/non-emontional.png"-->\r\n                                <!--alt="Image">-->\r\n            <!--<span>NON-EMOTIONAL ATTRIBUTES INDEX</span>-->\r\n          <!--</div>-->\r\n        <!--</div>-->\r\n      <!--</div>-->\r\n\r\n      <!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->\r\n        <!--<h5>CEI Interactive Color Upload</h5>-->\r\n        <!--<p>Stress-test the colors you\u2019re considering agains the CEI to validate the-->\r\n          <!--colors evoke the attributes you\u2019re looking for within the relevant-->\r\n          <!--product and demographic context. Simply upload your colors and we\u2019ll-->\r\n          <!--analyze them for you.</p>-->\r\n        <!--<img src="../assets/images/indices2.png" class="img-responsive " alt="Image">-->\r\n      <!--</div>-->\r\n\r\n      <!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->\r\n        <!--<h5>COLOR NAMING INDEX</h5>-->\r\n        <!--<p>With nearly 10 million color names in our system, HUEDATA-->\r\n          <!--can help you name your color right. Explore our color naming-->\r\n          <!--visualizations to identify best ways to communicate your color-->\r\n          <!--selection.<br><br></p>-->\r\n        <!--<img src="../assets/images/indices3.png" class="img-responsive  text-center" alt="Image">-->\r\n      <!--</div>-->\r\n    <!--</div>-->\r\n  <!--</div>-->\r\n<!--</section>-->\r\n');
+$templateCache.put('app/components/color-index-accordion/color-index-accordion.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n<section id="color-emotion-header">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-6">\r\n                <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n\r\n            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n                <div class="title-color-index">The Color Naming Index</div>\r\n                <div class="button membership">\r\n                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n                </div>\r\n                <div class="line"></div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section class="bg-color-picker-block">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div ng-controller="AccordionCtrl">\r\n                <uib-accordion close-others="oneAtATime">\r\n                    <div uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            <!--{{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>-->\r\n                            {{$ctrl.colorAssociationNames.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item">\r\n                            <!--<div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">-->\r\n                                <!--<div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>-->\r\n                            <!--</div>-->\r\n                            <!--<div ng-repeat="similarColor1 in $ctrl.similarSaturateColors">-->\r\n                                <!--<div style="width: 40px; height: 40px; background: {{similarColor1}}"></div>-->\r\n                            <!--</div>-->\r\n                            <ul class="selectPerPage" ng-if="$ctrl.colorAssociationNames !== undefined || $ctrl.colorAssociationNames !== 0">\r\n                                <button ng-click="showSelect()" class="selectPerPage__btn">{{pageSize}}</button>\r\n                                <ul class="selectPerPage__list">\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="num-80" ng-click="showSelect()">80</label>\r\n                                        <input type="radio" id="num-80" name="pageSize" checked="checked" ng-model="pageSize" ng-value="80">\r\n                                    </li>\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="num-160" ng-click="showSelect()">160</label>\r\n                                        <input type="radio" id="num-160" name="pageSize" ng-model="pageSize" ng-value="160">\r\n                                    </li>\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="num-320" ng-click="showSelect()">320</label>\r\n                                        <input type="radio" id="num-320" name="pageSize" ng-model="pageSize" ng-value="320">\r\n                                    </li>\r\n                                    <li class="selectPerPage__item">\r\n                                        <label for="string-all" ng-click="showSelect()">ALL</label>\r\n                                        <input type="radio" id="string-all" name="pageSize" ng-model="pageSize" ng-value="\'ALL\'">\r\n                                    </li>\r\n                                </ul>\r\n                            </ul>\r\n                            <ul>\r\n                                <div class="color-index-accordion-item color-index-accordion-item__last-line" ng-if="$ctrl.colorAssociationNames">\r\n                                    <div class="checkboxes-accordion" ng-repeat="color in $ctrl.colorAssociationNames | limitTo:pageSize ">\r\n                                        <div class="checkbox-accordion-item">\r\n                                            <label class="title-checkbox-accordion"></label>\r\n                                            <input type="checkbox" class="option-input checkbox" style="background: rgb({{color.RGB}});">\r\n                                            <span class="checkbox-accordion_text">{{color.colorName}}</span>\r\n                                            <div class="checkbox-accordion-tooltip">\r\n                                                <span class="checkbox-accordion-tooltip_text">{{color.colorName}}</span>\r\n                                                <div class="checkbox-accordion-tooltip_triangle-with-shadow"></div>\r\n                                            </div>\r\n                                            <span class="checkbox-accordion_small_text">{{color.RGB}}</span>\r\n                                        </div>\r\n                                    </div>\r\n                                </div>\r\n                        </ul></div>\r\n                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined">Not found</div>\r\n                    </div>\r\n                    <div uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            {{$ctrl.paintColorNames.length}} PAINT COLOR NAMES\r\n                            <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-items">\r\n                            <ul>\r\n                            <div class="color-index-accordion-item color-index-accordion-item__last-line" ng-if="$ctrl.paintColorNames !== 0">\r\n                                <div class="checkboxes-accordion" ng-repeat="color in $ctrl.paintColorNames | limitTo:pageSize ">\r\n                                    <div class="checkbox-accordion-item">\r\n                                        <label class="title-checkbox-accordion"></label>\r\n                                        <input type="checkbox" class="option-input checkbox" style="background: rgb({{color.RGB}});">\r\n                                        <span class="checkbox-accordion_text">{{color.colorName}}</span>\r\n                                        <div class="checkbox-accordion-tooltip">\r\n                                                <span class="checkbox-accordion-tooltip_text">{{color.colorName}}</span>\r\n                                                <div class="checkbox-accordion-tooltip_triangle-with-shadow"></div>\r\n                                        </div>\r\n                                        <span class="checkbox-accordion_small_text">{{color.RGB}}</span>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                            </ul>\r\n                                <div class="color-index-accordion-item" ng-if="$ctrl.paintColorNames == undefined || $ctrl.paintColorNames == 0">Not found</div>\r\n                        </div>\r\n                    </div>\r\n                    <div uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            COLOURLOVERS COLOR NAMES <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item">\r\n                            Not found\r\n                        </div>\r\n                    </div>\r\n                    <!--<div uib-accordion-group class="color-index-accordion-title">-->\r\n                    <!--<uib-accordion-heading>-->\r\n                    <!--18 RESEARCH COLOR NAMES <i class="pull-right glyphicon"></i>-->\r\n                    <!--</uib-accordion-heading>-->\r\n                    <!--<div class="color-index-accordion-item">-->\r\n                    <!--<img class="img-accordion img-responsive img50" alt="Image" src="../../../assets/images/accordion-color-music.png">-->\r\n                    <!--</div>-->\r\n                    <!--</div>-->\r\n\r\n                    <div ng-if="$ctrl.searchColorName === undefined" uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            COLOR MOSAIC FOR (COLOR NAME) <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item">\r\n                        </div>\r\n                    </div>\r\n                    <div ng-if="$ctrl.searchColorName" uib-accordion-group class="color-index-accordion-title">\r\n                        <uib-accordion-heading>\r\n                            COLOR WORD CLOUD <i class="pull-right glyphicon"></i>\r\n                        </uib-accordion-heading>\r\n                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames">\r\n                            <div id="chart"></div>\r\n                        </div>\r\n                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined">Not found</div>\r\n                    </div>\r\n                </uib-accordion>\r\n            <div class="container">\r\n                <div class="row">\r\n                    <div class="button accordion-button">\r\n                        <a class="btn join-btn" ui-sref="colorIndex">NEW SEARCH</a>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div></section>\r\n');
+$templateCache.put('app/components/color-index-search/color-index-search.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="color-naming-info">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-md-12 col-lg-12 text-center">\r\n        <img class="color-search-pen-img" src="../assets/images/pen.png" alt="">\r\n        <h5 class="color-search-title">WHAT COLOR NAME DO YOU HAVE IN MIND?</h5>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="col-lg-2 col-md-2"></div>\r\n      <div class="col-md-8 col-lg-8 center">\r\n        <form class="search-container">\r\n          <input ng-model="$ctrl.data.color" ng-value="$ctrl.data.color" type="text" id="search-bar" placeholder="TYPE HERE">\r\n          <button class="btn-color-search" ng-click="$ctrl.colorSearch()"></button>\r\n        </form>\r\n\r\n        <div ng-if="$ctrl.colorValidDataShort.length === 0" class="msg-inf" style="height: 0px!important;">\r\n          <p style="text-align: center"> Not found.</p>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-2 col-md-2"></div>\r\n    </div>\r\n      <div class="row equal" style="margin-top: 100px"></div>\r\n  </div>\r\n</section>');
+$templateCache.put('app/components/color-naming-index/color-naming-index.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n\r\n\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top" class="">\r\n  <div class="container-fluid">\r\n    <div class="row color-names-block">\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            37\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n          <div class="title-color-naming">\r\n            <span>COLOR  </span>\r\n            <span>  ASSOCIATION</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            22\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>PAINT  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            139\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>COLOURLOVERS  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            18\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>RESEARCH  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="center-color-block">\r\n        <div class="button">\r\n          <a class="btn join-btn" ui-sref="colorIndexAccordion">NEXT</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/color-naming-info/color-naming-info.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="color-naming-info">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-md-2 col-lg-2"></div>\r\n      <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2 center-block text-center color-naming-info-part_text">\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="col-md-12 col-lg-12">\r\n        <div class="button center-block scroll_down" style="width: 153px;">\r\n          <a class="btn join-btn color-index-btn">CLICK TO START</a>\r\n        </div>\r\n    </div>\r\n  </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM THINKING OF THIS COLOR AND WANT TO LEARN NOW ITS CALLED </h5>\r\n          <img id="color-naming-block-desc_img_2" src="../assets/images/picker.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorPicker">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM LOOKING TO LEARN WHAT COLORS ARE ASSOCIATED WITH THIS WORD /NAME </h5>\r\n          <img id="color-naming-block-desc_img_1" src="../assets/images/pen.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorNamingIndex">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>');
+$templateCache.put('app/components/color-picker/color-picker.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-6">\r\n                <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n\r\n            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n                <div class="title-color-index">The Color Naming Index</div>\r\n                <div class="button membership">\r\n                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n                </div>\r\n                <div class="line"></div>\r\n            </div>\r\n\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n\r\n<!--<div id="s_color_picker_id">-->\r\n<!--<canvas id="color_picker" width="200" height="200"></canvas>-->\r\n<!--<div id="color_id"></div>-->\r\n<!--<div>{{pixelColor ? pixelColor : \'rgb(0,0,0)\'}}</div>-->\r\n<!--</div>-->\r\n\r\n<section class="bg-color-picker-block">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <h5 class="title-link-color-picker h-data ng-binding color-picker-title">WHAT COLOR NAMES ARE ASSOCIATED WITH MY COLOR SELECTION? </h5>\r\n                <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/picker.png" alt=""></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-4 col-md-4 color-piker-item_canvas">\r\n                <div id="s_color_picker_id">\r\n                    <div class="wrapper-color-picker">\r\n                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\r\n                    </div>\r\n                    <div class="slidecontainer">\r\n                        <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\r\n                        <span class="slider-title-opacity">OPACITY</span>\r\n                        <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\r\n                        <label id="value_span"></label>\r\n                    </div>\r\n                    <div class="rgb-display">\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">R</span>\r\n                            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">G</span>\r\n                            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">B</span>\r\n                            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div id="color_id"></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <div class="button button-color-picker scroll_down">\r\n                    <button ng-click="$ctrl.searchByRGB()" class="btn join-btn">LET\'S START</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section id="education-top" class="scroll-end">\r\n    <div class="container-fluid">\r\n        <div class="row color-names-block">\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames">\r\n            {{$ctrl.numOfcolorAssociationNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOR  </span>\r\n                        <span>  ASSOCIATION</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>PAINT  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            0\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOURLOVERS  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>RESEARCH  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="center-color-block">\r\n                <div class="button">\r\n                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames($ctrl.colorAssociationNameWord)">NEXT</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>');
+$templateCache.put('app/components/contact-us/contact-us.tmpl.html','<update-title title="Contact Us"></update-title>\r\n<update-meta name="description" content="Contact form for HUEDATA"></update-meta>\r\n<update-meta name="keywords" content="Contact us"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Contact Us</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="contact-us-page">\r\n  <form name="contact">\r\n    <div class="container-fluid text-center">\r\n      <div class="row">\r\n        <div class="contact-us-form membership-form">\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && contact.firstName.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && contact.lastName.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="lastName">LAST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.title.value" ng-value="$ctrl.data.title.value" type="text" id="title" name="title" ng-class="\'ng-dirty\' && contact.title.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="title">TITLE <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && contact.company.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="company">COMPANY <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.phone.value" ng-value="$ctrl.data.phone.value" type="text" id="phone" name="phone" ng-class="\'ng-dirty\' && contact.phone.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="phone">PHONE</label>\r\n          </div>\r\n\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.companyEmail.value" ng-value="$ctrl.data.companyEmail.value" type="text" id="companyEmail" name="companyEmail" ng-class="\'ng-dirty\' && contact.companyEmail.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="companyEmail">COMPANY EMAIL <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="form-item">\r\n          <textarea ng-model="$ctrl.data.comments.value" ng-value="$ctrl.data.comments.value" type="text" id="comments" name="comments" ng-class="\'ng-dirty\' && contact.comments.$invalid ?  \'error\' :\'\'" required></textarea>\r\n            <label for="comments">COMMENTS <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="button">\r\n            <button class="btn" ng-click="$ctrl.contactUs()">SUBMIT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </form>\r\n</section>\r\n');
+$templateCache.put('app/components/courses/courses.tmpl.html','<update-title title="Color Courses"></update-title>\n<update-meta name="description" content="Online color education platform to teach various color subjects"></update-meta>\n<update-meta name="keywords" content="Color Fundamentals, Color Education, color theory courses, color courses online,\ncolor theory and application, foundations of color, Theory of color, color preferences"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()" )>\n    <div class="row">\n      <div class="col-lg-6 col-lg-offset-3"><h3>Color Courses</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-3 buttons-group">\n        <div class="button membership">\n          <button class="btn" ui-sref="educationInquire">BECOME AN EDUCATION PARTNER</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-center">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3 search-fields2">\n        <div class="select-style">\n          <select ng-model="$ctrl.topicModel" ng-change="$ctrl.select()">\n            <option>TOPIC</option>\n            <option ng-repeat="item in $ctrl.topic">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.providerModel" ng-change="$ctrl.select()">\n            <option>PROVIDER</option>\n            <option ng-repeat="item in $ctrl.provider">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.levelModel" ng-change="$ctrl.select()">\n            <option>LEVEL</option>\n            <option ng-repeat="item in $ctrl.level">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left course course-items-min-h">\n    <div class="row equal">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item text-dn" ng-repeat="item in $ctrl.items">\n        <a style="text-decoration: none" ng-href="#!/color-education-courses/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class="row" ng-if="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/courses-details/courses-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Course"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA course, detailed page"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Education</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD\n              EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section class="detailed-content-min-h">\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section class="detailed-bottom-content detailed-bottom-content-min-h" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;;\n                    background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
+$templateCache.put('app/components/customized-infographics/customized-infographics.tmpl.html','<update-title title="Customized Color Infographics"></update-title>\r\n<update-meta name="description" content="HUEDATA members create their own color analysis and inforgroahics"></update-meta>\r\n<update-meta name="keywords" content="Color Analytics, Color visualization, Color Data, Color insights,\r\ncolor theory infographics, infographics color scheme"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="CustomInfographicsController as vm">\r\n  <div class="container-fluid infographics text-center title customized-infographics-top-container">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-12 col-lg-offset-3">\r\n        <h3>Color Customized Infographics</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-3 col-md-12 text-right buttons-group">\r\n        <div class="button membership btn-space-left">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn btn-no-space-right" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid text-left title">\r\n    <!--<div class="dashboard-overlay" hue-dashboard-overlay ng-if="vm.showDashboardOverlay"></div>-->\r\n    <div class="customized-infographics-controls">\r\n      <div style="max-width: none" class="select-style custom-select">\r\n        <ui-select class="chart-type" ng-model="vm.currentChart" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title" class="to-uppercase"></ui-select-match>\r\n          <ui-select-choices repeat="item in vm.charts track by item.id">\r\n            <span class="to-uppercase" ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'designer\')">\r\n        <ui-select id="designers" ng-model="vm.filter.designer" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL DESIGNERS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'designers\', item.title)" repeat="item in vm.meta.designers track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'color\')">\r\n        <ui-select id="color" class="colors" ng-model="vm.filter.color" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL COLORS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'colorGroups\', item.title)" repeat="item in vm.meta.colorGroups track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'category\')">\r\n        <ui-select id="categories" class="categories" ng-model="vm.filter.category" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL CATEGORIES\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'categories\', item.title)" repeat="item in vm.meta.categories track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'season\')">\r\n        <ui-select id="seasons" class="seasons" ng-model="vm.filter.season" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL SEASONS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'seasons\', item.title)" repeat="item in vm.meta.seasons track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'year\')">\r\n        <ui-select id="years" class="years" ng-model="vm.filter.year" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL YEARS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'years\', item.title)" repeat="item in vm.meta.years track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'region\')">\r\n        <ui-select id="regions" class="regions" ng-model="vm.filter.region" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL REGIONS\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'regions\', item.title)" repeat="item in vm.meta.regions track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n\r\n      <div class="select-style custom-select" ng-if="vm.isFilterVisible(\'city\')">\r\n        <ui-select id="cities" class="cities" ng-model="vm.filter.city" theme="selectize" search-enabled="false">\r\n          <ui-select-match ng-bind-html="$select.selected.title || \'ALL CITIES\'"></ui-select-match>\r\n          <ui-select-choices ui-disable-choice="vm.isFilterItems(\'cities\', item.title)" repeat="item in vm.meta.cities track by item.id">\r\n            <span ng-bind-html="item.title"></span>\r\n          </ui-select-choices>\r\n        </ui-select>\r\n      </div>\r\n      <button class="btn customized-infographics-controls-btn" style="margin-top: 0" ng-click="vm.refresh()">LOAD</button>\r\n      <div style="padding-left: 10px">\r\n        <button class="btn" style="margin-top: 0" ng-click="vm.exportJpg()">\r\n          EXPORT\r\n        </button>\r\n      </div>\r\n      <!--<div style="padding-left: 10px" ng-if="vm.isUserAdmin()">-->\r\n        <!--<button class="btn" style="margin-top: 0" ng-click="vm.reportJpg()">-->\r\n          <!--REPORT-->\r\n        <!--</button>-->\r\n      <!--</div>-->\r\n\r\n\r\n      <!--<div style="display: inline-block">-->\r\n      <!--</div>-->\r\n    </div>\r\n\r\n    <section class="customized-infographics">\r\n      <div id="capture">\r\n        <div class="graphic-titles">\r\n          <div class="letters-anchors" ng-if="vm.currentChart.group === \'top4Grid\' && vm.title">\r\n            <a ng-click="vm.scrollToLetter(\'anchor-\'+letter)" ng-repeat="letter in vm.alphabet">{{letter}}</a>\r\n          </div>\r\n          <h2 ng-bind-html="vm.title">\r\n          </h2>\r\n          <h4>{{vm.description}}</h4>\r\n        </div>\r\n\r\n        <hue-chart-by-city-period hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.qNumber === \'CO1a\'">\r\n        </hue-chart-by-city-period>\r\n\r\n        <hue-chart-by-city-period-colors hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.qNumber === \'CO1b\'">\r\n        </hue-chart-by-city-period-colors>\r\n\r\n        <hue-chart-colors-unique-with-levels hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsUniqueWithLevels\'">\r\n        </hue-chart-colors-unique-with-levels>\r\n\r\n        <hue-chart-trends hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'trends\'">\r\n        </hue-chart-trends>\r\n\r\n        <hue-chart-by-region-period hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsByRegionPeriod\'">\r\n        </hue-chart-by-region-period>\r\n\r\n        <hue-chart-colors-per-region hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsPerRegions\'">\r\n        </hue-chart-colors-per-region>\r\n\r\n        <hue-chart-unique-with-groups hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsUniqueGroupsCommon\'">\r\n        </hue-chart-unique-with-groups>\r\n\r\n        <hue-chart-by-season-five-years hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsUniqueByPeriodFiveYears\'">\r\n        </hue-chart-by-season-five-years>\r\n\r\n        <hue-chart-by-season-five-years-colors hue-chart data="vm.model" mode="true" ng-if="vm.currentChart.group === \'colorsUniqueByPeriodFiveYears2\'">\r\n        </hue-chart-by-season-five-years-colors>\r\n\r\n        <hue-chart-colors-unique-with-groups-per-season hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'uniqueWithGroupsPerSeason\'">\r\n        </hue-chart-colors-unique-with-groups-per-season>\r\n\r\n        <hue-chart-nails hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsByCategoryPeriod\'">\r\n        </hue-chart-nails>\r\n\r\n        <hue-chart-grid-nails hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsGridNails\'">\r\n        </hue-chart-grid-nails>\r\n\r\n        <hue-chart-grid-nails hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.group === \'colorsGridNails2\'">\r\n        </hue-chart-grid-nails>\r\n\r\n        <hue-chart-cities-by-color-period hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'citiesByColorPeriod\'">\r\n        </hue-chart-cities-by-color-period>\r\n\r\n        <!--Designers <DE**>-->\r\n        <hue-chart-common-with-groups hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'colorsGroupsCommon\'">\r\n        </hue-chart-common-with-groups>\r\n\r\n        <hue-chart-common-with-groups hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.group === \'colorsGroupsCommon2\'">\r\n        </hue-chart-common-with-groups>\r\n\r\n        <hue-chart-colors-with-groups-for-two hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'top4forDesigner\'">\r\n        </hue-chart-colors-with-groups-for-two>\r\n\r\n        <hue-chart-colors-with-groups-for-two hue-chart data="vm.model" mode="{extraView: true}" ng-if="vm.currentChart.group === \'top4forDesigner2\'">\r\n        </hue-chart-colors-with-groups-for-two>\r\n\r\n        <hue-top4-grid hue-chart data="vm.model" mode="vm.mode" ng-if="vm.currentChart.group === \'top4Grid\'">\r\n        </hue-top4-grid>\r\n\r\n        <div class="customized-infographics-footer">\r\n          <a></a>\r\n          <h5 style="padding-top: 9px;">HUEDATA is a color intelligence company, providing color analytics and insights across industries,\r\n            product categories, geographies and time to inspire, inform and validate color decisions. Visit us at: <a href="http://www.hue-data.com">www.hue-data.com</a>\r\n          </h5>\r\n          <p style="margin-top: -8px;">&#169 HUEDATA Inc. 2018</p>\r\n        </div>\r\n      </div>\r\n    </section>\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/daily-insights/daily-insights.tmpl.html','<update-title title="Daily Insight"></update-title>\r\n<update-meta name="description" content="Color daily insight blog"></update-meta>\r\n<update-meta name="keywords" content="Color social media, color blog, color design blog, color insights, color daily insights"></update-meta>\r\n\r\n<section id="daily-insight" ng-if="$ctrl.emptyData">\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-12">\r\n        <h1 class="h1-daily"><strong style="color:black;">DAILY </strong>{{$ctrl.pageData.header}}\r\n        </h1>\r\n        <button ng-if="$ctrl.getUser()" class="btn-daily-join btn daily-btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n      </div>\r\n    </div>\r\n    <div class="dailyinsights"></div>\r\n\r\n    <div class="row" style="margin-bottom:50px;">\r\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">\r\n        <h4 style="padding-top:0; margin-top:0">{{$ctrl.pageData.date}}</h4>\r\n      </div>\r\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 social-icons">\r\n        <a href="https://www.linkedin.com/company/huedata/" target="_blank"><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://www.facebook.com/pg/Huedata-1287083448095980/" target="_blank"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://twitter.com/huedata1" target="_blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://www.instagram.com/huedata/" target="_blank"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></a>\r\n        <a href="https://www.pinterest.com/huedatainc" target="_blank"><i class="fa fa-pinterest fa-2x" aria-hidden="true"></i></a>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="daily-insights-min-h" ng-if="$ctrl.emptyData">\r\n  <div class="container-fluid" style="border-bottom: solid 2px;\r\n    border-color: #bb0076;\r\n    padding-bottom: 50px;">\r\n    <div class="row">\r\n\r\n      <div class="col-lg-5 col-md-5" ng-bind-html="$ctrl.pageData.description">\r\n\r\n      </div>\r\n\r\n      <div class="col-lg-7 col-md-7">\r\n        <img ng-src="{{$ctrl.pageData.image_url || \'../assets/images/insights.jpg\'}}" class="img-responsive shadow" style="width:100%" alt="Image">\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section ng-init="$ctrl.init()" ng-if="!$ctrl.emptyData">\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h1 style="padding-bottom:0px; margin-top:0px; color:#bb0076"><strong style="color:black;">DAILY </strong>\r\n        </h1>\r\n      </div>\r\n    </div>\r\n    <div class="dailyinsights"></div>\r\n\r\n    <div class="row" style="margin-bottom:50px;">\r\n      <div class="col-lg-6">\r\n        <h4 style="padding-top:0px; margin-top:0px"><em>Nothing found. Please try later</em></h4>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section ng-if="$ctrl.emptyData">\r\n  <div class="container-fluid text-left course">\r\n    <div class="row equal daily-list-min-h">\r\n      <a style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\r\n        <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\r\n        <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item)" style="background: {{\'url(\' + item.image_url +\') top center\'}};\r\n                    background-repeat: no-repeat;\r\n                    background-size: cover;\r\n                    padding-bottom: 56%;\r\n                    background-color: #e1e1e126;\r\n                    cursor: pointer;">\r\n        </div>\r\n        <h5>{{item.header}}</h5>\r\n        <div class="justify">\r\n          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\r\n        </div>\r\n      </a>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="row" ng-if="!$ctrl.flag">\r\n    <div class="col-lg-12 text-center">\r\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/data-partners/partners.tmpl.html','<update-title title="Data Partnership Inquiry"></update-title>\r\n<update-meta name="description" content="Inquire about Data Partnership"></update-meta>\r\n<update-meta name="keywords" content="Color data partnership, Color design partnership, Color data partners, color database,\r\ncolor dataset, color data points in r,color coding data analysis, color big data"></update-meta>\r\n\r\n<div class="container-fluid header data-partners-header text-center" ng-init="$ctrl.init()">\r\n  <div class="text-header">\r\n    <h1>Our Data Partners</h1>\r\n    <div class="button">\r\n      <button class="btn" ui-sref="partnershipInquire">Inquire about Data Partnership</button>\r\n    </div>\r\n  </div>\r\n</div>\r\n<section>\r\n  <div class="container-fluid text-left partners partners-min-h">\r\n    <div class="row equal">\r\n      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 partner" ng-repeat="item in $ctrl.pageData">\r\n        <img class="partners-logo-min-h" ng-if="item.image_url" ng-src="{{item.image_url}}">\r\n        <h5>{{item.partner_name}}</h5>\r\n        <div class="justify">\r\n          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n<section style="margin-top: 0" class="inquiries">\r\n  <div class="container-fluid text-center">\r\n    <h3>Inquire about Data Partnership</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n  <div class="row">\r\n    <div class="container-fluid">\r\n      <div class="col-lg-4 col-md-4" style="font-size: 17px">\r\n        <p class="text-align-left padding-bottom-20">Typical ways in which Data partners collaborate with HUEDATA include:</p>\r\n        <ol class="list-huegroup">\r\n          <li>Seeking help structuring company color data</li>\r\n          <li>Looking to benchmark company color data against\r\n            HUEDATA specific color datasets for comparative and\r\n            competitive insights</li>\r\n          <li>Participate in invited research</li>\r\n          <li>Customize color dashboards and infographics using HUEDATA API</li>\r\n          <li>Co-Promoting unique color datasets\r\n            on HUEDATA\u2019s growing Color Intelligence Platform</li>\r\n        </ol>\r\n      </div>\r\n      <form name="inquiries" class="inq">\r\n        <div class="col-lg-4 col-md-4 membership-form">\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="email">EMAIL <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.company.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="Company">COMPANY<span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="membr-block">\r\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\r\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\r\n                <span ng-bind-html="job.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\r\n                <span ng-bind-html="companySize.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\r\n                <span ng-bind-html="ind.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style select-mrg">\r\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\r\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\r\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\r\n                <span ng-bind-html="cntry.title"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <textarea ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>\r\n\r\n          <div class="button">\r\n            <button ng-click="$ctrl.send()" class="btn pull-right">\r\n              SUBMIT INQUIRY\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </form>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n');
+$templateCache.put('app/components/detailed-page/detailed.tmpl.html','<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<div class="detailed-page-wrapper">\r\n  <section class="top">\r\n    <div class="container-fluid text-left title">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="list-item">\r\n            <div>\r\n              <span class="list-category">Category</span>\r\n              <span class="list-date">September 11, 2017</span>\r\n            </div>\r\n            <div class="list-text">China: Online Video</div>\r\n          </div>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\r\n          <div class="button membership">\r\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n          </div>\r\n          <div class="button membership white">\r\n            <button class="btn white-btn">DOWNLOAD EXCERPT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <div class="border"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left">\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left report detailed-content">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <div class="category Beauty text-center"><p>HUEBEAUTY</p></div>\r\n          <img class="img-responsive" src="../assets/images/report.jpg">\r\n        </div>\r\n\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <p class="text">Lorem ipsum dolor sit amet, ne nam nibh iriure, ad sea graece nemore repudiare. Nam no debet\r\n            perpetua, usu\r\n            movet scripta et. Eos everti iracundia id, munere placerat no vis. Ex decore aliquam vix, eos et doming\r\n            sanctus persequeris. No quo deterruisset delicatissimi, in novum omnesque voluptatum per.</p>\r\n\r\n          <a>Download Excerpt</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section class="detailed-bottom-content">\r\n    <div class="container-fluid">\r\n      <div class="row top-row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <h4>Key Analytics</h4>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="button membership white">\r\n            <button class="btn white-btn">VIEW ALL FROM THIS REPORT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row slider-images">\r\n        <a>\r\n          <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\r\n            <img src="../assets/images/slider-1.jpg" alt="slider-image" class="img-responsive shadow">\r\n          </div>\r\n          <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\r\n            <h5>SS17</h5>\r\n            <div class="short-line"></div>\r\n          </div>\r\n        </a>\r\n\r\n        <a>\r\n          <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\r\n            <img src="../assets/images/slider-1.jpg" alt="slider-image" class="img-responsive shadow">\r\n          </div>\r\n          <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\r\n            <h5>Pink is in again</h5>\r\n            <div class="short-line"></div>\r\n          </div>\r\n        </a>\r\n\r\n        <a>\r\n          <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\r\n            <img src="../assets/images/slider-1.jpg" alt="slider-image" class="img-responsive shadow">\r\n          </div>\r\n          <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\r\n            <h5>RTW SS18</h5>\r\n            <div class="short-line"></div>\r\n          </div>\r\n        </a>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
+$templateCache.put('app/components/download-excerpt-page/download-excerpt-page.tmpl.html','<update-title title="Download Excerpt"></update-title>\n<update-meta name="description" content="Download excerpt form"></update-meta>\n<update-meta name="keywords" content="download excerpt"></update-meta>\n\n<section class="inquiries">\n  <div class="container-fluid text-center">\n    <h3>DOWNLOAD EXCERPT</h3>\n    <div class="line"></div>\n  </div>\n  <div class="row">\n    <div class="container-fluid">\n      <form name="inquiries" class="inq">\n        <div class="col-lg-offset-1 col-lg-5 col-md-6 membership-form">\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="email">EMAIL(MUST BE BUSINESS ADDRESS) <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="Company">COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <!--<textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value"-->\n                    <!--placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>-->\n          <!--<textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value"-->\n                    <!--placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" style="border: 0px"></textarea>-->\n\n          <!--<div class="button">-->\n            <!--<button ng-click="$ctrl.send(\'data\')" class="btn pull-right">-->\n              <!--DOWNLOAD EXCERPT-->\n            <!--</button>-->\n          <!--</div>-->\n        </div>\n\n        <div class="col-lg-5 col-md-6 membership-form">\n          <h4>Join our Email list</h4>\n          <div>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.daily" type="checkbox" id="dailyInsight">\n              <label for="dailyInsight">THE DAILY</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.newReportNotification" type="checkbox" id="newReportNotification">\n              <label for="newReportNotification">HUEDATA NEW REPORT NOTIFICATION</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.expert" type="checkbox" id="joinPanel">\n              <label for="joinPanel">EXPERT PANEL INVITE</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.emotionIndexInsights" type="checkbox" id="emotionIndexInsights">\n              <label for="emotionIndexInsights">COLOR - EMOTION INDEX INSIGHTS</label>\n            </p>\n          </div>\n\n          <div class="button">\n            <p style="float: none">\n              <input ng-model="$ctrl.data.contact.becoming" type="checkbox" id="becoming">\n              <label for="becoming">PLEASE CONTACT ME ABOUT BECOMING A HUEDATA MEMBER</label>\n            </p>\n            <button ng-click="$ctrl.send()" class="btn">\n              DOWNLOAD EXCERPT\n            </button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/good-reads/good-reads.tmpl.html','<update-title title="Good Reads"></update-title>\n<update-meta name="description" content="Relevant color news and publications we follow"></update-meta>\n<update-meta name="keywords" content=""></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n    <div class="row">\n      <div class="col-lg-8 col-lg-offset-2">\n        <h3>Goods Reads</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-2">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n<section>\n  <div class="container-fluid text-left course">\n    <div class="row equal goods-reads-min-h">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n        <a ng-href="{{item.link}}" target="_blank" rel="nofollow">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="two_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n    <div class="row" ng-if="!$ctrl.flag">\n      <div class="col-lg-12 text-center">\n        <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n      </div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/good-reads-details/good-reads-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Good Read"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA good read, detailed page, good read"></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Goods Reads</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>HUE{{$ctrl.pageData.hue}}</p>\n          </div>\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n');
+$templateCache.put('app/components/infographics/infographics.tmpl.html','<update-title title="Color Infographics"></update-title>\n<update-meta name="description" content="color analytics and color visualization of fashion colors, color use in product,\ncolor use in brands and color use in environments"></update-meta>\n<update-meta name="keywords" content="Color Analytics, Color visualization, Color Data, Color insights,\ncolor theory infographics, infographics color scheme, color data visualization"></update-meta>\n\n<section>\n    <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n        <div class="row">\n            <div class="col-lg-8 col-lg-offset-2"><h3>Color Infographics</h3>\n                <div class="line"></div>\n            </div>\n            <div class="col-lg-2 buttons-group">\n                <div class="button membership">\n                    <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n                </div>\n            </div>\n        </div>\n    </div>\n</section>\n\n<section>\n    <div class="container-fluid text-left">\n        <div class="row search-fields">\n            <div class="col-lg-2 col-lg-offset-4 search-fields">\n                <div class="select-style">\n                    <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select()">\n                        <option>VERTICAL</option>\n                        <option ng-repeat="item in $ctrl.hue">{{item}}</option>\n                    </select>\n                </div>\n            </div>\n            <div class="col-lg-2">\n                <div class="select-style">\n                    <select ng-model="$ctrl.yearModel" ng-change="$ctrl.select()">\n                        <option>YEAR</option>\n                        <option ng-repeat="time in $ctrl.year">{{time}}</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n    </div>\n</section>\n\n<section class="min-h">\n    <div class="container-fluid text-left course infographics-min-h" style="margin-bottom: 0px">\n        <div ng-if="$ctrl.items.length === 0" class="msg-inf">\n            <p>Building this massive color database takes\n                time and we\'re working diligently to</p>\n            <p>introduce color analytics for this topic area.\n                Check again towards end of Fall 2018</p>\n        </div>\n        <div class="row equal">\n            <a style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n                <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n                <div class="img-responsive background-image" ng-click="$ctrl.onGraphicClick(item.image_url)" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;\n                    cursor: pointer;">\n                </div>\n                <h6 class="text-14">{{ $ctrl.makeDate(item) }}</h6>\n                <h5 class="h-data">{{item.header}}</h5>\n                <div class="justify">\n                    <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n                </div>\n            </a>\n        </div>\n    </div>\n\n    <div class="row" ng-if="!$ctrl.flag && $ctrl.items.length > 3">\n        <div class="col-lg-12 text-center">\n            <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n        </div>\n    </div>\n</section>\n');
+$templateCache.put('app/components/infographics-details/infographics-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Infographic"></update-title>\r\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\r\n<update-meta name="keywords" content="HUEDATA infographic, detailed page, infographic"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\r\n  <section class="top">\r\n    <div class="container-fluid text-left title">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="list-item">\r\n            <div>\r\n              <span class="list-category">HUEDATA Infographics</span>\r\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\r\n            </div>\r\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\r\n          </div>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\r\n          <div class="button membership">\r\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <div class="border"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left">\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left report detailed-content">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>HUE{{$ctrl.pageData.hue}}</p>\r\n          </div>\r\n          <img class="img-responsive" src="{{$ctrl.pageData.image_url}}">\r\n        </div>\r\n\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <span ng-bind-html="$ctrl.pageData.description"></span>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
+$templateCache.put('app/components/inquiries/inquiries.tmpl.html','<update-title title="{{$ctrl.title}}"></update-title>\n<update-meta name="description" content="{{$ctrl.caption}}"></update-meta>\n<update-meta name="keywords" content="{{$ctrl.keywords}}"></update-meta>\n\n\n<section class="inquiries">\n  <div class="container-fluid text-center">\n    <h3>{{$ctrl.caption}}</h3>\n    <div class="line"></div>\n  </div>\n  <div class="row">\n    <div class="container-fluid">\n      <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 justify" style="font-size: 17px">\n        <p>HUEDATA color intelligence helps you benchmark your color performance relative to trends and competitors,\n          inspires your color innovation, optimizes color decisions for your customer segment and supports rationalizing\n          your color decisions.</p>\n      </div>\n      <div ng-if="$ctrl.inquire2" class="col-lg-4 col-md-4" style="font-size: 17px">\n        <p>Typical ways in which Data partners collaborate with HUEDATA include:</p>\n        <ol class="list-huegroup">\n          <li>Seeking help structuring company color data</li>\n          <li>Looking to benchmark company color data against\n            HUEDATA specific color datasets for comparative and\n            competitive insights</li>\n          <li>Participate in invited research</li>\n          <li>Customize color dashboards and infographics using HUEDATA API</li>\n          <li>Co-Promoting unique color datasets\n            on HUEDATA\u2019s growing Color Intelligence Platform</li>\n        </ol>\n      </div>\n\n      <div ng-if="$ctrl.inquire3" class="col-lg-4 col-md-4 justify" style="font-size: 17px">\n        <p>HUEDATA collaborates with Academic Partners (Institutions and Faculty)\n          to develop, accredit, host and deliver educational offerings from\n          various online color courses to customize color training programs\n          and teaching materials leveraging HUEDATA rich color datasets,\n          analytics and insights.</p>\n      </div>\n      <form name="inquiries" class="inq">\n        <div class="col-lg-4 col-md-4 membership-form">\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="email">EMAIL <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-if="$ctrl.inquire3" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="institute" name="institute" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="institute">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-if="$ctrl.inquire1 || $ctrl.inquire2" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="Company">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>\n          <textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" style="border: 0px"></textarea>\n\n          <div ng-if="$ctrl.inquire2" class="button">\n            <button ng-click="$ctrl.send(\'data\')" class="btn pull-right">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n          <div ng-if="$ctrl.inquire3" class="button">\n            <button ng-click="$ctrl.send(\'edu\')" class="btn pull-right">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n        </div>\n\n        <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 membership-form">\n          <h4>Join our Email list</h4>\n          <div>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.daily" type="checkbox" id="dailyInsight">\n              <label for="dailyInsight">Daily Insight</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.research" type="checkbox" id="researchReport">\n              <label for="researchReport">Research Reports</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.edu" ng-value="$ctrl.educationOfferings" type="checkbox" id="educationOfferings">\n              <label for="educationOfferings">Education Offerings</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.expert" type="checkbox" id="joinPanel">\n              <label for="joinPanel">Join Expert Panel</label>\n            </p>\n          </div>\n\n          <div ng-if="$ctrl.inquire1" class="button">\n            <button ng-click="$ctrl.send(\'inquire\')" class="btn">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n\n\n\n');
+$templateCache.put('app/components/landing/landing.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n  <div class="container-fluid text-center">\n    <div class="logo">\n      <a style="padding-left: 40px; position: relative">\n        <svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">\n          <g>\n          \t<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>\n          </g>\n          <line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>\n        </svg>\n        <img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">\n      </a>\n    </div>\n  </div>\n\n  <div class="container-fluid menu text-center">\n    <ul>\n      <li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>\n        <p>Our Color Intelligence</p>\n      </li>\n      <li><a href="#!/color-research" class="outline-style">Color<br>Research</a>\n        <p>Color Reports & Infographic</p>\n      </li>\n      <li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>\n        <p>Who we are</p>\n      </li>\n      <li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>\n        <p>Our Blog</p>\n      </li>\n      <li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>\n        <p>Say Hi!</p>\n      </li>\n    </ul>\n  </div>\n\n  <!--</div>-->\n  <div class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/landing-page/landing-page.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n  \n  <!--<div class="container-fluid  text-center">-->\n    <!--<div class="logo">-->\n      <!--<a style="padding-left: 40px; position: relative">-->\n        <!--<svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"-->\n\t        <!--width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">-->\n          <!--<g>-->\n          \t<!--<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>-->\n          <!--</g>-->\n          <!--<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>-->\n        <!--</svg>-->\n        <!--<img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">-->\n      <!--</a>-->\n    <!--</div>-->\n  <!--</div>-->\n\n  <!--<div class="container-fluid  menu text-center">-->\n    <!--<ul>-->\n      <!--<li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>-->\n        <!--<p>Our Color Intelligence</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-research" class="outline-style">Color<br>Research</a>-->\n        <!--<p>Color Reports & Infographic</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>-->\n        <!--<p>Who we are</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>-->\n        <!--<p>Our Blog</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>-->\n        <!--<p>Say Hi!</p>-->\n      <!--</li>-->\n    <!--</ul>-->\n  <!--</div>-->\n\n  <!--</div>-->\n  <div class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n<section class="landing-video">\n    <div class="container">\n      <div class="row center">\n        <div class="landing_vimeo_video">\n          <video width="855" height="480" controls poster="../../../assets/img/landing/video_preview_HD.jpg">\n            <source src="../../../assets/img/landing/HueData_2018.mp4" type="video/mp4">\n            <!--<source src="movie.ogg" type="video/ogg">-->\n            Your browser does not support the video tag.\n          </video>\n          <!--<iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo"-->\n                  <!--id="companyVimeoVideo"-->\n                  <!--frameborder="0" webkitallowfullscreen mozallowfullscreen-->\n                  <!--allowfullscreen>-->\n          <!--</iframe>-->\n        </div>\n      </div>\n    </div>\n</section>\n\n<section class="landing-analytics-description">\n  <div class="container">\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">We love <br> colors analytics</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_1.jpg" alt="img">\n      </div>\n    </div>\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">..and publish 100s <br> of color reports <br> and infographic <br> every year</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_2.jpg" alt="">\n\n      </div>\n    </div>\n  </div>\n</section>\n<section class="landing-reports-section">\n  <div class="container">\n    <div class="row flex landing-reports">\n      <div class="landing-report-item" ng-repeat="report in $ctrl.reports_on_landing">\n        <img class="download-img" ng-src="{{report.image}}">\n        <span>{{report.hue}}</span>\n        <p>{{report.header}}</p>\n      </div>\n    </div>\n    <div class="landing-color-index-title">\n      <p>Check out our propraitery</p>\n      <p>Color Naming Index</p>\n      <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n    </div>\n  </div>\n</section>\n\n<section class="landing-color-picker">\n  <div class="container-fluid">\n    <div class="row landing-color-picker-block">\n    <div class="col-md-2 col-lg-2 landing-color-picker-title">\n      <p>SELECT A COLOR TO&nbsp;START</p>\n    </div>\n      <div class="col-lg-3 col-md-3">\n        <div id="s_color_picker_id">\n          <div class="wrapper-color-picker">\n            <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\n          </div>\n\n          <div class="slidecontainer">\n            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\n            <span class="slider-title-opacity">OPACITY</span>\n            <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\n            <label id="value_span"></label>\n          </div>\n\n\n          <div class="rgb-display">\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">R</span>\n              <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">G</span>\n              <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">B</span>\n              <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n          </div>\n        </div>\n      </div>\n      <div class="col-lg-2 col-md-2 color-piker-item">\n        <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/arrow_picker.png" alt=""></div>\n      </div>\n      <div class="col-lg-3 col-md-3 landing-color-piker-image">\n        <div id="color_id"></div>\n      </div>\n      <div class="col-md-2 col-lg-2 landing-color-picker-title">\n        <p>HOW IS THIS&nbsp;COLOR CALLED</p>\n        <div class="button landing-color-picker-button">\n          <a class="btn join-btn" ng-click="$ctrl.colorWordSearchLanding()">FIND OUT</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/login/login.tmpl.html','<update-title title="Login"></update-title>\r\n<update-meta name="description" content="HUEDATA login page"></update-meta>\r\n<update-meta name="keywords" content="HUEDATA, login, login page"></update-meta>\r\n\r\n\r\n<div class="login-page">\r\n  <div class="container-fluid text-center">\r\n    <h3>Member Login</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n\r\n  <section>\r\n    <div class="container-fluid">\r\n      <div class="row">\r\n        <div class="login-container text-center">\r\n          <div ng-show="$ctrl.error" class="error-message afade text-left">\r\n            <span>ERROR: </span><a>The username or password you entered is incorrect</a>\r\n          </div>\r\n          <form>\r\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\r\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\r\n            <div class="remember-checkbox">\r\n              <p>\r\n                <input type="checkbox" id="rememberMe" ng-model="$ctrl.isRemembered">\r\n                <label for="rememberMe">Remember Me</label>\r\n              </p>\r\n            </div>\r\n            <div class="button login-btn">\r\n              <button ng-click="$ctrl.login()" class="btn">MEMBER LOGIN</button>\r\n            </div>\r\n          </form>\r\n\r\n          <div class="additional-links text-left">\r\n            <a ng-href="#!/recover">Forgot your password</a>\r\n            <p>Not a HUEDATA member? <a ui-sref="membership({scrollTo: true})">Learn more about Huedata Membership</a></p>\r\n            <a ng-href="#!/staff-login">HUEDATA Staff - Login here</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
+$templateCache.put('app/components/members/members.tmpl.html','<update-title title="HUEDATA Members"></update-title>\r\n<update-meta name="description" content="HUEDATA members"></update-meta>\r\n<update-meta name="keywords" content="Our members"></update-meta>\r\n\r\n<section id="members">\r\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>HUEDATA Members</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-3 col-md-12">\r\n        <input ng-model="$ctrl.filter" ng-change="$ctrl.filterChange()" class="search" placeholder="A-Z" type="text">\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid members-list" style="padding-top:20px">\r\n    <div class="row members-list-min-h">\r\n      <div class="col-lg-3 col-md-4 col-sm-4" ng-repeat="group in $ctrl.dataGroups">\r\n        <ul>\r\n          <li ng-repeat="item in group">{{item.first_name}} {{item.last_name}}</li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/members-analytics/members-analytics.tmpl.html','<update-title title="Members Analytics"></update-title>\n<update-meta name="description" content="HUEDATA members private area"></update-meta>\n<update-meta name="keywords" content=""></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n<section ng-init="$ctrl.init()">\n\n  <div class="container-fluid text-center title">\n    <div class="row">\n\n      <div class="col-lg-4 col-lg-offset-4">\n\n        <h3>Members Analytics</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12 buttons-group">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n        <div class="button membership">\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</section>\n\n<section>\n  <div class="container-fluid text-left">\n    <div class="row">\n      <div class="col-lg-3 col-md-12">\n        <input class="search" placeholder="A-Z" type="text" ng-model="$ctrl.searchModel" ng-change="$ctrl.search()">\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="analytics-section min-h analytics-min-h">\n  <div class="group">\n    <div class="item" ng-repeat="item in $ctrl.items" style="padding: 0">\n      <div class="img-container">\n        <div class="img" style="background: {{\'url(\' + item.logo_url +\') center center\'}};\n                    background-repeat: no-repeat;\n                    background-size: contain;">\n        </div>\n      </div>\n      <h6 class="analytic-title">{{item.member_name}}</h6>\n    </div>\n  </div>\n\n  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.items.length">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/membership/membership.tmpl.html','<update-title title="HUEDATA Members Use Color Analytics and Insights to: AND HUEDATA Membership Benefits"></update-title>\n<update-meta name="description" content="Membership form for HUEDATA"></update-meta>\n<update-meta name="keywords" content="Color subscription"></update-meta>\n\n<div class="container-fluid header member-header text-center">\n  <div class="text-header">\n    <h1>Become a HUEDATA Member</h1>\n\n  </div>\n</div>\n\n<div class="clear"></div>\n\n<section>\n\n  <div class="container-fluid text-center">\n    <h3>HUEDATA Members Use Color Analytics and Insights to:</h3>\n    <div class="line"></div>\n\n  </div>\n  <div class="container-fluid bg-3">\n\n    <div class="row equal text-center">\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/stay-informed.png" alt="Image" style="padding-top:30px">\n          <h5>STAY INFORMED</h5>\n          <p>Enjoy real time color analytics\n            and insights and never miss on\n            new color introduction,\n            emerging trends and deep dive analyses\n            to enhance your color decisions.</p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/Innovation.png" alt="Image" style="padding-top:30px">\n          <h5>GET INSPIRED</h5>\n          <p>Identify new color opportunities not always\n            visible to the naked eye! Let the data leads\n            you to new understandings and opportunities to\n            create, differentiate, and lead with color innovation.\n          </p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/customization.png" alt="Image" style="padding-top:30px">\n          <h5>OPTIMIZE</h5>\n          <p>Leverage color intelligence to better\n            customize your color offering to your\n            audience, within the context of competitive\n            offerings and emerging trends.\n          </p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n      <!--        ------------------------------------------->\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 membership-item">\n\n        <div><img src="../assets/images/Efficiences.png" alt="Image" style="padding-top:30px">\n          <h5>RATIONALIZE</h5>\n          <p>Use HUEDATA\u2019s comprehensive and always\n            updated data to support your color\n            designs / innovations, validate your\n            choices and communicate the strategic\n            value of your color decisions.\n          </p>\n        </div>\n      </div>\n      <!--        ------------------------------------------->\n\n    </div>\n  </div>\n\n</section>\n<hr>\n\n<section>\n  <div class="container-fluid text-center">\n    <h3 class="padding-top-0">HUEDATA Membership Benefits</h3>\n    <div class="line" style="margin-bottom:25px"></div>\n\n  </div>\n  <div class="container-fluid">\n    <div class="row equal">\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>BENCHMARK</h5>\n            <p>Members enjoy access to HUEDATA\u2019s Indices,\n              Reports and Customized Infographics with\n              industry-specific analytics and actionable insights\n              to benchmark and improve their color performance.\n            </p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>RESEARCH REPORTS</h5>\n            <p>HUEDATA publishes 100+ member-only\n              reports and infographics annually providing\n              deep cross- sector insight into color\n              performance of thousands of brands,\n              products and built environments.</p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>MEMBER SUPPORT</h5>\n            <p>Access to HUEDATA experts with\n              cross-industry color depth provide\n              an opportunity for customized\n              strategic guidance on key color\n              decisions and effective color execution.\n            </p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n\n      <div class="col-lg-6 col-md-6 col-sm-12">\n        <div class="benefits shadow">\n          <div class="col-lg-1 col-md-1">\n            <img src="../assets/images/benefits-icon.png" class="icon-benefits">\n          </div>\n          <div class="col-lg-10 col-md-12 justify">\n            <h5>EXECUTIVE EDUCATION</h5>\n            <p>HUEDATA growing library of educational\n              offerings from online color courses\n              to color teaching materials is open\n              to both industry and academic members.</p>\n\n          </div>\n          <div style="clear: both;"></div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</section>\n\n<section id="becomeMember" class="become-member">\n  <div class="container-fluid text-center">\n    <h3>Inquire about Membership</h3>\n    <div class="line"></div>\n  </div>\n\n  <div class="container-fluid">\n    <div class="row">\n      <div class="col-lg-4 col-md-4 justify">\n        <p class="padding-bottom-20">HUEDATA color intelligence helps you benchmark\n          your color performance relative to trends and\n          competitors, inspires your color innovation,\n          optimizes color choices for your customer\n          segment and supports rationalizing your\n          color decisions.<br>\n        </p><ul class="indented-line padding-left-0">\n          <li>&emsp;Vertical-specific analytics to benchmark color performance</li>\n          <li>&emsp;Access to HUEDATA color experts with cross-industry depth</li>\n          <li>&emsp;Access to HUEDATA 100+ reports and infographics annually</li>\n          <li>&emsp;A growing library of educational color courses and teaching materials</li>\n        </ul>\n      </div>\n      <form name="membership">\n        <div class="col-lg-4 col-md-4 membership-form">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && membership.Email.$invalid ?  \'error\' :\'\'" required>\n            <label for="email">EMAIL <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && membership.company.$invalid ?  \'error\' :\'\'" required>\n            <label for="company">COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && membership.job_title.$invalid ?  \'error\' :\'\'" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n        </div>\n\n        <div class="col-lg-4 col-md-4 membership-form">\n          <div>\n            <p style="float: none">\n              <input type="checkbox" id="test5" ng-model="$ctrl.data.permissions.daily">\n              <label for="test5">Daily Insight</label>\n            </p>\n            <p style="float: none">\n              <input type="checkbox" id="test6" ng-model="$ctrl.data.permissions.research">\n              <label for="test6">Research Reports</label>\n            </p>\n            <p style="float: none">\n              <input type="checkbox" id="test7" ng-model="$ctrl.data.permissions.edu">\n              <label for="test7">Education Offerings</label>\n            </p>\n            <p style="float: none">\n              <input type="checkbox" id="test8" ng-model="$ctrl.data.relationship.expert">\n              <label for="test8">Join Expert Panel</label>\n            </p>\n          </div>\n\n          <div class="button">\n            <button class="btn" ng-click="$ctrl.submitInquiry()">SUBMIT INQUIRY</button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/modal/cat-survey-modal.tmpl.html','<div class="cart-surve-modal">\n  <div class="container-fluid">\n    <button class="close" ng-click="cancel()" style="outline: none;">\n      <span aria-hidden="true">&times;</span>\n    </button>\n  </div>\n  <div class="row">\n    <div class="col-sm-12">\n      <h4 class="memberOnlyTitle">Remove item from cart</h4>\n    </div>\n  </div>\n  <div class="row">\n    <div>\n      <div class="col-sm-12">\n        <h4>Are you sure you want to delete this product?</h4>\n        <div id="test-test" class="cart-modal-btn-group">\n          <button class="btn white-btn" ng-click="cancel()">NO</button>\n          <button class="btn" ng-click="img();cancel();">YES</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</div>');
+$templateCache.put('app/components/modal/dailyModal.tmpl.html','<div class="modal-header">\n  <button class="close" ng-click="cancel()" style="outline: none;">\n    <span aria-hidden="true">&times;</span>\n  </button>\n</div>\n<section>\n  <div class="container-fluid text-left">\n    <div class="row">\n      <div class="col-lg-12">\n        <h1 class="h1-modal-daily"><strong style="color:black;">DAILY </strong>{{item.header}}\n        </h1>\n      </div>\n\n    </div>\n    <div class="dailyinsights"></div>\n\n    <div class="row" style="margin-bottom:50px;">\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">\n        <h4 style="padding-top:0px; margin-top:0px">{{item.date}}</h4>\n      </div>\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 social-icons">\n        <a href="https://www.linkedin.com/company/huedata/" target="_blank"><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.facebook.com/pg/Huedata-1287083448095980/" target="_blank"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>\n        <a href="https://twitter.com/huedata1" target="_blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.instagram.com/huedata/" target="_blank"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.pinterest.com/huedatainc" target="_blank"><i class="fa fa-pinterest fa-2x" aria-hidden="true"></i></a>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid" style="padding-bottom: 50px">\n    <div class="row">\n      <div class="col-lg-5 col-md-5" ng-bind-html="item.description">\n      </div>\n      <div class="col-lg-7 col-md-7">\n        <img ng-src="{{item.image_url || \'../assets/images/infographic2.jpg\'}}" class="img-responsive shadow" style="width:100%" alt="Image">\n      </div>\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/modal/graphic-modal.tmpl.html','<div class="modal-header">\n  <button class="close" ng-click="cancel()" style="outline: none;">\n    <span aria-hidden="true">&times;</span>\n  </button>\n</div>\n\n<div class="image-container" style="background: url({{img}}) no-repeat center; background-size: contain; margin-bottom: 38px">\n</div>\n');
+$templateCache.put('app/components/modal/membersOnlyModal.tmpl.html','<div class="container-fluid">\r\n  <button class="close" ng-click="cancel()" style="outline: none;">\r\n    <span aria-hidden="true">&times;</span>\r\n  </button>\r\n</div>\r\n<div class="row">\r\n  <div class="col-lg-6 col-md-6 col-sm-12">\r\n    <h3 class="memberOnlyTitle">Members Only Feature</h3>\r\n  </div>\r\n</div>\r\n<div class="row">\r\n  <div>\r\n    <div class="col-lg-6 col-md-6 col-sm-12">\r\n      <p class="">HUEDATA member? Log-in to use this feature</p>\r\n      <button class="btn" ui-sref="login" ng-click="cancel()">MEMBER LOGIN</button>\r\n    </div>\r\n  </div>\r\n  <div>\r\n    <div class="white col-lg-6 col-md-6 col-sm-12">\r\n      <p>Not a HUEDATA member? Learn more about HUEDATA Membership</p>\r\n      <button class="btn white-btn" ui-sref="membership({scrollTo: true})" ng-click="cancel()">Learn more</button>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
+$templateCache.put('app/components/modal/modal.tmpl.html','<div class="modal-err">\r\n  <h4>www.hue-data.com says:</h4>\r\n  <p ng-show="flag != true && flag !== false">Please correct the following problem(s):</p>\r\n  <ul ng-show="flag != true && flag !== false">\r\n    <li ng-repeat="str in item">{{str}}</li>\r\n  </ul>\r\n  <p ng-show="flag === false">Error! This email is already in Use.</p>\r\n  <p ng-show="flag === false" style="min-height: 150px">{{item[0]}}</p>\r\n\r\n  <p ng-show="flag == true" style="text-align: center; min-height: 150px">\r\n    {{item[0]}}\r\n  </p>\r\n</div>\r\n<div class="div-but">\r\n  <button class="btn" style="outline: none;" ng-click="cancel()">OK</button>\r\n</div>');
+$templateCache.put('app/components/my-purchases/my-purchases.tmpl.html','<update-title title="My Purchases"></update-title>\n<update-meta name="description" content="My purchases"></update-meta>\n<update-meta name="keywords" content="My purchases, purchases, bought items, HUEDATA purchases"></update-meta>\n\n<div class="my-purchase">\n  <section class="my-purchase-header">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-4 col-md-12 col-lg-offset-4 my-purchase-title">\n          <!--<i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>-->\n          <h3 style="display: inline-block">MY PURCHASES</h3>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section class="my-purchase-items">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div style="{{item.style}}" class="col-lg-3 col-md-4 col-sm-6 col-xs-12 item text-dn" ng-repeat="item in $ctrl.data">\n          <a style="text-decoration: none" ng-href="#!/{{item.type}}/{{item.item.id}}">\n            <div class="category {{item.item.hue}} text-center"><p>{{item.item.hue}}</p></div>\n            <div class="img-responsive background-image" style="background: {{\'url(\' + item.images[0].image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n            </div>\n          </a>\n          <div class="purchase-name">\n            <h5>{{item.item.header}}</h5>\n          </div>\n          <div class="price">\n            <p><span>Price:</span> {{item.item.price === 0 ? \'Free\' : \'$\' + item.item.price}}</p>\n          </div>\n          <div class="date-purchase">\n            <p>Date of purchase: {{item.purchaseDate}}</p>\n          </div>\n          <div class="download-btn">\n            <a href="{{item.files[0].image_url}}" download><button class="btn">DOWNLOAD</button></a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
+$templateCache.put('app/components/order-email/order-email.tmpl.html','<update-title title="Thank You for Your Purchase"></update-title>\n<update-meta name="description" content="Thanks page after purchase"></update-meta>\n<update-meta name="keywords" content="Thank you page, download"></update-meta>\n\n\n<section ng-init="$ctrl.init()" style="min-height: 500px; padding-top: 60px;">\n  <div ng-show="$ctrl.success === true">\n    <div class="cart-thank-page cart-thank">\n      <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>\n      <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId || \'UNKNOWN\'}}</span></h4>\n      <div class="thank-text">\n        <span>CLICK HERE TO DOWNLOAD</span>\n      </div>\n    </div>\n    <div class="download-page">\n      <div class="container-fluid text-center">\n        <div class="row download-row">\n          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">\n            <div>\n              <img class="download-img" ng-src="{{item.image}}">\n            </div>\n            <div ng-show="item.file">\n              <a href="{{item.file}}" download>\n                <button class="btn">DOWNLOAD</button>\n              </a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show="$ctrl.success === false">\n    <div class="cart-thank-page cart-thank">\n      <h4 class="thank-title"><strong>YOUR LINK IS BROKEN, PLEASE CHECK AGAIN AND CONTACT US, IF LINK STILL NOT\n        WORKING</strong></h4>\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/password-recover/password-recover.tmpl.html','<update-title title="Password Recover"></update-title>\n<update-meta name="description" content="Recover password for HUEDATA account"></update-meta>\n<update-meta name="keywords" content="Password recover, password, HUEDATA recover password"></update-meta>\n\n\n<div class="login-page">\n  <section>\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-12">\n          <h3 ng-if="$ctrl.type === \'s\'">Set the Password on Your HUEDATA Account</h3>\n          <h3 ng-if="$ctrl.type !== \'s\'">Recover the Password on Your HUEDATA Account</h3>\n          <div class="line"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid">\n      <div class="row">\n        <div class="success afade text-center" ng-show="$ctrl.successRequest">\n          <div class="col-lg-12">\n            <b class="black-text" ng-if="$ctrl.type === \'set\'">Password on Your HUEDATA Account has been successfully\n              changed</b>\n            <b class="black-text" ng-if="$ctrl.type !== \'set\'">Password on Your HUEDATA Account has been successfully\n              set</b>\n          </div>\n        </div>\n\n        <div class="login-container text-center">\n          <div ng-hide="$ctrl.successRequest">\n            <div ng-show="$ctrl.error" class="error-message afade text-left">\n              <span>ERROR: </span>{{$ctrl.error}}\n            </div>\n            <input type="password" ng-model="$ctrl.password" name="password" placeholder="ENTER YOUR PASSWORD">\n            <input type="password" ng-focus="$ctrl.error = false" ng-model="$ctrl.passwordConfirm" name="passwordConfirm" placeholder="CONFIRM YOUR PASSWORD">\n          </div>\n          <div class="login-btn" style="padding: 30px 0 40px; text-align: center">\n            <button ng-click="$ctrl.onSendLoginClick()" class="btn" style="padding: 15px 50px;">\n              {{$ctrl.successRequest ? \'LOGIN\' : \'SEND\'}}\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
+$templateCache.put('app/components/password-recover-cart/password-recover-cart.tmpl.html','<update-title title="Password Recover"></update-title>\n<update-meta name="description" content="Recover password for HUEDATA account"></update-meta>\n<update-meta name="keywords" content="Password recover, password, HUEDATA recover password"></update-meta>\n\n<div class="login-page">\n  <section>\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n          <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n          &emsp;<h3 style="display: inline-block">MY CART</h3>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid reset-password-cart">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-10">\n          <div style="border-bottom: #d0d0d0 1px solid">\n            <h4 class="subTitle">RESET YOUR PASSWORD</h4>\n          </div>\n        </div>\n\n        <div class="col-lg-offset-1 col-lg-10 col-md-10 instruction">\n          <div class="info-text">\n            <span>PLEASE ENTER YOUR EMAIL ADDRESS BELOW, YOU WILL RECEIVE A LINK TO RESET YOUR PASSWORD</span>\n          </div>\n          <div class="login-container text-left">\n            <div ng-hide="$ctrl.successRequest">\n              <!--<input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email"-->\n                     <!--placeholder="EMAIL ADDRESS">-->\n              <div class="membr-block">\n                <input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email" id="email" ng-value="$ctrl.email">\n                <label for="email">EMAIL ADDRESS <span class="red-text">*</span></label>\n              </div>\n              <div ng-show="$ctrl.error" class="error-message afade text-left">\n                {{$ctrl.error}}\n              </div>\n            </div>\n            <div class="login-btn" style="padding: 30px 0 40px;">\n              <button ng-click="$ctrl.onSendLoginClick()" class="btn">\n                SUBMIT\n              </button>\n              <button ng-click="$ctrl.goBack()" class="btn btn-success btn-lg center-block white-btn">GO BACK</button>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
+$templateCache.put('app/components/press/press.tmpl.html','<update-title title="Request content AND HUEDATA Media Mentions"></update-title>\n<update-meta name="description" content="Press Inquiries about HUEDATA"></update-meta>\n<update-meta name="keywords" content="Color media, Color news, Color of the year, Best Colors for the season, New colors,\ncolor innovation, color in the news"></update-meta>\n\n<div class="press-page-wrapper">\n  <div class="container-fluid header text-center press-header">\n    <div class="text-header">\n      <h1>Press</h1>\n      <h2>HUEDATA is a member-based Color Intelligence Company</h2>\n\n      <div class="col-lg-12 col-md-12 text-center buttons-group">\n        <div class="clearfix" style="display: inline-block; margin-top: 30px">\n          <div class="button membership white" ng-if="$ctrl.pageData.file">\n            <a class="btn white-btn" target="_self" href="{{$ctrl.pageData.file.image_url}}" download="foo.pdf">Download Brand Assets</a>\n          </div>\n          <div class="button membership m-r-10">\n            <button class="btn" ui-sref="membership({scrollTo: true})" ng-click="$ctrl.scroll()">Learn more</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <section class="from-container" ng-init="$ctrl.init()">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-4 col-md-4">\n          <h3 class="padding-bottom-20">Request content</h3>\n          <p class="padding-bottom-20">Selected research reports are available to members\n            of the media to support the development of color news stories.</p>\n          <p class="padding-bottom-20">Please complete to following form for your request. </p>\n          <p>HUEDATA empowers brands with the data and insights to benchmark\n            their color performance relative to competitors, inspire\n            and rationalize color design decisions, and optimize\n            the impact of their color strategy over time.</p>\n        </div>\n        <form name="press">\n          <div class="col-lg-4 col-md-4 press-form form membership-form">\n            <div class="form-item">\n              <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && press.firstName.$invalid ?  \'error\' :\'\'" required>\n              <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n              <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && press.lastName.$invalid ?  \'error\' :\'\'" required>\n              <label for="lastName">LAST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n              <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && press.email.$invalid ?  \'error\' :\'\'" required>\n              <label for="email">EMAIL <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n              <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && press.company.$invalid ?  \'error\' :\'\'" required>\n              <label for="company">COMPANY <span class="red-text">*</span></label>\n            </div>\n            <div class="form-item">\n            <textarea ng-value="$ctrl.data.message.value" name="message" id="message" ng-model="$ctrl.data.message.value" ng-class="\'ng-dirty\' && press.message.$invalid ?  \'error\' :\'\'" required></textarea>\n              <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>\n            </div>\n          </div>\n\n          <div class="col-lg-4 col-md-4 membership-form">\n            <div>\n              <p>Looking for specific research? Select below:</p>\n              <div class="select-style">\n                <select ng-model="$ctrl.data.research.value" name="research" ng-class="\'ng-dirty\' && press.email.$invalid ?  \'error\' :\'\'" required>\n                  <option value="-">SEARCH RESEARCH REPORT</option>\n                  <option ng-repeat="report in $ctrl.pageData.reports" value="{{report.data.header}}">{{report.data.header}}</option>\n                </select>\n              </div>\n            </div>\n            <div class="button text-right">\n              <button class="btn" ng-click="$ctrl.press()">SUBMIT REQUEST</button>\n            </div>\n          </div>\n        </form>\n      </div>\n    </div>\n  </section>\n\n  <section class="press-page-bottom-list">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-12">\n          <h3>HUEDATA Media Mentions</h3>\n\n          <div class="list-item" ng-repeat="item in $ctrl.pageData.data">\n            <div>\n              <span class="list-category">{{item.data.publication}}</span>\n              <span class="list-date">{{$ctrl.makeDate(item)}}</span>\n            </div>\n              <a href="{{item.data.url}}" class="list-text link-for-list-items" target="_blank">{{item.data.header}}</a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>\n');
+$templateCache.put('app/components/privacy-policy/privacy-policy.tmpl.html','<update-title title="Privacy Policy"></update-title>\r\n<update-meta name="description" content="HUEDATA Privacy Policy"></update-meta>\r\n<update-meta name="keywords" content="Privacy Policy"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3><b>{{$ctrl.pageData.title}}</b></h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section>\r\n  <div ng-bind-html="$ctrl.pageData.editor" style="text-align: justify">\r\n\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/profile/profile.tmpl.html','<update-title title="My Profile"></update-title>\n<update-meta name="description" content="HUEDATA member profile"></update-meta>\n<update-meta name="keywords" content="HUEDATA member profile, profile, my profile"></update-meta>\n\n<section>\n  <div class="staffs-container container-fluid profile-page min-h" ng-init="$ctrl.init()">\n    <div class="row profile-page-rows">\n      <div class="col-lg-12 col-md-12 profile_header">\n        <h3 ng-show="!$ctrl.editFlag">My profile</h3>\n        <h3 ng-show="$ctrl.editFlag">Profile Update</h3>\n        <div class="line"></div>\n        <br>\n      </div>\n      <div class="col-md-offset-2 col-lg-5 col-md-5 col-sm-6 col-xs-6 text-center staff-item user-data" ng-show="!$ctrl.editFlag">\n        <div class="profile-data-text">\n          <p>FIRST NAME: <span>{{$ctrl.data.first_name.value}}</span>\n        </p></div>\n        <div class="profile-data-text">\n          <p>LAST NAME: <span>{{$ctrl.data.last_name.value}}</span>\n        </p></div>\n        <div class="profile-data-text">\n          <p>Email: <span>{{$ctrl.data.email.value}}</span></p>\n        </div>\n        <div class="profile-data-text">\n          <p>\n            COMPANY: <span>{{$ctrl.data.company.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>\n            JOB TITLE: <span>{{$ctrl.data.job_title.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>\n            JOB FUNCTION: <span>{{$ctrl.data.job_function.value.title || $ctrl.data.job_function.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>COMPANY SIZE: <span>{{$ctrl.data.company_size.value.title || $ctrl.data.company_size.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>INDUSTRY: <span>{{$ctrl.data.industry.value.title || $ctrl.data.industry.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>COUNTRY: <span>{{$ctrl.data.country.value.title || $ctrl.data.country.value}}</span>\n          </p>\n        </div>\n        <div class="profile-data-text">\n          <p>BIO: <span>{{$ctrl.data.bio.value}}</span>\n          </p>\n        </div>\n        <button ng-click="$ctrl.editProfile()" class="btn basket-btn update-btn" style="display: inline-block">\n          UPDATE\n        </button>\n      </div>\n      <div class="col-md-offset-2 col-lg-5 col-md-5 col-sm-6 col-xs-6 text-center staff-item user-data" ng-show="$ctrl.editFlag">\n        <div class="profile-data-text">\n\n          <div class="membr-block">\n            <label for="first_name">FIRST NAME</label>\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="membr-block">\n            <label for="last_name">LAST NAME</label>\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="membr-block">\n            <label for="company">COMPANY</label>\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && membership.company.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="membr-block">\n            <label for="job_title">JOB TITLE</label>\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && membership.job_title.$invalid ?  \'error\' :\'\'">\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="job_function">JOB FUNCTION</label>\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false" id="job_function">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="job in $ctrl.job_function">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="company_size">COMPANY SIZE</label>\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false" id="company_size">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="companySize in $ctrl.company_size">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="industry">INDUSTRY</label>\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false" id="industry">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="ind in $ctrl.industry">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <label for="country">COUNTRY</label>\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false" id="country">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices repeat="cntry in $ctrl.country">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <label class="for-textarea" for="bio">BIO</label>\n            <textarea ng-show="$ctrl.editFlag" id="bio" ng-model="$ctrl.data.bio.value" ng-value="$ctrl.data.bio.value">\n            </textarea>\n          </div>\n          <div class="profile-btn-group">\n            <button ng-click="$ctrl.cancel()" class="btn white-btn basket-btn" style="display: inline-block">\n              CANCEL\n            </button>\n            <button ng-click="$ctrl.save()" class="btn basket-btn save-btn" style="display: inline-block">\n              SAVE\n            </button>\n          </div>\n        </div>\n      </div>\n      <div class="col-lg-3 col-md-5 col-sm-6 col-xs-6 text-center staff-item">\n        <div class="profile-photo">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + ($ctrl.userData.image_url || \'http://www.hue-data.com/assets/images/course.jpg\') + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    height: 250px;\n                    width: 250px;\n                    border-radius: 50%;\n                    background-color: #000;\n                    margin: auto">\n            <div ng-show="$ctrl.editFlag" class="edit-photo">\n              <label class="file-upload">\n                <button type="file" ngf-select="uploadFiles($file, $invalidFiles)" accept="image/*" ngf-max-height="1000" ngf-max-size="1MB">\n                  Select File</button>\n              </label>\n              <br>\n              <span ng-show="$ctrl.fileFlag">{{$ctrl.file.name}}</span>\n              <br>\n            </div>\n          </div>\n        </div>\n        <div class="speaking_item" style="padding-top: 15px">\n          <div class="speaking_item_header profile-name"><a>{{$ctrl.data.first_name.value}} {{$ctrl.data.last_name.value}}</a>\n          </div>\n          <div ng-click="$ctrl.goCart()" class="cart-button btn white-btn">\n            <i class="fa fa-shopping-cart fa-2x pointer" aria-hidden="true"></i>\n            <p>&emsp;MY CART</p>\n          </div>\n          <div ng-click="$ctrl.goPurchase()" class="purchase-btn btn white-btn">\n            <p>MY PURCHASES</p>\n          </div>\n          <a ng-show="$ctrl.editFlag" ng-href="#!/recover">Change password</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/publication-schedule/publication-schedule.tmpl.html','<update-title title="Publication Schedule"></update-title>\r\n<update-meta name="description" content="HUEDATA publications by quarter"></update-meta>\r\n<update-meta name="keywords" content="Color forecasting reports, Color Analytics, Color Data, Color insights"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-8 col-lg-offset-2"><h3>Publication Schedule</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-2">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n  <div class="container-fluid text-center schedule schedule-min-h">\r\n    <div class="row equal">\r\n      <div class="col-lg-6 col-md-6" ng-repeat="item in $ctrl.result">\r\n        <h3 class="pad-t-13"><b style="color:#bb0076">Q{{item.q}}</b> {{item.year}}</h3>\r\n        <div style="padding-bottom: 13px" ng-bind-html="item.list">\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n');
+$templateCache.put('app/components/recover/recover.tmpl.html','<update-title title="Recover Password Request"></update-title>\r\n<update-meta name="description" content="Recover Password Request"></update-meta>\r\n<update-meta name="keywords" content="Recover password, recover request"></update-meta>\r\n\r\n<div class="login-page">\r\n  <section>\r\n    <div class="container-fluid text-center title">\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <h3>Recover the Password to Your HUEDATA Account</h3>\r\n          <div class="line"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid">\r\n      <div class="row">\r\n        <div class="success afade text-center" ng-show="$ctrl.successRequest">\r\n          <div class="col-lg-12">\r\n            <b class="black-text">A password recovery link has been sent to Your email</b>\r\n          </div>\r\n        </div>\r\n\r\n        <div class="login-container text-center">\r\n          <div ng-hide="$ctrl.successRequest">\r\n            <div ng-show="$ctrl.error" class="error-message afade text-left">\r\n              <span>ERROR: </span>{{$ctrl.error}}\r\n            </div>\r\n            <input type="text" ng-focus="$ctrl.error = false" ng-model="$ctrl.email" name="email" placeholder="ENTER YOUR EMAIL ADDRESS">\r\n          </div>\r\n          <div class="login-btn" style="padding: 30px 0 40px; text-align: center">\r\n            <button ng-click="$ctrl.onSendLoginClick()" class="btn" style="padding: 15px 50px;">\r\n              {{$ctrl.successRequest ? \'LOGIN\' : \'SEND\'}}\r\n            </button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>');
+$templateCache.put('app/components/reports/reports.tmpl.html','<update-title title="Color Reports"></update-title>\n<update-meta name="description" content="color reports on trends in fashion colors, color use in product, color use in brands and color use in environments"></update-meta>\n<update-meta name="keywords" content="Color forecasting report, Color Research Report, Color Trend report,\nfall color reports, spring color reports, winter color reports, fashion color reports"></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\n        <h3>Color Reports</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n        <div class="button membership">\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-left">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3">\n        <div class="select-style">\n          <select ng-model="$ctrl.hueModel" ng-change="$ctrl.select(this)">\n            <option>VERTICALS</option>\n            <option ng-repeat="item in $ctrl.hue">{{item}}</option>\n          </select>\n        </div>\n      </div>\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.reportModel" ng-change="$ctrl.select()" ng-disabled="$ctrl.dis">\n            <option>ALL</option>\n            <option ng-repeat="item in $ctrl.report">{{item}}</option>\n          </select>\n        </div>\n      </div>\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.yearModel" ng-change="$ctrl.select()">\n            <option>YEAR</option>\n            <option ng-repeat="item in $ctrl.year">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left report reports-min-h">\n    <div class="row equal">\n      <div style="text-decoration: none; {{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n        <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n        <a style="text-decoration: none" ng-href="#!/color-reports/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="three_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n        <span>{{item.date}}</span><a ng-href="#!/color-reports/{{item.id}}">Learn more</a>\n      </div>\n    </div>\n  </div>\n  <div class="row" ng-if="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n\n');
+$templateCache.put('app/components/reports-details/reports-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Report"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA report, detailed page, report"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Reports</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>{{$ctrl.pageData.hue}}</p>\n          </div>\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.addProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section class="detailed-bottom-content" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
+$templateCache.put('app/components/speaking-engagements/speaking-engagements.tmpl.html','<update-title title="Speaking Engagements"></update-title>\n<update-meta name="description" content="HUEDATA speakers and how to invite us to talk on your color event"></update-meta>\n<update-meta name="keywords" content="Anat Lechner, Leslie Harrington, Color lectures, Color Strategy, Color research,\nlectures on Color, Color presentations, color conference speakers, color meeting speakers, color event speakers,\ncolor conference keynote speaker, design conference speakers, design conference keynote speakers"></update-meta>\n\n<section>\n  <div class="staffs-container container-fluid min-h" ng-init="$ctrl.init()">\n    <div class="row" ng-repeat="group in $ctrl.groups">\n      <div class="col-lg-4 col-md-4 text-center staff-item" ng-repeat="item in group">\n        <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    height: 170px;\n                    width: 170px;\n                    border-radius: 50%;\n                    background-color: #000;\n                    margin: auto">\n        </div>\n        <div class="speaking_item" style="padding-top: 15px">\n          <div class="speaking_item_header"><a>{{item.first_name}} {{item.last_name}}</a>\n            <span style="color: black"> \u2014 {{item.title}}</span>\n          </div>\n          <div class="justify">\n            <p class="three_line_height" style="display: block" data-ng-bind-html="item.bio" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n          </div>\n          <div class="line"></div>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="speaking_engagements">\n  <div class="container-fluid text-center">\n    <h3>{{$ctrl.pageData.title}}</h3>\n    <div class="line"></div>\n  </div>\n\n\n  <div class="container-fluid">\n    <div class="row">\n      <div class="col-lg-3 col-md-3 justify speaking-text" ng-bind-html="$ctrl.pageData.editor">\n      </div>\n      <form name="speaking">\n        <div class="col-lg-6 col-md-6 membership-form">\n          <div class="forms">\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && speaking.FirstName.$invalid ?  \'error\' :\'\'" required>\n              <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && speaking.Email.$invalid ?  \'error\' :\'\'" required>\n              <label for="email">EMAIL <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.jobtitle.value" ng-value="$ctrl.data.jobtitle.value" type="text" id="jobtitle" name="jobtitle" ng-class="\'ng-dirty\' && speaking.jobtitle.$invalid ?  \'error\' :\'\'" required>\n              <label for="jobtitle">JOB TITLE <span class="red-text">*</span></label>\n            </div>\n          </div>\n\n          <div class="forms-right">\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && speaking.LastName.$invalid ?  \'error\' :\'\'" required>\n              <label for="lastName">LAST NAME <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && speaking.company.$invalid ?  \'error\' :\'\'" required>\n              <label for="company">COMPANY <span class="red-text">*</span></label>\n            </div>\n            <div class="membr-block">\n              <input ng-model="$ctrl.data.request.value" ng-value="$ctrl.data.request.value" type="text" id="request" name="request" ng-class="\'ng-dirty\' && speaking.request.$invalid ?  \'error\' :\'\'" required>\n              <label for="request">REQUEST A SPECIFIC SPEAKER <span class="red-text">*</span></label>\n            </div>\n          </div>\n\n          <div class="membr-block" style="width:100%; float:left">\n            <textarea rows="20" cols="1" ng-value="$ctrl.data.message.value" name="message" id="message" ng-model="$ctrl.data.message.value" ng-class="\'ng-dirty\' && speaking.message.$invalid ?  \'error\' :\'\'" required></textarea>\n            <label for="message" style="top: 6%">MESSAGE <span class="red-text">*</span></label>\n          </div>\n        </div>\n\n        <div class="col-lg-3 col-md-3">\n          <div class="button membership" style="float:left; margin-right:10px; margin-bottom: 10px">\n            <button class="btn white-btn without-margins" ng-click="$ctrl.send()">\n              SUBMIT\n            </button>\n          </div>\n          <div class="button membership" style="float:left;">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/staff-login/staff-login.tmpl.html','<update-title title="Staff Login"></update-title>\n<update-meta name="description" content="HUEDATA Staff Login"></update-meta>\n<update-meta name="keywords" content="HUEDATA staff, staff login, login"></update-meta>\n\n<div class="login-page">\n  <div class="container-fluid text-center">\n    <h3>Staff Login</h3>\n    <div class="line"></div>\n  </div>\n\n  <section>\n    <div class="container-fluid">\n      <div class="row">\n        <div class="login-container text-center">\n          <div ng-show="$ctrl.error" class="error-message-staff afade text-left">\n            <span>ERROR: </span><a>The username or password you entered is incorrect</a>\n          </div>\n          <a href="" id="ign_in">\n            <div class="google-auth-button">LOGIN WITH GOOGLE</div>\n          </a>\n          <p><b>OR</b></p>\n\n          <form>\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\n            <div class="remember-checkbox">\n              <p>\n                <input type="checkbox" id="rememberMe" ng-model="$ctrl.isRemembered">\n                <label for="rememberMe">Remember Me</label>\n              </p>\n            </div>\n            <div class="button login-btn">\n              <button ng-click="$ctrl.login()" class="btn">STAFF LOGIN</button>\n            </div>\n          </form>\n\n          <div class="additional-links text-left">\n            <a ng-href="#!/recover">Forgot your password</a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
+$templateCache.put('app/components/teaching-materials/teaching-materials.tmpl.html','<update-title title="Color Teaching Materials"></update-title>\n<update-meta name="description" content="Color teaching materials repository of color templates, color tools and color tests"></update-meta>\n<update-meta name="keywords" content="color teaching ppt, color teaching aids, teaching color, teaching about color,\nteaching color concepts, color wheel template for teaching, color teaching activities, color blind texts"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\n    <div class="row">\n      <div class="col-lg-6 col-lg-offset-3"><h3>Color Teaching Materials</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-3 buttons-group">\n        <div class="button membership">\n          <button class="btn" ui-sref="educationInquire">BECOME AN EDUCATION PARTNER</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-center">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3 search-fields2">\n        <div class="select-style">\n          <select ng-model="$ctrl.topicModel" ng-change="$ctrl.select()">\n            <option>TOPIC</option>\n            <option ng-repeat="item in $ctrl.topic">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.providerModel" ng-change="$ctrl.select()">\n            <option>PROVIDER</option>\n            <option ng-repeat="item in $ctrl.provider">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.typeModel" ng-change="$ctrl.select()">\n            <option>TYPE</option>\n            <option ng-repeat="item in $ctrl.type">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left course teaching-materials-min-h" style="margin-bottom: 0px;">\n    <div class="row equal">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item" ng-repeat="item in $ctrl.items">\n        <a style="text-decoration: none" ng-href="#!/color-teaching-materials/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class="row" ng-show="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.showMore()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/teaching-materials-details/teaching-materials-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Teaching Material"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA teaching material, detailed page, teaching material"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Education</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD\n              EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url + \') top center\'}};\n                      background-repeat: no-repeat;\n                      background-size: cover;\n                      padding-bottom: 56%;\n                      background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section class="detailed-bottom-content" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                          background-repeat: no-repeat;\n                          background-size: cover;\n                          padding-bottom: 56%;\n                          background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
+$templateCache.put('app/components/terms/terms.tmpl.html','<update-title title="Terms of Use"></update-title>\r\n<update-meta name="description" content="HUEDATA terms of Use"></update-meta>\r\n<update-meta name="keywords" content="Terms of Use, HUEDATA terms"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3><b>{{$ctrl.pageData.title}}</b></h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section>\r\n  <div ng-bind-html="$ctrl.pageData.editor" style="text-align: justify">\r\n\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/thank-you/thank-you.tmpl.html','<update-title title="Thank You"></update-title>\n<update-meta name="description" content="Thank you for inquiry"></update-meta>\n<update-meta name="keywords" content="Thank you, thank page"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" style="padding-bottom: 1px">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\n        <h3>Thank You</h3>\n        <div class="line"></div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-left" style="min-height: 400px;">\n    <h3 ng-if="!$ctrl.membership" style="font-size: 19pt; text-align: center">Thank you for contacting HUEDATA. We`ll get back to you shortly!</h3>\n    <!--<h3 ng-if="$ctrl.membership">{{$ctrl.text}}</h3>-->\n    <!--<div class="thanksDiv">-->\n      <!--<div class="thanksText">-->\n        <!--<strong>Not a member? Learn more about HUEDATA Membership.</strong>-->\n      <!--</div>-->\n      <!--<div>-->\n        <!--<button class="thanksBtn" ui-sref="membership({scrollTo: true})">-->\n          <!--Learn More-->\n        <!--</button>-->\n      <!--</div>-->\n    <!--</div>-->\n    <!--<div>-->\n      <!--<div class="thanksText">-->\n        <!--<strong>Stay current on HUEDATA news and insights.</strong>-->\n      <!--</div>-->\n      <!--<div>-->\n        <!--<button class="btn" style="font-size: 13px; padding: 15px 20px 15px 20px; min-width: 134px;">Email Sign Up-->\n        <!--</button>-->\n      <!--</div>-->\n    <!--</div>-->\n</div></section>');
+$templateCache.put('app/components/unsubscribe/unsubscribe.tmpl.html','<update-title title="Unsubscribe"></update-title>\n<update-meta name="description" content="Unsubscribe page"></update-meta>\n<update-meta name="keywords" content="Unsubscribe, unsubscribe page"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" style="padding-bottom: 1px">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 unsubscribe-div">\n        <h3>{{$ctrl.success ? \'Your email was successfully unsubscribe\' : \'Something wrong, please try again later\'}}</h3>\n        <div class="line"></div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n\n</section>');
+$templateCache.put('app/components/vertical-coverage/vertical-coverage.tmpl.html','<update-title title="HUEDATA verticals"></update-title>\n<update-meta name="description" content="The color industries HUEDATA covers"></update-meta>\n<update-meta name="keywords" content="Color in Industry, Color Design, Color in Fashion, Color in Brands, Color in Auto,\nColor in Beauty, Color Trends, Color Forecasting, Color Analysis"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\n        <h3>HUEDATA Verticals</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section ng-repeat="item in $ctrl.pageData" class="vertical-coverage {{($index + 1)% 2 == 0 ? \'gray\' :\'\'}}">\n  <div class="container-fluid">\n    <div class="row">\n      <div class="col-lg-6 col-md-6">\n        <div class="category_form"><strong>{{item.category_name.toUpperCase()}}</strong></div>\n      </div>\n\n    </div>\n  </div>\n\n  <div class="container-fluid verticals-min-h" style="padding-top:30px">\n    <div class="row">\n      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6" ng-repeat="editor in item.editor track by $index" ng-bind-html="editor">\n      </div>\n    </div>\n    <div class="row slider-images">\n      <a> <!--style="height: 100px"-->\n        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 verticals-item">\n          <div class="img-responsive background-image test-img" style="background: {{\'url(\' + item.image1_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 40%;\n                    background-color: #e1e1e126;">\n          </div>\n          <div class="test-title">\n            <h5>{{item.image1_name}}</h5>\n            <div class="short-line"></div>\n          </div>\n        </div>\n      </a>\n\n      <a>\n        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 verticals-item">\n          <div class="img-responsive background-image test-img" style="background: {{\'url(\' + item.image2_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 40%;\n                    background-color: #e1e1e126;">\n          </div>\n        <!--</div>-->\n\n        <!--<div class="col-lg-1 col-md-12 col-sm-12 col-xs-12 slider">-->\n          <div class="test-title">\n            <h5>{{item.image2_name}}</h5>\n            <div class="short-line"></div>\n          </div>\n        </div>\n      </a>\n\n      <a>\n        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 verticals-item">\n          <div class="img-responsive background-image test-img" style="background: {{\'url(\' + item.image3_url + \') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 40%;\n                    background-color: #e1e1e126;">\n          </div>\n        <!--</div>-->\n\n        <!--<div class="col-lg-1 col-md-12 col-sm-12 col-xs-12 slider">-->\n          <div class="test-title">\n            <h5>{{item.image3_name}}</h5>\n            <div class="short-line"></div>\n          </div>\n        </div>\n      </a>\n    </div>\n  </div>\n</section>\n');
 $templateCache.put('app/components/dashboards/auto/auto.tmpl.html','<update-title title="Auto Color Trends"></update-title>\r\n<update-meta name="description" content="HUEDATA color in car trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color trends in Auto, Color trends in cars, new car colors, colors for vehicles,\r\ncar color trends for 2018, car color trends for 2019, car color trends for 2020"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="autoController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Auto Color Trends</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default dashboard-auto">\r\n        <div class="dashboard-controls">\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.brand" theme="selectize" ng-disabled="disabledControls[\'brand\'] || isLoadingControls" title="Choose a brand" on-select="handleChangeControl(\'brand\')">\r\n              <ui-select-match placeholder="BRAND">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="brand.id as brand in controlsData.manufacturers | filter: {title: $select.search}">\r\n                <span ng-bind-html="brand.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="brand"-->\r\n            <!--ng-disabled="disabledControls[\'brand\'] || isLoadingControls"-->\r\n            <!--ng-model="brand"-->\r\n            <!--ng-change="handleChangeControl(\'brand\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="BRAND" value="">BRAND</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.manufacturers" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.model" theme="selectize" ng-disabled="disabledControls[\'model\'] || isLoadingControls" title="Choose a model" on-select="handleChangeControl(\'model\')">\r\n              <ui-select-match placeholder="MODEL">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="model.id as model in controlsData.models | filter: {title: $select.search}">\r\n                <span ng-bind-html="model.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="model"-->\r\n            <!--ng-disabled="disabledControls[\'model\'] || isLoadingControls"-->\r\n            <!--ng-model="model"-->\r\n            <!--ng-change="handleChangeControl(\'model\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="MODEL" value="">MODEL</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.models" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.year" theme="selectize" ng-disabled="disabledControls[\'year\'] || isLoadingControls" title="Choose a year" on-select="handleChangeControl(\'year\')">\r\n              <ui-select-match placeholder="YEAR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="year.id as year in controlsData.years | filter: {title: $select.search}">\r\n                <span ng-bind-html="year.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="year"-->\r\n            <!--ng-disabled="disabledControls[\'year\'] || isLoadingControls"-->\r\n            <!--ng-model="year"-->\r\n            <!--ng-change="handleChangeControl(\'year\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="YEAR">YEAR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.years" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="color"-->\r\n            <!--ng-disabled="disabledControls[\'color\'] || isLoadingControls"-->\r\n            <!--ng-model="color"-->\r\n            <!--ng-change="handleChangeControl(\'color\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/dashboards/branding/branding.tmpl.html','<update-title title="Brand Color Insights"></update-title>\r\n<update-meta name="description" content="HUEDATA color in logo trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color of Logos, Logo Colors, Color insights of logos, Color of companies logo,\r\nCompany logo colors, logo colors meaning, logo colors combination, new logo colors, logo design color trends,\r\nlogo color palette, logo color trends 2018"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="brandingController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Brand Color Insights</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button ui-sref="productInquiry" class="btn white-btn">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default dashboard-branding">\r\n\r\n        <div class="dashboard-controls">\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.brand" theme="selectize" ng-disabled="disabledControls[\'brand\'] || isLoadingControls" title="Choose a brand" on-select="handleChangeControl(\'brand\')">\r\n\r\n              <ui-select-match placeholder="BRAND">{{$select.selected.title}}</ui-select-match>\r\n\r\n              <ui-select-choices repeat="brand.id as brand in controlsData.companies | filter: {title: $select.search}">\r\n                <span ng-bind-html="brand.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="brand"-->\r\n            <!--ng-disabled="disabledControls[\'brand\'] || isLoadingControls"-->\r\n            <!--ng-model="brand"-->\r\n            <!--ng-change="handleChangeControl(\'brand\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="BRAND" value="">BRAND</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.companies" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.industry" theme="selectize" ng-disabled="disabledControls[\'industry\'] || isLoadingControls" title="Choose a industry" on-select="handleChangeControl(\'industry\')">\r\n              <ui-select-match placeholder="INDUSTRY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="industry.id as industry in controlsData.industries | filter: {title: $select.search}">\r\n                <span ng-bind-html="industry.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="industry"-->\r\n            <!--ng-disabled="disabledControls[\'industry\'] || isLoadingControls"-->\r\n            <!--ng-model="industry"-->\r\n            <!--ng-change="handleChangeControl(\'industry\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="INDUSTRY" value="">INDUSTRY</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.industries" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="color"-->\r\n            <!--ng-disabled="disabledControls[\'color\'] || isLoadingControls"-->\r\n            <!--ng-model="color"-->\r\n            <!--ng-change="handleChangeControl(\'color\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.attribute" theme="selectize" ng-disabled="disabledControls[\'attribute\'] || isLoadingControls" title="Choose a attribute" on-select="handleChangeControl(\'attribute\')">\r\n              <ui-select-match placeholder="ATTRIBUTE">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="attribute.id as attribute in controlsData.attributes | filter: {title: $select.search}">\r\n                <span ng-bind-html="attribute.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="attribute"-->\r\n            <!--ng-disabled="disabledControls[\'attribute\'] || isLoadingControls"-->\r\n            <!--ng-model="attribute"-->\r\n            <!--ng-change="handleChangeControl(\'attribute\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="ATTRIBUTE">ATTRIBUTE</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.attributes" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.country" theme="selectize" ng-disabled="disabledControls[\'country\'] || isLoadingControls" title="Choose a country" on-select="handleChangeControl(\'country\')">\r\n              <ui-select-match placeholder="COUNTRY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="country.id as country in controlsData.countries | filter: {title: $select.search}">\r\n                <span ng-bind-html="country.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="country"-->\r\n            <!--ng-disabled="disabledControls[\'country\'] || isLoadingControls"-->\r\n            <!--ng-model="country"-->\r\n            <!--ng-change="handleChangeControl(\'country\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COUNTRY">COUNTRY</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.countries" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/dashboards/fashion/fashion.tmpl.html','<update-title title="Fashion Color Trends"></update-title>\r\n<update-meta name="description" content="HUEDATA color in fashion trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color trends in fashion, current color trends fashion, fashion trend colors, fashion color trends"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT // CURRENTLY OPEN FOR USER TESTING</h4>\r\n\r\n<section ng-controller="fashionController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Fashion Color Trends</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default">\r\n\r\n        <div class="dashboard-controls">\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.season" theme="selectize" ng-disabled="disabledControls[\'season\'] || isLoadingControls" title="Choose a season" on-select="handleChangeControl(\'season\')">\r\n              <ui-select-match placeholder="SEASON">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="season.id as season in controlsData.seasons | filter: {title: $select.search}">\r\n                <span ng-bind-html="season.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.year" theme="selectize" ng-disabled="disabledControls[\'year\'] || isLoadingControls" title="Choose a year" on-select="handleChangeControl(\'year\')">\r\n              <ui-select-match placeholder="YEAR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="year.id as year in controlsData.years | filter: {title: $select.search}">\r\n                <span ng-bind-html="year.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.category" theme="selectize" ng-disabled="disabledControls[\'category\'] || isLoadingControls" title="Choose a region" on-select="handleChangeControl(\'category\')">\r\n              <ui-select-match placeholder="CATEGORY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="category.id as category in controlsData.categories | filter: {title: $select.search}">\r\n                <span ng-bind-html="category.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.region" theme="selectize" ng-disabled="disabledControls[\'region\'] || isLoadingControls" title="Choose a region" on-select="handleChangeControl(\'region\')">\r\n              <ui-select-match placeholder="REGION">{{$select.selected.title}}</ui-select-match>\r\n\r\n              <ui-select-choices repeat="region.id as region in controlsData.regions | filter: {title: $select.search}">\r\n                <span ng-bind-html="region.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.city" theme="selectize" ng-disabled="disabledControls[\'city\'] || isLoadingControls" title="Choose a city" on-select="handleChangeControl(\'city\')">\r\n              <ui-select-match placeholder="CITY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="city.id as city in controlsData.cities | filter: {title: $select.search}">\r\n                <span ng-bind-html="city.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n          <div class="select-style custom-select">\r\n\r\n            <ui-select ng-model="menus.designer" theme="selectize" ng-disabled="disabledControls[\'designer\'] || isLoadingControls" title="Choose a designer" on-select="handleChangeControl(\'designer\')">\r\n              <ui-select-match placeholder="DESIGNER">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="designer.id as designer in controlsData.designers | filter: {title: $select.search}">\r\n                <span ng-bind-html="designer.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
@@ -52092,4 +52092,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-a9f681d85c.js.map
+//# sourceMappingURL=../maps/scripts/app-007ecebac2.js.map
