@@ -152,7 +152,7 @@ angular
 			};
 
 			this.searchByShortNames = function (colorAssociationNameWord) {
-				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: vm.colorAssociationNameWord})
 					.then(function (res) {
 						vm.validData = res.data;
 						if (res && res.data.length > 0) {
