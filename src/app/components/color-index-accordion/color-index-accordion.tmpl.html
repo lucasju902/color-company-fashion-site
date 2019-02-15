@@ -35,14 +35,14 @@
                             <!--{{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>-->
                             {{$ctrl.colorAssociationNames.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
-                        <div class="color-index-accordion-item">
+                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames">
                             <!--<div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">-->
                                 <!--<div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>-->
                             <!--</div>-->
                             <!--<div ng-repeat="similarColor1 in $ctrl.similarSaturateColors">-->
                                 <!--<div style="width: 40px; height: 40px; background: {{similarColor1}}"></div>-->
                             <!--</div>-->
-                            <ul class="selectPerPage" ng-if="$ctrl.colorAssociationNames !== undefined || $ctrl.colorAssociationNames !== 0">
+                            <ul class="selectPerPage">
                                 <button ng-click="showSelect()" class="selectPerPage__btn">{{pageSize}}</button>
                                 <ul class="selectPerPage__list">
                                     <li class="selectPerPage__item">
@@ -64,7 +64,7 @@
                                 </ul>
                             </ul>
                             <ul>
-                                <div class="color-index-accordion-item color-index-accordion-item__last-line" ng-if="$ctrl.colorAssociationNames">
+                                <div class="color-index-accordion-item color-index-accordion-item__last-line" >
                                     <div class='checkboxes-accordion' ng-repeat="color in $ctrl.colorAssociationNames | limitTo:pageSize ">
                                         <div class="checkbox-accordion-item">
                                             <label class="title-checkbox-accordion"></label>
