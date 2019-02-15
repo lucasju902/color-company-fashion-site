@@ -170,7 +170,6 @@ angular
 									colorName = item.ShortName;
 									return {colorName: colorName, RGB: RGB};
 								});
-
 								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
 								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
                 //

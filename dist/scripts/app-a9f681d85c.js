@@ -55,8 +55,8 @@ angular.module('app').constant('appConfig', {
   legalServiceUrl: 'https://huelegal.herokuapp.com/api/',
   // authServiceUrl: 'http://localhost:5000',
   authServiceUrl: '',
-  // dashboardServiceUrl: 'http://localhost:3002/',
-  dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
+  dashboardServiceUrl: 'http://localhost:3002/',
+  // dashboardServiceUrl: 'https://gentle-bastion-76293.herokuapp.com/',
   colorAPI: 'http://myperfectcolor.gndex.com//api/list?key=123456789&',
 
   repositories: {
@@ -2937,6 +2937,4651 @@ angular.module('app').controller('autoController',
     }
   ]);
 }());
+
+angular
+  .module('app')
+  .component('verticalCoverageComponent', {
+    templateUrl: 'app/components/vertical-coverage/vertical-coverage.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'about_vertical_coverages.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = angular.copy(res.data);
+              vm.pageData.forEach(function (item) {
+                item.editor = item.editor.split('</ul>');
+                item.editor = item.editor.map(function (t) {
+                  return t + '</ul>';
+                });
+              });
+            }
+          });
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+
+    }
+  });
+
+angular
+  .module('app')
+  .component('unsubscribeComponent', {
+    templateUrl: 'app/components/unsubscribe/unsubscribe.tmpl.html',
+    controller: function ($http, appConfig, $stateParams) {
+      var self = this;
+      self.success = true;
+      $http.get(appConfig.dashboardServiceUrl + 'unsubscribe.json', {params: {token: $stateParams.token}})
+        .then(function (res) {
+          if (res.data && res.data.success) {
+            self.success = res.data.success;
+          }
+        });
+    }
+  });
+
+angular
+  .module('app')
+  .component('thankYouComponent', {
+    templateUrl: 'app/components/thank-you/thank-you.tmpl.html',
+    controller: function ($stateParams) {
+      // this.membership = $stateParams.parFrom === 'membership';
+      // switch ($stateParams.parFrom) {
+      //   case 'press': {
+      //     this.text = 'press request';
+      //     break;
+      //   }
+      //   case 'speaking': {
+      //     this.text = 'Speaking Engagements request';
+      //     break;
+      //   }
+      //   case 'contact': {
+      //     this.text = 'contacting request';
+      //     break;
+      //   }
+      //   case 'data': {
+      //     this.text = 'inquire about Data Partnership';
+      //     break;
+      //   }
+      //   case 'edu': {
+      //     this.text = 'inquire about Education Partnership';
+      //     break;
+      //   }
+      //   case 'inquire': {
+      //     this.text = 'inquire';
+      //     break;
+      //   }
+      //   case 'membership': {
+      //     this.text = 'We received your membership request. Thank you for reaching out.';
+      //     break;
+      //   }
+      //   default: {
+      //     this.text = 'request';
+      //     break;
+      //   }
+      // }
+    }
+  });
+
+angular
+  .module('app')
+  .component('termsComponent', {
+    templateUrl: 'app/components/terms/terms.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.find(function (item) {
+                return item.name === 'Terms of Use';
+              })
+            }
+          });
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('teachingMaterialsDetailsComponent', {
+  templateUrl: 'app/components/teaching-materials-details/teaching-materials-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'teaching_materials/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser')? true : false
+    };
+
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.teaching_materials) {
+        products.teaching_materials = {};
+      }
+      products.teaching_materials[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'teachingMaterials'});
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('teachingMaterialsComponent', {
+    templateUrl: 'app/components/teaching-materials/teaching-materials.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.topicModel = 'TOPIC';
+      vm.providerModel = 'PROVIDER';
+      vm.typeModel = 'TYPE';
+      vm.pageData = [];
+      vm.categories = [];
+      vm.cacheItems = [];
+      vm.topic = [];
+      vm.provider = [];
+      vm.type = [];
+      vm.items = [];
+      vm.flag = true;
+      var numberOfElements = 3;
+      var count = 1;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'teaching_materials.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                vm.cacheItems.push(angular.copy(item.data));
+                return item.data;
+              });
+              vm.pageData.forEach(function (t) {
+                if (t.teaching_material_provider && !vm.provider.includes(t.teaching_material_provider)) {
+                  vm.provider.push(t.teaching_material_provider);
+                }
+              });
+              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
+              vm.type = ['Beginner', 'Intermediate', 'Advanced'];
+              vm.select();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterDate.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.showMore = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.select = function () {
+        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.type.includes(vm.typeModel)) {
+          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
+            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.teaching_material_topic) &&
+              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.teaching_material_provider) &&
+              (!vm.type.includes(vm.typeModel) || vm.typeModel === t.teaching_material_type)) {
+              return t;
+            }
+          });
+        } else {
+          vm.filterDate = angular.copy(vm.cacheItems);
+        }
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('staffLoginComponent', {
+    templateUrl: 'app/components/staff-login/staff-login.tmpl.html',
+    controller: function (authService, appConfig, $state) {
+      var self = this;
+      self.buttonGoogleUrl = appConfig.dashboardServiceUrl + 'auth/google_oauth2';
+      this.email = '';
+      this.password = '';
+      this.isRemembered = false;
+      this.error = '';
+
+      this.login = function () {
+        self.error = false;
+        authService.login(this.email, this.password, this.isRemembered)
+          .then(function (data) {
+            if (data && data.success) {
+              $state.go('landing');
+            } else {
+              self.error = true;
+            }
+          });
+      };
+    }
+  })
+angular
+  .module('app')
+  .component('speakingEngagementsComponent', {
+    templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
+    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+      vm.speakers = [];
+
+      vm.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        jobtitle: {value: '', required: true, name: 'job title', type: 'provide'},
+        request: {value: '', required: true, name: 'request', type: 'enter'},
+        message: {value: '', required: true, name: 'message', type: 'enter'}
+      };
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.speakers = angular.copy(res.data);
+            }
+            vm.groups = _.chunk(angular.copy(vm.speakers), 3);
+          });
+        $http.get(appConfig.dashboardServiceUrl + 'about_speaking_engagements.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData.title = res.data['0'].title;
+              vm.pageData.editor = res.data['0'].editor;
+            }
+          });
+      };
+
+      vm.send = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('reportsDetailsComponent', {
+  templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'reports/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'reports', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.addProduct = function () {
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.reports) {
+        products.reports = {};
+      }
+      products.reports[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'reports'});
+    };
+
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('reportsComponent', {
+    templateUrl: 'app/components/reports/reports.tmpl.html',
+    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.filters = {};
+      vm.hueModel = 'VERTICALS';
+      vm.reportModel = 'ALL';
+      vm.yearModel = 'YEAR';
+      vm.pageData = {};
+      vm.cacheItems = [];
+      vm.hue = categoryValues('hue');
+
+      vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
+      vm.year = [];
+      vm.items = [];
+      vm.dis = true;
+      vm.flag = true;
+      var lastYear = moment().year();
+      var count = 1;
+      var numberOfElements = 3;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                vm.cacheItems.push(angular.copy(item.data));
+                return item.data;
+              });
+              vm.pageData.forEach(function (t) {
+                if (t.hue && !vm.hue.includes(t.hue)) {
+                  vm.hue.push(t.hue);
+                }
+
+                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
+                  lastYear = Number(t.published_year);
+                }
+              });
+              vm.year = _.range(lastYear, moment().year() + 1);
+              vm.select();
+              vm.year = vm.year.reverse();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.select = function (obj) {
+        if (obj) {
+          if (obj.$ctrl.hueModel === 'Fashion') {
+            vm.dis = false;
+          } else {
+            vm.dis = true;
+          }
+        }
+        if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
+          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
+            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
+              (!vm.report.includes(vm.reportModel) || vm.reportModel === t.report_style) &&
+              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
+              return t;
+            }
+          });
+        } else {
+          vm.filterData = angular.copy(vm.cacheItems);
+        }
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('recoverComponent', {
+    templateUrl: 'app/components/recover/recover.tmpl.html',
+    controller: function ($state, $http, appConfig) {
+      var self = this;
+      this.successRequest = false;
+      this.email = '';
+      this.error = false;
+
+      this.onSendLoginClick = function () {
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.email) {
+          self.error = 'The Email field is required';
+        } else {
+          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
+            .then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('publicationScheduleComponent', {
+    templateUrl: 'app/components/publication-schedule/publication-schedule.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.result = [];
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'publication_schedules.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.quarter1 = _.groupBy(res.data, 'quater_year1');
+              vm.quarter2 = _.groupBy(res.data, 'quater_year2');
+
+              var quarters1 = [];
+              var quarters2 = [];
+              for (var year1 in vm.quarter1) {
+                var test1 = vm.quarter1[year1].reduce(function (acc, nv) {
+                  return acc + nv.editor1;
+                }, '');
+
+                quarters1.push({
+                  year: year1,
+                  q: 1,
+                  list: test1
+                });
+              }
+
+              for (var year2 in vm.quarter2) {
+                var test = vm.quarter2[year2].reduce(function (acc, nv) {
+                  return acc + nv.editor2;
+                }, '');
+
+                quarters2.push({
+                  year: year2,
+                  q: 2,
+                  list: test
+                });
+              }
+              vm.result = _.sortBy(quarters1.concat(quarters2), ['year', 'q']);
+            }
+          });
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('profileComponent', {
+    templateUrl: 'app/components/profile/profile.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout, Upload) {
+      var vm = this;
+      $scope.uploadFiles = function (file) {
+        if (file.$ngfBlobUrl) {
+          vm.userData.image_url = file.$ngfBlobUrl;
+          file.upload = Upload.upload({
+            url: appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json',
+            method: 'PUT',
+            fields: {'member[image]': file, flag: true},
+            file: file,
+            fileFormDataName: 'member[image]'
+          });
+        }
+      };
+
+      vm.job_function = categoryValues('job function');
+      vm.country = categoryValues('country');
+      vm.industry = categoryValues('industry');
+      vm.company_size = categoryValues('company size');
+      vm.editFlag = false;
+      vm.fileFlag = true;
+
+      vm.init = function () {
+        authService.loadCurrentUser().then(function (res) {
+          vm.userID = res.data.user.id;
+          $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json', {params: {token: authService.token}})
+            .then(function (res) {
+              if (res && res.data) {
+                vm.userData = res.data;
+                vm.date = moment(vm.userData.date_year + '-' + vm.userData.date_month + '-' + vm.userData.date_day).format('YYYY-MM-DD');
+
+                vm.indexes = {
+                  job_function: vm.searchIndex(vm.job_function, vm.userData.job_function),
+                  company_size: vm.searchIndex(vm.company_size, vm.userData.company_size),
+                  country: vm.searchIndex(vm.country, vm.userData.country),
+                  industry: vm.searchIndex(vm.industry, vm.userData.industry)
+                };
+                vm.intEditData();
+              }
+            });
+        });
+      };
+
+      vm.intEditData = function () {
+        vm.data = {
+          first_name: {value: vm.userData.first_name, required: true, name: 'first name', type: 'provide'},
+          last_name: {value: vm.userData.last_name, required: true, name: 'last name', type: 'provide'},
+          email: {value: vm.userData.email, required: true, name: 'email', type: 'provide'},
+          company: {value: vm.userData.company, required: true, name: 'company name', type: 'provide'},
+          job_title: {value: vm.userData.job_title, required: true, name: 'job title', type: 'provide'},
+          bio: {value: vm.userData.bio, name: 'bio', type: 'provide'},
+          job_function: {
+            value: vm.job_function[vm.indexes.job_function] || vm.userData.job_function,
+            required: true,
+            name: 'job function',
+            type: 'select'
+          },
+          company_size: {
+            value: vm.company_size[vm.indexes.company_size] || vm.userData.company_size,
+            required: true,
+            name: 'company size',
+            type: 'select'
+          },
+          industry: {
+            value: vm.industry[vm.indexes.country] || vm.userData.industry,
+            required: true,
+            name: 'industry',
+            type: 'select'
+          },
+          country: {
+            value: vm.country[vm.indexes.industry] || vm.userData.country,
+            required: true,
+            name: 'country',
+            type: 'select'
+          }
+        };
+      };
+
+      vm.searchIndex = function (arr, value) {
+        return _.findIndex(arr, function (item) {
+          return item.title === value;
+        });
+      };
+
+      vm.goCart = function () {
+        $state.go('cart-page', {wayBack: 'profile'});
+      };
+
+      vm.goPurchase = function () {
+        $state.go('my-purchases');
+      };
+
+      vm.cancel = function () {
+        vm.editFlag = false;
+        vm.intEditData();
+      };
+
+      vm.save = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in vm.data) {
+            if (vm.data[item].type === 'select') {
+              data[item] = vm.data[item].value.title;
+            } else {
+              data[item] = vm.data[item].value;
+            }
+          }
+          data.flag = 'profile';
+          data.token = authService.token;
+          $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, data)
+            .then(function (res) {
+              if (res.status !== 200) {
+                console.log(res);
+              }
+            });
+          vm.editFlag = false;
+        }
+      };
+
+      vm.editProfile = function () {
+        for (var key in vm.indexes) {
+          if (vm.indexes[key] < 0) {
+            vm.data[key].value = vm[key][0];
+          }
+        }
+        vm.editFlag = true;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('privacyComponent', {
+    templateUrl: 'app/components/privacy-policy/privacy-policy.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.find(function (item) {
+                return item.name === 'Privacy Policy';
+              })
+            }
+          });
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('pressComponent', {
+    templateUrl: 'app/components/press/press.tmpl.html',
+    controller: function ($state, $http, appConfig, dataValidate) {
+      var vm = this;
+      vm.pageData = {};
+      vm.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        message: {value: '', required: true, name: 'message', type: 'enter'},
+        research: {value: '-'}
+      };
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'presses.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = angular.copy(res.data);
+            }
+          });
+        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData.reports = angular.copy(res.data.data);
+            }
+          });
+      };
+      vm.press = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
+            params: data
+          })
+            .then(function (res) {
+              if (res.status === 200) {
+                $state.go('thank-you');
+              }
+            });
+        }
+      };
+      vm.makeDate = function (item) {
+        return moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day).format('MMMM D, YYYY');
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('passwordRecoverCartComponent', {
+    templateUrl: 'app/components/password-recover-cart/password-recover-cart.tmpl.html',
+    controller: function ($state, $http, appConfig) {
+      var self = this;
+      self.successRequest = false;
+      self.email = '';
+      self.error = false;
+
+      self.onSendLoginClick = function () {
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.email) {
+          self.error = 'The Email field is required';
+        } else {
+          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
+            .then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            });
+        }
+      };
+
+      self.goBack = function () {
+        $state.go('cart-checkout');
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('passwordRecoverComponent', {
+    templateUrl: 'app/components/password-recover/password-recover.tmpl.html',
+    controller: function ($state, $http, appConfig, $stateParams) {
+      var self = this;
+      this.successRequest = false;
+      this.password = '';
+      this.passwordConfirm = '';
+      this.error = false;
+      this.type = $stateParams.token[0] || 'r';
+      this.token = $stateParams.token.slice(1);
+
+      this.onSendLoginClick = function () {
+        self.error = false;
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.password || !self.passwordConfirm) {
+          self.error = 'Password and Confirm Password fields are required';
+        } else {
+          if (self.password === self.passwordConfirm) {
+            $http.get(appConfig.dashboardServiceUrl + '/password_recover.json', {
+              params: {
+                password: self.password,
+                token: self.token
+              }
+            }).then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            }).catch(function (err) {
+              if (err) {
+                self.error = 'Your token is invalid';
+              }
+            });
+          } else {
+            self.error = 'Passwords are not identical';
+          }
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('orderEmailComponent', {
+    templateUrl: 'app/components/order-email/order-email.tmpl.html',
+    controller: function ($state, $http, appConfig, $stateParams) {
+      var vm = this;
+      vm.token = $stateParams.token;
+      vm.products = [];
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'order-email.json', {
+          params: {
+            token: vm.token
+          }
+        }).then(function (res) {
+          if (res.data) {
+            vm.success = res.data.success;
+            if (res.data.success) {
+              vm.orderId = res.data.orderId;
+              vm.products = res.data.products;
+            } else {
+              vm.error = 'We did not find email you provided in our base';
+            }
+          }
+        });
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('myPurchasesComponent', {
+    templateUrl: 'app/components/my-purchases/my-purchases.tmpl.html',
+    controller: function ($state, $http, appConfig, $scope, authService, localStorageService) {
+      var vm = this;
+      vm.data = [];
+
+      function init() {
+        if (vm.user && vm.user.id) {
+          $http.get(appConfig.dashboardServiceUrl + '/members/bought_items.json', {params: {id: vm.user.id, token: authService.token}})
+            .then(function (res) {
+              for (var key in res.data) {
+                res.data[key].forEach(function (item) {
+                  item.purchaseDate = moment(item.purchase_date).format('DD.MM.YYYY');
+                  if (key === 'teaching_materials') {
+                    item.type = 'color-teaching-materials';
+                  } else if (key === 'reports') {
+                    item.type = 'color-reports';
+                  } else if (key === 'courses') {
+                    item.type = 'color-education-courses';
+                  }
+                  vm.data.push(item);
+                });
+              }
+              vm.data.sort(vm.sortByDate);
+            });
+        }
+      }
+
+      vm.sortByDate = function(a, b) {
+        if (Date.parse(a.purchase_date) < Date.parse(b.purchase_date)) return 1;
+        if (Date.parse(a.purchase_date) > Date.parse(b.purchase_date)) return -1;
+      };
+
+
+
+      $scope.$watch(function () {
+        return authService.currentUser;
+      }, function (newVal) {
+        vm.user = localStorageService.get('currentUser');
+        init();
+      });
+    }
+  });
+
+angular
+  .module('app')
+  .component('membershipComponent', {
+    templateUrl: 'app/components/membership/membership.tmpl.html',
+    controller: function ($stateParams, $state, scrollService, categoryValues, $http, appConfig, modalService, dataValidate) {
+      scrollService.scrollMember();
+      var self = this;
+      this.jobs = categoryValues('job function');
+      this.countries = categoryValues('country');
+      this.industries = categoryValues('industry');
+      this.companySizes = categoryValues('company size');
+
+
+      this.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
+        permissions: {daily: true, research: true, edu: true},
+        relationship: {expert: true}
+      };
+
+      this.submitInquiry = function () {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            if (item !== 'permissions' && item !== 'relationship') {
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
+            } else if (item === 'permissions') {
+              data.permissions = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.permissions.push(categoryValues('permissions')[k]);
+                }
+              });
+              data.permissions = JSON.stringify(data.permissions);
+            } else if (item === 'relationship' && this.data.relationship.expert) {
+              data.relationship = 'Expert Panelist';
+            }
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'new_member', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('membersAnalyticsComponent', {
+    templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService, localStorageService) {
+      var vm = this;
+      vm.searchModel = '';
+      vm.all = [];
+      vm.pageData = [];
+      vm.items = [];
+      var count = 0;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json', {params: {token: authService.token}})
+          .then(function (res) {
+            vm.pageData = angular.copy(res.data.data);
+            vm.all = angular.copy(res.data.data);
+            vm.search();
+          });
+      };
+      vm.more = function () {
+        vm.all[count++].forEach(function (i) {
+          vm.items.push(i);
+        });
+      };
+
+      vm.search = function () {
+        if (vm.searchModel) {
+          vm.filterData = [];
+          vm.pageData.forEach(function (t) {
+            if (new RegExp('^' + vm.searchModel, 'i').test(t.member_name)) {
+              vm.filterData.push(t);
+            }
+          });
+        } else {
+          vm.filterData = angular.copy(vm.pageData);
+        }
+        vm.items = [];
+        vm.all = _.chunk(angular.copy(vm.filterData), 5);
+        count = 0;
+        vm.more();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('membersComponent', {
+    templateUrl: 'app/components/members/members.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.filter = '';
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'members/names.json')
+          .then(function (res) {
+            if (res && res.data) {
+              var rows = res.data.length > 0 ? Math.ceil(res.data.length / 4) : 1;
+              vm.pageData = res.data;
+              vm.dataGroups = _.chunk(res.data, rows);
+            }
+          });
+      };
+
+      vm.filterChange = function () {
+        vm.dataGroups = _.chunk(vm.pageData.filter(function (item) {
+          var fullName = item.first_name + ' ' + item.last_name;
+          return fullName.toLowerCase().indexOf(vm.filter) >= 0;
+        }));
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+            return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('loginComponent', {
+    templateUrl: 'app/components/login/login.tmpl.html',
+    controller: function (authService, $state, localStorageService) {
+      var self = this;
+      this.email = '';
+      this.password = '';
+      this.isRemembered = false;
+      this.error = '';
+      var products = {courses: {}, reports: {}, teaching_materials: {}};
+      localStorageService.set('products', products);
+
+      this.login = function () {
+        self.error = false;
+        authService.login(this.email, this.password, this.isRemembered)
+          .then(function (data) {
+            if (data && data.success) {
+              $state.go('aboutPage');
+            } else {
+              self.error = true;
+            }
+          });
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('landingPageComponent', {
+    templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
+    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location) {
+    var vm =this;
+
+      $(document).ready(function () {
+        $("nav").find("li").on("click", "a", function () {
+          // $('.navbar-collapse.in').collapse('hide');
+        });
+      });
+
+      $(document).ready(function(){
+
+        $("#slideshow > div:gt(0)").hide();
+
+        var interval = setInterval(slide, 3000);
+
+        function intslide(func) {
+          if (func == 'start') {
+            interval = setInterval(slide, 3000);
+          } else {
+            clearInterval(interval);
+          }
+        }
+
+          function slide() {
+              sact('next', 0, 2000);
+          }
+
+          function sact(a, ix, it) {
+              var currentSlide = $('.current');
+              var nextSlide = currentSlide.next('.slideitem');
+              var prevSlide = currentSlide.prev('.slideitem');
+              var reqSlide = $('.slideitem').eq(ix);
+
+              var currentDot = $('.active-dot');
+              var nextDot = currentDot.next();
+              var prevDot = currentDot.prev();
+              var reqDot = $('.dot').eq(ix);
+
+              if (nextSlide.length == 0) {
+                  nextDot = $('.dot').first();
+                  nextSlide = $('.slideitem').first();
+              }
+
+              if (prevSlide.length == 0) {
+                  prevDot = $('.dot').last();
+                  prevSlide = $('.slideitem').last();
+              }
+
+              if (a == 'next') {
+                  var Slide = nextSlide;
+                  var Dot = nextDot;
+              }
+              else if (a == 'prev') {
+                  var Slide = prevSlide;
+                  var Dot = prevDot;
+              }
+              else {
+                  var Slide = reqSlide;
+                  var Dot = reqDot;
+              }
+              var it_before = it - 1500;
+              currentSlide.fadeOut(it_before).removeClass('current');
+              Slide.fadeIn(it).addClass('current');
+          }
+      });
+
+//                                                                                                          REPORTS ON LANDING
+			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
+				console.log("res", res.data.reports);
+				vm.reports_on_landing = res.data.reports
+			});
+
+//                                                                                                          COLOR-PICKER
+        var color_picker = document.getElementById("color_picker");
+        var color_id = document.getElementById("color_id");
+        $scope.colorPickerGray = 100;
+        $scope.colorPickerOpacity = 1;
+			  document.getElementById('value_span').innerHTML = '100%';
+
+        $scope.changeColor = function () {
+            color_picker.onmousedown = select_color;
+        };
+        color_picker_add();
+
+        $scope.colorPickerSliderGray = function  () {
+            var value = document.getElementById('rg').value;
+            color_id.style.filter =  "saturate(" + value + "%)";
+        };
+
+        $scope.colorPickerSliderOpacity = function  () {
+            var value = document.getElementById('range_opacity').value;
+            document.getElementById('value_span').innerHTML = value*100 + '%';
+            color_id.style.opacity =  value;
+        };
+
+        $scope.colorPickerRGB = function () {
+            var colorInputR = document.getElementById('colorInputR').value;
+            var colorInputG = document.getElementById('colorInputG').value;
+            var colorInputB = document.getElementById('colorInputB').value;
+
+            $scope.colorRGB_R = colorInputR;
+            $scope.colorRGB_G = colorInputG;
+            $scope.colorRGB_B = colorInputB;
+
+            var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
+            color_id.style.backgroundColor = inputRGB;
+        };
+
+        function color_picker_add() {
+            color_picker_ = color_picker.getContext("2d"),
+                center_x = (color_picker.width)/2,
+                center_y = (color_picker.height)/2,
+                sx = center_x,
+                sy = center_y;
+
+            $scope.colorRGB_R = 0;
+            $scope.colorRGB_G = 0;
+            $scope.colorRGB_B = 0;
+            palette = new color_picker_element(center_x, center_y, sx, sy);
+            palette.draw();
+        }
+
+        function select_color(e) {
+            var x = e.pageX - color_picker.offsetLeft - 534,
+                y = e.pageY - color_picker.offsetTop - 3672,
+                pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+                pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
+            color_id.style.backgroundColor = pixelColor;
+
+            $scope.pixel = pixel;
+            $scope.colorRGB_R = pixel[0];
+            $scope.colorRGB_G = pixel[1];
+            $scope.colorRGB_B = pixel[2];
+            console.log('pixelColor _select_color', $scope);
+            console.log('y  _select_color',y);
+            console.log('x  _select_color',x);
+        }
+        function color_picker_element(center_x, center_y, sx, sy) {
+            this.center_x = center_x;
+            this.center_y = center_y;
+            this.sx = sx;
+            this.sy = sy;
+            this.draw = function() {
+                for(var i = 0; i < 360; i+=0.1) {
+                    var rad = (i-45) * (Math.PI) / 180;
+                    color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
+                    color_picker_.beginPath();
+                    color_picker_.moveTo(center_x, center_y);
+                    color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+                    color_picker_.stroke();
+                }
+            }
+        }
+
+        this.colorWordSearchLanding = function () {
+					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
+					var colorAssociationName = '';
+					// var str = [];
+					var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
+						.then(function (res) {
+							if (res.data.length > 0) {
+								vm.paintColorNames = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
+								});
+								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
+								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
+                //
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: colorAssociationName})
+									.then(function (res) {
+										vm.validData = res.data;
+										if (res && res.data.length > 0) {
+											var RGB = '',
+												colorName = '';
+											vm.colorAssociationNames = res.data.map(function (item) {
+												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+												colorName = item.ShortName;
+												return {colorName: colorName, RGB: RGB};
+											});
+											searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
+											$location.url('/color-index-accordion');
+										}
+									});
+							}
+						});
+        };
+    }
+  });
+
+angular
+  .module('app')
+  .component('landingComponent', {
+    templateUrl: 'app/components/landing/landing.tmpl.html',
+    controller: function (authService, $state, localStorageService) {
+
+      $(document).ready(function () {
+        $("nav").find("li").on("click", "a", function () {
+          // $('.navbar-collapse.in').collapse('hide');
+        });
+      });
+
+      $(document).ready(function(){
+
+        $("#slideshow > div:gt(0)").hide();
+
+        var interval = setInterval(slide, 3000);
+
+        function intslide(func) {
+          if (func == 'start') {
+            interval = setInterval(slide, 3000);
+          } else {
+            clearInterval(interval);
+          }
+        }
+
+        function slide() {
+          sact('next', 0, 2000);
+        }
+
+        function sact(a, ix, it) {
+          var currentSlide = $('.current');
+          var nextSlide = currentSlide.next('.slideitem');
+          var prevSlide = currentSlide.prev('.slideitem');
+          var reqSlide = $('.slideitem').eq(ix);
+
+          var currentDot = $('.active-dot');
+          var nextDot = currentDot.next();
+          var prevDot = currentDot.prev();
+          var reqDot = $('.dot').eq(ix);
+
+          if (nextSlide.length == 0) {
+            nextDot = $('.dot').first();
+            nextSlide = $('.slideitem').first();
+          }
+
+          if (prevSlide.length == 0) {
+            prevDot = $('.dot').last();
+            prevSlide = $('.slideitem').last();
+          }
+
+          if (a == 'next') {
+            var Slide = nextSlide;
+            var Dot = nextDot;
+          }
+          else if (a == 'prev') {
+            var Slide = prevSlide;
+            var Dot = prevDot;
+          }
+          else {
+            var Slide = reqSlide;
+            var Dot = reqDot;
+          }
+          var it_before = it - 500;
+          currentSlide.fadeOut(it_before).removeClass('current');
+          Slide.fadeIn(it).addClass('current');
+          }
+      });
+    }
+  });
+
+angular
+  .module('app')
+  .component('inquiriesComponent', {
+    templateUrl: 'app/components/inquiries/inquiries.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
+      var currentName = $state.current.name;
+
+      var self = this;
+      this.jobs = categoryValues('job function');
+      this.companySizes = categoryValues('company size');
+      this.industries = categoryValues('industry');
+      this.countries = categoryValues('country');
+
+      this.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'}
+      };
+
+      switch (currentName) {
+        case 'productInquiry':
+          this.title = 'Product Inquiry';
+          this.keywords = 'Color Product Inquiry, color database, color Product';
+          this.data.permissions = {daily: true, research: true, edu: true};
+          this.data.relationship = {expert: true};
+          this.caption = 'Product Inquiry';
+          this.inquire1 = true;
+          this.url = 'product_partner';
+          break;
+
+        case 'partnershipInquire':
+          this.title = 'Data Partnership Inquiry';
+          this.keywords = 'Color data partnership, color database, color dataset, color data points in r';
+          this.caption = 'Inquire about Data Partnership';
+          this.inquire2 = true;
+          this.url = 'new_data_partners';
+          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
+          break;
+
+        default:
+          this.title = 'Education Partnership Inquiry';
+          this.keywords = 'Color Education partnership, color database, color Education, color Education points in r';
+          this.caption = 'Inquire about Education Partnership';
+          this.url = 'new_education_partners';
+          this.inquire3 = true;
+          this.jobs.splice(1, 0, {id: 7, title: 'Educator'});
+          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
+          break;
+      }
+
+      this.send = function (inquiryType) {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            if (item !== 'permissions' && item !== 'relationship') {
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
+            } else if (item === 'permissions') {
+              data.permissions = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.permissions.push(categoryValues('permissions')[k]);
+                }
+              });
+              data.permissions = JSON.stringify(data.permissions);
+            } else if (item === 'relationship' && this.data.relationship.expert) {
+              data.relationship = 'Expert Panelist';
+            }
+          }
+          $http.get(appConfig.dashboardServiceUrl + this.url, {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('infographicsDetailsComponent', {
+  templateUrl: 'app/components/infographics-details/infographics-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'infographics/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+      });
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('infographicsComponent', {
+    templateUrl: 'app/components/infographics/infographics.tmpl.html',
+    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll,
+                          localStorageService) {
+      var vm = this;
+      vm.hueModel = 'VERTICAL';
+      vm.yearModel = 'YEAR';
+      vm.year = [];
+      vm.hue = categoryValues('hue');
+      vm.pageData = {};
+      vm.items = [];
+      vm.flag = true;
+      var numberOfElements = 3;
+      var count = 1;
+      var lastYear = moment().year();
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'infographics.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                var b = res.data.picture.find(function (a) {
+                  return a.infographic_id === item.id;
+                });
+                if (b) {
+                  item.image_url = b.image_url;
+                }
+                return item;
+              });
+              vm.year.push(moment().format('YYYY'));
+              vm.pageData.map(function (t) {
+                t.date = moment(t.published_year + '-' + t.published_month + '-' + t.published_day).format(' MMMM D, YYYY');
+              });
+              vm.pageData.forEach(function (t) {
+                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
+                  lastYear = Number(t.published_year);
+                }
+              });
+              vm.year = _.range(lastYear, moment().year() + 1);
+              vm.select();
+              vm.year = vm.year.reverse();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.onGraphicClick = function (event) {
+        if (event) {
+          modalService.showModal(2, event);
+        }
+      };
+
+      vm.select = function () {
+        if (vm.hue.includes(vm.hueModel) || vm.year.includes(Number(vm.yearModel))) {
+          vm.filterData = angular.copy(vm.pageData.filter(function (t) {
+            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
+              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
+              return t;
+            }
+          }));
+        } else {
+          vm.filterData = angular.copy(vm.pageData);
+        }
+        count = 1;
+        vm.items = [];
+        vm.sortItems();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+
+
+      vm.makeDate = function (item) {
+          return moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('MMMM D, YYYY');
+      };
+    }
+  });
+
+angular
+.module('app')
+.component('goodReadsDetailsComponent', {
+  templateUrl: 'app/components/good-reads-details/good-reads-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, localStorageService) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'good_reads/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+      });
+    };
+    vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('goodReadsComponent', {
+    templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.all = [];
+      vm.items = [];
+      vm.flag = true;
+      var count = 1;
+      var numberOfElements = 6;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                return item.data;
+              });
+            }
+            vm.sortItems();
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.pageData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('downloadExcerptPageComponent', {
+    templateUrl: 'app/components/download-excerpt-page/download-excerpt-page.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate, $stateParams, $window, $scope, localStorageService) {
+
+      var self = this;
+      this.jobs = categoryValues('job function');
+      this.companySizes = categoryValues('company size');
+      this.industries = categoryValues('industry');
+      this.countries = categoryValues('country');
+      self.flag = false;
+
+      switch ($stateParams.type) {
+        case 'reports':
+          self.wayBackName = 'reportsDetails';
+          break;
+        case 'courses':
+          self.wayBackName = 'coursesDetails';
+          break;
+        case 'teachingMaterials':
+          self.wayBackName = 'teachingDetailsMaterials';
+          break;
+        default:
+          self.wayBackName = 'profile';
+
+      }
+
+      this.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
+        relationship: {expert: true, daily: true, newReportNotification: true, emotionIndexInsights: true},
+        contact: {becoming: true}
+      };
+
+      this.send = function () {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          data.productType = $stateParams.type;
+          data.productID = $stateParams.id;
+          for (var item in this.data) {
+            if (item !== 'relationship' && item !== 'contact') {
+              if (this.data[item].type === 'select') {
+                data[item] = this.data[item].value.title;
+              } else {
+                data[item] = this.data[item].value;
+              }
+            } else if (item === 'relationship') {
+              data.relationship = [];
+              _.forEach(this.data[item], function (i, k) {
+                if (i === true) {
+                  data.relationship.push(categoryValues('downloadExcerpt')[k]);
+                }
+              });
+              data.relationship = JSON.stringify(data.relationship);
+            } else if (item === 'contact' && this.data.contact.becoming) {
+              data.contact = 'Contact about becoming a HUEDATA members';
+            }
+          }
+          $window.open(localStorageService.get('link'), '_blank');
+          $http.get(appConfig.dashboardServiceUrl + 'download-excerpt', {
+            params: data
+          }).then(function (res) {
+            $state.go(self.wayBackName, {id: $stateParams.id});
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('detailedComponent', {
+    templateUrl: 'app/components/detailed-page/detailed.tmpl.html',
+    controller: function ($location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('partnersComponent', {
+    templateUrl: 'app/components/data-partners/partners.tmpl.html',
+    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
+      var vm = this;
+
+      vm.jobs = categoryValues('job function');
+      vm.companySizes = categoryValues('company size');
+      vm.industries = categoryValues('industry');
+      vm.countries = categoryValues('country');
+
+      vm.data = {
+        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+        email: {value: '', required: true, name: 'email', type: 'provide'},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
+        job_function: {value: vm.jobs[0], required: true, name: 'job function', type: 'select'},
+        company_size: {value: vm.companySizes[0], required: true, name: 'company size', type: 'select'},
+        industry: {value: vm.industries[0], required: true, name: 'industry', type: 'select'},
+        country: {value: vm.countries[0], required: true, name: 'country', type: 'select'},
+        description: {value: '', required: false, name: 'description', type: 'enter'}
+      };
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'top_data_partners.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data;
+            }
+          });
+      };
+
+      vm.send = function () {
+        if (dataValidate.validate(vm.data)) {
+          var data = {};
+          for (var item in vm.data) {
+            if (vm.data[item].type === 'select') {
+              data[item] = vm.data[item].value.title;
+            } else {
+              data[item] = vm.data[item].value;
+            }
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'new_data_partners', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('dailyInsightsComponent', {
+    templateUrl: 'app/components/daily-insights/daily-insights.tmpl.html',
+    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+      vm.items = [];
+      vm.allDailies = [];
+      vm.items = [];
+      vm.flag = true;
+      var count = 1;
+      var numberOfElements = 3;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'dailies.json')
+          .then(function (res) {
+            if (res && res.data) {
+              angular.forEach(res.data, function (item) {
+                item.date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('dddd, MMMM D, YYYY');
+                item.published_date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('YYYY-MM-DD');
+              });
+              vm.allDailies = _.sortBy(res.data, 'published_date').reverse();
+              vm.emptyData = Boolean(vm.allDailies[0]);
+              vm.pageData = vm.allDailies.shift();
+              vm.sortItems();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.allDailies.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          } else {
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.onGraphicClick = function (item) {
+        if (item) {
+          modalService.showModal(3, null, item);
+        }
+      };
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+        return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+(function (angular) {
+  'use strict';
+  var controllerName = 'CustomInfographicsController';
+  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'statsService', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
+    '$q', 'repo.meta', 'repo.designers', '$timeout', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository', 'anchorSmoothScroll',
+    function ($http, appConfig, statsService, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
+      var vm = this;
+
+      $scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.grayList = {};
+      vm.meta = {};
+      vm.filter = {};
+      vm.showDashboardOverlay = false;
+      vm.isUserAdmin = function () {
+        return authService.getCurrentUser().username === 'admin';
+      };
+
+      var groupTitlesTemplates = {
+        beige: {
+          name: '#f5f5dc',
+          template: '#f5f5{0}'
+        },
+        black: {
+          name: '#000000',
+          template: '#{0}{0}{0}'
+        },
+        blue: {
+          name: '#0000ff',
+          template: '#{0}{0}ff'
+        },
+        brown: {
+          name: '#964b00',
+          template: '#{0}{1}00'
+        },
+        cyan: {
+          name: '#00ffff',
+          template: '#{0}ffff'
+        },
+        gray: {
+          name: '#c0c0c0',
+          template: '#{0}{0}{0}'
+        },
+        green: {
+          name: '#008000',
+          template: '#{0}80{0}'
+        },
+        magenta: {
+          name: '#ff00ff',
+          template: '#ff{0}ff'
+        },
+        orange: {
+          name: '#ff7f00',
+          template: '#ff{0}00'
+        },
+        red: {
+          name: '#ff0000',
+          template: '#ff{0}{1}'
+        },
+        violet: {
+          name: '#8f00ff',
+          template: '#{0}00ff'
+        },
+        white: {
+          name: '#ffffff',
+          template: '#{0}{0}{0}'
+        },
+        yellow: {
+          name: '#ffff00',
+          template: '#ffff{0}'
+        },
+        yellowgreen: {
+          name: '#8db600',
+          template: '#8d{0}00'
+        }
+      };
+
+      var cache = {
+        designers: [],
+        categories: [],
+        regions: {},
+        cities: []
+      };
+
+      var loading = {
+        ready: false,
+        designersReady: $q.defer(),
+        metaLoaded: $q.defer(),
+        metaReady: $q.defer()
+      };
+
+      vm.scrollToLetter = function (anchor) {
+        $location.hash(anchor);
+        $anchorScroll();
+        $location.hash('');
+      };
+
+      vm.alphabet = [
+        "a",
+        "à",
+        "b",
+        "c",
+        "d",
+        "e",
+        "é",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "ö",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ];
+
+      vm.prepareRequestParams = function () {
+        var reg = new RegExp('ALL ');
+        var city = reg.test(vm.filter.city.title) ? 'all' : vm.filter.city.title;
+        var season = reg.test(vm.filter.season.title) ? 'all' : vm.filter.season.title;
+        var category = reg.test(vm.filter.category.title) ? 'all' : vm.filter.category.title;
+        var designer = reg.test(vm.filter.designer.title) ? 'all' : vm.filter.designer.title.replace(/ /g, '_');
+
+        return {
+          city: city,
+          year: vm.filter.year.id,
+          season: season,
+          category: category,
+          region: vm.filter.region.id,
+          designer: designer
+        };
+      };
+
+      vm.prepareColorsParams = function () {
+        var reg = new RegExp('ALL ');
+        var param = {};
+        if (!reg.test(vm.filter.city.title)) {
+          param.city_id = vm.filter.city.id;
+        }
+        if (!reg.test(vm.filter.season.title)) {
+          param.season_id = vm.filter.season.id;
+        }
+        if (!reg.test(vm.filter.category.title)) {
+          param.category_id = vm.filter.category.id;
+        }
+        if (!reg.test(vm.filter.designer.title)) {
+          param.designer_id = vm.filter.designer.id;
+        }
+        param.year_id = vm.filter.year.id;
+        return param;
+      };
+
+      vm.prepareColors = function () {
+        var reg = new RegExp('ALL ');
+        if (!reg.test(vm.filter.season.title)) {
+          return {all: vm.filter.season, category: 'season'};
+        }
+        if (!reg.test(vm.filter.city.title)) {
+          return {all: vm.filter.city, category: 'city'};
+        }
+        if (!reg.test(vm.filter.category.title)) {
+          return {all: vm.filter.category, category: 'category'};
+        }
+        if (!reg.test(vm.filter.designer.title)) {
+          return {all: vm.filter.designer, category: 'designer'};
+        }
+        return {all: {id: 2018}, category: 'year'};
+      };
+
+      loading.metaLoadedStrongLink = loading.metaLoaded;
+      loading.filtersReady = $q.all([loading.designersReady.promise, loading.metaReady.promise]);
+
+      meta.objects().then(function (result) {
+        var years = [];
+        for (var i = result.years.to; i >= result.years.from; i--) {
+          years.push({id: i, title: i});
+        }
+
+        vm.meta.years = years;
+        vm.meta.colorGroups = result.colorGroups;
+        vm.meta.categories = result.categories;
+        vm.meta.seasons = result.seasons;
+        vm.meta.regions = common.generic.regions;
+        vm.meta.cities = result.cities;
+
+        _.each(vm.meta, function (item, key) {
+          var newTitle = 'All ' + key;
+          if (key !== 'colorGroups') {
+            item.unshift({id: 'all', title: newTitle.toUpperCase(), region: 'all', serverName: 'all', all: true})
+          }
+        });
+
+        angular.copy(vm.meta.cities, cache.cities);
+
+        vm.filter.color = vm.meta.colorGroups[0];
+        // vm.filter.year = _.find(vm.meta.years, {id: 2017}) || vm.meta.years[vm.meta.years.length - 1];
+        vm.filter.year = vm.meta.years[0];
+        vm.filter.season = vm.meta.seasons[0];
+        vm.filter.category = vm.meta.categories[0];
+        vm.filter.city = vm.meta.cities[0];
+        vm.filter.region = vm.meta.regions[0];
+
+        loading.metaLoaded.resolve();
+      });
+
+      designers.search().then(function (result) {
+        vm.meta.designers = result;
+        vm.meta.designers.unshift({id: 'all', title: 'ALL DESIGNERS', all: true});
+
+        vm.filter.designer = vm.meta.designers[0];
+
+        loading.designersReady.resolve();
+      });
+
+      vm.refresh = function () {
+        loadData();
+      };
+
+      var defaultDescription = {
+        years: '2015-2016',
+        colors: '45.567',
+        cities: '4',
+        region: '1',
+        designer: '234',
+        season: '3'
+      };
+
+      vm.cityOrRegionTitle = function () {
+        return vm.filter.city.all && vm.filter.region.all ? null : vm.filter.city.all ? vm.filter.region.title : vm.filter.city.title
+      };
+
+      var citiesAbbrevs = {
+        London: 'LN',
+        Milan: 'MI',
+        Paris: 'PR',
+        Berlin: 'BR',
+        NewYork: 'NY',
+        Mexico: 'MX',
+        RioDeJaneiro: 'RJ',
+        Seoul: 'SE',
+        Tokyo: 'TK',
+        SaoPaulo: 'SP',
+        Istanbul: 'IS',
+        Monaco: 'MN',
+        Florence: 'FL',
+        Rome: 'RO',
+        Kiev: 'KI',
+        LosAngeles: 'LA',
+        LakmeIndia: 'LI',
+        Copenhagen: 'CP',
+        Salzburg: 'SA',
+        Stockholm: 'ST',
+        Madrid: 'MA',
+        Sydney: 'SY',
+        Dubai: 'DU',
+        Kaliningrad: 'KA',
+        Moscow: 'MO',
+        PalmSprings: 'PS',
+        Cannes: 'CN',
+        Cambridge: 'CB',
+        Tbilisi: 'TB',
+        Havana: 'HA',
+        Kyoto: 'KO',
+        SaintPetersburg: 'SG',
+        Shanghai: 'SH'
+      };
+
+      var regionsAbbrevs = {
+        AsiaAndPacific: 'AP',
+        Europe: 'EU',
+        SouthAmerica: 'LA',
+        NorthAmerica: 'NA'
+      };
+
+      vm.getTitle = function (type) {
+        if (type === 'region') {
+          return vm.cityOrRegionTitle()
+        } else {
+          return !vm.filter[type].all ? vm.filter[type].title : null
+        }
+      };
+
+      vm.getAbbrv = function (type) {
+        var value;
+        if (type === 'category') {
+          value = vm.filter.category.title;
+          if (value === 'Couture') {
+            return 'CT';
+          } else if (value === 'Menswear') {
+            return 'MW';
+          } else {
+            return value;
+          }
+        } else if (type === 'season') {
+          value = vm.filter.season.title;
+          if (value === 'Fall') {
+            return 'FW';
+          } else if (value === 'Pre-Fall') {
+            return 'PF';
+          } else if (value === 'Spring') {
+            return 'SS';
+          } else if (value === 'Resort') {
+            return 'RS';
+          } else if (value === 'ALL SEASONS') {
+            return 'ALL';
+          } else {
+            return value;
+          }
+        } else if (type === 'city') {
+          value = vm.filter.city.title.replace(/\s/g, '').toLowerCase();
+          return _.find(citiesAbbrevs, function (item, key) {
+            return value == key.toLowerCase();
+          });
+        } else if (type === 'region') {
+          value = vm.filter.region.title.replace(/\s/g, '').toLowerCase();
+          return _.find(regionsAbbrevs, function (item, key) {
+            return value == key.toLowerCase();
+          });
+        }
+      };
+
+      vm.parseTitle = function (number) {
+        var divider = '';
+        var result = '';
+        _.map(vm.currentChart.titleGroups[number], function (title) {
+          if (vm.getTitle(title) !== null) {
+            divider = '//';
+          }
+          if (vm.getTitle(title)) {
+            result = result + ' ' + vm.getTitle(title)
+          }
+        });
+        return divider + result;
+      };
+
+      vm.charts = [
+        {
+          qNumber: 'CO1a',
+          id: 'colorsByCityPeriod',
+          group: 'colorsByCityPeriod',
+          title: 'Color Popularity Overview',
+          chartTitle: 'Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
+              .then(function (results) {
+                return results;
+              });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CO1b',
+          id: 'colorsByCityPeriod1',
+          group: 'colorsByCityPeriod1',
+          title: 'Expanded Color Popularity Overview',
+          chartTitle: 'Expanded Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return $q(function (resolve) {
+              charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
+                .then(function (results) {
+                  var param = vm.prepareColors();
+                  dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(results, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 17) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                        resolve(results);
+                      });
+                    });
+                });
+            });
+          },
+          filters: {
+            category: true,
+            region: true,
+            city: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CO2a',
+          id: 'colorsUniqueWithLevels',
+          group: 'colorsUniqueWithLevels',
+          title: 'Color Mosaic View With Popularity',
+          chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsUniqueGroups(vm.prepareRequestParams());
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'CO3a',
+          id: 'trends',
+          group: 'trends',
+          title: 'Five Year Color Comparison',
+          chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
+            var customParams = vm.prepareRequestParams();
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+            }
+
+            return $q.all(_.map(yearsRange, function (year) {
+              customParams.year = year;
+              return charts.colorGroupsByCityPeriod(customParams);
+            })).then(function (results) {
+              return _.map(results, function (result, i) {
+                return {
+                  title: yearsRange[i],
+                  data: result
+                };
+              });
+            });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'RE1a',
+          id: 'colorsByRegionPeriodNA',
+          group: 'colorsByRegionPeriod',
+          title: 'Color Popularity By Region With City Breakdown',
+          chartTitle: 'Color Popularity By Region With City Breakdown {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsWithGroupsByRegionPeriod(vm.prepareRequestParams(), vm.filter.region.name);
+          },
+          filters: {
+            category: true,
+            region: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {}
+        },
+        {
+          qNumber: 'RE2a',
+          id: 'colorsPerRegions',
+          group: 'colorsPerRegions',
+          title: 'Cross Region Top Four Colors',
+          chartTitle: 'Cross Region Top Four Colors {{vm.parseTitle(0)}}',
+          api: function () {
+            return charts.colorsPerRegions(vm.prepareRequestParams());
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year']
+          ]
+        },
+        {
+          qNumber: 'SE1a',
+          id: 'colorsUniqueGroupsCommon',
+          group: 'colorsUniqueGroupsCommon',
+          title: 'Color Popularity By Season',
+          chartTitle: 'Color Popularity By Season {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsUniqueGroupsCommon(vm.prepareRequestParams());
+          },
+          apiAfter: function (model) {
+            model.season = vm.filter.season.title;
+            model.year = vm.filter.year.title;
+          },
+          filters: {
+            category: true,
+            region: true,
+            city: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'SE2a',
+          id: 'colorsUniqueByPeriodFiveYears',
+          group: 'colorsUniqueByPeriodFiveYears',
+          title: 'Five Year Comparison Of Seasons Colors',
+          chartTitle: 'Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+            }
+            return charts.colorsByPeriodYearsRange(vm.prepareRequestParams(), yearsRange);
+          },
+          filters: {
+            category: true,
+            region: true,
+            city: true,
+            season: true,
+            year: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'SE2b',
+          id: 'colorsUniqueByPeriodFiveYears2',
+          group: 'colorsUniqueByPeriodFiveYears2',
+          title: 'Expanded Five Year Comparison Of Seasons Colors',
+          chartTitle: 'Expanded Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+            }
+            var param = vm.prepareColors();
+            var palettes = {};
+            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
+              .then(function (results) {
+                return $q.all(yearsRange.map(function (d) {
+                  return dashboardRepository['year'].getColorPalette(d, vm.prepareColorsParams(), 250);
+                }))
+                  .then(function (data) {
+                    _.each(data, function (r, i) {
+                      _.each(r, function (a) {
+                        a.colorHex = a.color.color.hex;
+                      });
+                      _.sortBy(r, 'percentage');
+                      palettes[vm.getAbbrv('season') + yearsRange[i]] = r;
+                    });
+                    results.push(palettes);
+                    return results;
+                  });
+              });
+          },
+          filters: {
+            category: true,
+            city: true,
+            season: true,
+            year: true,
+            region: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'SE3a',
+          id: 'uniqueWithGroupsPerSeason',
+          group: 'uniqueWithGroupsPerSeason',
+          title: 'Color Mosaic View By Season With Popularity',
+          chartTitle: 'Color Mosaic View By Season With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+            return charts.colorsUniqueGroupsPerSeason(customParams.year, customParams.city, customParams.category);
+          },
+          apiAfter: function (model) {
+            model.city = vm.cityOrRegionTitle();
+          },
+          filters: {
+            category: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'CA1a',
+          id: 'colorsByCategoryPeriod',
+          group: 'colorsByCategoryPeriod',
+          title: 'Color Popularity By Category',
+          chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'CA2a',
+          id: 'colorsByCategory',
+          group: 'colorsGridNails',
+          title: 'Cross Category Color Popularity',
+          chartTitle: 'Cross Category Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+            return $q.all(_.map(['couture', 'menswear', 'rtw'], function (category) {
+              customParams.category = category;
+              return charts.colorGroupsByCityPeriod(customParams)
+                .then(function (groups) {
+                  _.each(groups, function (gr) {
+                    gr.colors = _.map(_.range(3), function () {
+                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
+                    });
+                  });
+                  return {
+                    name: category,
+                    title: category,
+                    data: groups
+                  };
+                });
+            }));
+          },
+          filters: {
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CA2b',
+          id: 'colorsByCategory2',
+          group: 'colorsGridNails2',
+          title: 'Cross Category Top Three Colors',
+          chartTitle: 'Cross Category Top Three Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+
+            return $q(function (resolve) {
+              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
+                var groups = [
+                  {
+                    name: customParams.category + '\n' + 'couture',
+                    title: customParams.category + '\n' + 'couture',
+                    data: group
+                  },
+                  {
+                    name: customParams.category + '\n' + 'menswear',
+                    title: customParams.category + '\n' + 'menswear',
+                    data: group
+                  }, {
+                    name: customParams.category + '\n' + 'rtw',
+                    title: customParams.category + '\n' + 'rtw',
+                    data: group
+                  }];
+                async.waterfall([function (cb) {
+                  dashboardRepository["category"].getColorPalette(3, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[0].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["category"].getColorPalette(2, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[1].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["category"].getColorPalette(1, vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[2].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }], function () {
+                  resolve(groups);
+                });
+              });
+            });
+          },
+          filters: {
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CA3a',
+          id: 'colorsByRtwCategory',
+          group: 'colorsGridNails',
+          title: 'Three Year Comparison Of Color Popularity',
+          chartTitle: 'Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
+            var customParams = vm.prepareRequestParams();
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
+            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
+            }
+
+            return $q.all(_.map(yearsRange, function (dy) {
+              customParams.year = dy;
+              return charts.colorGroupsByCityPeriod(customParams)
+                .then(function (groups) {
+                  _.each(groups, function (gr) {
+                    gr.colors = _.map(_.range(3), function () {
+                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
+                    });
+                  });
+
+                  return {
+                    name: customParams.category + '\n' + dy,
+                    title: customParams.category + '\n' + dy,
+                    data: groups
+                  };
+                });
+            }));
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CA3b',
+          id: 'colorsByRtwCategory2',
+          group: 'colorsGridNails2',
+          title: 'Expanded Three Year Comparison Of Color Popularity',
+          chartTitle: 'Expanded Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
+            var customParams = vm.prepareRequestParams();
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
+            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
+            }
+            return $q(function (resolve) {
+              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
+                var groups = [
+                  {
+                    name: customParams.category + '\n' + yearsRange[0],
+                    title: customParams.category + '\n' + yearsRange[0],
+                    data: group
+                  },
+                  {
+                    name: customParams.category + '\n' + yearsRange[1],
+                    title: customParams.category + '\n' + yearsRange[1],
+                    data: group
+                  }, {
+                    name: customParams.category + '\n' + yearsRange[2],
+                    title: customParams.category + '\n' + yearsRange[2],
+                    data: group
+                  }];
+                async.waterfall([function (cb) {
+                  dashboardRepository["year"].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[0].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["year"].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[1].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }, function (cb) {
+                  dashboardRepository["year"].getColorPalette(yearsRange[2], vm.prepareColorsParams(), 250)
+                    .then(function (data) {
+                      _.each(groups[2].data, function (colorGroup) {
+                        colorGroup.colors = [];
+                        data.forEach(function (t) {
+                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
+                            colorGroup.colors.push(t.color.color.hex);
+                          }
+                        });
+                      });
+                      cb();
+                    });
+                }], function () {
+                  resolve(groups);
+                });
+              });
+            });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            city: true
+          },
+          titleGroups: [
+            ['category', 'season', 'year'],
+            ['region']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'CI1a',
+          id: 'citiesByColorPeriod',
+          group: 'citiesByColorPeriod',
+          title: 'Cross City Popularity By Color',
+          chartTitle: 'Cross City Popularity By Color {{vm.parseTitle(0)}} {{vm.parseTitle(1)}} {{vm.parseTitle(2)}}',
+          api: function () {
+            var customParams = vm.prepareRequestParams();
+            customParams.color = vm.filter.color.hex.replace('#', '');
+            return charts.citiesByColorPeriod(customParams);
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            region: true,
+            color: true
+          },
+          titleGroups: [
+            ['color'],
+            ['category', 'season', 'year'],
+            ['region']
+          ]
+        },
+        {
+          qNumber: 'DE1a',
+          id: 'colorsGroupsCommon',
+          group: 'colorsGroupsCommon',
+          title: 'Color Popularity By Designer',
+          chartTitle: 'Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsGroupsCommon(vm.prepareRequestParams())
+              .then(function (results) {
+                return results;
+              });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE1b',
+          id: 'colorsGroupsCommon2',
+          group: 'colorsGroupsCommon2',
+          title: 'Expanded Color Popularity By Designer',
+          chartTitle: 'Expanded Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.colorsGroupsCommon(vm.prepareRequestParams())
+              .then(function (results) {
+                return dashboardRepository['year'].getColorPalette(vm.filter.year.all ? 2018 : vm.filter.year.id, vm.prepareColorsParams(), 250)
+                  .then(function (data) {
+                    results['palettes'] = data;
+                    return results;
+                  });
+              });
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE2a',
+          id: 'top4forDesigner',
+          group: 'top4forDesigner',
+          title: 'Two Year Comparison of Color Popularity By Designer',
+          chartTitle: 'Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
+            }
+
+            return $q.all([
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
+                .then(function (results) {
+                  return results;
+                }),
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
+                .then(function (results) {
+                  return results;
+                })
+            ]).then(function (results) {
+              return _.map(results, function (result, i) {
+                return {
+                  title: yearsRange[i],
+                  data: result
+                };
+              });
+            });
+          },
+          apiAfter: function (model) {
+            model.city = vm.filter.city.title;
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE2b',
+          id: 'top4forDesigner2',
+          group: 'top4forDesigner2',
+          title: 'Expanded Two Year Comparison of Color Popularity By Designer',
+          chartTitle: 'Expanded Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
+            if (vm.filter.year.all) {
+              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
+            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
+            }
+            return $q.all([
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
+                .then(function (results) {
+                  return results;
+                }),
+              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
+                .then(function (results) {
+                  return results;
+                }),
+              dashboardRepository['year'].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
+                .then(function (data) {
+                  return data;
+                }),
+              dashboardRepository['year'].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
+                .then(function (data) {
+                  return data;
+                })
+            ]).then(function (results) {
+              return _.map(results,
+                function (result, i) {
+                  return {
+                    title: yearsRange[i],
+                    data: result
+                  };
+                });
+            });
+          },
+          apiAfter: function (model) {
+            model.city = vm.filter.city.title;
+          },
+          filters: {
+            category: true,
+            season: true,
+            year: true,
+            designer: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['category', 'season', 'year']
+          ],
+          options: {
+            extraView: true
+          }
+        },
+        {
+          qNumber: 'DE3a',
+          id: 'top4Grid',
+          group: 'top4Grid',
+          title: 'Designers Top Four Colors',
+          chartTitle: 'Designers Top Four Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+          api: function () {
+            return charts.designersWithTopColors(vm.prepareRequestParams());
+          },
+          filters: {
+            season: true,
+            year: true,
+            region: true
+          },
+          titleGroups: [
+            ['designer'],
+            ['season', 'year']
+          ]
+        }
+        /*           {
+         id: 'colorsUniqueWithLevelsGrouped',
+         group: 'colorsUniqueWithLevels',
+         title: 'All colors with their distribution per region / city / season / year - GROUPED',
+         chartTitle: 'A Comparative View of All Colors used in {{vm.filter.region.title}} {{vm.filter.city.title}} And Their Distribution {{vm.getAbbrv("season")}} {{vm.filter.year.title}}',
+         api: function() {
+         return charts.colorsUniqueGroups(vm.filter.year.id, vm.filter.season.title, null, vm.filter.city.title);
+         },
+         apiAfter:  function(model, results) {
+         //                            vm.model.ordered = true;
+         model.grouped = true;
+         },
+         filters: {
+         seasons: true,
+         years: true,
+         regions: true,
+         cities: true
+         }
+         },
+         */
+      ];
+
+      vm.currentChart = vm.charts[0];
+      vm.chartsCurrentViewType = null;
+
+      $scope.$watch('[vm.currentChart, vm.filter]', loadData, true);
+
+      $scope.$watch('vm.filter.region', function (regionNewV) {
+        if (regionNewV) {
+          if (!regionNewV.all) {
+            vm.meta.cities = _.filter(cache.cities, function (city) {
+              if (city.region) {
+                return city.region.toLowerCase() === regionNewV.serverName.toLowerCase() || city.all
+              }
+            })
+          } else if (regionNewV.all) {
+            angular.copy(cache.cities, vm.meta.cities);
+          }
+          vm.filter.city = vm.meta.cities[0];
+        }
+
+        // var region = (cache.regions || {})[(vm.filter.region || {}).id] || {};
+        // vm.meta.cities = region.cities;
+        // vm.filter.city = (region.cities || [])[0];
+        //
+        // // city must be already selected before starting to filter
+
+        if (!loading.isMetaLoadedSetup) {
+          loading.metaLoaded.promise.then(function () {
+            loading.metaReady.resolve();
+          });
+          loading.isMetaLoadedSetup = true;
+        }
+      });
+
+      // $scope.$watch(function () {
+      //   return dashboardOverlayService.showOverlay;
+      // }, function (newValue, oldValue) {
+      //   vm.showDashboardOverlay = newValue;
+      // });
+
+      function loadData(newV, oldV) {
+        // dashboardOverlayService.loadingStart(10000);
+        loading.currentRequestId = Math.random();
+        if (newV && oldV) {
+          if (newV[0].qNumber !== oldV[0].qNumber) {
+            vm.filter.designer = vm.meta.designers[0];
+
+            if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
+              vm.meta.regions = _.filter(vm.meta.regions, function (item) {
+                return !item.all;
+              });
+              vm.filter.region = vm.meta.regions[0];
+            } else if (!_.find(vm.meta.regions, 'all')) {
+              vm.meta.regions.unshift({id: 'all', title: 'ALL REGIONS', region: 'all', serverName: 'all', all: true});
+              vm.filter.region = vm.meta.regions[0];
+            }
+          }
+        }
+
+        loading.filtersReady.then(function () {
+          vm.model = null;
+
+          (function (currentRequestId) {
+            vm.currentChart.api().then(function (result) {
+
+              if (currentRequestId !== loading.currentRequestId || !result) {
+                return;
+              }
+              vm.model = result;
+              if (vm.currentChart.apiAfter) {
+                vm.currentChart.apiAfter(vm.model, result);
+              }
+              vm.title = prepareTitle(vm.currentChart.chartTitle);
+              prepareDescription();
+            });
+            // dashboardOverlayService.loadingCompleted();
+          })(loading.currentRequestId);
+        });
+      }
+
+      function prepareTitle(title) {
+        var exp = $interpolate(title);
+        return exp($scope);
+      }
+
+      function prepareDescription() {
+        vm.description = vm.description || (vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
+          vm.filter.city.title + ' | REGIONS-' + vm.filter.region.title + ' | DESIGNER-' + vm.filter.designer.title +
+          ' | SEASONS-' + vm.filter.season.title);
+
+        var regionId = null;
+        switch (vm.filter.region.id) {
+          case 'europe':
+            regionId = 2;
+            break;
+          case 'north_america':
+            regionId = 3;
+            break;
+          case 'latin_america':
+            regionId = 4;
+            break;
+          case 'asia_pacific':
+            regionId = 1;
+            break;
+        }
+
+        var yearFrom = null;
+        var yearTo = vm.filter.year.id === 'all' ? vm.meta.years[1].title : vm.filter.year.id;
+        if (vm.currentChart.qNumber === 'CO3a' || vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b') {
+          yearFrom = yearTo - 4;
+        } else if (vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b') {
+          yearFrom = yearTo - 2;
+        } else if (vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b') {
+          yearFrom = yearTo - 1;
+        }
+
+        $http({
+          url: (appConfig.webServiceUrl + 'stats'),
+          method: 'GET',
+          params: {
+            fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
+            fashionDesigner: vm.filter.designer.id === 'all' ? null : vm.filter.designer.id,
+            fashionRegion: regionId || null,
+            fashionCity: vm.filter.city.id === 'all' ? null : vm.filter.city.id,
+            fashionCategory: vm.filter.category.id === 'all' ? null : vm.filter.category.id,
+            fashionYear: yearFrom || vm.filter.year.id === 'all' ? null : vm.filter.year.id,
+            yearFrom: yearFrom || null,
+            yearTo: yearFrom ? yearTo : null
+          }
+        }).then(function (res) {
+          vm.grayList = res.data.data;
+          vm.description = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
+            ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
+            ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
+        });
+      }
+
+      vm.labelToGray = function (selector, title) {
+        var result = true;
+
+        if (title.indexOf('ALL ') === -1) {
+          _.forEach(vm.grayList[selector], function (item) {
+            if (item.title === title) {
+              result = false;
+            }
+          });
+        }
+        return result;
+      };
+
+      vm.isFilterItems = function (selector, title) {
+        if (selector === 'regions') {
+          switch (title) {
+            case 'Europe':
+              title = 'Europe';
+              break;
+            case 'North America':
+              title = 'North America';
+              break;
+            case 'South America':
+              title = 'Latin America';
+              break;
+            case 'Asia and Pacific':
+              title = 'Asia Pacific';
+              break;
+          }
+        }
+
+        var result = true;
+
+        if (vm.grayList[selector] === undefined) {
+          result = false;
+        } else if (selector === 'years' && vm.filter.year.title === 'ALL YEARS' && (vm.currentChart.qNumber === 'CO3a' ||
+            vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
+            vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
+            vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
+          result = false;
+        } else if (selector === 'regions' && vm.currentChart.qNumber === 'RE1a') {
+          result = false;
+        } else if (vm.grayList === {} || title.toString().indexOf('ALL ') === -1) {
+          _.forEach(vm.grayList[selector], function (item) {
+            if (item.title === title.toString()) {
+              result = false;
+            }
+          });
+        } else {
+          result = false;
+        }
+        return result;
+      };
+
+      vm.isFilterVisible = function (filterId) {
+        var filterOptions = vm.currentChart.filters || {};
+
+        var filter = filterOptions.all;
+        if (!filter) {
+          filter = filterOptions[filterId];
+        }
+
+        if (filter === true) {
+          return true;
+        } else if (angular.isFunction(filter)) {
+          return filter();
+        }
+
+        return false;
+      };
+
+      vm.generateImgName = function (extension) {
+        var abbrevs = {
+          qNumber: vm.currentChart.qNumber,
+          category: vm.filter.category.all ? 'AllCa' : vm.getAbbrv('category'),
+          season: vm.filter.season.all ? 'AllSe' : vm.getAbbrv('season'),
+          year: vm.filter.year.all ? 'AllYe' : '17',
+          region: vm.filter.region.all ? 'AllRe' : vm.getAbbrv('region'),
+          city: vm.filter.city.all ? 'AllCi' : vm.getAbbrv('city')
+        };
+        var result = '';
+        var date = moment().format('L');
+
+        _.map(abbrevs, function (item) {
+          result += item + '.';
+        });
+
+        return result + date + '.jpg';
+      };
+
+      vm.exportJpg = function () {
+        statsService.infographics();
+        var captureEl = angular.element('#capture');
+        var footer = angular.element('.customized-infographics-footer');
+        var titles = angular.element('.graphic-titles');
+        footer.css({display: 'block'});
+        // titles.css({'text-align': 'left', 'font-size': '3em'});
+        captureEl.css({'padding-top': '30px'});
+        var captureElHeight = captureEl.height();
+        var captureElWidth = captureEl.width();
+
+        timeout(function () {
+          html2canvas(captureEl[0], {
+            height: captureElHeight + 20,
+            width: captureElWidth + 10,
+            background: '#fff'
+          }).then(function (canvas) {
+            var img = canvas.toDataURL("image/jpeg");
+            download(img, vm.generateImgName('jpg'), "image/jpg");
+            captureEl.css({'padding': '0'});
+            footer.css({display: 'none'});
+            titles.css({'font-size': '20px', 'text-align': 'center'});
+          });
+        }, 50);
+      };
+
+      vm.reportJpg = function () {
+        var captureEl = angular.element('#capture');
+        var captureElHeight = captureEl.height();
+        var captureElWidth = captureEl.width();
+        timeout(function () {
+          html2canvas(captureEl[0], {
+            height: captureElHeight + 20,
+            width: captureElWidth + 20,
+            background: '#fff'
+          }).then(function (canvas) {
+            var img = canvas.toDataURL("image/jpeg");
+            download(img, vm.generateImgName('jpg'), "image/jpg");
+          });
+        }, 50);
+      };
+
+      function generateRandomGroupColorByGroupTitle(title) {
+        title = (title || '').replace(/[^\w]/g, '').toLowerCase();
+        var group = (groupTitlesTemplates[title] || {}).template || '#{0}{1}{2}';
+
+        return String.format(group,
+          randomColorFraction() + randomColorFraction(),
+          randomColorFraction() + randomColorFraction(),
+          randomColorFraction() + randomColorFraction());
+
+        function randomColorFraction() {
+          return Math.round(Math.random() * 15).toString(16);
+        }
+      }
+    }
+
+  ]);
+}(angular));
+
+angular
+  .module('app')
+  .component('customizedInfographicsComponent', {
+    templateUrl: 'app/components/customized-infographics/customized-infographics.tmpl.html'
+  });
+
+angular
+.module('app')
+.component('coursesDetailsComponent', {
+  templateUrl: 'app/components/courses-details/courses-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, $state, localStorageService) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'courses/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'courses', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.courses) {
+        products.courses = {};
+      }
+      products.courses[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'courses'});
+    };
+  }
+});
+
+angular
+  .module('app')
+  .component('coursesComponent', {
+    templateUrl: 'app/components/courses/courses.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.pageData = [];
+      vm.categories = [];
+      vm.cacheItems = [];
+      vm.level = [];
+      vm.topic = [];
+      vm.provider = [];
+      vm.topicModel = 'TOPIC';
+      vm.providerModel = 'PROVIDER';
+      vm.levelModel = 'LEVEL';
+      vm.items = [];
+      vm.flag = true;
+      var numberOfElements = 3;
+      var count = 1;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'courses.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                vm.cacheItems.push(angular.copy(item.data));
+                return item.data;
+              });
+              vm.pageData.forEach(function (t) {
+                if (t.course_provider && !vm.provider.includes(t.course_provider)) {
+                  vm.provider.push(t.course_provider);
+                }
+              });
+              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
+              vm.level = ['Beginner', 'Intermediate', 'Advanced'];
+              vm.select();
+            }
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.filterData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
+
+      vm.select = function () {
+        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.level.includes(vm.levelModel)) {
+          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
+            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.course_topic) &&
+              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.course_provider) &&
+              (!vm.level.includes(vm.levelModel) || vm.levelModel === t.course_level)) {
+              return t;
+            }
+          });
+        } else {
+          vm.filterData = angular.copy(vm.cacheItems);
+        }
+        vm.items = [];
+        count = 1;
+        vm.sortItems();
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('contactUsComponent', {
+    templateUrl: 'app/components/contact-us/contact-us.tmpl.html',
+    controller: function ($state, $http, appConfig, dataValidate) {
+      this.data = {
+        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
+        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
+        title: {value: '', required: true, name: 'title', type: ''},
+        company: {value: '', required: true, name: 'company name', type: 'provide'},
+        phone: {value: '', name: 'phone number', type: 'enter'},
+        companyEmail: {value: '', required: true, name: 'company email', type: 'provide'},
+        comments: {value: '', required: true, name: 'comments', type: 'enter'}
+      };
+
+      this.contactUs = function () {
+        if (dataValidate.validate(this.data)) {
+          var data = {};
+          for (var item in this.data) {
+            data[item] = this.data[item].value;
+          }
+          $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
+            params: data
+          }).then(function (res) {
+            if (res.status === 200) {
+              $state.go('thank-you');
+            }
+          });
+        }
+      };
+    }
+  });
+
+angular
+	.module('app')
+	.component('colorPickerComponent', {
+		templateUrl: 'app/components/color-picker/color-picker.tmpl.html',
+		controller: function ($location, $scope, $http, appConfig, anchorSmoothScroll, searchColor) {
+			var vm = this;
+
+			vm.gotoElement = function (eID) {
+				$location.hash('prefooter');
+				anchorSmoothScroll.scrollTo(eID);
+				$location.hash('');
+			};
+			// vm.paintColorNamesByPicker = [];
+			// vm.colorAssociationNamesByPicker = [];
+
+			var color_picker = document.getElementById("color_picker"),
+							color_id = document.getElementById("color_id");
+			$scope.colorPickerGray = 100;
+			$scope.colorPickerOpacity = 1;
+			document.getElementById('value_span').innerHTML = '100%';
+
+			vm.numOfpaintColorNames = 0;
+			vm.numOfcolorAssociationNames = 0;
+			vm.colorAssociationNameWord = '';
+
+			$scope.changeColor = function () {
+				color_picker.onmousedown = select_color;
+			};
+
+			color_picker_add();
+
+			$scope.colorPickerSliderGray = function () {
+				var value = document.getElementById('rg').value;
+				color_id.style.filter = "saturate(" + value + "%)";
+			};
+
+			$scope.colorPickerSliderOpacity = function () {
+				var value = document.getElementById('range_opacity').value;
+				document.getElementById('value_span').innerHTML = value * 100 + '%';
+				color_id.style.opacity = value;
+			};
+
+			$scope.colorPickerRGB = function () {
+				var colorInputR = document.getElementById('colorInputR').value,
+						colorInputG = document.getElementById('colorInputG').value,
+						colorInputB = document.getElementById('colorInputB').value;
+
+				$scope.colorRGB_R = colorInputR;
+				$scope.colorRGB_G = colorInputG;
+				$scope.colorRGB_B = colorInputB;
+
+				var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + ")";
+				color_id.style.backgroundColor = inputRGB;
+			}
+
+			function color_picker_add() {
+				color_picker_ = color_picker.getContext("2d"),
+					center_x = (color_picker.width) / 2,
+					center_y = (color_picker.height) / 2,
+					sx = center_x,
+					sy = center_y;
+
+				$scope.colorRGB_R = 0;
+				$scope.colorRGB_G = 0;
+				$scope.colorRGB_B = 0;
+				palette = new color_picker_element(center_x, center_y, sx, sy);
+				palette.draw();
+			}
+
+			function select_color(e) {
+				var x = e.pageX - color_picker.offsetLeft - 48,
+						y = e.pageY - color_picker.offsetTop - 570,
+						pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+						// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
+						pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
+				color_id.style.backgroundColor = pixelColor;
+				// console.log('xxx', x, 'yyy', y);
+				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+
+				$scope.pixel = pixel;
+				$scope.colorRGB_R = pixel[0];
+				$scope.colorRGB_G = pixel[1];
+				$scope.colorRGB_B = pixel[2];;
+			}
+
+
+			function color_picker_element(center_x, center_y, sx, sy) {
+				this.center_x = center_x;
+				this.center_y = center_y;
+				this.sx = sx;
+				this.sy = sy;
+				this.draw = function () {
+					for (var i = 0; i < 360; i += 0.1) {
+						var rad = (i - 45) * (Math.PI) / 180;
+						color_picker_.strokeStyle = "hsla(" + i + ", 100%, 50%, 1.0)";
+						color_picker_.beginPath();
+						color_picker_.moveTo(center_x, center_y);
+						color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+						color_picker_.stroke();
+					}
+				}
+			}
+
+			this.searchByRGB = function () {
+				vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
+				// $http.get(appConfig.colorAPI +
+				// 	'minred=' + $scope.colorRGB_R +
+				// 	'&maxred=' + $scope.colorRGB_R +
+				// 	'&mingreen=' + $scope.colorRGB_G +
+				// 	'&maxgreen=' + $scope.colorRGB_G +
+				// 	'&minblue=' + $scope.colorRGB_B +
+				// 	'&maxblue=' + $scope.colorRGB_B, {})
+				// 	.then(function (res) {
+				// 		if (res.data.length > 0) {
+				// 			vm.paintColorNamesByPicker = res.data.map(function (item) {
+				// 				RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+				// 				colorName = item.ShortName;
+				// 				return {colorName: colorName, RGB: RGB};
+				// 			});
+				// 			if (vm.paintColorNamesByPicker) {
+				// 				vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
+				// 			}
+				//
+				// 			$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
+				// 				.then(function (res) {
+				// 					vm.numOfcolorAssociationNames = res.data.length;
+				// 					vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+				// 				});
+				// 		}
+				// 	});
+				var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
+					.then(function (res) {
+						if (res.data.length > 0) {
+							vm.paintColorNamesByPicker = res.data.map(function (item) {
+								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+								colorName = item.ShortName;
+								return {colorName: colorName, RGB: RGB};
+							});
+							if (vm.paintColorNamesByPicker) {
+								vm.colorAssociationNameWord = {'shortname': vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20')};
+							}
+							$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
+								.then(function (res) {
+									vm.validData = res.data;
+									vm.numOfcolorAssociationNames = res.data.length;
+									vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+								});
+						}
+					});
+			};
+
+			this.searchByShortNames = function (colorAssociationNameWord) {
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: vm.colorAssociationNameWord})
+					.then(function (res) {
+						vm.validData = res.data;
+						if (res && res.data.length > 0) {
+							var RGB = '',
+								colorName = '';
+							vm.colorAssociationNamesByPicker = res.data.map(function (item) {
+								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+								colorName = item.ShortName;
+								return {colorName: colorName, RGB: RGB};
+							});
+							searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
+							$location.url('/color-index-accordion');
+						}
+					});
+			};
+
+			$(document).ready(function () {
+				$(".scroll_down").click(function () {
+					$('html, body').animate({
+						scrollTop: $(".scroll-end").offset().top
+					}, 1500);
+				});
+			});
+
+		}
+	});
+
+angular
+  .module('app')
+  .component('colorNamingInfoComponent', {
+    templateUrl: 'app/components/color-naming-info/color-naming-info.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+        var vm = this;
+
+        $(document).ready(function() {
+            $(".scroll_down").click(function() {
+                $('html, body').animate({
+                    scrollTop: $("#education-top").offset().top
+                }, 1500);
+            });
+        });
+    }
+  });
+
+angular
+  .module('app')
+  .component('colorNamingIndexComponent', {
+    templateUrl: 'app/components/color-naming-index/color-naming-index.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+      var vm = this;
+
+
+    }
+  });
+
+angular
+	.module('app')
+	.component('colorIndexSearchComponent', {
+		templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
+		controller: function (dataValidate, appConfig, $window, $location, anchorSmoothScroll, $http, $scope, searchColor) {
+			var vm = this;
+			vm.paintColorNamesData = [];
+			vm.colorAssociationNames = [];
+
+			this.colorSearch = function () {
+				if (this.data.color != ' ') {
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {
+						params: {shortname: vm.data.color}
+					})
+						.then(function (res) {
+							vm.colorValidDataShort = res.data;
+							if (res && res.data.length > 0) {
+								var RGB = '',
+									colorName = '';
+								vm.paintColorNamesData = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
+								});
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {
+									params: {shortname: vm.data.color}
+								})
+									.then(function (res) {
+										if (res && res.data.length > 0) {
+											var RGB = '',
+												colorName = '';
+											vm.colorAssociationNames = res.data.map(function (item) {
+												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+												colorName = item.ShortName;
+												return {colorName: colorName, RGB: RGB};
+											});
+											searchColor.set(vm.paintColorNamesData, vm.colorAssociationNames);
+											$location.url('/color-index-accordion');
+										}
+									});
+							}
+						});
+				}
+			};
+		}
+	});
+
+angular
+  .module('app')
+  .component('colorIndexAccordionComponent', {
+    templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
+    controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
+      var vm = this;
+
+			vm.paintColorNames = searchColor.getPaintColorNames();
+      vm.colorAssociationNames = searchColor.getColorAssociationNames();
+
+      vm.searchColorName = [];
+
+			$scope.pageSize = 80;
+
+      // if (colorRgb !== undefined) {
+      //
+      //   var similarSaturateColors = [];
+      //   var similarDarkenColors = [];
+      //
+      //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
+      //     similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
+      //     similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
+      //   }
+      //   // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
+      //   // notDuplicateColors(similarSaturateColors);
+      //   // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
+      //
+      //   vm.similarSaturateColors = similarSaturateColors;
+      //   // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
+      //   vm.similarDarkenColors = similarDarkenColors;
+      //   // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
+      // }
+
+      var colorNamesItems = [],
+        		colorRgbItems = [];
+
+      if (vm.colorAssociationNames !== undefined) {
+        if (vm.colorAssociationNames.length > 0) {
+          vm.colorAssociationNames.forEach(function (color) {
+            colorRgbItems.push(color.RGB);
+						colorNamesItems.push(color.colorName);
+          });
+        }
+      }
+
+      var colorNames = colorNamesItems.join(',');
+			// word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud
+
+      if (colorNames.length > 1) {
+				drawWordCloud(colorNames);
+			}
+
+      function drawWordCloud(text_string) {
+        var common = 'poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,says,said,shall';
+
+        var word_count = {};
+
+        var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
+        if (words.length === 1) {
+          word_count[words[0]] = 1;
+        } else {
+          words.forEach(function (word) {
+            var word = word.toLowerCase();
+            if (word !== '' && common.indexOf(word) === -1 && word.length > 1) {
+              if (word_count[word]) {
+                word_count[word]++;
+              } else {
+                word_count[word] = 1;
+              }
+            }
+          });
+        }
+        var svg_location = '#chart';
+        var widthOf84per = innerWidth - innerWidth*16/100;
+        var width = widthOf84per;
+        var height = 450;
+
+        var word_entries = d3.entries(word_count);
+
+        var xScale = d3.scale.linear()
+                .domain([0, d3.max(word_entries, function (d) {
+                  return d.value;
+                })
+                ])
+                .range([20, 100]);
+        d3.layout.cloud().size([width, height])
+                .timeInterval(20)
+                .words(word_entries)
+                .fontSize(function (d) {
+                  return xScale(Number(d.value)); 
+                })
+                .text(function (d) {
+                  return d.key; 
+                })
+                .rotate(function () {
+                  return ~~(Math.random() * 2) * 90; 
+                })
+                .font('Impact')
+                .on('end', draw)
+                .start();
+				window.addEventListener("resize", draw(words));
+        function draw(words) {
+					console.log("window.innerWidth", window.innerWidth);
+          d3.select(svg_location).append('svg')
+                    .attr('width', width)
+                    .attr('height', height)
+						        // .attr("preserveAspectRatio", "xMidYMid meet")
+						        // .attr("viewBox", "0 0 1000 450")
+                    .append('g')
+                    .attr('transform', 'translate(' + [widthOf84per/2, 225] + ')')
+                    // .attr('transform', 'scale(2)')
+                    .selectAll('text')
+                    .data(words)
+                    .enter().append('text')
+                    .style('font-size', function (d) {
+                      return xScale(d.value*0.5) + 'px';
+                    })
+                    .style('font-family', 'Impact')
+                    .style('fill', function (d, i) {
+                      return 'rgb(' + colorRgbItems[i] + ')';
+                    })
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', function (d) {
+                      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
+                    })
+                    .text(function (d) {
+                      return d.key; 
+                    });
+        }
+        d3.layout.cloud().stop();
+      }
+                                                                                                    // METHOD RGB TO HEX
+      function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? '0' + hex : hex;
+      }
+
+      function rgbToHex(r, g, b) {
+        return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+      }
+
+      //                                                                                         SELECT FOR COLOR DATA
+      $(document).ready(function() {
+        var widthContainer = window.innerWidth - 200;
+        var widthOneElement = $('.checkbox-accordion-item').width();
+        var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
+        var allElements = vm.paintColorNames.length;
+        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyElements = integerElementsOnRow - elementsOnRow;
+        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
+        
+        for(var i = 0; i < emptyElements; i++) {
+          $('.color-index-accordion-item__last-line').append(emptyBlock);
+        }
+        
+        $(document).click(function(event) {
+          if ($(event.target).closest(".selectPerPage").length) return;
+          $('.selectPerPage__list').removeClass('show');          
+          event.stopPropagation();
+        });
+      });
+
+      $scope.showSelect = function() {
+        $('.selectPerPage__list').toggleClass('show');
+      }
+    }
+  });
+angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
+  $scope.oneAtATime = true;
+});
+
+angular
+  .module('app')
+  .component('colorIndexComponent', {
+    templateUrl: 'app/components/color-index/color-index.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+      var vm = this;
+
+
+    }
+  });
+
+angular
+  .module('app')
+  .component('colorEmotionComponent', {
+    templateUrl: 'app/components/color-emotion/color-emotion.tmpl.html',
+    controller: function ($location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+
+
+
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartThankComponent', {
+    templateUrl: 'app/components/cart-thank/cart-thank.tmpl.html',
+    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
+      var vm = this;
+
+      vm.orderId = localStorageService.get('orderId');
+      localStorageService.remove('orderId');
+      localStorageService.remove('purchase');
+      localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
+      vm.products = localStorageService.get('purchaseItems');
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartPageComponent', {
+    templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
+    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService, $window) {
+      var vm = this;
+
+      vm.init = function () {
+        vm.wayBack = $stateParams.wayBack || 'profile';
+        vm.wayBackName = ' to ';
+
+        switch ($stateParams.wayBack) {
+          case 'reports':
+            vm.wayBackName += 'Color Reports';
+            break;
+          case 'courses':
+            vm.wayBackName += 'Color Courses';
+            break;
+          case 'teachingMaterials':
+            vm.wayBackName += 'Color Teaching Materials';
+            break;
+          case 'profile':
+            vm.wayBackName += 'Profile';
+            break;
+          default:
+            vm.wayBackName = '';
+        }
+
+        vm.products = [];
+        vm.all = 0;
+        vm.tax = 0;
+        vm.IDs = localStorageService.get('products');
+
+        vm.getProductItems(vm.IDs.reports, 'reports');
+        vm.getProductItems(vm.IDs.courses, 'courses');
+        vm.getProductItems(vm.IDs.teaching_materials, 'teaching_materials');
+      };
+
+      vm.getProductItems = function (obj, name) {
+        for (var key in obj) {
+          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
+            .then(function (res) {
+              vm.pageData = res.data.data.data;
+              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+              vm.pageData.file = res.data.data.files && res.data.data.files[0];
+              vm.pageData.analitics = angular.copy(res.data.data.analytics);
+              vm.pageData.count = obj[key];
+              vm.pageData.type = name;
+              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
+              vm.products.push(vm.pageData);
+            });
+        }
+      };
+
+      vm.goCheckout = function () {
+        var purchase = {IDs: {}};
+        purchase.amount = vm.all;
+        for (var type in vm.IDs) {
+          purchase.IDs[type] = {};
+          for (var id in vm.IDs[type]) {
+            if (vm.IDs[type][id] < 1) {
+              return;
+            } else {
+              purchase.IDs[type][id] = vm.IDs[type][id];
+            }
+          }
+        }
+
+        localStorageService.set('purchase', purchase);
+        $state.go('cart-checkout');
+      };
+
+      vm.removeProduct = function (id, type, index) {
+        modalService.showModal(4, function () {
+          delete vm.IDs[type][id];
+          vm.products.splice(index, 1);
+          localStorageService.set('products', vm.IDs);
+        });
+      };
+
+      vm.goWayBack = function () {
+        if ($window.history.length < 3) {
+          $state.go('about');
+        } else if (vm.wayBackName === '') {
+          $window.history.back();
+        } else {
+          $state.go(vm.wayBack);
+        }
+      };
+
+      vm.editCount = function (id, index, type, value) {
+        if (vm.products[index].count + value > 0) {
+          vm.products[index].count = vm.products[index].count + value;
+          vm.IDs[type][id] = vm.IDs[type][id] + value;
+          localStorageService.set('products', vm.IDs);
+          vm.all = vm.all + vm.products[index].price * value;
+        } else {
+          vm.removeProduct(id, type, index);
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartCheckoutMethodsComponent', {
+    templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
+    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope, $cookies) {
+      var vm = this;
+
+      function init() {
+        vm.userIsLoggedIn();
+
+        vm.methodNumber = 1;
+        vm.payError = false;
+        vm.nonce = false;
+        vm.errFlag = false;
+        vm.payDataFlag = false;
+        vm.placeOrderFlag = false;
+        vm.maxMethod = 1;
+        vm.tax = 0;
+        vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
+        vm.registerAndCheckout = false;
+        vm.checkoutAsGuest = false;
+        vm.country = categoryValues('country');
+        vm.states = categoryValues('states');
+
+        vm.email = '';
+        vm.password = '';
+        vm.error = '';
+
+        vm.data = {
+          first_name: {value: '', required: true, name: 'first name', type: 'provide'},
+          last_name: {value: '', required: true, name: 'last name', type: 'provide'},
+          email: {value: '', required: true, name: 'email', type: 'provide'},
+          middle_name: {value: '', name: 'middle name', type: 'provide'},
+          address: {value: '', required: true, name: 'address', type: 'provide'},
+          second_address: {value: '', name: 'second_address', type: 'provide'},
+          city: {value: '', required: true, name: 'city', type: 'provide'},
+          zip: {value: '', required: true, name: 'zip', type: 'numeric'},
+          telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
+          state: {
+            value: vm.states[0],
+            required: true,
+            name: 'state',
+            type: 'both'
+          },
+          country: {
+            value: vm.country[0],
+            required: true,
+            name: 'country',
+            type: 'select'
+          }
+        };
+
+        vm.products = [];
+        vm.all = 0;
+        vm.purchase = localStorageService.get('purchase');
+
+        vm.getProductItems(vm.purchase.IDs.reports, 'reports');
+        vm.getProductItems(vm.purchase.IDs.courses, 'courses');
+        vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
+        vm.editGrayList();
+      }
+
+      $scope.getStates = function (search) {
+        var newState = vm.states.slice();
+        if (search.length > 0 && newState.indexOf(search) === -1) {
+          newState.unshift(search);
+        }
+        return newState;
+      };
+
+      vm.getBillingData = function () {
+        if (vm.user && vm.user.id) {
+          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json', {params: {token: authService.token}})
+            .then(function (res) {
+              // console.log('res',res);
+              if (res && res.data && res.data[0]) {
+                // console.log('res',res);
+
+                for (var key in vm.data) {
+                  if (key === 'state') {
+                    var index = _.findIndex(vm.states, function (item) {
+                      return item.title === res.data[0][key];
+                    });
+                    vm.data[key].value = vm.states[index];
+                  }
+                  if (key === 'country') {
+                    var index2 = _.findIndex(vm.country, function (item) {
+                      return item.title === res.data[0][key];
+                    });
+                    vm.data[key].value = vm.country[index2];
+                  }
+                  vm.data[key].value = res.data[0][key] || '';
+                }
+              }
+              if (!vm.data.email.value && vm.user) {
+                vm.data.email.value = vm.user.email;
+              }
+              vm.continue();
+            })
+            .catch(function (err) {
+              // console.log('ERROR',err);
+            });
+        } else {
+          return false;
+        }
+      };
+
+      vm.login = function () {
+        vm.error = false;
+        authService.login(this.email, this.password)
+          .then(function (data) {
+            if (data && data.success) {
+              vm.user = localStorageService.get('currentUser');
+            } else {
+              vm.error = true;
+            }
+          });
+      };
+
+      vm.uploadBillingInfo = function () {
+        if (vm.user.id) {
+          if (dataValidate.validate(vm.data)) {
+            var data = {};
+            for (var item in vm.data) {
+              if (vm.data[item].type === 'select') {
+                data[item] = vm.data[item].value.title || vm.data[item].value;
+              } else {
+                data[item] = vm.data[item].value;
+              }
+            }
+            data.member_id = vm.user.id;
+            data.token = authService.token;
+            $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
+              .then(function (res) {
+                vm.continue();
+              })
+              .catch(function (err) {
+                // console.log('ERROR',err);
+              });
+          }
+        } else {
+          vm.continue();
+        }
+      };
+
+      vm.continue = function () {
+        if (vm.methodNumber === 2 && !dataValidate.validate(vm.data)) {
+          return;
+        }
+        vm.methodNumber = vm.methodNumber + 1;
+        if (vm.methodNumber === 3 && !vm.purchase.amount) {
+          vm.methodNumber = 4;
+        }
+        if (vm.maxMethod < vm.methodNumber) {
+          vm.maxMethod = vm.methodNumber;
+        }
+        vm.editGrayList();
+      };
+
+      vm.editGrayList = function () {
+        vm.methodStyle.forEach(function (value, index) {
+          if (index === vm.methodNumber - 1) {
+            vm.methodStyle[index] = 'black';
+          } else {
+            vm.methodStyle[index] = 'gray';
+          }
+        });
+      };
+
+      vm.getProductItems = function (obj, name) {
+        for (var key in obj) {
+          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
+            .then(function (res) {
+              vm.pageData = res.data.data.data;
+              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+              vm.pageData.analitics = angular.copy(res.data.data.analytics);
+              vm.pageData.count = obj[key];
+              vm.pageData.type = name;
+              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
+              vm.products.push(vm.pageData);
+            });
+        }
+      };
+
+      vm.goToMethod = function (number) {
+        vm.errFlag = false;
+        vm.methodNumber = number;
+        vm.editGrayList();
+      };
+
+      vm.passwordRecover = function () {
+        $state.go('password-recover-cart');
+      };
+
+      vm.userIsLoggedIn = function () {
+        vm.loginFlag = ($cookies.get('hg_session') !== undefined);
+        if (vm.loginFlag) {
+          vm.getBillingData();
+        } else {
+          vm.methodNumber = 1;
+        }
+      };
+
+      vm.stepBack = function () {
+        vm.methodNumber = vm.methodNumber - 1;
+        vm.editGrayList();
+      };
+
+      vm.goToThank = function () {
+        $timeout(function () {
+          vm.errFlag = false;
+          vm.placeOrderFlag = true;
+        }, 0);
+        var names = [];
+        var prices = [];
+        vm.products.forEach(function (item) {
+          names.push(item.header);
+          prices.push(item.price);
+        });
+        var data = {
+          id: vm.user.id || 0,
+          email: vm.data.email.value,
+          reports: vm.purchase.IDs.reports,
+          teaching_materials: vm.purchase.IDs.teaching_materials,
+          courses: vm.purchase.IDs.courses,
+          payment_method_nonce: vm.nonce,
+          name: vm.data.first_name.value + ' ' + vm.data.last_name.value,
+          address: vm.data.address.value,
+          zip: vm.data.zip.value,
+          city: vm.data.city.value,
+          productsNames: names,
+          productsPrices: prices
+        };
+        $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
+          .then(function (res) {
+            if (res) {
+              vm.info = res.data.info;
+              if (res.data.status === 'fail') {
+                vm.errFlag = true;
+                $timeout(function () {
+                  vm.placeOrderFlag = false;
+                }, 0);
+              } else {
+                vm.errFlag = false;
+                localStorageService.set('purchaseItems', res.data.items);
+                localStorageService.set('orderId', res.data.orderId);
+                $timeout(function () {
+                  vm.placeOrderFlag = false;
+                }, 0);
+                $state.go('cart-thank');
+              }
+            }
+          })
+          .catch(function (err) {
+            vm.placeOrderFlag = false;
+            vm.errFlag = true;
+          });
+      };
+
+      braintree.client.create({
+        authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
+      }, function (err, clientInstance) {
+        if (err) {
+          // console.error(err);
+          return;
+        }
+        braintree.hostedFields.create({
+          client: clientInstance,
+          styles: {
+            'input': {
+              'font-size': '14px',
+              'font-family': 'helvetica, tahoma, calibri, sans-serif',
+              'color': '#3a3a3a'
+            },
+            ':focus': {
+              'color': 'black'
+            }
+          },
+          fields: {
+            number: {
+              selector: '#card-number',
+              placeholder: 'CREDIT CARD NUMBER *'
+            },
+            cvv: {
+              selector: '#cvv',
+              placeholder: 'CVV *'
+            },
+            expirationMonth: {
+              selector: '#expiration-month',
+              placeholder: 'MONTH',
+              select: {
+                options: [
+                  '01',
+                  '02',
+                  '03',
+                  '04',
+                  '05',
+                  '06',
+                  '07',
+                  '08',
+                  '09',
+                  '10',
+                  '11',
+                  '12'
+                ]
+              }
+            },
+            expirationYear: {
+              selector: '#expiration-year',
+              placeholder: 'YEAR',
+              select: {
+                options: true
+              }
+            }
+          }
+        }, function (err, hostedFieldsInstance) {
+          if (err) {
+            // console.error(err);
+            return;
+          }
+          hostedFieldsInstance.on('validityChange', function (event) {
+            $timeout(function () {
+              vm.payError = false;
+            }, 0);
+            var field = event.fields[event.emittedBy];
+            if (field.isValid) {
+              if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear' || event.emittedBy === 'cvv') {
+                if (!event.fields.expirationMonth.isValid || !event.fields.expirationYear.isValid || !event.fields.cvv.isValid) {
+                  return;
+                }
+              } else if (event.emittedBy === 'number') {
+                $('#card-number').next('span').text('');
+              }
+              // Remove any previously applied error or warning classes
+              $(field.container).parents('.form-group').removeClass('has-warning');
+              $(field.container).parents('.form-group').removeClass('has-success');
+              // Apply styling for a valid field
+              $(field.container).parents('.form-group').addClass('has-success');
+            } else if (field.isPotentiallyValid) {
+              // Remove styling  from potentially valid fields
+              $(field.container).parents('.form-group').removeClass('has-warning');
+              $(field.container).parents('.form-group').removeClass('has-success');
+              if (event.emittedBy === 'number') {
+                $('#card-number').next('span').text('');
+              }
+            } else {
+              // Add styling to invalid fields
+              $(field.container).parents('.form-group').addClass('has-warning');
+              // Add helper text for an invalid card number
+              if (event.emittedBy === 'number') {
+                $('#card-number').next('span').text('Looks like this card number has an error.');
+              }
+            }
+          });
+          hostedFieldsInstance.on('cardTypeChange', function (event) {
+            // Handle a field's change, such as a change in validity or credit card type
+            if (event.cards.length === 1) {
+              $('#card-type').text(event.cards[0].niceType);
+            } else {
+              $('#card-type').text('Card');
+            }
+          });
+          $('.panel-body').submit(function (event) {
+            $timeout(function () {
+              vm.payDataFlag = true;
+            }, 0);
+
+            event.preventDefault();
+            hostedFieldsInstance.tokenize(function (err, payload) {
+              if (err) {
+                $timeout(function () {
+                  vm.payError = err.message;
+                  vm.payDataFlag = false;
+                  // console.error(err);
+                  return;
+                }, 0);
+              }
+              // This is where you would submit payload.nonce to your server
+              $timeout(function () {
+                if (payload && payload.nonce) {
+                  vm.nonce = payload.nonce;
+                  vm.continue();
+                  vm.payDataFlag = false;
+                }
+              }, 0);
+            });
+          });
+        });
+
+        braintree.paypalCheckout.create({
+          client: clientInstance
+        }, function (paypalCheckoutErr, paypalCheckoutInstance) {
+
+          // Stop if there was a problem creating PayPal Checkout.
+          // This could happen if there was a network error or if it's incorrectly
+          // configured.
+          if (paypalCheckoutErr) {
+            console.error('Error creating PayPal Checkout:', paypalCheckoutErr);
+            return;
+          }
+
+          // Set up PayPal with the checkout.js library
+          paypal.Button.render({
+            locale: 'en_US',
+            style: {
+              size: 'small',
+              color: 'blue',
+              shape: 'pill',
+              label: 'paypal',
+              tagline: 'false'
+            },
+            env: 'sandbox', // or 'sandbox'
+
+            payment: function () {
+              return paypalCheckoutInstance.createPayment({
+                flow: 'checkout',
+                amount: vm.all,
+                currency: 'USD',
+                intent: 'sale'
+                // Your PayPal options here. For available options, see
+                // http://braintree.github.io/braintree-web/current/PayPalCheckout.html#createPayment
+              });
+            },
+
+            onAuthorize: function (data, actions) {
+              return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
+                if (err) {
+                  $timeout(function () {
+                    vm.payError = err.message;
+                    // console.error(err);
+                    return;
+                  }, 0);
+                }
+                // This is where you would submit payload.nonce to your server
+                $timeout(function () {
+                  if (payload && payload.nonce) {
+                    vm.nonce = payload.nonce;
+                    vm.continue();
+                  }
+                }, 0);
+                // Submit `payload.nonce` to your server.
+              });
+            },
+
+            onCancel: function (data) {
+              console.log('checkout.js payment cancelled', JSON.stringify(data, 0, 2));
+            },
+
+            onError: function (err) {
+              console.error('checkout.js error', err);
+            }
+          }, '#paypal-button').then(function () {
+            // The PayPal button will be rendered in an html element with the id
+            // `paypal-button`. This function will be called when the PayPal button
+            // is set up and ready to be used.
+          });
+
+        });
+      });
+
+      $scope.$watch(function () {
+        return authService.currentUser;
+      }, function (newVal) {
+        vm.user = localStorageService.get('currentUser');
+        if (vm.user) {
+          init();
+        }
+
+      });
+    }
+  });
+angular
+  .module('app')
+  .component('aboutPage', {
+    templateUrl: 'app/components/about-page/about-page.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce, localStorageService) {
+      var vm = this;
+      vm.pageData = {};
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'abouts/1.json')
+          .then(function (res) {
+            if (res && res.data) {
+              // var keys = Object.keys(res.data).filter(function (item) {
+              //   return !!~item.indexOf('_url');
+              // });
+              //
+              // angular.forEach(keys, function (key) {
+              //   res.data[key] = appConfig.dashboardServiceUrl + res.data[key]
+              // });
+
+              vm.pageData = res.data;
+              vm.pageData.editor = $sce.trustAsHtml(vm.pageData.editor);
+            }
+          });
+      };
+
+      angular.element(window.scrollTo(0, 0));
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
+      };
+
+      vm.playerAPI = function (action) {
+        vm.vimeoPlayer = angular.element('iframe#companyVimeoVideo')[0];
+        if (vm.vimeoPlayer) {
+          vm.vimeoAPI = $f(vm.vimeoPlayer).api(action);
+        }
+      };
+
+      vm.showVideoPopup = function () {
+        angular.element('#video-popup').show();
+        angular.element('body').addClass('modal-open');
+      };
+
+      vm.hideVideoPopup = function () {
+        vm.playerAPI('pause');
+        angular.element('#video-popup').hide();
+        angular.element('body').removeClass('modal-open');
+      };
+    }
+  })
 
 angular.module('app').directive('hueTrialExpiredMessage', function () {
   function link(scope, element, attrs) {
@@ -8954,4632 +13599,6 @@ angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', functi
     }
   };
 }]);
-
-angular
-  .module('app')
-  .component('verticalCoverageComponent', {
-    templateUrl: 'app/components/vertical-coverage/vertical-coverage.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'about_vertical_coverages.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = angular.copy(res.data);
-              vm.pageData.forEach(function (item) {
-                item.editor = item.editor.split('</ul>');
-                item.editor = item.editor.map(function (t) {
-                  return t + '</ul>';
-                });
-              });
-            }
-          });
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('unsubscribeComponent', {
-    templateUrl: 'app/components/unsubscribe/unsubscribe.tmpl.html',
-    controller: function ($http, appConfig, $stateParams) {
-      var self = this;
-      self.success = true;
-      $http.get(appConfig.dashboardServiceUrl + 'unsubscribe.json', {params: {token: $stateParams.token}})
-        .then(function (res) {
-          if (res.data && res.data.success) {
-            self.success = res.data.success;
-          }
-        });
-    }
-  });
-
-angular
-  .module('app')
-  .component('thankYouComponent', {
-    templateUrl: 'app/components/thank-you/thank-you.tmpl.html',
-    controller: function ($stateParams) {
-      // this.membership = $stateParams.parFrom === 'membership';
-      // switch ($stateParams.parFrom) {
-      //   case 'press': {
-      //     this.text = 'press request';
-      //     break;
-      //   }
-      //   case 'speaking': {
-      //     this.text = 'Speaking Engagements request';
-      //     break;
-      //   }
-      //   case 'contact': {
-      //     this.text = 'contacting request';
-      //     break;
-      //   }
-      //   case 'data': {
-      //     this.text = 'inquire about Data Partnership';
-      //     break;
-      //   }
-      //   case 'edu': {
-      //     this.text = 'inquire about Education Partnership';
-      //     break;
-      //   }
-      //   case 'inquire': {
-      //     this.text = 'inquire';
-      //     break;
-      //   }
-      //   case 'membership': {
-      //     this.text = 'We received your membership request. Thank you for reaching out.';
-      //     break;
-      //   }
-      //   default: {
-      //     this.text = 'request';
-      //     break;
-      //   }
-      // }
-    }
-  });
-
-angular
-  .module('app')
-  .component('termsComponent', {
-    templateUrl: 'app/components/terms/terms.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.find(function (item) {
-                return item.name === 'Terms of Use';
-              })
-            }
-          });
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('teachingMaterialsDetailsComponent', {
-  templateUrl: 'app/components/teaching-materials-details/teaching-materials-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'teaching_materials/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser')? true : false
-    };
-
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.aggProduct = function () {
-      // localStorageService.remove('products');
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.teaching_materials) {
-        products.teaching_materials = {};
-      }
-      products.teaching_materials[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'teachingMaterials'});
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('teachingMaterialsComponent', {
-    templateUrl: 'app/components/teaching-materials/teaching-materials.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.topicModel = 'TOPIC';
-      vm.providerModel = 'PROVIDER';
-      vm.typeModel = 'TYPE';
-      vm.pageData = [];
-      vm.categories = [];
-      vm.cacheItems = [];
-      vm.topic = [];
-      vm.provider = [];
-      vm.type = [];
-      vm.items = [];
-      vm.flag = true;
-      var numberOfElements = 3;
-      var count = 1;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'teaching_materials.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                vm.cacheItems.push(angular.copy(item.data));
-                return item.data;
-              });
-              vm.pageData.forEach(function (t) {
-                if (t.teaching_material_provider && !vm.provider.includes(t.teaching_material_provider)) {
-                  vm.provider.push(t.teaching_material_provider);
-                }
-              });
-              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
-              vm.type = ['Beginner', 'Intermediate', 'Advanced'];
-              vm.select();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterDate.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.showMore = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.select = function () {
-        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.type.includes(vm.typeModel)) {
-          vm.filterDate = angular.copy(vm.cacheItems).filter(function (t) {
-            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.teaching_material_topic) &&
-              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.teaching_material_provider) &&
-              (!vm.type.includes(vm.typeModel) || vm.typeModel === t.teaching_material_type)) {
-              return t;
-            }
-          });
-        } else {
-          vm.filterDate = angular.copy(vm.cacheItems);
-        }
-        vm.items = [];
-        count = 1;
-        vm.sortItems();
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('staffLoginComponent', {
-    templateUrl: 'app/components/staff-login/staff-login.tmpl.html',
-    controller: function (authService, appConfig, $state) {
-      var self = this;
-      self.buttonGoogleUrl = appConfig.dashboardServiceUrl + 'auth/google_oauth2';
-      this.email = '';
-      this.password = '';
-      this.isRemembered = false;
-      this.error = '';
-
-      this.login = function () {
-        self.error = false;
-        authService.login(this.email, this.password, this.isRemembered)
-          .then(function (data) {
-            if (data && data.success) {
-              $state.go('landing');
-            } else {
-              self.error = true;
-            }
-          });
-      };
-    }
-  })
-angular
-  .module('app')
-  .component('speakingEngagementsComponent', {
-    templateUrl: 'app/components/speaking-engagements/speaking-engagements.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-      vm.speakers = [];
-
-      vm.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        jobtitle: {value: '', required: true, name: 'job title', type: 'provide'},
-        request: {value: '', required: true, name: 'request', type: 'enter'},
-        message: {value: '', required: true, name: 'message', type: 'enter'}
-      };
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'about_add_speakers.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.speakers = angular.copy(res.data);
-            }
-            vm.groups = _.chunk(angular.copy(vm.speakers), 3);
-          });
-        $http.get(appConfig.dashboardServiceUrl + 'about_speaking_engagements.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData.title = res.data['0'].title;
-              vm.pageData.editor = res.data['0'].editor;
-            }
-          });
-      };
-
-      vm.send = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in this.data) {
-            data[item] = this.data[item].value;
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'speaking_engagements', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('reportsDetailsComponent', {
-  templateUrl: 'app/components/reports-details/reports-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'reports/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'reports', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.addProduct = function () {
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.reports) {
-        products.reports = {};
-      }
-      products.reports[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'reports'});
-    };
-
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('reportsComponent', {
-    templateUrl: 'app/components/reports/reports.tmpl.html',
-    controller: function ($http, appConfig, categoryValues, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.filters = {};
-      vm.hueModel = 'VERTICALS';
-      vm.reportModel = 'ALL';
-      vm.yearModel = 'YEAR';
-      vm.pageData = {};
-      vm.cacheItems = [];
-      vm.hue = categoryValues('hue');
-
-      vm.report = ['CATEGORY', 'CITY', 'COLOR', 'DESIGNER', 'REGION', 'SEASON', 'YEAR'];
-      vm.year = [];
-      vm.items = [];
-      vm.dis = true;
-      vm.flag = true;
-      var lastYear = moment().year();
-      var count = 1;
-      var numberOfElements = 3;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                vm.cacheItems.push(angular.copy(item.data));
-                return item.data;
-              });
-              vm.pageData.forEach(function (t) {
-                if (t.hue && !vm.hue.includes(t.hue)) {
-                  vm.hue.push(t.hue);
-                }
-
-                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
-                  lastYear = Number(t.published_year);
-                }
-              });
-              vm.year = _.range(lastYear, moment().year() + 1);
-              vm.select();
-              vm.year = vm.year.reverse();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.select = function (obj) {
-        if (obj) {
-          if (obj.$ctrl.hueModel === 'Fashion') {
-            vm.dis = false;
-          } else {
-            vm.dis = true;
-          }
-        }
-        if (vm.hue.includes(vm.hueModel) || vm.report.includes(vm.reportModel) || vm.year.includes(Number(vm.yearModel))) {
-          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
-            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
-              (!vm.report.includes(vm.reportModel) || vm.reportModel === t.report_style) &&
-              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
-              return t;
-            }
-          });
-        } else {
-          vm.filterData = angular.copy(vm.cacheItems);
-        }
-        vm.items = [];
-        count = 1;
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('recoverComponent', {
-    templateUrl: 'app/components/recover/recover.tmpl.html',
-    controller: function ($state, $http, appConfig) {
-      var self = this;
-      this.successRequest = false;
-      this.email = '';
-      this.error = false;
-
-      this.onSendLoginClick = function () {
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.email) {
-          self.error = 'The Email field is required';
-        } else {
-          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
-            .then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('publicationScheduleComponent', {
-    templateUrl: 'app/components/publication-schedule/publication-schedule.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.result = [];
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'publication_schedules.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.quarter1 = _.groupBy(res.data, 'quater_year1');
-              vm.quarter2 = _.groupBy(res.data, 'quater_year2');
-
-              var quarters1 = [];
-              var quarters2 = [];
-              for (var year1 in vm.quarter1) {
-                var test1 = vm.quarter1[year1].reduce(function (acc, nv) {
-                  return acc + nv.editor1;
-                }, '');
-
-                quarters1.push({
-                  year: year1,
-                  q: 1,
-                  list: test1
-                });
-              }
-
-              for (var year2 in vm.quarter2) {
-                var test = vm.quarter2[year2].reduce(function (acc, nv) {
-                  return acc + nv.editor2;
-                }, '');
-
-                quarters2.push({
-                  year: year2,
-                  q: 2,
-                  list: test
-                });
-              }
-              vm.result = _.sortBy(quarters1.concat(quarters2), ['year', 'q']);
-            }
-          });
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('profileComponent', {
-    templateUrl: 'app/components/profile/profile.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate, localStorageService, authService, $scope, $q, $timeout, Upload) {
-      var vm = this;
-      $scope.uploadFiles = function (file) {
-        if (file.$ngfBlobUrl) {
-          vm.userData.image_url = file.$ngfBlobUrl;
-          file.upload = Upload.upload({
-            url: appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json',
-            method: 'PUT',
-            fields: {'member[image]': file, flag: true},
-            file: file,
-            fileFormDataName: 'member[image]'
-          });
-        }
-      };
-
-      vm.job_function = categoryValues('job function');
-      vm.country = categoryValues('country');
-      vm.industry = categoryValues('industry');
-      vm.company_size = categoryValues('company size');
-      vm.editFlag = false;
-      vm.fileFlag = true;
-
-      vm.init = function () {
-        authService.loadCurrentUser().then(function (res) {
-          vm.userID = res.data.user.id;
-          $http.get(appConfig.dashboardServiceUrl + 'members/' + vm.userID + '.json', {params: {token: authService.token}})
-            .then(function (res) {
-              if (res && res.data) {
-                vm.userData = res.data;
-                vm.date = moment(vm.userData.date_year + '-' + vm.userData.date_month + '-' + vm.userData.date_day).format('YYYY-MM-DD');
-
-                vm.indexes = {
-                  job_function: vm.searchIndex(vm.job_function, vm.userData.job_function),
-                  company_size: vm.searchIndex(vm.company_size, vm.userData.company_size),
-                  country: vm.searchIndex(vm.country, vm.userData.country),
-                  industry: vm.searchIndex(vm.industry, vm.userData.industry)
-                };
-                vm.intEditData();
-              }
-            });
-        });
-      };
-
-      vm.intEditData = function () {
-        vm.data = {
-          first_name: {value: vm.userData.first_name, required: true, name: 'first name', type: 'provide'},
-          last_name: {value: vm.userData.last_name, required: true, name: 'last name', type: 'provide'},
-          email: {value: vm.userData.email, required: true, name: 'email', type: 'provide'},
-          company: {value: vm.userData.company, required: true, name: 'company name', type: 'provide'},
-          job_title: {value: vm.userData.job_title, required: true, name: 'job title', type: 'provide'},
-          bio: {value: vm.userData.bio, name: 'bio', type: 'provide'},
-          job_function: {
-            value: vm.job_function[vm.indexes.job_function] || vm.userData.job_function,
-            required: true,
-            name: 'job function',
-            type: 'select'
-          },
-          company_size: {
-            value: vm.company_size[vm.indexes.company_size] || vm.userData.company_size,
-            required: true,
-            name: 'company size',
-            type: 'select'
-          },
-          industry: {
-            value: vm.industry[vm.indexes.country] || vm.userData.industry,
-            required: true,
-            name: 'industry',
-            type: 'select'
-          },
-          country: {
-            value: vm.country[vm.indexes.industry] || vm.userData.country,
-            required: true,
-            name: 'country',
-            type: 'select'
-          }
-        };
-      };
-
-      vm.searchIndex = function (arr, value) {
-        return _.findIndex(arr, function (item) {
-          return item.title === value;
-        });
-      };
-
-      vm.goCart = function () {
-        $state.go('cart-page', {wayBack: 'profile'});
-      };
-
-      vm.goPurchase = function () {
-        $state.go('my-purchases');
-      };
-
-      vm.cancel = function () {
-        vm.editFlag = false;
-        vm.intEditData();
-      };
-
-      vm.save = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in vm.data) {
-            if (vm.data[item].type === 'select') {
-              data[item] = vm.data[item].value.title;
-            } else {
-              data[item] = vm.data[item].value;
-            }
-          }
-          data.flag = 'profile';
-          data.token = authService.token;
-          $http.put(appConfig.dashboardServiceUrl + 'members/' + vm.userID, data)
-            .then(function (res) {
-              if (res.status !== 200) {
-                console.log(res);
-              }
-            });
-          vm.editFlag = false;
-        }
-      };
-
-      vm.editProfile = function () {
-        for (var key in vm.indexes) {
-          if (vm.indexes[key] < 0) {
-            vm.data[key].value = vm[key][0];
-          }
-        }
-        vm.editFlag = true;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('privacyComponent', {
-    templateUrl: 'app/components/privacy-policy/privacy-policy.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.find(function (item) {
-                return item.name === 'Privacy Policy';
-              })
-            }
-          });
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('pressComponent', {
-    templateUrl: 'app/components/press/press.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate) {
-      var vm = this;
-      vm.pageData = {};
-      vm.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        message: {value: '', required: true, name: 'message', type: 'enter'},
-        research: {value: '-'}
-      };
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'presses.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = angular.copy(res.data);
-            }
-          });
-        $http.get(appConfig.dashboardServiceUrl + 'reports.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData.reports = angular.copy(res.data.data);
-            }
-          });
-      };
-      vm.press = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in this.data) {
-            data[item] = this.data[item].value;
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'press_contact', {
-            params: data
-          })
-            .then(function (res) {
-              if (res.status === 200) {
-                $state.go('thank-you');
-              }
-            });
-        }
-      };
-      vm.makeDate = function (item) {
-        return moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day).format('MMMM D, YYYY');
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('passwordRecoverCartComponent', {
-    templateUrl: 'app/components/password-recover-cart/password-recover-cart.tmpl.html',
-    controller: function ($state, $http, appConfig) {
-      var self = this;
-      self.successRequest = false;
-      self.email = '';
-      self.error = false;
-
-      self.onSendLoginClick = function () {
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.email) {
-          self.error = 'The Email field is required';
-        } else {
-          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
-            .then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            });
-        }
-      };
-
-      self.goBack = function () {
-        $state.go('cart-checkout');
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('passwordRecoverComponent', {
-    templateUrl: 'app/components/password-recover/password-recover.tmpl.html',
-    controller: function ($state, $http, appConfig, $stateParams) {
-      var self = this;
-      this.successRequest = false;
-      this.password = '';
-      this.passwordConfirm = '';
-      this.error = false;
-      this.type = $stateParams.token[0] || 'r';
-      this.token = $stateParams.token.slice(1);
-
-      this.onSendLoginClick = function () {
-        self.error = false;
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.password || !self.passwordConfirm) {
-          self.error = 'Password and Confirm Password fields are required';
-        } else {
-          if (self.password === self.passwordConfirm) {
-            $http.get(appConfig.dashboardServiceUrl + '/password_recover.json', {
-              params: {
-                password: self.password,
-                token: self.token
-              }
-            }).then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            }).catch(function (err) {
-              if (err) {
-                self.error = 'Your token is invalid';
-              }
-            });
-          } else {
-            self.error = 'Passwords are not identical';
-          }
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('orderEmailComponent', {
-    templateUrl: 'app/components/order-email/order-email.tmpl.html',
-    controller: function ($state, $http, appConfig, $stateParams) {
-      var vm = this;
-      vm.token = $stateParams.token;
-      vm.products = [];
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'order-email.json', {
-          params: {
-            token: vm.token
-          }
-        }).then(function (res) {
-          if (res.data) {
-            vm.success = res.data.success;
-            if (res.data.success) {
-              vm.orderId = res.data.orderId;
-              vm.products = res.data.products;
-            } else {
-              vm.error = 'We did not find email you provided in our base';
-            }
-          }
-        });
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('myPurchasesComponent', {
-    templateUrl: 'app/components/my-purchases/my-purchases.tmpl.html',
-    controller: function ($state, $http, appConfig, $scope, authService, localStorageService) {
-      var vm = this;
-      vm.data = [];
-
-      function init() {
-        if (vm.user && vm.user.id) {
-          $http.get(appConfig.dashboardServiceUrl + '/members/bought_items.json', {params: {id: vm.user.id, token: authService.token}})
-            .then(function (res) {
-              for (var key in res.data) {
-                res.data[key].forEach(function (item) {
-                  item.purchaseDate = moment(item.purchase_date).format('DD.MM.YYYY');
-                  if (key === 'teaching_materials') {
-                    item.type = 'color-teaching-materials';
-                  } else if (key === 'reports') {
-                    item.type = 'color-reports';
-                  } else if (key === 'courses') {
-                    item.type = 'color-education-courses';
-                  }
-                  vm.data.push(item);
-                });
-              }
-              vm.data.sort(vm.sortByDate);
-            });
-        }
-      }
-
-      vm.sortByDate = function(a, b) {
-        if (Date.parse(a.purchase_date) < Date.parse(b.purchase_date)) return 1;
-        if (Date.parse(a.purchase_date) > Date.parse(b.purchase_date)) return -1;
-      };
-
-
-
-      $scope.$watch(function () {
-        return authService.currentUser;
-      }, function (newVal) {
-        vm.user = localStorageService.get('currentUser');
-        init();
-      });
-    }
-  });
-
-angular
-  .module('app')
-  .component('membershipComponent', {
-    templateUrl: 'app/components/membership/membership.tmpl.html',
-    controller: function ($stateParams, $state, scrollService, categoryValues, $http, appConfig, modalService, dataValidate) {
-      scrollService.scrollMember();
-      var self = this;
-      this.jobs = categoryValues('job function');
-      this.countries = categoryValues('country');
-      this.industries = categoryValues('industry');
-      this.companySizes = categoryValues('company size');
-
-
-      this.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
-        permissions: {daily: true, research: true, edu: true},
-        relationship: {expert: true}
-      };
-
-      this.submitInquiry = function () {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          for (var item in this.data) {
-            if (item !== 'permissions' && item !== 'relationship') {
-              if (this.data[item].type === 'select') {
-                data[item] = this.data[item].value.title;
-              } else {
-                data[item] = this.data[item].value;
-              }
-            } else if (item === 'permissions') {
-              data.permissions = [];
-              _.forEach(this.data[item], function (i, k) {
-                if (i === true) {
-                  data.permissions.push(categoryValues('permissions')[k]);
-                }
-              });
-              data.permissions = JSON.stringify(data.permissions);
-            } else if (item === 'relationship' && this.data.relationship.expert) {
-              data.relationship = 'Expert Panelist';
-            }
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'new_member', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('membersAnalyticsComponent', {
-    templateUrl: 'app/components/members-analytics/members-analytics.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, authService, localStorageService) {
-      var vm = this;
-      vm.searchModel = '';
-      vm.all = [];
-      vm.pageData = [];
-      vm.items = [];
-      var count = 0;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + '/member_analytics.json', {params: {token: authService.token}})
-          .then(function (res) {
-            vm.pageData = angular.copy(res.data.data);
-            vm.all = angular.copy(res.data.data);
-            vm.search();
-          });
-      };
-      vm.more = function () {
-        vm.all[count++].forEach(function (i) {
-          vm.items.push(i);
-        });
-      };
-
-      vm.search = function () {
-        if (vm.searchModel) {
-          vm.filterData = [];
-          vm.pageData.forEach(function (t) {
-            if (new RegExp('^' + vm.searchModel, 'i').test(t.member_name)) {
-              vm.filterData.push(t);
-            }
-          });
-        } else {
-          vm.filterData = angular.copy(vm.pageData);
-        }
-        vm.items = [];
-        vm.all = _.chunk(angular.copy(vm.filterData), 5);
-        count = 0;
-        vm.more();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('membersComponent', {
-    templateUrl: 'app/components/members/members.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.filter = '';
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'members/names.json')
-          .then(function (res) {
-            if (res && res.data) {
-              var rows = res.data.length > 0 ? Math.ceil(res.data.length / 4) : 1;
-              vm.pageData = res.data;
-              vm.dataGroups = _.chunk(res.data, rows);
-            }
-          });
-      };
-
-      vm.filterChange = function () {
-        vm.dataGroups = _.chunk(vm.pageData.filter(function (item) {
-          var fullName = item.first_name + ' ' + item.last_name;
-          return fullName.toLowerCase().indexOf(vm.filter) >= 0;
-        }));
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-            return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('loginComponent', {
-    templateUrl: 'app/components/login/login.tmpl.html',
-    controller: function (authService, $state, localStorageService) {
-      var self = this;
-      this.email = '';
-      this.password = '';
-      this.isRemembered = false;
-      this.error = '';
-      var products = {courses: {}, reports: {}, teaching_materials: {}};
-      localStorageService.set('products', products);
-
-      this.login = function () {
-        self.error = false;
-        authService.login(this.email, this.password, this.isRemembered)
-          .then(function (data) {
-            if (data && data.success) {
-              $state.go('aboutPage');
-            } else {
-              self.error = true;
-            }
-          });
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('landingPageComponent', {
-    templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
-    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location) {
-    var vm =this;
-
-      $(document).ready(function () {
-        $("nav").find("li").on("click", "a", function () {
-          // $('.navbar-collapse.in').collapse('hide');
-        });
-      });
-
-      $(document).ready(function(){
-
-        $("#slideshow > div:gt(0)").hide();
-
-        var interval = setInterval(slide, 3000);
-
-        function intslide(func) {
-          if (func == 'start') {
-            interval = setInterval(slide, 3000);
-          } else {
-            clearInterval(interval);
-          }
-        }
-
-          function slide() {
-              sact('next', 0, 2000);
-          }
-
-          function sact(a, ix, it) {
-              var currentSlide = $('.current');
-              var nextSlide = currentSlide.next('.slideitem');
-              var prevSlide = currentSlide.prev('.slideitem');
-              var reqSlide = $('.slideitem').eq(ix);
-
-              var currentDot = $('.active-dot');
-              var nextDot = currentDot.next();
-              var prevDot = currentDot.prev();
-              var reqDot = $('.dot').eq(ix);
-
-              if (nextSlide.length == 0) {
-                  nextDot = $('.dot').first();
-                  nextSlide = $('.slideitem').first();
-              }
-
-              if (prevSlide.length == 0) {
-                  prevDot = $('.dot').last();
-                  prevSlide = $('.slideitem').last();
-              }
-
-              if (a == 'next') {
-                  var Slide = nextSlide;
-                  var Dot = nextDot;
-              }
-              else if (a == 'prev') {
-                  var Slide = prevSlide;
-                  var Dot = prevDot;
-              }
-              else {
-                  var Slide = reqSlide;
-                  var Dot = reqDot;
-              }
-              var it_before = it - 1500;
-              currentSlide.fadeOut(it_before).removeClass('current');
-              Slide.fadeIn(it).addClass('current');
-          }
-      });
-
-//                                                                                                          REPORTS ON LANDING
-			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
-				console.log("res", res.data.reports);
-				vm.reports_on_landing = res.data.reports
-			});
-
-//                                                                                                          COLOR-PICKER
-        var color_picker = document.getElementById("color_picker");
-        var color_id = document.getElementById("color_id");
-        $scope.colorPickerGray = 100;
-        $scope.colorPickerOpacity = 1;
-			  document.getElementById('value_span').innerHTML = '100%';
-
-        $scope.changeColor = function () {
-            color_picker.onmousedown = select_color;
-        };
-        color_picker_add();
-
-        $scope.colorPickerSliderGray = function  () {
-            var value = document.getElementById('rg').value;
-            color_id.style.filter =  "saturate(" + value + "%)";
-        };
-
-        $scope.colorPickerSliderOpacity = function  () {
-            var value = document.getElementById('range_opacity').value;
-            document.getElementById('value_span').innerHTML = value*100 + '%';
-            color_id.style.opacity =  value;
-        };
-
-        $scope.colorPickerRGB = function () {
-            var colorInputR = document.getElementById('colorInputR').value;
-            var colorInputG = document.getElementById('colorInputG').value;
-            var colorInputB = document.getElementById('colorInputB').value;
-
-            $scope.colorRGB_R = colorInputR;
-            $scope.colorRGB_G = colorInputG;
-            $scope.colorRGB_B = colorInputB;
-
-            var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G +", "+ $scope.colorRGB_B + ")";
-            color_id.style.backgroundColor = inputRGB;
-        };
-
-        function color_picker_add() {
-            color_picker_ = color_picker.getContext("2d"),
-                center_x = (color_picker.width)/2,
-                center_y = (color_picker.height)/2,
-                sx = center_x,
-                sy = center_y;
-
-            $scope.colorRGB_R = 0;
-            $scope.colorRGB_G = 0;
-            $scope.colorRGB_B = 0;
-            palette = new color_picker_element(center_x, center_y, sx, sy);
-            palette.draw();
-        }
-
-        function select_color(e) {
-            var x = e.pageX - color_picker.offsetLeft - 664,
-                y = e.pageY - color_picker.offsetTop - 3622,
-                pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
-                pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
-            color_id.style.backgroundColor = pixelColor;
-
-            $scope.pixel = pixel;
-            $scope.colorRGB_R = pixel[0];
-            $scope.colorRGB_G = pixel[1];
-            $scope.colorRGB_B = pixel[2];
-            console.log('pixelColor _select_color', $scope);
-            console.log('y  _select_color',y);
-            console.log('x  _select_color',x);
-        }
-        function color_picker_element(center_x, center_y, sx, sy) {
-            this.center_x = center_x;
-            this.center_y = center_y;
-            this.sx = sx;
-            this.sy = sy;
-            this.draw = function() {
-                for(var i = 0; i < 360; i+=0.1)
-                {
-                    var rad = (i-45) * (Math.PI) / 180;
-                    color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
-                    color_picker_.beginPath();
-                    color_picker_.moveTo(center_x, center_y);
-                    color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
-                    color_picker_.stroke();
-                }
-            }
-        }
-
-        this.colorWordSearchLanding = function () {
-					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
-					var colorAssociationName = '';
-
-					$http.get(appConfig.colorAPI +
-						'minred=' + $scope.colorRGB_R +
-						'&maxred=' + $scope.colorRGB_R +
-						'&mingreen=' + $scope.colorRGB_G +
-						'&maxgreen=' + $scope.colorRGB_G +
-						'&minblue=' + $scope.colorRGB_B +
-						'&maxblue=' + $scope.colorRGB_B, {})
-						.then(function (res) {
-							if (res.data.length > 0) {
-								vm.paintColorNames = res.data.map(function (item) {
-									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-									colorName = item.ShortName;
-									return {colorName: colorName, RGB: RGB};
-								});
-								colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
-
-								$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationName, {})
-									.then(function (res) {
-										vm.validData = res.data;
-										if (res && res.data.length > 0) {
-											var RGB = '',
-												colorName = '';
-											vm.colorAssociationNames = res.data.map(function (item) {
-												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-												colorName = item.ShortName;
-												return {colorName: colorName, RGB: RGB};
-											});
-											searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
-											$location.url('/color-index-accordion');
-										}
-									});
-							}
-						});
-        };
-    }
-  });
-
-angular
-  .module('app')
-  .component('landingComponent', {
-    templateUrl: 'app/components/landing/landing.tmpl.html',
-    controller: function (authService, $state, localStorageService) {
-
-      $(document).ready(function () {
-        $("nav").find("li").on("click", "a", function () {
-          // $('.navbar-collapse.in').collapse('hide');
-        });
-      });
-
-      $(document).ready(function(){
-
-        $("#slideshow > div:gt(0)").hide();
-
-        var interval = setInterval(slide, 3000);
-
-        function intslide(func) {
-          if (func == 'start') {
-            interval = setInterval(slide, 3000);
-          } else {
-            clearInterval(interval);
-          }
-        }
-
-        function slide() {
-          sact('next', 0, 2000);
-        }
-
-        function sact(a, ix, it) {
-          var currentSlide = $('.current');
-          var nextSlide = currentSlide.next('.slideitem');
-          var prevSlide = currentSlide.prev('.slideitem');
-          var reqSlide = $('.slideitem').eq(ix);
-
-          var currentDot = $('.active-dot');
-          var nextDot = currentDot.next();
-          var prevDot = currentDot.prev();
-          var reqDot = $('.dot').eq(ix);
-
-          if (nextSlide.length == 0) {
-            nextDot = $('.dot').first();
-            nextSlide = $('.slideitem').first();
-          }
-
-          if (prevSlide.length == 0) {
-            prevDot = $('.dot').last();
-            prevSlide = $('.slideitem').last();
-          }
-
-          if (a == 'next') {
-            var Slide = nextSlide;
-            var Dot = nextDot;
-          }
-          else if (a == 'prev') {
-            var Slide = prevSlide;
-            var Dot = prevDot;
-          }
-          else {
-            var Slide = reqSlide;
-            var Dot = reqDot;
-          }
-          var it_before = it - 500;
-          currentSlide.fadeOut(it_before).removeClass('current');
-          Slide.fadeIn(it).addClass('current');
-          }
-      });
-    }
-  });
-
-angular
-  .module('app')
-  .component('inquiriesComponent', {
-    templateUrl: 'app/components/inquiries/inquiries.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
-      var currentName = $state.current.name;
-
-      var self = this;
-      this.jobs = categoryValues('job function');
-      this.companySizes = categoryValues('company size');
-      this.industries = categoryValues('industry');
-      this.countries = categoryValues('country');
-
-      this.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: self.countries[0], required: true, name: 'country', type: 'select'}
-      };
-
-      switch (currentName) {
-        case 'productInquiry':
-          this.title = 'Product Inquiry';
-          this.keywords = 'Color Product Inquiry, color database, color Product';
-          this.data.permissions = {daily: true, research: true, edu: true};
-          this.data.relationship = {expert: true};
-          this.caption = 'Product Inquiry';
-          this.inquire1 = true;
-          this.url = 'product_partner';
-          break;
-
-        case 'partnershipInquire':
-          this.title = 'Data Partnership Inquiry';
-          this.keywords = 'Color data partnership, color database, color dataset, color data points in r';
-          this.caption = 'Inquire about Data Partnership';
-          this.inquire2 = true;
-          this.url = 'new_data_partners';
-          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
-          break;
-
-        default:
-          this.title = 'Education Partnership Inquiry';
-          this.keywords = 'Color Education partnership, color database, color Education, color Education points in r';
-          this.caption = 'Inquire about Education Partnership';
-          this.url = 'new_education_partners';
-          this.inquire3 = true;
-          this.jobs.splice(1, 0, {id: 7, title: 'Educator'});
-          this.data.description = {value: '', required: false, name: 'description', type: 'enter'};
-          break;
-      }
-
-      this.send = function (inquiryType) {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          for (var item in this.data) {
-            if (item !== 'permissions' && item !== 'relationship') {
-              if (this.data[item].type === 'select') {
-                data[item] = this.data[item].value.title;
-              } else {
-                data[item] = this.data[item].value;
-              }
-            } else if (item === 'permissions') {
-              data.permissions = [];
-              _.forEach(this.data[item], function (i, k) {
-                if (i === true) {
-                  data.permissions.push(categoryValues('permissions')[k]);
-                }
-              });
-              data.permissions = JSON.stringify(data.permissions);
-            } else if (item === 'relationship' && this.data.relationship.expert) {
-              data.relationship = 'Expert Panelist';
-            }
-          }
-          $http.get(appConfig.dashboardServiceUrl + this.url, {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('infographicsDetailsComponent', {
-  templateUrl: 'app/components/infographics-details/infographics-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'infographics/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-      });
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('infographicsComponent', {
-    templateUrl: 'app/components/infographics/infographics.tmpl.html',
-    controller: function ($http, appConfig, modalService, categoryValues, $location, anchorSmoothScroll,
-                          localStorageService) {
-      var vm = this;
-      vm.hueModel = 'VERTICAL';
-      vm.yearModel = 'YEAR';
-      vm.year = [];
-      vm.hue = categoryValues('hue');
-      vm.pageData = {};
-      vm.items = [];
-      vm.flag = true;
-      var numberOfElements = 3;
-      var count = 1;
-      var lastYear = moment().year();
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'infographics.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                var b = res.data.picture.find(function (a) {
-                  return a.infographic_id === item.id;
-                });
-                if (b) {
-                  item.image_url = b.image_url;
-                }
-                return item;
-              });
-              vm.year.push(moment().format('YYYY'));
-              vm.pageData.map(function (t) {
-                t.date = moment(t.published_year + '-' + t.published_month + '-' + t.published_day).format(' MMMM D, YYYY');
-              });
-              vm.pageData.forEach(function (t) {
-                if (Number(t.published_year) && Number(t.published_year) < lastYear) {
-                  lastYear = Number(t.published_year);
-                }
-              });
-              vm.year = _.range(lastYear, moment().year() + 1);
-              vm.select();
-              vm.year = vm.year.reverse();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.onGraphicClick = function (event) {
-        if (event) {
-          modalService.showModal(2, event);
-        }
-      };
-
-      vm.select = function () {
-        if (vm.hue.includes(vm.hueModel) || vm.year.includes(Number(vm.yearModel))) {
-          vm.filterData = angular.copy(vm.pageData.filter(function (t) {
-            if ((!vm.hue.includes(vm.hueModel) || vm.hueModel === t.hue) &&
-              (!vm.year.includes(Number(vm.yearModel)) || vm.yearModel === t.published_year)) {
-              return t;
-            }
-          }));
-        } else {
-          vm.filterData = angular.copy(vm.pageData);
-        }
-        count = 1;
-        vm.items = [];
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-
-
-      vm.makeDate = function (item) {
-          return moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('MMMM D, YYYY');
-      };
-    }
-  });
-
-angular
-.module('app')
-.component('goodReadsDetailsComponent', {
-  templateUrl: 'app/components/good-reads-details/good-reads-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, localStorageService) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'good_reads/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-      });
-    };
-    vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('goodReadsComponent', {
-    templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.all = [];
-      vm.items = [];
-      vm.flag = true;
-      var count = 1;
-      var numberOfElements = 6;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                return item.data;
-              });
-            }
-            vm.sortItems();
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.pageData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('downloadExcerptPageComponent', {
-    templateUrl: 'app/components/download-excerpt-page/download-excerpt-page.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate, $stateParams, $window, $scope, localStorageService) {
-
-      var self = this;
-      this.jobs = categoryValues('job function');
-      this.companySizes = categoryValues('company size');
-      this.industries = categoryValues('industry');
-      this.countries = categoryValues('country');
-      self.flag = false;
-
-      switch ($stateParams.type) {
-        case 'reports':
-          self.wayBackName = 'reportsDetails';
-          break;
-        case 'courses':
-          self.wayBackName = 'coursesDetails';
-          break;
-        case 'teachingMaterials':
-          self.wayBackName = 'teachingDetailsMaterials';
-          break;
-        default:
-          self.wayBackName = 'profile';
-
-      }
-
-      this.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: self.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: self.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: self.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: self.countries[0], required: true, name: 'country', type: 'select'},
-        relationship: {expert: true, daily: true, newReportNotification: true, emotionIndexInsights: true},
-        contact: {becoming: true}
-      };
-
-      this.send = function () {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          data.productType = $stateParams.type;
-          data.productID = $stateParams.id;
-          for (var item in this.data) {
-            if (item !== 'relationship' && item !== 'contact') {
-              if (this.data[item].type === 'select') {
-                data[item] = this.data[item].value.title;
-              } else {
-                data[item] = this.data[item].value;
-              }
-            } else if (item === 'relationship') {
-              data.relationship = [];
-              _.forEach(this.data[item], function (i, k) {
-                if (i === true) {
-                  data.relationship.push(categoryValues('downloadExcerpt')[k]);
-                }
-              });
-              data.relationship = JSON.stringify(data.relationship);
-            } else if (item === 'contact' && this.data.contact.becoming) {
-              data.contact = 'Contact about becoming a HUEDATA members';
-            }
-          }
-          $window.open(localStorageService.get('link'), '_blank');
-          $http.get(appConfig.dashboardServiceUrl + 'download-excerpt', {
-            params: data
-          }).then(function (res) {
-            $state.go(self.wayBackName, {id: $stateParams.id});
-          });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('detailedComponent', {
-    templateUrl: 'app/components/detailed-page/detailed.tmpl.html',
-    controller: function ($location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('partnersComponent', {
-    templateUrl: 'app/components/data-partners/partners.tmpl.html',
-    controller: function ($state, $http, appConfig, categoryValues, dataValidate) {
-      var vm = this;
-
-      vm.jobs = categoryValues('job function');
-      vm.companySizes = categoryValues('company size');
-      vm.industries = categoryValues('industry');
-      vm.countries = categoryValues('country');
-
-      vm.data = {
-        first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-        last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-        email: {value: '', required: true, name: 'email', type: 'provide'},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        job_title: {value: '', required: true, name: 'job title', type: 'provide'},
-        job_function: {value: vm.jobs[0], required: true, name: 'job function', type: 'select'},
-        company_size: {value: vm.companySizes[0], required: true, name: 'company size', type: 'select'},
-        industry: {value: vm.industries[0], required: true, name: 'industry', type: 'select'},
-        country: {value: vm.countries[0], required: true, name: 'country', type: 'select'},
-        description: {value: '', required: false, name: 'description', type: 'enter'}
-      };
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'top_data_partners.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data;
-            }
-          });
-      };
-
-      vm.send = function () {
-        if (dataValidate.validate(vm.data)) {
-          var data = {};
-          for (var item in vm.data) {
-            if (vm.data[item].type === 'select') {
-              data[item] = vm.data[item].value.title;
-            } else {
-              data[item] = vm.data[item].value;
-            }
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'new_data_partners', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('dailyInsightsComponent', {
-    templateUrl: 'app/components/daily-insights/daily-insights.tmpl.html',
-    controller: function ($http, appConfig, modalService, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-      vm.items = [];
-      vm.allDailies = [];
-      vm.items = [];
-      vm.flag = true;
-      var count = 1;
-      var numberOfElements = 3;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'dailies.json')
-          .then(function (res) {
-            if (res && res.data) {
-              angular.forEach(res.data, function (item) {
-                item.date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('dddd, MMMM D, YYYY');
-                item.published_date = moment(item.published_year + '-' + item.published_month + '-' + item.published_day).format('YYYY-MM-DD');
-              });
-              vm.allDailies = _.sortBy(res.data, 'published_date').reverse();
-              vm.emptyData = Boolean(vm.allDailies[0]);
-              vm.pageData = vm.allDailies.shift();
-              vm.sortItems();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.allDailies.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          } else {
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.onGraphicClick = function (item) {
-        if (item) {
-          modalService.showModal(3, null, item);
-        }
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-(function (angular) {
-  'use strict';
-  var controllerName = 'CustomInfographicsController';
-  angular.module('app').controller(controllerName, ['$http', 'appConfig', 'statsService', 'common', 'repo.common', '$interpolate', '$scope', 'charts',
-    '$q', 'repo.meta', 'repo.designers', '$timeout', '$location', 'dashboardOverlayService', 'authService', 'dashboardRepository', 'anchorSmoothScroll',
-    function ($http, appConfig, statsService, common, data, $interpolate, $scope, charts, $q, meta, designers, timeout, $location, dashboardOverlayService, authService, dashboardRepository, anchorSmoothScroll) {
-      var vm = this;
-
-      $scope.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.grayList = {};
-      vm.meta = {};
-      vm.filter = {};
-      vm.showDashboardOverlay = false;
-      vm.isUserAdmin = function () {
-        return authService.getCurrentUser().username === 'admin';
-      };
-
-      var groupTitlesTemplates = {
-        beige: {
-          name: '#f5f5dc',
-          template: '#f5f5{0}'
-        },
-        black: {
-          name: '#000000',
-          template: '#{0}{0}{0}'
-        },
-        blue: {
-          name: '#0000ff',
-          template: '#{0}{0}ff'
-        },
-        brown: {
-          name: '#964b00',
-          template: '#{0}{1}00'
-        },
-        cyan: {
-          name: '#00ffff',
-          template: '#{0}ffff'
-        },
-        gray: {
-          name: '#c0c0c0',
-          template: '#{0}{0}{0}'
-        },
-        green: {
-          name: '#008000',
-          template: '#{0}80{0}'
-        },
-        magenta: {
-          name: '#ff00ff',
-          template: '#ff{0}ff'
-        },
-        orange: {
-          name: '#ff7f00',
-          template: '#ff{0}00'
-        },
-        red: {
-          name: '#ff0000',
-          template: '#ff{0}{1}'
-        },
-        violet: {
-          name: '#8f00ff',
-          template: '#{0}00ff'
-        },
-        white: {
-          name: '#ffffff',
-          template: '#{0}{0}{0}'
-        },
-        yellow: {
-          name: '#ffff00',
-          template: '#ffff{0}'
-        },
-        yellowgreen: {
-          name: '#8db600',
-          template: '#8d{0}00'
-        }
-      };
-
-      var cache = {
-        designers: [],
-        categories: [],
-        regions: {},
-        cities: []
-      };
-
-      var loading = {
-        ready: false,
-        designersReady: $q.defer(),
-        metaLoaded: $q.defer(),
-        metaReady: $q.defer()
-      };
-
-      vm.scrollToLetter = function (anchor) {
-        $location.hash(anchor);
-        $anchorScroll();
-        $location.hash('');
-      };
-
-      vm.alphabet = [
-        "a",
-        "à",
-        "b",
-        "c",
-        "d",
-        "e",
-        "é",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "ö",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9"
-      ];
-
-      vm.prepareRequestParams = function () {
-        var reg = new RegExp('ALL ');
-        var city = reg.test(vm.filter.city.title) ? 'all' : vm.filter.city.title;
-        var season = reg.test(vm.filter.season.title) ? 'all' : vm.filter.season.title;
-        var category = reg.test(vm.filter.category.title) ? 'all' : vm.filter.category.title;
-        var designer = reg.test(vm.filter.designer.title) ? 'all' : vm.filter.designer.title.replace(/ /g, '_');
-
-        return {
-          city: city,
-          year: vm.filter.year.id,
-          season: season,
-          category: category,
-          region: vm.filter.region.id,
-          designer: designer
-        };
-      };
-
-      vm.prepareColorsParams = function () {
-        var reg = new RegExp('ALL ');
-        var param = {};
-        if (!reg.test(vm.filter.city.title)) {
-          param.city_id = vm.filter.city.id;
-        }
-        if (!reg.test(vm.filter.season.title)) {
-          param.season_id = vm.filter.season.id;
-        }
-        if (!reg.test(vm.filter.category.title)) {
-          param.category_id = vm.filter.category.id;
-        }
-        if (!reg.test(vm.filter.designer.title)) {
-          param.designer_id = vm.filter.designer.id;
-        }
-        param.year_id = vm.filter.year.id;
-        return param;
-      };
-
-      vm.prepareColors = function () {
-        var reg = new RegExp('ALL ');
-        if (!reg.test(vm.filter.season.title)) {
-          return {all: vm.filter.season, category: 'season'};
-        }
-        if (!reg.test(vm.filter.city.title)) {
-          return {all: vm.filter.city, category: 'city'};
-        }
-        if (!reg.test(vm.filter.category.title)) {
-          return {all: vm.filter.category, category: 'category'};
-        }
-        if (!reg.test(vm.filter.designer.title)) {
-          return {all: vm.filter.designer, category: 'designer'};
-        }
-        return {all: {id: 2018}, category: 'year'};
-      };
-
-      loading.metaLoadedStrongLink = loading.metaLoaded;
-      loading.filtersReady = $q.all([loading.designersReady.promise, loading.metaReady.promise]);
-
-      meta.objects().then(function (result) {
-        var years = [];
-        for (var i = result.years.to; i >= result.years.from; i--) {
-          years.push({id: i, title: i});
-        }
-
-        vm.meta.years = years;
-        vm.meta.colorGroups = result.colorGroups;
-        vm.meta.categories = result.categories;
-        vm.meta.seasons = result.seasons;
-        vm.meta.regions = common.generic.regions;
-        vm.meta.cities = result.cities;
-
-        _.each(vm.meta, function (item, key) {
-          var newTitle = 'All ' + key;
-          if (key !== 'colorGroups') {
-            item.unshift({id: 'all', title: newTitle.toUpperCase(), region: 'all', serverName: 'all', all: true})
-          }
-        });
-
-        angular.copy(vm.meta.cities, cache.cities);
-
-        vm.filter.color = vm.meta.colorGroups[0];
-        // vm.filter.year = _.find(vm.meta.years, {id: 2017}) || vm.meta.years[vm.meta.years.length - 1];
-        vm.filter.year = vm.meta.years[0];
-        vm.filter.season = vm.meta.seasons[0];
-        vm.filter.category = vm.meta.categories[0];
-        vm.filter.city = vm.meta.cities[0];
-        vm.filter.region = vm.meta.regions[0];
-
-        loading.metaLoaded.resolve();
-      });
-
-      designers.search().then(function (result) {
-        vm.meta.designers = result;
-        vm.meta.designers.unshift({id: 'all', title: 'ALL DESIGNERS', all: true});
-
-        vm.filter.designer = vm.meta.designers[0];
-
-        loading.designersReady.resolve();
-      });
-
-      vm.refresh = function () {
-        loadData();
-      };
-
-      var defaultDescription = {
-        years: '2015-2016',
-        colors: '45.567',
-        cities: '4',
-        region: '1',
-        designer: '234',
-        season: '3'
-      };
-
-      vm.cityOrRegionTitle = function () {
-        return vm.filter.city.all && vm.filter.region.all ? null : vm.filter.city.all ? vm.filter.region.title : vm.filter.city.title
-      };
-
-      var citiesAbbrevs = {
-        London: 'LN',
-        Milan: 'MI',
-        Paris: 'PR',
-        Berlin: 'BR',
-        NewYork: 'NY',
-        Mexico: 'MX',
-        RioDeJaneiro: 'RJ',
-        Seoul: 'SE',
-        Tokyo: 'TK',
-        SaoPaulo: 'SP',
-        Istanbul: 'IS',
-        Monaco: 'MN',
-        Florence: 'FL',
-        Rome: 'RO',
-        Kiev: 'KI',
-        LosAngeles: 'LA',
-        LakmeIndia: 'LI',
-        Copenhagen: 'CP',
-        Salzburg: 'SA',
-        Stockholm: 'ST',
-        Madrid: 'MA',
-        Sydney: 'SY',
-        Dubai: 'DU',
-        Kaliningrad: 'KA',
-        Moscow: 'MO',
-        PalmSprings: 'PS',
-        Cannes: 'CN',
-        Cambridge: 'CB',
-        Tbilisi: 'TB',
-        Havana: 'HA',
-        Kyoto: 'KO',
-        SaintPetersburg: 'SG',
-        Shanghai: 'SH'
-      };
-
-      var regionsAbbrevs = {
-        AsiaAndPacific: 'AP',
-        Europe: 'EU',
-        SouthAmerica: 'LA',
-        NorthAmerica: 'NA'
-      };
-
-      vm.getTitle = function (type) {
-        if (type === 'region') {
-          return vm.cityOrRegionTitle()
-        } else {
-          return !vm.filter[type].all ? vm.filter[type].title : null
-        }
-      };
-
-      vm.getAbbrv = function (type) {
-        var value;
-        if (type === 'category') {
-          value = vm.filter.category.title;
-          if (value === 'Couture') {
-            return 'CT';
-          } else if (value === 'Menswear') {
-            return 'MW';
-          } else {
-            return value;
-          }
-        } else if (type === 'season') {
-          value = vm.filter.season.title;
-          if (value === 'Fall') {
-            return 'FW';
-          } else if (value === 'Pre-Fall') {
-            return 'PF';
-          } else if (value === 'Spring') {
-            return 'SS';
-          } else if (value === 'Resort') {
-            return 'RS';
-          } else if (value === 'ALL SEASONS') {
-            return 'ALL';
-          } else {
-            return value;
-          }
-        } else if (type === 'city') {
-          value = vm.filter.city.title.replace(/\s/g, '').toLowerCase();
-          return _.find(citiesAbbrevs, function (item, key) {
-            return value == key.toLowerCase();
-          });
-        } else if (type === 'region') {
-          value = vm.filter.region.title.replace(/\s/g, '').toLowerCase();
-          return _.find(regionsAbbrevs, function (item, key) {
-            return value == key.toLowerCase();
-          });
-        }
-      };
-
-      vm.parseTitle = function (number) {
-        var divider = '';
-        var result = '';
-        _.map(vm.currentChart.titleGroups[number], function (title) {
-          if (vm.getTitle(title) !== null) {
-            divider = '//';
-          }
-          if (vm.getTitle(title)) {
-            result = result + ' ' + vm.getTitle(title)
-          }
-        });
-        return divider + result;
-      };
-
-      vm.charts = [
-        {
-          qNumber: 'CO1a',
-          id: 'colorsByCityPeriod',
-          group: 'colorsByCityPeriod',
-          title: 'Color Popularity Overview',
-          chartTitle: 'Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-              .then(function (results) {
-                return results;
-              });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CO1b',
-          id: 'colorsByCityPeriod1',
-          group: 'colorsByCityPeriod1',
-          title: 'Expanded Color Popularity Overview',
-          chartTitle: 'Expanded Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return $q(function (resolve) {
-              charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-                .then(function (results) {
-                  var param = vm.prepareColors();
-                  dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(results, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 17) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                        resolve(results);
-                      });
-                    });
-                });
-            });
-          },
-          filters: {
-            category: true,
-            region: true,
-            city: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CO2a',
-          id: 'colorsUniqueWithLevels',
-          group: 'colorsUniqueWithLevels',
-          title: 'Color Mosaic View With Popularity',
-          chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsUniqueGroups(vm.prepareRequestParams());
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'CO3a',
-          id: 'trends',
-          group: 'trends',
-          title: 'Five Year Color Comparison',
-          chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
-            var customParams = vm.prepareRequestParams();
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
-            }
-
-            return $q.all(_.map(yearsRange, function (year) {
-              customParams.year = year;
-              return charts.colorGroupsByCityPeriod(customParams);
-            })).then(function (results) {
-              return _.map(results, function (result, i) {
-                return {
-                  title: yearsRange[i],
-                  data: result
-                };
-              });
-            });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'RE1a',
-          id: 'colorsByRegionPeriodNA',
-          group: 'colorsByRegionPeriod',
-          title: 'Color Popularity By Region With City Breakdown',
-          chartTitle: 'Color Popularity By Region With City Breakdown {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsWithGroupsByRegionPeriod(vm.prepareRequestParams(), vm.filter.region.name);
-          },
-          filters: {
-            category: true,
-            region: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {}
-        },
-        {
-          qNumber: 'RE2a',
-          id: 'colorsPerRegions',
-          group: 'colorsPerRegions',
-          title: 'Cross Region Top Four Colors',
-          chartTitle: 'Cross Region Top Four Colors {{vm.parseTitle(0)}}',
-          api: function () {
-            return charts.colorsPerRegions(vm.prepareRequestParams());
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year']
-          ]
-        },
-        {
-          qNumber: 'SE1a',
-          id: 'colorsUniqueGroupsCommon',
-          group: 'colorsUniqueGroupsCommon',
-          title: 'Color Popularity By Season',
-          chartTitle: 'Color Popularity By Season {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsUniqueGroupsCommon(vm.prepareRequestParams());
-          },
-          apiAfter: function (model) {
-            model.season = vm.filter.season.title;
-            model.year = vm.filter.year.title;
-          },
-          filters: {
-            category: true,
-            region: true,
-            city: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'SE2a',
-          id: 'colorsUniqueByPeriodFiveYears',
-          group: 'colorsUniqueByPeriodFiveYears',
-          title: 'Five Year Comparison Of Seasons Colors',
-          chartTitle: 'Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
-            }
-            return charts.colorsByPeriodYearsRange(vm.prepareRequestParams(), yearsRange);
-          },
-          filters: {
-            category: true,
-            region: true,
-            city: true,
-            season: true,
-            year: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'SE2b',
-          id: 'colorsUniqueByPeriodFiveYears2',
-          group: 'colorsUniqueByPeriodFiveYears2',
-          title: 'Expanded Five Year Comparison Of Seasons Colors',
-          chartTitle: 'Expanded Five Year Comparison Of Seasons Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 4, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
-            }
-            var param = vm.prepareColors();
-            var palettes = {};
-            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-              .then(function (results) {
-                return $q.all(yearsRange.map(function (d) {
-                  return dashboardRepository['year'].getColorPalette(d, vm.prepareColorsParams(), 250);
-                }))
-                  .then(function (data) {
-                    _.each(data, function (r, i) {
-                      _.each(r, function (a) {
-                        a.colorHex = a.color.color.hex;
-                      });
-                      _.sortBy(r, 'percentage');
-                      palettes[vm.getAbbrv('season') + yearsRange[i]] = r;
-                    });
-                    results.push(palettes);
-                    return results;
-                  });
-              });
-          },
-          filters: {
-            category: true,
-            city: true,
-            season: true,
-            year: true,
-            region: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'SE3a',
-          id: 'uniqueWithGroupsPerSeason',
-          group: 'uniqueWithGroupsPerSeason',
-          title: 'Color Mosaic View By Season With Popularity',
-          chartTitle: 'Color Mosaic View By Season With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-            return charts.colorsUniqueGroupsPerSeason(customParams.year, customParams.city, customParams.category);
-          },
-          apiAfter: function (model) {
-            model.city = vm.cityOrRegionTitle();
-          },
-          filters: {
-            category: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'CA1a',
-          id: 'colorsByCategoryPeriod',
-          group: 'colorsByCategoryPeriod',
-          title: 'Color Popularity By Category',
-          chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'CA2a',
-          id: 'colorsByCategory',
-          group: 'colorsGridNails',
-          title: 'Cross Category Color Popularity',
-          chartTitle: 'Cross Category Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-            return $q.all(_.map(['couture', 'menswear', 'rtw'], function (category) {
-              customParams.category = category;
-              return charts.colorGroupsByCityPeriod(customParams)
-                .then(function (groups) {
-                  _.each(groups, function (gr) {
-                    gr.colors = _.map(_.range(3), function () {
-                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
-                    });
-                  });
-                  return {
-                    name: category,
-                    title: category,
-                    data: groups
-                  };
-                });
-            }));
-          },
-          filters: {
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CA2b',
-          id: 'colorsByCategory2',
-          group: 'colorsGridNails2',
-          title: 'Cross Category Top Three Colors',
-          chartTitle: 'Cross Category Top Three Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-
-            return $q(function (resolve) {
-              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
-                var groups = [
-                  {
-                    name: customParams.category + '\n' + 'couture',
-                    title: customParams.category + '\n' + 'couture',
-                    data: group
-                  },
-                  {
-                    name: customParams.category + '\n' + 'menswear',
-                    title: customParams.category + '\n' + 'menswear',
-                    data: group
-                  }, {
-                    name: customParams.category + '\n' + 'rtw',
-                    title: customParams.category + '\n' + 'rtw',
-                    data: group
-                  }];
-                async.waterfall([function (cb) {
-                  dashboardRepository["category"].getColorPalette(3, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[0].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["category"].getColorPalette(2, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[1].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["category"].getColorPalette(1, vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[2].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }], function () {
-                  resolve(groups);
-                });
-              });
-            });
-          },
-          filters: {
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CA3a',
-          id: 'colorsByRtwCategory',
-          group: 'colorsGridNails',
-          title: 'Three Year Comparison Of Color Popularity',
-          chartTitle: 'Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
-            var customParams = vm.prepareRequestParams();
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
-            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
-            }
-
-            return $q.all(_.map(yearsRange, function (dy) {
-              customParams.year = dy;
-              return charts.colorGroupsByCityPeriod(customParams)
-                .then(function (groups) {
-                  _.each(groups, function (gr) {
-                    gr.colors = _.map(_.range(3), function () {
-                      return {color: generateRandomGroupColorByGroupTitle(gr.title)};
-                    });
-                  });
-
-                  return {
-                    name: customParams.category + '\n' + dy,
-                    title: customParams.category + '\n' + dy,
-                    data: groups
-                  };
-                });
-            }));
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CA3b',
-          id: 'colorsByRtwCategory2',
-          group: 'colorsGridNails2',
-          title: 'Expanded Three Year Comparison Of Color Popularity',
-          chartTitle: 'Expanded Three Year Comparison Of Color Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id, vm.filter.year.id - 3);
-            var customParams = vm.prepareRequestParams();
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title, vm.meta.years[1].title - 3);
-            } else if (yearsRange[2] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title + 2, vm.meta.years[vm.meta.years.length - 1].title - 1);
-            }
-            return $q(function (resolve) {
-              charts.colorGroupsByCityPeriod(customParams).then(function (group) {
-                var groups = [
-                  {
-                    name: customParams.category + '\n' + yearsRange[0],
-                    title: customParams.category + '\n' + yearsRange[0],
-                    data: group
-                  },
-                  {
-                    name: customParams.category + '\n' + yearsRange[1],
-                    title: customParams.category + '\n' + yearsRange[1],
-                    data: group
-                  }, {
-                    name: customParams.category + '\n' + yearsRange[2],
-                    title: customParams.category + '\n' + yearsRange[2],
-                    data: group
-                  }];
-                async.waterfall([function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[0].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[1].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }, function (cb) {
-                  dashboardRepository["year"].getColorPalette(yearsRange[2], vm.prepareColorsParams(), 250)
-                    .then(function (data) {
-                      _.each(groups[2].data, function (colorGroup) {
-                        colorGroup.colors = [];
-                        data.forEach(function (t) {
-                          if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 3) {
-                            colorGroup.colors.push(t.color.color.hex);
-                          }
-                        });
-                      });
-                      cb();
-                    });
-                }], function () {
-                  resolve(groups);
-                });
-              });
-            });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            city: true
-          },
-          titleGroups: [
-            ['category', 'season', 'year'],
-            ['region']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'CI1a',
-          id: 'citiesByColorPeriod',
-          group: 'citiesByColorPeriod',
-          title: 'Cross City Popularity By Color',
-          chartTitle: 'Cross City Popularity By Color {{vm.parseTitle(0)}} {{vm.parseTitle(1)}} {{vm.parseTitle(2)}}',
-          api: function () {
-            var customParams = vm.prepareRequestParams();
-            customParams.color = vm.filter.color.hex.replace('#', '');
-            return charts.citiesByColorPeriod(customParams);
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            region: true,
-            color: true
-          },
-          titleGroups: [
-            ['color'],
-            ['category', 'season', 'year'],
-            ['region']
-          ]
-        },
-        {
-          qNumber: 'DE1a',
-          id: 'colorsGroupsCommon',
-          group: 'colorsGroupsCommon',
-          title: 'Color Popularity By Designer',
-          chartTitle: 'Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsGroupsCommon(vm.prepareRequestParams())
-              .then(function (results) {
-                return results;
-              });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE1b',
-          id: 'colorsGroupsCommon2',
-          group: 'colorsGroupsCommon2',
-          title: 'Expanded Color Popularity By Designer',
-          chartTitle: 'Expanded Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.colorsGroupsCommon(vm.prepareRequestParams())
-              .then(function (results) {
-                return dashboardRepository['year'].getColorPalette(vm.filter.year.all ? 2018 : vm.filter.year.id, vm.prepareColorsParams(), 250)
-                  .then(function (data) {
-                    results['palettes'] = data;
-                    return results;
-                  });
-              });
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE2a',
-          id: 'top4forDesigner',
-          group: 'top4forDesigner',
-          title: 'Two Year Comparison of Color Popularity By Designer',
-          chartTitle: 'Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
-            }
-
-            return $q.all([
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
-                .then(function (results) {
-                  return results;
-                }),
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
-                .then(function (results) {
-                  return results;
-                })
-            ]).then(function (results) {
-              return _.map(results, function (result, i) {
-                return {
-                  title: yearsRange[i],
-                  data: result
-                };
-              });
-            });
-          },
-          apiAfter: function (model) {
-            model.city = vm.filter.city.title;
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE2b',
-          id: 'top4forDesigner2',
-          group: 'top4forDesigner2',
-          title: 'Expanded Two Year Comparison of Color Popularity By Designer',
-          chartTitle: 'Expanded Two Year Comparison of Color Popularity By Designer {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            var yearsRange = _.range(vm.filter.year.id - 1, vm.filter.year.id + 1);
-            if (vm.filter.year.all) {
-              yearsRange = _.range(vm.meta.years[1].title - 1, vm.meta.years[1].title + 1);
-            } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
-              yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 2);
-            }
-            return $q.all([
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[0])
-                .then(function (results) {
-                  return results;
-                }),
-              charts.colorsWithGroups(vm.prepareRequestParams(), yearsRange[1])
-                .then(function (results) {
-                  return results;
-                }),
-              dashboardRepository['year'].getColorPalette(yearsRange[0], vm.prepareColorsParams(), 250)
-                .then(function (data) {
-                  return data;
-                }),
-              dashboardRepository['year'].getColorPalette(yearsRange[1], vm.prepareColorsParams(), 250)
-                .then(function (data) {
-                  return data;
-                })
-            ]).then(function (results) {
-              return _.map(results,
-                function (result, i) {
-                  return {
-                    title: yearsRange[i],
-                    data: result
-                  };
-                });
-            });
-          },
-          apiAfter: function (model) {
-            model.city = vm.filter.city.title;
-          },
-          filters: {
-            category: true,
-            season: true,
-            year: true,
-            designer: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['category', 'season', 'year']
-          ],
-          options: {
-            extraView: true
-          }
-        },
-        {
-          qNumber: 'DE3a',
-          id: 'top4Grid',
-          group: 'top4Grid',
-          title: 'Designers Top Four Colors',
-          chartTitle: 'Designers Top Four Colors {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
-          api: function () {
-            return charts.designersWithTopColors(vm.prepareRequestParams());
-          },
-          filters: {
-            season: true,
-            year: true,
-            region: true
-          },
-          titleGroups: [
-            ['designer'],
-            ['season', 'year']
-          ]
-        }
-        /*           {
-         id: 'colorsUniqueWithLevelsGrouped',
-         group: 'colorsUniqueWithLevels',
-         title: 'All colors with their distribution per region / city / season / year - GROUPED',
-         chartTitle: 'A Comparative View of All Colors used in {{vm.filter.region.title}} {{vm.filter.city.title}} And Their Distribution {{vm.getAbbrv("season")}} {{vm.filter.year.title}}',
-         api: function() {
-         return charts.colorsUniqueGroups(vm.filter.year.id, vm.filter.season.title, null, vm.filter.city.title);
-         },
-         apiAfter:  function(model, results) {
-         //                            vm.model.ordered = true;
-         model.grouped = true;
-         },
-         filters: {
-         seasons: true,
-         years: true,
-         regions: true,
-         cities: true
-         }
-         },
-         */
-      ];
-
-      vm.currentChart = vm.charts[0];
-      vm.chartsCurrentViewType = null;
-
-      $scope.$watch('[vm.currentChart, vm.filter]', loadData, true);
-
-      $scope.$watch('vm.filter.region', function (regionNewV) {
-        if (regionNewV) {
-          if (!regionNewV.all) {
-            vm.meta.cities = _.filter(cache.cities, function (city) {
-              if (city.region) {
-                return city.region.toLowerCase() === regionNewV.serverName.toLowerCase() || city.all
-              }
-            })
-          } else if (regionNewV.all) {
-            angular.copy(cache.cities, vm.meta.cities);
-          }
-          vm.filter.city = vm.meta.cities[0];
-        }
-
-        // var region = (cache.regions || {})[(vm.filter.region || {}).id] || {};
-        // vm.meta.cities = region.cities;
-        // vm.filter.city = (region.cities || [])[0];
-        //
-        // // city must be already selected before starting to filter
-
-        if (!loading.isMetaLoadedSetup) {
-          loading.metaLoaded.promise.then(function () {
-            loading.metaReady.resolve();
-          });
-          loading.isMetaLoadedSetup = true;
-        }
-      });
-
-      // $scope.$watch(function () {
-      //   return dashboardOverlayService.showOverlay;
-      // }, function (newValue, oldValue) {
-      //   vm.showDashboardOverlay = newValue;
-      // });
-
-      function loadData(newV, oldV) {
-        // dashboardOverlayService.loadingStart(10000);
-        loading.currentRequestId = Math.random();
-        if (newV && oldV) {
-          if (newV[0].qNumber !== oldV[0].qNumber) {
-            vm.filter.designer = vm.meta.designers[0];
-
-            if (newV[0].qNumber === 'RE1a' || newV[0].qNumber === 'CI1a') {
-              vm.meta.regions = _.filter(vm.meta.regions, function (item) {
-                return !item.all;
-              });
-              vm.filter.region = vm.meta.regions[0];
-            } else if (!_.find(vm.meta.regions, 'all')) {
-              vm.meta.regions.unshift({id: 'all', title: 'ALL REGIONS', region: 'all', serverName: 'all', all: true});
-              vm.filter.region = vm.meta.regions[0];
-            }
-          }
-        }
-
-        loading.filtersReady.then(function () {
-          vm.model = null;
-
-          (function (currentRequestId) {
-            vm.currentChart.api().then(function (result) {
-
-              if (currentRequestId !== loading.currentRequestId || !result) {
-                return;
-              }
-              vm.model = result;
-              if (vm.currentChart.apiAfter) {
-                vm.currentChart.apiAfter(vm.model, result);
-              }
-              vm.title = prepareTitle(vm.currentChart.chartTitle);
-              prepareDescription();
-            });
-            // dashboardOverlayService.loadingCompleted();
-          })(loading.currentRequestId);
-        });
-      }
-
-      function prepareTitle(title) {
-        var exp = $interpolate(title);
-        return exp($scope);
-      }
-
-      function prepareDescription() {
-        vm.description = vm.description || (vm.filter.year.title + ' | COLORS-' + vm.currentChart.qNumber + ' | CITIES-' +
-          vm.filter.city.title + ' | REGIONS-' + vm.filter.region.title + ' | DESIGNER-' + vm.filter.designer.title +
-          ' | SEASONS-' + vm.filter.season.title);
-
-        var regionId = null;
-        switch (vm.filter.region.id) {
-          case 'europe':
-            regionId = 2;
-            break;
-          case 'north_america':
-            regionId = 3;
-            break;
-          case 'latin_america':
-            regionId = 4;
-            break;
-          case 'asia_pacific':
-            regionId = 1;
-            break;
-        }
-
-        var yearFrom = null;
-        var yearTo = vm.filter.year.id === 'all' ? vm.meta.years[1].title : vm.filter.year.id;
-        if (vm.currentChart.qNumber === 'CO3a' || vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b') {
-          yearFrom = yearTo - 4;
-        } else if (vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b') {
-          yearFrom = yearTo - 2;
-        } else if (vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b') {
-          yearFrom = yearTo - 1;
-        }
-
-        $http({
-          url: (appConfig.webServiceUrl + 'stats'),
-          method: 'GET',
-          params: {
-            fashionSeason: vm.filter.season.id === 'all' ? null : vm.filter.season.id,
-            fashionDesigner: vm.filter.designer.id === 'all' ? null : vm.filter.designer.id,
-            fashionRegion: regionId || null,
-            fashionCity: vm.filter.city.id === 'all' ? null : vm.filter.city.id,
-            fashionCategory: vm.filter.category.id === 'all' ? null : vm.filter.category.id,
-            fashionYear: yearFrom || vm.filter.year.id === 'all' ? null : vm.filter.year.id,
-            yearFrom: yearFrom || null,
-            yearTo: yearFrom ? yearTo : null
-          }
-        }).then(function (res) {
-          vm.grayList = res.data.data;
-          vm.description = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
-            ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
-            ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
-        });
-      }
-
-      vm.labelToGray = function (selector, title) {
-        var result = true;
-
-        if (title.indexOf('ALL ') === -1) {
-          _.forEach(vm.grayList[selector], function (item) {
-            if (item.title === title) {
-              result = false;
-            }
-          });
-        }
-        return result;
-      };
-
-      vm.isFilterItems = function (selector, title) {
-        if (selector === 'regions') {
-          switch (title) {
-            case 'Europe':
-              title = 'Europe';
-              break;
-            case 'North America':
-              title = 'North America';
-              break;
-            case 'South America':
-              title = 'Latin America';
-              break;
-            case 'Asia and Pacific':
-              title = 'Asia Pacific';
-              break;
-          }
-        }
-
-        var result = true;
-
-        if (vm.grayList[selector] === undefined) {
-          result = false;
-        } else if (selector === 'years' && vm.filter.year.title === 'ALL YEARS' && (vm.currentChart.qNumber === 'CO3a' ||
-            vm.currentChart.qNumber === 'SE2a' || vm.currentChart.qNumber === 'SE2b' ||
-            vm.currentChart.qNumber === 'CA3a' || vm.currentChart.qNumber === 'CA3b' ||
-            vm.currentChart.qNumber === 'DE2a' || vm.currentChart.qNumber === 'DE2b')) {
-          result = false;
-        } else if (selector === 'regions' && vm.currentChart.qNumber === 'RE1a') {
-          result = false;
-        } else if (vm.grayList === {} || title.toString().indexOf('ALL ') === -1) {
-          _.forEach(vm.grayList[selector], function (item) {
-            if (item.title === title.toString()) {
-              result = false;
-            }
-          });
-        } else {
-          result = false;
-        }
-        return result;
-      };
-
-      vm.isFilterVisible = function (filterId) {
-        var filterOptions = vm.currentChart.filters || {};
-
-        var filter = filterOptions.all;
-        if (!filter) {
-          filter = filterOptions[filterId];
-        }
-
-        if (filter === true) {
-          return true;
-        } else if (angular.isFunction(filter)) {
-          return filter();
-        }
-
-        return false;
-      };
-
-      vm.generateImgName = function (extension) {
-        var abbrevs = {
-          qNumber: vm.currentChart.qNumber,
-          category: vm.filter.category.all ? 'AllCa' : vm.getAbbrv('category'),
-          season: vm.filter.season.all ? 'AllSe' : vm.getAbbrv('season'),
-          year: vm.filter.year.all ? 'AllYe' : '17',
-          region: vm.filter.region.all ? 'AllRe' : vm.getAbbrv('region'),
-          city: vm.filter.city.all ? 'AllCi' : vm.getAbbrv('city')
-        };
-        var result = '';
-        var date = moment().format('L');
-
-        _.map(abbrevs, function (item) {
-          result += item + '.';
-        });
-
-        return result + date + '.jpg';
-      };
-
-      vm.exportJpg = function () {
-        statsService.infographics();
-        var captureEl = angular.element('#capture');
-        var footer = angular.element('.customized-infographics-footer');
-        var titles = angular.element('.graphic-titles');
-        footer.css({display: 'block'});
-        // titles.css({'text-align': 'left', 'font-size': '3em'});
-        captureEl.css({'padding-top': '30px'});
-        var captureElHeight = captureEl.height();
-        var captureElWidth = captureEl.width();
-
-        timeout(function () {
-          html2canvas(captureEl[0], {
-            height: captureElHeight + 20,
-            width: captureElWidth + 10,
-            background: '#fff'
-          }).then(function (canvas) {
-            var img = canvas.toDataURL("image/jpeg");
-            download(img, vm.generateImgName('jpg'), "image/jpg");
-            captureEl.css({'padding': '0'});
-            footer.css({display: 'none'});
-            titles.css({'font-size': '20px', 'text-align': 'center'});
-          });
-        }, 50);
-      };
-
-      vm.reportJpg = function () {
-        var captureEl = angular.element('#capture');
-        var captureElHeight = captureEl.height();
-        var captureElWidth = captureEl.width();
-        timeout(function () {
-          html2canvas(captureEl[0], {
-            height: captureElHeight + 20,
-            width: captureElWidth + 20,
-            background: '#fff'
-          }).then(function (canvas) {
-            var img = canvas.toDataURL("image/jpeg");
-            download(img, vm.generateImgName('jpg'), "image/jpg");
-          });
-        }, 50);
-      };
-
-      function generateRandomGroupColorByGroupTitle(title) {
-        title = (title || '').replace(/[^\w]/g, '').toLowerCase();
-        var group = (groupTitlesTemplates[title] || {}).template || '#{0}{1}{2}';
-
-        return String.format(group,
-          randomColorFraction() + randomColorFraction(),
-          randomColorFraction() + randomColorFraction(),
-          randomColorFraction() + randomColorFraction());
-
-        function randomColorFraction() {
-          return Math.round(Math.random() * 15).toString(16);
-        }
-      }
-    }
-
-  ]);
-}(angular));
-
-angular
-  .module('app')
-  .component('customizedInfographicsComponent', {
-    templateUrl: 'app/components/customized-infographics/customized-infographics.tmpl.html'
-  });
-
-angular
-.module('app')
-.component('coursesDetailsComponent', {
-  templateUrl: 'app/components/courses-details/courses-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, $state, localStorageService) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'courses/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'courses', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.aggProduct = function () {
-      // localStorageService.remove('products');
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.courses) {
-        products.courses = {};
-      }
-      products.courses[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'courses'});
-    };
-  }
-});
-
-angular
-  .module('app')
-  .component('coursesComponent', {
-    templateUrl: 'app/components/courses/courses.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.pageData = [];
-      vm.categories = [];
-      vm.cacheItems = [];
-      vm.level = [];
-      vm.topic = [];
-      vm.provider = [];
-      vm.topicModel = 'TOPIC';
-      vm.providerModel = 'PROVIDER';
-      vm.levelModel = 'LEVEL';
-      vm.items = [];
-      vm.flag = true;
-      var numberOfElements = 3;
-      var count = 1;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'courses.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.date = moment(item.data.published_year + '-' + item.data.published_month + '-' + item.data.published_day, 'YYYY-MM-DD').format('MMMM D, YYYY');
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                vm.cacheItems.push(angular.copy(item.data));
-                return item.data;
-              });
-              vm.pageData.forEach(function (t) {
-                if (t.course_provider && !vm.provider.includes(t.course_provider)) {
-                  vm.provider.push(t.course_provider);
-                }
-              });
-              vm.topic = ['Color Foundation', 'Color Strategy', 'Color Naming'];
-              vm.level = ['Beginner', 'Intermediate', 'Advanced'];
-              vm.select();
-            }
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.filterData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.select = function () {
-        if (vm.topic.includes(vm.topicModel) || vm.provider.includes(vm.providerModel) || vm.level.includes(vm.levelModel)) {
-          vm.filterData = angular.copy(vm.cacheItems).filter(function (t) {
-            if ((!vm.topic.includes(vm.topicModel) || vm.topicModel === t.course_topic) &&
-              (!vm.provider.includes(vm.providerModel) || vm.providerModel === t.course_provider) &&
-              (!vm.level.includes(vm.levelModel) || vm.levelModel === t.course_level)) {
-              return t;
-            }
-          });
-        } else {
-          vm.filterData = angular.copy(vm.cacheItems);
-        }
-        vm.items = [];
-        count = 1;
-        vm.sortItems();
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('contactUsComponent', {
-    templateUrl: 'app/components/contact-us/contact-us.tmpl.html',
-    controller: function ($state, $http, appConfig, dataValidate) {
-      this.data = {
-        firstName: {value: '', required: true, name: 'first name', type: 'provide'},
-        lastName: {value: '', required: true, name: 'last name', type: 'provide'},
-        title: {value: '', required: true, name: 'title', type: ''},
-        company: {value: '', required: true, name: 'company name', type: 'provide'},
-        phone: {value: '', name: 'phone number', type: 'enter'},
-        companyEmail: {value: '', required: true, name: 'company email', type: 'provide'},
-        comments: {value: '', required: true, name: 'comments', type: 'enter'}
-      };
-
-      this.contactUs = function () {
-        if (dataValidate.validate(this.data)) {
-          var data = {};
-          for (var item in this.data) {
-            data[item] = this.data[item].value;
-          }
-          $http.get(appConfig.dashboardServiceUrl + 'contact_us', {
-            params: data
-          }).then(function (res) {
-            if (res.status === 200) {
-              $state.go('thank-you');
-            }
-          });
-        }
-      };
-    }
-  });
-
-angular
-	.module('app')
-	.component('colorPickerComponent', {
-		templateUrl: 'app/components/color-picker/color-picker.tmpl.html',
-		controller: function ($location, $scope, $http, appConfig, anchorSmoothScroll, searchColor) {
-			var vm = this;
-
-			vm.gotoElement = function (eID) {
-				$location.hash('prefooter');
-				anchorSmoothScroll.scrollTo(eID);
-				$location.hash('');
-			};
-			// vm.paintColorNamesByPicker = [];
-			// vm.colorAssociationNamesByPicker = [];
-
-			var color_picker = document.getElementById("color_picker"),
-							color_id = document.getElementById("color_id");
-			$scope.colorPickerGray = 100;
-			$scope.colorPickerOpacity = 1;
-			document.getElementById('value_span').innerHTML = '100%';
-
-			vm.numOfpaintColorNames = 0;
-			vm.numOfcolorAssociationNames = 0;
-			vm.colorAssociationNameWord = '';
-
-			$scope.changeColor = function () {
-				color_picker.onmousedown = select_color;
-			};
-
-			color_picker_add();
-
-			$scope.colorPickerSliderGray = function () {
-				var value = document.getElementById('rg').value;
-				color_id.style.filter = "saturate(" + value + "%)";
-			};
-
-			$scope.colorPickerSliderOpacity = function () {
-				var value = document.getElementById('range_opacity').value;
-				document.getElementById('value_span').innerHTML = value * 100 + '%';
-				color_id.style.opacity = value;
-			};
-
-			$scope.colorPickerRGB = function () {
-				var colorInputR = document.getElementById('colorInputR').value,
-						colorInputG = document.getElementById('colorInputG').value,
-						colorInputB = document.getElementById('colorInputB').value;
-
-				$scope.colorRGB_R = colorInputR;
-				$scope.colorRGB_G = colorInputG;
-				$scope.colorRGB_B = colorInputB;
-
-				var inputRGB = "rgb(" + $scope.colorRGB_R + ", " + $scope.colorRGB_G + ", " + $scope.colorRGB_B + ")";
-				color_id.style.backgroundColor = inputRGB;
-			}
-
-			function color_picker_add() {
-				color_picker_ = color_picker.getContext("2d"),
-					center_x = (color_picker.width) / 2,
-					center_y = (color_picker.height) / 2,
-					sx = center_x,
-					sy = center_y;
-
-				$scope.colorRGB_R = 0;
-				$scope.colorRGB_G = 0;
-				$scope.colorRGB_B = 0;
-				palette = new color_picker_element(center_x, center_y, sx, sy);
-				palette.draw();
-			}
-
-			function select_color(e) {
-				var x = e.pageX - color_picker.offsetLeft - 48,
-					y = e.pageY - color_picker.offsetTop - 570,
-					pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
-					// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
-					pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
-				color_id.style.backgroundColor = pixelColor;
-				console.log('xxx', x, 'yyy', y);
-				console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
-
-				$scope.pixel = pixel;
-				$scope.colorRGB_R = pixel[0];
-				$scope.colorRGB_G = pixel[1];
-				$scope.colorRGB_B = pixel[2];;
-			}
-
-
-			function color_picker_element(center_x, center_y, sx, sy) {
-				this.center_x = center_x;
-				this.center_y = center_y;
-				this.sx = sx;
-				this.sy = sy;
-				this.draw = function () {
-					for (var i = 0; i < 360; i += 0.1) {
-						var rad = (i - 45) * (Math.PI) / 180;
-						color_picker_.strokeStyle = "hsla(" + i + ", 100%, 50%, 1.0)";
-						color_picker_.beginPath();
-						color_picker_.moveTo(center_x, center_y);
-						color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
-						color_picker_.stroke();
-					}
-				}
-			}
-
-			this.searchByRGB = function () {
-				vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
-				$http.get(appConfig.colorAPI +
-					'minred=' + $scope.colorRGB_R +
-					'&maxred=' + $scope.colorRGB_R +
-					'&mingreen=' + $scope.colorRGB_G +
-					'&maxgreen=' + $scope.colorRGB_G +
-					'&minblue=' + $scope.colorRGB_B +
-					'&maxblue=' + $scope.colorRGB_B, {})
-					.then(function (res) {
-						if (res.data.length > 0) {
-							vm.paintColorNamesByPicker = res.data.map(function (item) {
-								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-								colorName = item.ShortName;
-								return {colorName: colorName, RGB: RGB};
-							});
-							if (vm.paintColorNamesByPicker) {
-								vm.colorAssociationNameWord = vm.paintColorNamesByPicker[0].colorName.replace(' ', '%20');
-							}
-
-							$http.get(appConfig.colorAPI + 'shortnamecontains=' + vm.colorAssociationNameWord, {})
-								.then(function (res) {
-									vm.numOfcolorAssociationNames = res.data.length;
-									vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
-								});
-						}
-					});
-			};
-
-			this.searchByShortNames = function (colorAssociationNameWord) {
-				$http.get(appConfig.colorAPI + 'shortnamecontains=' + colorAssociationNameWord, {})
-					.then(function (res) {
-						vm.validData = res.data;
-						if (res && res.data.length > 0) {
-							var RGB = '',
-								colorName = '';
-							vm.colorAssociationNamesByPicker = res.data.map(function (item) {
-								RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-								colorName = item.ShortName;
-								return {colorName: colorName, RGB: RGB};
-							});
-							searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
-							$location.url('/color-index-accordion');
-						}
-					});
-			};
-
-			$(document).ready(function () {
-				$(".scroll_down").click(function () {
-					$('html, body').animate({
-						scrollTop: $(".scroll-end").offset().top
-					}, 1500);
-				});
-			});
-
-		}
-	});
-
-angular
-  .module('app')
-  .component('colorNamingInfoComponent', {
-    templateUrl: 'app/components/color-naming-info/color-naming-info.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-        var vm = this;
-
-        $(document).ready(function() {
-            $(".scroll_down").click(function() {
-                $('html, body').animate({
-                    scrollTop: $("#education-top").offset().top
-                }, 1500);
-            });
-        });
-    }
-  });
-
-angular
-  .module('app')
-  .component('colorNamingIndexComponent', {
-    templateUrl: 'app/components/color-naming-index/color-naming-index.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-      var vm = this;
-
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('colorIndexSearchComponent', {
-    templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
-    controller: function (dataValidate, appConfig, $window, $location, anchorSmoothScroll, $http, $scope, searchColor) {
-      var vm = this;
-      // vm.paintColorNamesData = [];
-      // vm.colorAssociationNames = [];
-
-        this.colorSearch = function () {
-        	if (this.data.color != ' ') {
-						$http.get(appConfig.colorAPI + 'shortname=' + this.data.color, {})
-							.then(function (res) {
-								// vm.colorValidData = res.data;
-								if (res && res.data.length > 0) {
-									var RGB = '',
-										colorName = '';
-									vm.paintColorNames = res.data.map(function (item) {
-										RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-										colorName = item.ShortName;
-										return {colorName: colorName, RGB: RGB};
-									});
-								}
-							});
-
-						$http.get(appConfig.colorAPI + 'shortnamecontains=' + this.data.color, {})
-							.then(function (res) {
-								vm.colorValidDataShort = res.data;
-								if (res && res.data.length > 0) {
-									var RGB = '',
-										colorName = '';
-									vm.colorAssociationNames = res.data.map(function (item) {
-										RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-										colorName = item.ShortName;
-										return {colorName: colorName, RGB: RGB};
-									});
-									searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
-									$location.url('/color-index-accordion');
-								}
-							});
-					}
-				};
-    }
-  });
-
-angular
-  .module('app')
-  .component('colorIndexAccordionComponent', {
-    templateUrl: 'app/components/color-index-accordion/color-index-accordion.tmpl.html',
-    controller: function ($location, $scope, anchorSmoothScroll, $window, $element, searchColor) {
-      var vm = this;
-
-			vm.paintColorNames = searchColor.getPaintColorNames();
-      vm.colorAssociationNames = searchColor.getColorAssociationNames();
-
-      vm.searchColorName = [];
-
-			$scope.pageSize = 80;
-
-      // if (colorRgb !== undefined) {
-      //
-      //   var similarSaturateColors = [];
-      //   var similarDarkenColors = [];
-      //
-      //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
-      //     similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
-      //     similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
-      //   }
-      //   // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
-      //   // notDuplicateColors(similarSaturateColors);
-      //   // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
-      //
-      //   vm.similarSaturateColors = similarSaturateColors;
-      //   // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
-      //   vm.similarDarkenColors = similarDarkenColors;
-      //   // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
-      // }
-
-      var colorNamesItems = [],
-        		colorRgbItems = [];
-
-      if (vm.colorAssociationNames !== undefined) {
-        if (vm.colorAssociationNames.length > 0) {
-          vm.colorAssociationNames.forEach(function (color) {
-            colorRgbItems.push(color.RGB);
-						colorNamesItems.push(color.colorName);
-          });
-        }
-      }
-
-      var colorNames = colorNamesItems.join(',');
-			// word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud word cloud
-
-      if (colorNames.length > 1) {
-				drawWordCloud(colorNames);
-			}
-
-      function drawWordCloud(text_string) {
-        var common = 'poop,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,says,said,shall';
-
-        var word_count = {};
-
-        var words = text_string.split(/[ '\-\(\)\*":;\[\]|{},.!?]+/);
-        if (words.length === 1) {
-          word_count[words[0]] = 1;
-        } else {
-          words.forEach(function (word) {
-            var word = word.toLowerCase();
-            if (word !== '' && common.indexOf(word) === -1 && word.length > 1) {
-              if (word_count[word]) {
-                word_count[word]++;
-              } else {
-                word_count[word] = 1;
-              }
-            }
-          });
-        }
-        var svg_location = '#chart';
-        var widthOf84per = innerWidth - innerWidth*16/100;
-        var width = widthOf84per;
-        var height = 450;
-
-        var word_entries = d3.entries(word_count);
-
-        var xScale = d3.scale.linear()
-                .domain([0, d3.max(word_entries, function (d) {
-                  return d.value;
-                })
-                ])
-                .range([20, 100]);
-        d3.layout.cloud().size([width, height])
-                .timeInterval(20)
-                .words(word_entries)
-                .fontSize(function (d) {
-                  return xScale(Number(d.value)); 
-                })
-                .text(function (d) {
-                  return d.key; 
-                })
-                .rotate(function () {
-                  return ~~(Math.random() * 2) * 90; 
-                })
-                .font('Impact')
-                .on('end', draw)
-                .start();
-				window.addEventListener("resize", draw(words));
-        function draw(words) {
-					console.log("window.innerWidth", window.innerWidth);
-          d3.select(svg_location).append('svg')
-                    .attr('width', width)
-                    .attr('height', height)
-						        // .attr("preserveAspectRatio", "xMidYMid meet")
-						        // .attr("viewBox", "0 0 1000 450")
-                    .append('g')
-                    .attr('transform', 'translate(' + [widthOf84per/2, 225] + ')')
-                    // .attr('transform', 'scale(2)')
-                    .selectAll('text')
-                    .data(words)
-                    .enter().append('text')
-                    .style('font-size', function (d) {
-                      return xScale(d.value*0.5) + 'px';
-                    })
-                    .style('font-family', 'Impact')
-                    .style('fill', function (d, i) {
-                      return 'rgb(' + colorRgbItems[i] + ')';
-                    })
-                    .attr('text-anchor', 'middle')
-                    .attr('transform', function (d) {
-                      return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
-                    })
-                    .text(function (d) {
-                      return d.key; 
-                    });
-        }
-        d3.layout.cloud().stop();
-      }
-                                                                                                    // METHOD RGB TO HEX
-      function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? '0' + hex : hex;
-      }
-
-      function rgbToHex(r, g, b) {
-        return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-      }
-
-      //                                                                                         SELECT FOR COLOR DATA
-      $(document).ready(function() {
-        var widthContainer = window.innerWidth - 200;
-        var widthOneElement = $('.checkbox-accordion-item').width();
-        var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
-        var allElements = vm.paintColorNames.length;
-        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
-        var emptyElements = integerElementsOnRow - elementsOnRow;
-        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
-        
-        for(var i = 0; i < emptyElements; i++) {
-          $('.color-index-accordion-item__last-line').append(emptyBlock);
-        }
-        
-        $(document).click(function(event) {
-          if ($(event.target).closest(".selectPerPage").length) return;
-          $('.selectPerPage__list').removeClass('show');          
-          event.stopPropagation();
-        });
-      });
-
-      $scope.showSelect = function() {
-        $('.selectPerPage__list').toggleClass('show');
-      }
-    }
-  });
-angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
-  $scope.oneAtATime = true;
-});
-
-angular
-  .module('app')
-  .component('colorIndexComponent', {
-    templateUrl: 'app/components/color-index/color-index.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-      var vm = this;
-
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('colorEmotionComponent', {
-    templateUrl: 'app/components/color-emotion/color-emotion.tmpl.html',
-    controller: function ($location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-
-
-
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartThankComponent', {
-    templateUrl: 'app/components/cart-thank/cart-thank.tmpl.html',
-    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
-      var vm = this;
-
-      vm.orderId = localStorageService.get('orderId');
-      localStorageService.remove('orderId');
-      localStorageService.remove('purchase');
-      localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
-      vm.products = localStorageService.get('purchaseItems');
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartPageComponent', {
-    templateUrl: 'app/components/cart-page/cart-page.tmpl.html',
-    controller: function ($state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, $stateParams, modalService, $window) {
-      var vm = this;
-
-      vm.init = function () {
-        vm.wayBack = $stateParams.wayBack || 'profile';
-        vm.wayBackName = ' to ';
-
-        switch ($stateParams.wayBack) {
-          case 'reports':
-            vm.wayBackName += 'Color Reports';
-            break;
-          case 'courses':
-            vm.wayBackName += 'Color Courses';
-            break;
-          case 'teachingMaterials':
-            vm.wayBackName += 'Color Teaching Materials';
-            break;
-          case 'profile':
-            vm.wayBackName += 'Profile';
-            break;
-          default:
-            vm.wayBackName = '';
-        }
-
-        vm.products = [];
-        vm.all = 0;
-        vm.tax = 0;
-        vm.IDs = localStorageService.get('products');
-
-        vm.getProductItems(vm.IDs.reports, 'reports');
-        vm.getProductItems(vm.IDs.courses, 'courses');
-        vm.getProductItems(vm.IDs.teaching_materials, 'teaching_materials');
-      };
-
-      vm.getProductItems = function (obj, name) {
-        for (var key in obj) {
-          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
-            .then(function (res) {
-              vm.pageData = res.data.data.data;
-              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-              vm.pageData.file = res.data.data.files && res.data.data.files[0];
-              vm.pageData.analitics = angular.copy(res.data.data.analytics);
-              vm.pageData.count = obj[key];
-              vm.pageData.type = name;
-              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
-              vm.products.push(vm.pageData);
-            });
-        }
-      };
-
-      vm.goCheckout = function () {
-        var purchase = {IDs: {}};
-        purchase.amount = vm.all;
-        for (var type in vm.IDs) {
-          purchase.IDs[type] = {};
-          for (var id in vm.IDs[type]) {
-            if (vm.IDs[type][id] < 1) {
-              return;
-            } else {
-              purchase.IDs[type][id] = vm.IDs[type][id];
-            }
-          }
-        }
-
-        localStorageService.set('purchase', purchase);
-        $state.go('cart-checkout');
-      };
-
-      vm.removeProduct = function (id, type, index) {
-        modalService.showModal(4, function () {
-          delete vm.IDs[type][id];
-          vm.products.splice(index, 1);
-          localStorageService.set('products', vm.IDs);
-        });
-      };
-
-      vm.goWayBack = function () {
-        if ($window.history.length < 3) {
-          $state.go('about');
-        } else if (vm.wayBackName === '') {
-          $window.history.back();
-        } else {
-          $state.go(vm.wayBack);
-        }
-      };
-
-      vm.editCount = function (id, index, type, value) {
-        if (vm.products[index].count + value > 0) {
-          vm.products[index].count = vm.products[index].count + value;
-          vm.IDs[type][id] = vm.IDs[type][id] + value;
-          localStorageService.set('products', vm.IDs);
-          vm.all = vm.all + vm.products[index].price * value;
-        } else {
-          vm.removeProduct(id, type, index);
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartCheckoutMethodsComponent', {
-    templateUrl: 'app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html',
-    controller: function (categoryValues, dataValidate, $state, $http, appConfig, $location, anchorSmoothScroll, localStorageService, authService, $timeout, $scope, $cookies) {
-      var vm = this;
-
-      function init() {
-        vm.userIsLoggedIn();
-
-        vm.methodNumber = 1;
-        vm.payError = false;
-        vm.nonce = false;
-        vm.errFlag = false;
-        vm.payDataFlag = false;
-        vm.placeOrderFlag = false;
-        vm.maxMethod = 1;
-        vm.tax = 0;
-        vm.methodStyle = ['gray', 'gray', 'gray', 'gray'];
-        vm.registerAndCheckout = false;
-        vm.checkoutAsGuest = false;
-        vm.country = categoryValues('country');
-        vm.states = categoryValues('states');
-
-        vm.email = '';
-        vm.password = '';
-        vm.error = '';
-
-        vm.data = {
-          first_name: {value: '', required: true, name: 'first name', type: 'provide'},
-          last_name: {value: '', required: true, name: 'last name', type: 'provide'},
-          email: {value: '', required: true, name: 'email', type: 'provide'},
-          middle_name: {value: '', name: 'middle name', type: 'provide'},
-          address: {value: '', required: true, name: 'address', type: 'provide'},
-          second_address: {value: '', name: 'second_address', type: 'provide'},
-          city: {value: '', required: true, name: 'city', type: 'provide'},
-          zip: {value: '', required: true, name: 'zip', type: 'numeric'},
-          telephone: {value: '', required: true, name: 'telephone', type: 'numeric'},
-          state: {
-            value: vm.states[0],
-            required: true,
-            name: 'state',
-            type: 'both'
-          },
-          country: {
-            value: vm.country[0],
-            required: true,
-            name: 'country',
-            type: 'select'
-          }
-        };
-
-        vm.products = [];
-        vm.all = 0;
-        vm.purchase = localStorageService.get('purchase');
-
-        vm.getProductItems(vm.purchase.IDs.reports, 'reports');
-        vm.getProductItems(vm.purchase.IDs.courses, 'courses');
-        vm.getProductItems(vm.purchase.IDs.teaching_materials, 'teaching_materials');
-        vm.editGrayList();
-      }
-
-      $scope.getStates = function (search) {
-        var newState = vm.states.slice();
-        if (search.length > 0 && newState.indexOf(search) === -1) {
-          newState.unshift(search);
-        }
-        return newState;
-      };
-
-      vm.getBillingData = function () {
-        if (vm.user && vm.user.id) {
-          $http.get(appConfig.dashboardServiceUrl + 'billing_infos/' + vm.user.id + '.json', {params: {token: authService.token}})
-            .then(function (res) {
-              // console.log('res',res);
-              if (res && res.data && res.data[0]) {
-                // console.log('res',res);
-
-                for (var key in vm.data) {
-                  if (key === 'state') {
-                    var index = _.findIndex(vm.states, function (item) {
-                      return item.title === res.data[0][key];
-                    });
-                    vm.data[key].value = vm.states[index];
-                  }
-                  if (key === 'country') {
-                    var index2 = _.findIndex(vm.country, function (item) {
-                      return item.title === res.data[0][key];
-                    });
-                    vm.data[key].value = vm.country[index2];
-                  }
-                  vm.data[key].value = res.data[0][key] || '';
-                }
-              }
-              if (!vm.data.email.value && vm.user) {
-                vm.data.email.value = vm.user.email;
-              }
-              vm.continue();
-            })
-            .catch(function (err) {
-              // console.log('ERROR',err);
-            });
-        } else {
-          return false;
-        }
-      };
-
-      vm.login = function () {
-        vm.error = false;
-        authService.login(this.email, this.password)
-          .then(function (data) {
-            if (data && data.success) {
-              vm.user = localStorageService.get('currentUser');
-            } else {
-              vm.error = true;
-            }
-          });
-      };
-
-      vm.uploadBillingInfo = function () {
-        if (vm.user.id) {
-          if (dataValidate.validate(vm.data)) {
-            var data = {};
-            for (var item in vm.data) {
-              if (vm.data[item].type === 'select') {
-                data[item] = vm.data[item].value.title || vm.data[item].value;
-              } else {
-                data[item] = vm.data[item].value;
-              }
-            }
-            data.member_id = vm.user.id;
-            data.token = authService.token;
-            $http.post(appConfig.dashboardServiceUrl + 'billing_infos.json', data)
-              .then(function (res) {
-                vm.continue();
-              })
-              .catch(function (err) {
-                // console.log('ERROR',err);
-              });
-          }
-        } else {
-          vm.continue();
-        }
-      };
-
-      vm.continue = function () {
-        if (vm.methodNumber === 2 && !dataValidate.validate(vm.data)) {
-          return;
-        }
-        vm.methodNumber = vm.methodNumber + 1;
-        if (vm.methodNumber === 3 && !vm.purchase.amount) {
-          vm.methodNumber = 4;
-        }
-        if (vm.maxMethod < vm.methodNumber) {
-          vm.maxMethod = vm.methodNumber;
-        }
-        vm.editGrayList();
-      };
-
-      vm.editGrayList = function () {
-        vm.methodStyle.forEach(function (value, index) {
-          if (index === vm.methodNumber - 1) {
-            vm.methodStyle[index] = 'black';
-          } else {
-            vm.methodStyle[index] = 'gray';
-          }
-        });
-      };
-
-      vm.getProductItems = function (obj, name) {
-        for (var key in obj) {
-          $http.get(appConfig.dashboardServiceUrl + name + '/' + key + '.json')
-            .then(function (res) {
-              vm.pageData = res.data.data.data;
-              vm.pageData.image_url = res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-              vm.pageData.analitic = _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-              vm.pageData.analitics = angular.copy(res.data.data.analytics);
-              vm.pageData.count = obj[key];
-              vm.pageData.type = name;
-              vm.all = vm.all + (vm.pageData.price * vm.pageData.count);
-              vm.products.push(vm.pageData);
-            });
-        }
-      };
-
-      vm.goToMethod = function (number) {
-        vm.errFlag = false;
-        vm.methodNumber = number;
-        vm.editGrayList();
-      };
-
-      vm.passwordRecover = function () {
-        $state.go('password-recover-cart');
-      };
-
-      vm.userIsLoggedIn = function () {
-        vm.loginFlag = ($cookies.get('hg_session') !== undefined);
-        if (vm.loginFlag) {
-          vm.getBillingData();
-        } else {
-          vm.methodNumber = 1;
-        }
-      };
-
-      vm.stepBack = function () {
-        vm.methodNumber = vm.methodNumber - 1;
-        vm.editGrayList();
-      };
-
-      vm.goToThank = function () {
-        $timeout(function () {
-          vm.errFlag = false;
-          vm.placeOrderFlag = true;
-        }, 0);
-        var names = [];
-        var prices = [];
-        vm.products.forEach(function (item) {
-          names.push(item.header);
-          prices.push(item.price);
-        });
-        var data = {
-          id: vm.user.id || 0,
-          email: vm.data.email.value,
-          reports: vm.purchase.IDs.reports,
-          teaching_materials: vm.purchase.IDs.teaching_materials,
-          courses: vm.purchase.IDs.courses,
-          payment_method_nonce: vm.nonce,
-          name: vm.data.first_name.value + ' ' + vm.data.last_name.value,
-          address: vm.data.address.value,
-          zip: vm.data.zip.value,
-          city: vm.data.city.value,
-          productsNames: names,
-          productsPrices: prices
-        };
-        $http.post(appConfig.dashboardServiceUrl + 'checkouts.json', data)
-          .then(function (res) {
-            if (res) {
-              vm.info = res.data.info;
-              if (res.data.status === 'fail') {
-                vm.errFlag = true;
-                $timeout(function () {
-                  vm.placeOrderFlag = false;
-                }, 0);
-              } else {
-                vm.errFlag = false;
-                localStorageService.set('purchaseItems', res.data.items);
-                localStorageService.set('orderId', res.data.orderId);
-                $timeout(function () {
-                  vm.placeOrderFlag = false;
-                }, 0);
-                $state.go('cart-thank');
-              }
-            }
-          })
-          .catch(function (err) {
-            vm.placeOrderFlag = false;
-            vm.errFlag = true;
-          });
-      };
-
-      braintree.client.create({
-        authorization: 'sandbox_kzkdbmyv_6swqvczbg4bk7gpx'
-      }, function (err, clientInstance) {
-        if (err) {
-          // console.error(err);
-          return;
-        }
-        braintree.hostedFields.create({
-          client: clientInstance,
-          styles: {
-            'input': {
-              'font-size': '14px',
-              'font-family': 'helvetica, tahoma, calibri, sans-serif',
-              'color': '#3a3a3a'
-            },
-            ':focus': {
-              'color': 'black'
-            }
-          },
-          fields: {
-            number: {
-              selector: '#card-number',
-              placeholder: 'CREDIT CARD NUMBER *'
-            },
-            cvv: {
-              selector: '#cvv',
-              placeholder: 'CVV *'
-            },
-            expirationMonth: {
-              selector: '#expiration-month',
-              placeholder: 'MONTH',
-              select: {
-                options: [
-                  '01',
-                  '02',
-                  '03',
-                  '04',
-                  '05',
-                  '06',
-                  '07',
-                  '08',
-                  '09',
-                  '10',
-                  '11',
-                  '12'
-                ]
-              }
-            },
-            expirationYear: {
-              selector: '#expiration-year',
-              placeholder: 'YEAR',
-              select: {
-                options: true
-              }
-            }
-          }
-        }, function (err, hostedFieldsInstance) {
-          if (err) {
-            // console.error(err);
-            return;
-          }
-          hostedFieldsInstance.on('validityChange', function (event) {
-            $timeout(function () {
-              vm.payError = false;
-            }, 0);
-            var field = event.fields[event.emittedBy];
-            if (field.isValid) {
-              if (event.emittedBy === 'expirationMonth' || event.emittedBy === 'expirationYear' || event.emittedBy === 'cvv') {
-                if (!event.fields.expirationMonth.isValid || !event.fields.expirationYear.isValid || !event.fields.cvv.isValid) {
-                  return;
-                }
-              } else if (event.emittedBy === 'number') {
-                $('#card-number').next('span').text('');
-              }
-              // Remove any previously applied error or warning classes
-              $(field.container).parents('.form-group').removeClass('has-warning');
-              $(field.container).parents('.form-group').removeClass('has-success');
-              // Apply styling for a valid field
-              $(field.container).parents('.form-group').addClass('has-success');
-            } else if (field.isPotentiallyValid) {
-              // Remove styling  from potentially valid fields
-              $(field.container).parents('.form-group').removeClass('has-warning');
-              $(field.container).parents('.form-group').removeClass('has-success');
-              if (event.emittedBy === 'number') {
-                $('#card-number').next('span').text('');
-              }
-            } else {
-              // Add styling to invalid fields
-              $(field.container).parents('.form-group').addClass('has-warning');
-              // Add helper text for an invalid card number
-              if (event.emittedBy === 'number') {
-                $('#card-number').next('span').text('Looks like this card number has an error.');
-              }
-            }
-          });
-          hostedFieldsInstance.on('cardTypeChange', function (event) {
-            // Handle a field's change, such as a change in validity or credit card type
-            if (event.cards.length === 1) {
-              $('#card-type').text(event.cards[0].niceType);
-            } else {
-              $('#card-type').text('Card');
-            }
-          });
-          $('.panel-body').submit(function (event) {
-            $timeout(function () {
-              vm.payDataFlag = true;
-            }, 0);
-
-            event.preventDefault();
-            hostedFieldsInstance.tokenize(function (err, payload) {
-              if (err) {
-                $timeout(function () {
-                  vm.payError = err.message;
-                  vm.payDataFlag = false;
-                  // console.error(err);
-                  return;
-                }, 0);
-              }
-              // This is where you would submit payload.nonce to your server
-              $timeout(function () {
-                if (payload && payload.nonce) {
-                  vm.nonce = payload.nonce;
-                  vm.continue();
-                  vm.payDataFlag = false;
-                }
-              }, 0);
-            });
-          });
-        });
-
-        braintree.paypalCheckout.create({
-          client: clientInstance
-        }, function (paypalCheckoutErr, paypalCheckoutInstance) {
-
-          // Stop if there was a problem creating PayPal Checkout.
-          // This could happen if there was a network error or if it's incorrectly
-          // configured.
-          if (paypalCheckoutErr) {
-            console.error('Error creating PayPal Checkout:', paypalCheckoutErr);
-            return;
-          }
-
-          // Set up PayPal with the checkout.js library
-          paypal.Button.render({
-            locale: 'en_US',
-            style: {
-              size: 'small',
-              color: 'blue',
-              shape: 'pill',
-              label: 'paypal',
-              tagline: 'false'
-            },
-            env: 'sandbox', // or 'sandbox'
-
-            payment: function () {
-              return paypalCheckoutInstance.createPayment({
-                flow: 'checkout',
-                amount: vm.all,
-                currency: 'USD',
-                intent: 'sale'
-                // Your PayPal options here. For available options, see
-                // http://braintree.github.io/braintree-web/current/PayPalCheckout.html#createPayment
-              });
-            },
-
-            onAuthorize: function (data, actions) {
-              return paypalCheckoutInstance.tokenizePayment(data, function (err, payload) {
-                if (err) {
-                  $timeout(function () {
-                    vm.payError = err.message;
-                    // console.error(err);
-                    return;
-                  }, 0);
-                }
-                // This is where you would submit payload.nonce to your server
-                $timeout(function () {
-                  if (payload && payload.nonce) {
-                    vm.nonce = payload.nonce;
-                    vm.continue();
-                  }
-                }, 0);
-                // Submit `payload.nonce` to your server.
-              });
-            },
-
-            onCancel: function (data) {
-              console.log('checkout.js payment cancelled', JSON.stringify(data, 0, 2));
-            },
-
-            onError: function (err) {
-              console.error('checkout.js error', err);
-            }
-          }, '#paypal-button').then(function () {
-            // The PayPal button will be rendered in an html element with the id
-            // `paypal-button`. This function will be called when the PayPal button
-            // is set up and ready to be used.
-          });
-
-        });
-      });
-
-      $scope.$watch(function () {
-        return authService.currentUser;
-      }, function (newVal) {
-        vm.user = localStorageService.get('currentUser');
-        if (vm.user) {
-          init();
-        }
-
-      });
-    }
-  });
-angular
-  .module('app')
-  .component('aboutPage', {
-    templateUrl: 'app/components/about-page/about-page.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, $sce, localStorageService) {
-      var vm = this;
-      vm.pageData = {};
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'abouts/1.json')
-          .then(function (res) {
-            if (res && res.data) {
-              // var keys = Object.keys(res.data).filter(function (item) {
-              //   return !!~item.indexOf('_url');
-              // });
-              //
-              // angular.forEach(keys, function (key) {
-              //   res.data[key] = appConfig.dashboardServiceUrl + res.data[key]
-              // });
-
-              vm.pageData = res.data;
-              vm.pageData.editor = $sce.trustAsHtml(vm.pageData.editor);
-            }
-          });
-      };
-
-      angular.element(window.scrollTo(0, 0));
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-      vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
-      };
-
-      vm.playerAPI = function (action) {
-        vm.vimeoPlayer = angular.element('iframe#companyVimeoVideo')[0];
-        if (vm.vimeoPlayer) {
-          vm.vimeoAPI = $f(vm.vimeoPlayer).api(action);
-        }
-      };
-
-      vm.showVideoPopup = function () {
-        angular.element('#video-popup').show();
-        angular.element('body').addClass('modal-open');
-      };
-
-      vm.hideVideoPopup = function () {
-        vm.playerAPI('pause');
-        angular.element('#video-popup').hide();
-        angular.element('body').removeClass('modal-open');
-      };
-    }
-  })
 
 angular.module('app').service('userDataRepository',
   ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
@@ -52073,4 +52092,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-c84425d506.js.map
+//# sourceMappingURL=../maps/scripts/app-a9f681d85c.js.map
