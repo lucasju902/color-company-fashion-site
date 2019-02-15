@@ -6758,6 +6758,28 @@ angular.module('app').directive('hueDbColorFrequencyColorPicker', function () {
   };
 });
 
+angular.module('app').directive('hueDbColorCountByModel', ['$location', function (location) {
+	function link(scope, element, attrs) {
+		scope.maxItems = 100;
+
+		scope.$watch('isExpanded', function (newValue, oldValue) {
+			if (newValue === true)
+				scope.maxItems = 100;
+			else if (newValue === false)
+				scope.maxItems = 6;
+		});
+	}
+
+	return {
+		restrict: 'E',
+		template: '<div class="db-color-count-by-model"><div class="color-count-row" ng-repeat="item in data | limitTo: maxItems"><div class="color-count" ng-bind="::item[0]"></div><div class="color-percentage">{{::item[1]}}</div></div></div>',
+		link: link,
+		scope: {
+			data: '=',
+			isExpanded: '='
+		}
+	};
+}]);
 angular.module('app').directive('hueDbColorFamiliesByBrandExpanded', function () {
   function link(scope, element, attrs) {
     scope.tooltipsterConfig = {
@@ -6827,28 +6849,6 @@ angular.module('app').directive('hueDbColorFamiliesByBrand', function () {
   };
 });
 
-angular.module('app').directive('hueDbColorCountByModel', ['$location', function (location) {
-	function link(scope, element, attrs) {
-		scope.maxItems = 100;
-
-		scope.$watch('isExpanded', function (newValue, oldValue) {
-			if (newValue === true)
-				scope.maxItems = 100;
-			else if (newValue === false)
-				scope.maxItems = 6;
-		});
-	}
-
-	return {
-		restrict: 'E',
-		template: '<div class="db-color-count-by-model"><div class="color-count-row" ng-repeat="item in data | limitTo: maxItems"><div class="color-count" ng-bind="::item[0]"></div><div class="color-percentage">{{::item[1]}}</div></div></div>',
-		link: link,
-		scope: {
-			data: '=',
-			isExpanded: '='
-		}
-	};
-}]);
 angular.module('app').directive('hueDbColorCount', ['$location', function (location) {
   function link(scope, element, attrs) {
   }
@@ -10245,9 +10245,9 @@ angular
 					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
 					var colorAssociationName = '';
 					// var str = [];
-					str = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+					var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
 
-					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: str})
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
 						.then(function (res) {
 							if (res.data.length > 0) {
 								vm.paintColorNames = res.data.map(function (item) {
@@ -10255,11 +10255,10 @@ angular
 									colorName = item.ShortName;
 									return {colorName: colorName, RGB: RGB};
 								});
-
 								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
 								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
                 //
-								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: colorAssociationName})
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: colorAssociationName})
 									.then(function (res) {
 										vm.validData = res.data;
 										if (res && res.data.length > 0) {
@@ -12646,7 +12645,7 @@ angular
 			};
 
 			this.searchByShortNames = function (colorAssociationNameWord) {
-				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {params: vm.colorAssociationNameWord})
+				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: vm.colorAssociationNameWord})
 					.then(function (res) {
 						vm.validData = res.data;
 						if (res && res.data.length > 0) {
@@ -52091,4 +52090,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-bf488b19c8.js.map
+//# sourceMappingURL=../maps/scripts/app-dc83056771.js.map
