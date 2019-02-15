@@ -160,9 +160,9 @@ angular
 					vm.RGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B];
 					var colorAssociationName = '';
 					// var str = [];
-					str = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
+					var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
 
-					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: str})
+					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
 						.then(function (res) {
 							if (res.data.length > 0) {
 								vm.paintColorNames = res.data.map(function (item) {
@@ -174,7 +174,7 @@ angular
 								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
 								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
                 //
-								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: colorAssociationName})
+								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: colorAssociationName})
 									.then(function (res) {
 										vm.validData = res.data;
 										if (res && res.data.length > 0) {
