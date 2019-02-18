@@ -51,7 +51,7 @@
                     <div class="slidecontainer">
                         <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">
                         <span class="slider-title-opacity">OPACITY</span>
-                        <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
+                        <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">
                         <label id="value_span"></label>
                     </div>
                     <div class="rgb-display">
@@ -177,7 +177,7 @@
         <div class="row">
             <div class="center-color-block">
                 <div class="button">
-                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames($ctrl.colorAssociationNameWord)">NEXT</a>
+                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames()">NEXT</a>
                 </div>
             </div>
         </div>

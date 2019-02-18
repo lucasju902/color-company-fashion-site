@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('landingPageComponent', {
     templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
-    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location) {
+    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location, modalService) {
     var vm =this;
 
       $(document).ready(function () {
@@ -164,31 +164,27 @@ angular
 
 					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
 						.then(function (res) {
-							if (res.data.length > 0) {
-								vm.paintColorNames = res.data.map(function (item) {
-									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-									colorName = item.ShortName;
+							if (res.data.rgb) {
+								vm.paintColorNames = res.data.rgb.map(function (item) {
+									RGB = item.RGB;
+									colorName = item.colorName;
 									return {colorName: colorName, RGB: RGB};
 								});
-								// colorAssociationName = vm.paintColorNames[0].colorName.replace(' ', '%20');
-								colorAssociationName = {'shortname': vm.paintColorNames[0].colorName.replace(' ', '%20')};
-                //
-								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {params: colorAssociationName})
-									.then(function (res) {
-										vm.validData = res.data;
-										if (res && res.data.length > 0) {
-											var RGB = '',
-												colorName = '';
-											vm.colorAssociationNames = res.data.map(function (item) {
-												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-												colorName = item.ShortName;
-												return {colorName: colorName, RGB: RGB};
-											});
-											searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
-											$location.url('/color-index-accordion');
-										}
+								vm.validData = res.data;
+								if (res && res.data.short_namecontains.length > 0) {
+									var RGB = '',
+									colorName = '';
+									vm.colorAssociationNames = res.data.short_namecontains.map(function (item) {
+										RGB = item.RGB;
+										colorName = item.colorName;
+										return {colorName: colorName, RGB: RGB};
 									});
-							}
+									searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
+									$location.url('/color-index-accordion');
+								}
+							} else {
+                                modalService.showModal(5);
+                            }
 						});
         };
     }

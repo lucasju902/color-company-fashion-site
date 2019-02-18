@@ -10,34 +10,25 @@ angular
 			this.colorSearch = function () {
 				if (this.data.color != ' ') {
 					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortname', {
-						params: {shortname: vm.data.color}
+						params: {short_name: vm.data.color}
 					})
 						.then(function (res) {
-							vm.colorValidDataShort = res.data;
-							if (res && res.data.length > 0) {
+							vm.colorValidDataShort = res.data.short_name;
+							if (res && res.data.short_name.length > 0) {
 								var RGB = '',
 									colorName = '';
-								vm.paintColorNamesData = res.data.map(function (item) {
-									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-									colorName = item.ShortName;
+								vm.paintColorNamesData = res.data.short_name.map(function (item) {
+									RGB = item.RGB;
+									colorName = item.colorName;
 									return {colorName: colorName, RGB: RGB};
 								});
-								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {
-									params: {shortname: vm.data.color}
-								})
-									.then(function (res) {
-										if (res && res.data.length > 0) {
-											var RGB = '',
-												colorName = '';
-											vm.colorAssociationNames = res.data.map(function (item) {
-												RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
-												colorName = item.ShortName;
-												return {colorName: colorName, RGB: RGB};
-											});
-											searchColor.set(vm.paintColorNamesData, vm.colorAssociationNames);
-											$location.url('/color-index-accordion');
-										}
-									});
+								vm.colorAssociationNames = res.data.short_namecontains.map(function (item) {
+									RGB = item.RGB;
+									colorName = item.colorName;
+									return {colorName: colorName, RGB: RGB};
+								});
+								searchColor.set(vm.paintColorNamesData, vm.colorAssociationNames);
+								$location.url('/color-index-accordion')
 							}
 						});
 				}

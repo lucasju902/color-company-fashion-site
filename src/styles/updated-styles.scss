@@ -5175,7 +5175,7 @@ footer {
   //cursor: crosshair;
 }
 #color_picker  {
-
+  border-radius: 50%;
 }
 #color_id {
   background-color: #000;
@@ -5359,6 +5359,8 @@ footer {
 .button-color-picker {
   text-align: center;
   padding: 0 0 20px 0;
+  width: 130px;
+  margin: 0 auto;
 }
 input[type=range] {
   margin: auto;
