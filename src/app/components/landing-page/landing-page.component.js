@@ -76,16 +76,16 @@ angular
 			});
 
 //                                                                                                          COLOR-PICKER
-        var color_picker = document.getElementById("color_picker");
+        var color_picker_landing = document.getElementById("color_picker_landing");
         var color_id = document.getElementById("color_id");
         $scope.colorPickerGray = 100;
         $scope.colorPickerOpacity = 1;
 			  document.getElementById('value_span').innerHTML = '100%';
 
-        $scope.changeColor = function () {
-            color_picker.onmousedown = select_color;
+        $scope.changeColorLanding = function () {
+            color_picker_landing.onmousedown = select_color;
         };
-        color_picker_add();
+        color_picker_landing_add();
 
         $scope.colorPickerSliderGray = function  () {
 					var value = document.getElementById('rg').value,
@@ -119,17 +119,17 @@ angular
             color_id.style.backgroundColor = inputRGB;
         };
 
-        function color_picker_add() {
-            color_picker_ = color_picker.getContext("2d"),
-                center_x = (color_picker.width)/2,
-                center_y = (color_picker.height)/2,
+        function color_picker_landing_add() {
+            color_picker_landing_ = color_picker_landing.getContext("2d"),
+                center_x = (color_picker_landing.width)/2,
+                center_y = (color_picker_landing.height)/2,
                 sx = center_x,
                 sy = center_y;
 
             $scope.colorRGB_R = 0;
             $scope.colorRGB_G = 0;
             $scope.colorRGB_B = 0;
-            palette = new color_picker_element(center_x, center_y, sx, sy);
+            palette = new color_picker_landing_element(center_x, center_y, sx, sy);
             palette.draw();
         }
 
@@ -164,9 +164,9 @@ angular
 				}
 
 			function select_color(e) {
-            var x = e.pageX - marginLeft - widthTitle - color_picker.offsetLeft,
-                y = e.pageY - color_picker.offsetTop - heightHeader - 2980,
-                pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
+            var x = e.pageX - marginLeft - widthTitle - color_picker_landing.offsetLeft,
+                y = e.pageY - color_picker_landing.offsetTop - heightHeader - 2980,
+                pixel = color_picker_landing.getContext("2d").getImageData(x, y, 2, 2).data,
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
             color_id.style.backgroundColor = pixelColor;
 
@@ -174,12 +174,12 @@ angular
             $scope.colorRGB_R = pixel[0];
             $scope.colorRGB_G = pixel[1];
             $scope.colorRGB_B = pixel[2];
-				// console.log('e.pageX', e.pageX);
-				// console.log('e.pageY', e.pageY);
-				// 	console.log('xxx', x, 'yyy', y);
-				// 	console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+					// console.log('e.pageX', e.pageX);
+					// console.log('e.pageY', e.pageY);
+					// console.log('xxx', x, 'yyy', y);
+					// console.log('color_picker_landing.offsetLeft', color_picker_landing.offsetLeft, 'color_picker_landing.offsetTop', color_picker_landing.offsetTop);
 				}
-        function color_picker_element(center_x, center_y, sx, sy) {
+        function color_picker_landing_element(center_x, center_y, sx, sy) {
             this.center_x = center_x;
             this.center_y = center_y;
             this.sx = sx;
@@ -187,11 +187,11 @@ angular
             this.draw = function() {
                 for(var i = 0; i < 360; i+=0.1) {
                     var rad = (i-45) * (Math.PI) / 180;
-                    color_picker_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
-                    color_picker_.beginPath();
-                    color_picker_.moveTo(center_x, center_y);
-                    color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
-                    color_picker_.stroke();
+                    color_picker_landing_.strokeStyle = "hsla("+i+", 100%, 50%, 1.0)";
+                    color_picker_landing_.beginPath();
+                    color_picker_landing_.moveTo(center_x, center_y);
+                    color_picker_landing_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+                    color_picker_landing_.stroke();
                 }
             }
         }
