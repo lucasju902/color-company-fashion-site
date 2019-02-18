@@ -14,7 +14,7 @@ angular
 			// vm.colorAssociationNamesByPicker = [];
 
 			var color_picker = document.getElementById('color_picker'),
-				color_id = document.getElementById('color_id');
+							color_id = document.getElementById('color_id');
 			$scope.colorPickerGray = 100;
 			$scope.colorPickerOpacity = 1;
 			document.getElementById('value_span').innerHTML = '100%';
@@ -76,12 +76,15 @@ angular
 			}
 
 			function select_color(e) {
+				// console.log('e.pageX', e.pageX);
+				// console.log('e.pageY', e.pageY);
 				var x = e.pageX - color_picker.offsetLeft - 48,
-					y = e.pageY - color_picker.offsetTop - 570,
+					y = e.pageY - color_picker.offsetTop - 550,
 					pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
 					// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
 					pixelColor = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
 				color_id.style.backgroundColor = pixelColor;
+				// console.log('color_picker', color_picker);
 				// console.log('xxx', x, 'yyy', y);
 				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
 

@@ -66,6 +66,7 @@ angular
               currentSlide.fadeOut(it_before).removeClass('current');
               Slide.fadeIn(it).addClass('current');
           }
+          sizeParamsOfColorPicker();
       });
 
 //                                                                                                          REPORTS ON LANDING
@@ -132,9 +133,39 @@ angular
             palette.draw();
         }
 
-        function select_color(e) {
-            var x = e.pageX - color_picker.offsetLeft - 534,
-                y = e.pageY - color_picker.offsetTop - 3672,
+			$(window).resize(function(){
+				sizeParamsOfColorPicker();
+				styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+				styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+				styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+				marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+				widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+				heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+				// console.log('heigthHeader', heightHeader)
+				// console.log('widthTitle', widthTitle)
+				// console.log('marginLeft', marginLeft)
+			});
+
+        //																																			RESPONSIVE COLOR PICKER
+        var styleParentCP = '',
+					   styleTitleCP = '',
+        	  	styleHeader = '',
+					     marginLeft = '',
+               widthTitle = '',
+             heightHeader = '';
+
+        function sizeParamsOfColorPicker () {
+					styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+					styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+					styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+					marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+					widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+					heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+				}
+
+			function select_color(e) {
+            var x = e.pageX - marginLeft - widthTitle - color_picker.offsetLeft,
+                y = e.pageY - color_picker.offsetTop - heightHeader - 2980,
                 pixel = color_picker.getContext("2d").getImageData(x, y, 2, 2).data,
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
             color_id.style.backgroundColor = pixelColor;
@@ -143,10 +174,11 @@ angular
             $scope.colorRGB_R = pixel[0];
             $scope.colorRGB_G = pixel[1];
             $scope.colorRGB_B = pixel[2];
-            console.log('pixelColor _select_color', $scope);
-            console.log('y  _select_color',y);
-            console.log('x  _select_color',x);
-        }
+				// console.log('e.pageX', e.pageX);
+				// console.log('e.pageY', e.pageY);
+				// 	console.log('xxx', x, 'yyy', y);
+				// 	console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+				}
         function color_picker_element(center_x, center_y, sx, sy) {
             this.center_x = center_x;
             this.center_y = center_y;
