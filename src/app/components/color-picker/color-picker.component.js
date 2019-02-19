@@ -119,14 +119,10 @@ angular
 				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
 					.then(function (res) {
 						if (res.data.rgb) {
-							vm.paintColorNamesByPicker = res.data.rgb.map(function (item) {
-								RGB = item.RGB;
-								colorName = item.colorName;
-								return {colorName: colorName, RGB: RGB};
-							});
+							vm.paintColorNamesByPicker = res.data.short_name;
 							vm.validData = res.data;
 							vm.numOfcolorAssociationNames = res.data.short_namecontains.length;
-							vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+							vm.numOfpaintColorNames = res.data.short_name.length;
 						} else {
 							modalService.showModal(5);
 						}
@@ -173,13 +169,7 @@ angular
 
 			this.searchByShortNames = function () {
 				if(vm.validData && vm.validData.short_namecontains.length > 0) {
-					var RGB = '',
-						colorName = '';
-						vm.colorAssociationNamesByPicker = vm.validData.short_namecontains.map(function (item) {
-							RGB = item.RGB;
-							colorName = item.colorName;
-							return {colorName: colorName, RGB: RGB};
-						});
+						vm.colorAssociationNamesByPicker = vm.validData.short_namecontains;
 						searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
 						$location.url('/color-index-accordion');
 				}

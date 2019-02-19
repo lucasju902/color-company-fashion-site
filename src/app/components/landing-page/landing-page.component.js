@@ -243,20 +243,10 @@ angular
 					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
 						.then(function (res) {
 							if (res.data.rgb) {
-								vm.paintColorNames = res.data.rgb.map(function (item) {
-									RGB = item.RGB;
-									colorName = item.colorName;
-									return {colorName: colorName, RGB: RGB};
-								});
+								vm.paintColorNames = res.data.short_name;
 								vm.validData = res.data;
 								if (res && res.data.short_namecontains.length > 0) {
-									var RGB = '',
-									colorName = '';
-									vm.colorAssociationNames = res.data.short_namecontains.map(function (item) {
-										RGB = item.RGB;
-										colorName = item.colorName;
-										return {colorName: colorName, RGB: RGB};
-									});
+									vm.colorAssociationNames = res.data.short_namecontains;
 									searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
 									$location.url('/color-index-accordion');
 								}
