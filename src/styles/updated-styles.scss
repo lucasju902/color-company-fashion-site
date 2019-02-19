@@ -5801,10 +5801,11 @@ input#search-bar{
   }
 }
 .landing-color-picker-block #value_span {
-  right: -2%;
-  @media (max-width: 1200px) {
-    right: -45px;
-  }
+  right: -52px;
+  bottom: -14px;
+}
+.landing-color-picker-block .slidecontainer {
+  position: relative;
 }
 .landing-color-picker {
   margin-top: 40px;
