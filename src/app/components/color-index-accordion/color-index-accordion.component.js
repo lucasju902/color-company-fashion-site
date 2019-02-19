@@ -144,12 +144,22 @@ angular
         var widthContainer = window.innerWidth - 200;
         var widthOneElement = $('.checkbox-accordion-item').width();
         var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
-        var allElements = vm.paintColorNames.length;
-        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
-        var emptyElements = integerElementsOnRow - elementsOnRow;
+
+        var paintColorNamesElements = vm.paintColorNames.length;
+        var paintColorNamesOnRow = paintColorNamesElements - (Math.floor(paintColorNamesElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyPainColorsElements = integerElementsOnRow - paintColorNamesOnRow;
+
+        var colorAssociationNamesElements = vm.colorAssociationNames.length;
+        var colorAssociationOnRow = colorAssociationNamesElements - (Math.floor(colorAssociationNamesElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyColorAssociationsElements = integerElementsOnRow - colorAssociationOnRow;
+
         var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
         
-        for(var i = 0; i < emptyElements; i++) {
+        for(var i = 0; i < emptyPainColorsElements; i++) {
+          $('.color-index-accordion-item__last-line').append(emptyBlock);
+        }
+
+        for(var i = 0; i < emptyColorAssociationsElements; i++) {
           $('.color-index-accordion-item__last-line').append(emptyBlock);
         }
         
