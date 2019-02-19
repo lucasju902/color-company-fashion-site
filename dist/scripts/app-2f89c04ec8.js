@@ -2601,343 +2601,6 @@ angular.module('app').controller('autoController',
       });
     }]);
 
-(function () {
-  'use strict';
-  var serviceId = 'common';
-  angular.module('app').service(serviceId, ['$q', function ($q) {
-    return {
-      $q: $q,
-
-      generic: {
-        regions: [
-          {
-            id: 'europe',
-            name: 'europe',
-            title: 'Europe',
-            serverName: 'europe',
-            cities: [
-              {name: 'london'}, {name: 'paris'}, {name: 'milan'}
-            ]
-          },
-          {
-            id: 'north_america',
-            name: 'namerica',
-            title: 'North America',
-            serverName: 'north_america',
-            cities: [{name: 'ny', serverName: 'new york'}]
-          },
-          {
-            id: 'latin_america',
-            name: 'samerica',
-            title: 'South America',
-            serverName: 'latin_america',
-            cities: [{name: 'mex', serverName: 'mexico'},
-              {name: 'rio', serverName: 'rio de janeiro'},
-              {name: 'sao', serverName: 'sao paulo'}
-            ]
-          },
-          {
-            id: 'asia_pacific',
-            name: 'asia',
-            title: 'Asia and Pacific',
-            serverName: 'asia_pacific',
-            cities: [{name: 'tokyo'}, {name: 'seoul'}]
-          }
-        ]
-      }
-    }
-  }
-  ]);
-}());
-
-(function () {
-  'use strict';
-  var serviceId = 'charts';
-  angular
-    .module('app')
-    .service(serviceId,
-      [
-        '$q', 'repo.hue',
-        function ($q, hue) {
-
-          var regions = ['europe', 'asia', 'namerica', 'samerica'];
-
-          function colorGroupsByCityPeriod(req) {
-            return hue.colorGroupsByCityPeriod(req)
-              .then(function (result) {
-                _.each(result, function (d) {
-                  var value = d.value;
-                  // d.value = d.percentage * 100; // overriding
-                  d.valueTitle = Math.round(d.percentage * 100) + '%';
-                  d.valueTitle2 = value;
-                  d.color = d.name;
-                });
-                result = _.sortBy(result, 'group');
-                return result;
-              });
-          }
-
-          function citiesByColorPeriod(req) {
-            return hue.citiesByColorPeriod(req)
-              .then(function (result) {
-                _.each(result, function (d) {
-                  var value = d.value;
-                  // d.value = d.percentage * 100;
-                  d.valueTitle = d.percentage === null ? 'N/A' : Math.round(d.percentage * 100) + '%';
-                  d.valueTitle2 = d.percentage === null ? '' : value;
-                  d.color = '#' + req.color;
-                });
-                result = _.sortBy(result, 'group');
-                return result;
-              });
-          }
-
-          function colorsPerRegions(req) {
-            return $q.all(_.map(regions, function (r) {
-                return hue.colorsByRegionCityPeriod({
-                  year: req.year,
-                  season: req.season,
-                  category: req.category,
-                  region: r
-                }).then(function (response) {
-                  return {
-                    name: r,
-                    title: r,
-                    data: response
-                  };
-                });
-              })
-            )/*.then(function(responses) {
-             return responses;
-             })*/;
-          }
-
-          function colorsByPeriodYearsRange(req, yearsRange) {
-            return $q.all(_.map(yearsRange, function (y) {
-              req.year = y;
-              return $q.all([
-                hue.colorsByRegionPeriod(req),
-                hue.colorsUniqueByRegionPeriod(req)
-              ]).then(function (responses) {
-                return {
-                  year: y,
-                  season: req.season,
-                  colors: responses[0],
-                  colorsUnique: responses[1]
-                };
-              });
-
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorsUniqueGroupsPerSeason(year, city, category) {
-            // var seasons = ['spring', 'spring', 'fall', 'fall'];
-            var seasons = ['winter', 'spring', 'summer', 'fall'];
-            return $q.all(_.map(seasons, function (s) {
-              var req = {year: year, season: s, city: city, category: category};
-              if (s === 'winter') {
-                req.season = 'spring';
-              } else if (s === 'summer') {
-                req.season = 'fall';
-              }
-              return $q.all([
-                hue.colorGroupsByCityPeriod(req),
-                hue.colorsUniqueByRegionPeriod(req)])
-                .then(function (responses) {
-                  return {
-                    year: year,
-                    name: s,
-                    groups: responses[0],
-                    unique: responses[1]
-                  };
-                });
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorGroupsByCategories(categories, region, year, season) {
-            return $q.all(_.map(categories, function (c) {
-              return hue.colorGroupsByCategories({category: c, region: region, year: year, season: season})
-                .then(function (response) {
-                  return {
-                    name: c,
-                    title: c,
-                    data: response
-                  };
-                });
-
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorsWithGroupsByRegionPeriod(req, region) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByRegionCitiesPeriod(req)
-            ]).then(function (results) {
-              var cities = results[1];
-              var data = results[0];
-
-              var result = {
-                region: {
-                  name: region,
-                  cities: {
-                    title: 'Top 4 colors',
-                    settings: {},
-                    data: cities
-                  }
-                },
-                charts: {
-                  settings: {},
-                  data: data
-                }
-              };
-
-              _.each(result.region.cities.data, function (c) {
-                // c.name = 'ny';
-                _.each(c.data, function (d) {
-                  d.value = d.percentage;
-                });
-              });
-
-              result.region.cities.settings = {
-                bars: {
-                  radius: 62,
-                  radiusInner: 46
-                }
-              };
-
-              return result;
-            });
-          }
-
-          function colorsWithGroups(req, year) {
-            req.year = year;
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByRegionCityPeriod(req)
-            ]).then(function (results) {
-              var groups = results[0];
-              var colors = results[1];
-              return {
-                groups: groups,
-                colors: colors
-              };
-            });
-          }
-
-          function colorsUniqueGroupsCommon(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByCityPeriod(req),
-              hue.colorsUniqueByRegionPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var common = results[1];
-              var unique = results[2];
-
-              return {
-                groups: data,
-                common: common,
-                unique: unique
-              };
-            });
-          }
-
-          function designersWithTopColors(req) {
-            var params = {region: req.region, year: req.year, season: req.season};
-            return hue.designersWithTopColors(params)
-              .then(function (results) {
-                return results;
-              });
-          }
-
-          function colorsGroupsCommon(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByCityPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var common = results[1];
-
-              return {
-                groups: data,
-                common: common
-              };
-            });
-          }
-
-          function colorsUniqueGroups(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsUniqueByRegionPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var unique = results[1];
-              return {
-                groups: data,
-                unique: unique
-              };
-            });
-          }
-
-          return {
-            colorGroupsByCityPeriod: colorGroupsByCityPeriod,
-            colorsWithGroupsByRegionPeriod: colorsWithGroupsByRegionPeriod,
-            colorsWithGroups: colorsWithGroups,
-            citiesByColorPeriod: citiesByColorPeriod,
-            colorsUniqueGroupsPerSeason: colorsUniqueGroupsPerSeason,
-
-            colorsByPeriodYearsRange: colorsByPeriodYearsRange,
-            colorGroupsByCategories: colorGroupsByCategories,
-            colorsUniqueGroupsCommon: colorsUniqueGroupsCommon,
-            colorsGroupsCommon: colorsGroupsCommon,
-            designersWithTopColors: designersWithTopColors,
-            colorsUniqueGroups: colorsUniqueGroups,
-            colorsPerRegions: colorsPerRegions
-          }
-        }
-      ]);
-}());
-
-(function () {
-  'use strict';
-  var serviceId = 'chartsHelper';
-  angular.module('app').service(serviceId, ['$q', 'repo.hue',
-    function ($q, hue) {
-      function initContainer(element, childPath) {
-        element = $(element);
-
-        var container = !!childPath ? $(element).find(childPath) : element;
-        var containerItself = !!childPath;
-
-        var innerContainer;
-        if (containerItself) {
-          innerContainer = container;
-        } else {
-          innerContainer = container.find('>*:first-child');
-        }
-
-        if (innerContainer.length === 0) {
-          innerContainer = $('<div></div>');
-          innerContainer.appendTo(container);
-        } else {
-          innerContainer.html('');
-        }
-        return innerContainer;
-      }
-
-      return {
-        initContainer: initContainer
-      }
-    }
-  ]);
-}());
-
 angular.module('app').directive('hueTrialExpiredMessage', function () {
   function link(scope, element, attrs) {
     scope.tryMoreClick = function () {
@@ -8955,6 +8618,343 @@ angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', functi
   };
 }]);
 
+(function () {
+  'use strict';
+  var serviceId = 'common';
+  angular.module('app').service(serviceId, ['$q', function ($q) {
+    return {
+      $q: $q,
+
+      generic: {
+        regions: [
+          {
+            id: 'europe',
+            name: 'europe',
+            title: 'Europe',
+            serverName: 'europe',
+            cities: [
+              {name: 'london'}, {name: 'paris'}, {name: 'milan'}
+            ]
+          },
+          {
+            id: 'north_america',
+            name: 'namerica',
+            title: 'North America',
+            serverName: 'north_america',
+            cities: [{name: 'ny', serverName: 'new york'}]
+          },
+          {
+            id: 'latin_america',
+            name: 'samerica',
+            title: 'South America',
+            serverName: 'latin_america',
+            cities: [{name: 'mex', serverName: 'mexico'},
+              {name: 'rio', serverName: 'rio de janeiro'},
+              {name: 'sao', serverName: 'sao paulo'}
+            ]
+          },
+          {
+            id: 'asia_pacific',
+            name: 'asia',
+            title: 'Asia and Pacific',
+            serverName: 'asia_pacific',
+            cities: [{name: 'tokyo'}, {name: 'seoul'}]
+          }
+        ]
+      }
+    }
+  }
+  ]);
+}());
+
+(function () {
+  'use strict';
+  var serviceId = 'charts';
+  angular
+    .module('app')
+    .service(serviceId,
+      [
+        '$q', 'repo.hue',
+        function ($q, hue) {
+
+          var regions = ['europe', 'asia', 'namerica', 'samerica'];
+
+          function colorGroupsByCityPeriod(req) {
+            return hue.colorGroupsByCityPeriod(req)
+              .then(function (result) {
+                _.each(result, function (d) {
+                  var value = d.value;
+                  // d.value = d.percentage * 100; // overriding
+                  d.valueTitle = Math.round(d.percentage * 100) + '%';
+                  d.valueTitle2 = value;
+                  d.color = d.name;
+                });
+                result = _.sortBy(result, 'group');
+                return result;
+              });
+          }
+
+          function citiesByColorPeriod(req) {
+            return hue.citiesByColorPeriod(req)
+              .then(function (result) {
+                _.each(result, function (d) {
+                  var value = d.value;
+                  // d.value = d.percentage * 100;
+                  d.valueTitle = d.percentage === null ? 'N/A' : Math.round(d.percentage * 100) + '%';
+                  d.valueTitle2 = d.percentage === null ? '' : value;
+                  d.color = '#' + req.color;
+                });
+                result = _.sortBy(result, 'group');
+                return result;
+              });
+          }
+
+          function colorsPerRegions(req) {
+            return $q.all(_.map(regions, function (r) {
+                return hue.colorsByRegionCityPeriod({
+                  year: req.year,
+                  season: req.season,
+                  category: req.category,
+                  region: r
+                }).then(function (response) {
+                  return {
+                    name: r,
+                    title: r,
+                    data: response
+                  };
+                });
+              })
+            )/*.then(function(responses) {
+             return responses;
+             })*/;
+          }
+
+          function colorsByPeriodYearsRange(req, yearsRange) {
+            return $q.all(_.map(yearsRange, function (y) {
+              req.year = y;
+              return $q.all([
+                hue.colorsByRegionPeriod(req),
+                hue.colorsUniqueByRegionPeriod(req)
+              ]).then(function (responses) {
+                return {
+                  year: y,
+                  season: req.season,
+                  colors: responses[0],
+                  colorsUnique: responses[1]
+                };
+              });
+
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorsUniqueGroupsPerSeason(year, city, category) {
+            // var seasons = ['spring', 'spring', 'fall', 'fall'];
+            var seasons = ['winter', 'spring', 'summer', 'fall'];
+            return $q.all(_.map(seasons, function (s) {
+              var req = {year: year, season: s, city: city, category: category};
+              if (s === 'winter') {
+                req.season = 'spring';
+              } else if (s === 'summer') {
+                req.season = 'fall';
+              }
+              return $q.all([
+                hue.colorGroupsByCityPeriod(req),
+                hue.colorsUniqueByRegionPeriod(req)])
+                .then(function (responses) {
+                  return {
+                    year: year,
+                    name: s,
+                    groups: responses[0],
+                    unique: responses[1]
+                  };
+                });
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorGroupsByCategories(categories, region, year, season) {
+            return $q.all(_.map(categories, function (c) {
+              return hue.colorGroupsByCategories({category: c, region: region, year: year, season: season})
+                .then(function (response) {
+                  return {
+                    name: c,
+                    title: c,
+                    data: response
+                  };
+                });
+
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorsWithGroupsByRegionPeriod(req, region) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByRegionCitiesPeriod(req)
+            ]).then(function (results) {
+              var cities = results[1];
+              var data = results[0];
+
+              var result = {
+                region: {
+                  name: region,
+                  cities: {
+                    title: 'Top 4 colors',
+                    settings: {},
+                    data: cities
+                  }
+                },
+                charts: {
+                  settings: {},
+                  data: data
+                }
+              };
+
+              _.each(result.region.cities.data, function (c) {
+                // c.name = 'ny';
+                _.each(c.data, function (d) {
+                  d.value = d.percentage;
+                });
+              });
+
+              result.region.cities.settings = {
+                bars: {
+                  radius: 62,
+                  radiusInner: 46
+                }
+              };
+
+              return result;
+            });
+          }
+
+          function colorsWithGroups(req, year) {
+            req.year = year;
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByRegionCityPeriod(req)
+            ]).then(function (results) {
+              var groups = results[0];
+              var colors = results[1];
+              return {
+                groups: groups,
+                colors: colors
+              };
+            });
+          }
+
+          function colorsUniqueGroupsCommon(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByCityPeriod(req),
+              hue.colorsUniqueByRegionPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var common = results[1];
+              var unique = results[2];
+
+              return {
+                groups: data,
+                common: common,
+                unique: unique
+              };
+            });
+          }
+
+          function designersWithTopColors(req) {
+            var params = {region: req.region, year: req.year, season: req.season};
+            return hue.designersWithTopColors(params)
+              .then(function (results) {
+                return results;
+              });
+          }
+
+          function colorsGroupsCommon(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByCityPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var common = results[1];
+
+              return {
+                groups: data,
+                common: common
+              };
+            });
+          }
+
+          function colorsUniqueGroups(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsUniqueByRegionPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var unique = results[1];
+              return {
+                groups: data,
+                unique: unique
+              };
+            });
+          }
+
+          return {
+            colorGroupsByCityPeriod: colorGroupsByCityPeriod,
+            colorsWithGroupsByRegionPeriod: colorsWithGroupsByRegionPeriod,
+            colorsWithGroups: colorsWithGroups,
+            citiesByColorPeriod: citiesByColorPeriod,
+            colorsUniqueGroupsPerSeason: colorsUniqueGroupsPerSeason,
+
+            colorsByPeriodYearsRange: colorsByPeriodYearsRange,
+            colorGroupsByCategories: colorGroupsByCategories,
+            colorsUniqueGroupsCommon: colorsUniqueGroupsCommon,
+            colorsGroupsCommon: colorsGroupsCommon,
+            designersWithTopColors: designersWithTopColors,
+            colorsUniqueGroups: colorsUniqueGroups,
+            colorsPerRegions: colorsPerRegions
+          }
+        }
+      ]);
+}());
+
+(function () {
+  'use strict';
+  var serviceId = 'chartsHelper';
+  angular.module('app').service(serviceId, ['$q', 'repo.hue',
+    function ($q, hue) {
+      function initContainer(element, childPath) {
+        element = $(element);
+
+        var container = !!childPath ? $(element).find(childPath) : element;
+        var containerItself = !!childPath;
+
+        var innerContainer;
+        if (containerItself) {
+          innerContainer = container;
+        } else {
+          innerContainer = container.find('>*:first-child');
+        }
+
+        if (innerContainer.length === 0) {
+          innerContainer = $('<div></div>');
+          innerContainer.appendTo(container);
+        } else {
+          innerContainer.html('');
+        }
+        return innerContainer;
+      }
+
+      return {
+        initContainer: initContainer
+      }
+    }
+  ]);
+}());
+
 angular
   .module('app')
   .component('verticalCoverageComponent', {
@@ -10218,17 +10218,24 @@ angular
             palette.draw();
         }
 
+			console.log('$(.color-picker-landing_responsive', $('.color-picker-landing_responsive'));
+			example = document.getElementById('color-picker-responsive-block');
+			example.addEventListener('onresize', function(){
+				console.log('color-picker-landing_responsive');
+			});
 			$(window).resize(function(){
 				sizeParamsOfColorPicker();
-				styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
-				styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
-				styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
-				marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
-				widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
-				heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
-				// console.log('heigthHeader', heightHeader)
-				// console.log('widthTitle', widthTitle)
-				// console.log('marginLeft', marginLeft)
+				console.log('dd');
+				// styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+				// styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+				// styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+				// styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
+				//
+				// marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+				// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+				// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+				// pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+
 			});
 
         //																																			RESPONSIVE COLOR PICKER
@@ -10237,15 +10244,21 @@ angular
         	  	styleHeader = '',
 					     marginLeft = '',
                widthTitle = '',
-             heightHeader = '';
+             heightHeader = '',
+				    	styleTextCP = '',
+					  	 pageTextCP = '';
 
         function sizeParamsOfColorPicker () {
-					styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
-					styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
-					styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
-					marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
-					widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
-					heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+					// styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+					// styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+					// styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+					// marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+					// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+					// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+					console.log('document.getElementById(olor-picker-responsive-block)', document.getElementById('color-picker-responsive-block'));
+					console.log('heigthHeader', heightHeader);
+					console.log('widthTitle', widthTitle);
+					console.log('marginLeft', marginLeft);
 				}
 
 			function select_color(e) {
@@ -12645,19 +12658,23 @@ angular
 				palette = new color_picker_element(center_x, center_y, sx, sy);
 				palette.draw();
 			}
-
+			var pageTextCP = '';
 			function select_color(e) {
 				// console.log('e.pageX', e.pageX);
 				// console.log('e.pageY', e.pageY);
+
+				var styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
+				pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+				// color-picker-page_text
 				var x = e.pageX - color_picker.offsetLeft - 48,
-					y = e.pageY - color_picker.offsetTop - 550,
+					y = e.pageY - color_picker.offsetTop - pageTextCP - 510,
 					pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
 					// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
 					pixelColor = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
 				color_id.style.backgroundColor = pixelColor;
-				// console.log('color_picker', color_picker);
-				// console.log('xxx', x, 'yyy', y);
-				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+				console.log('pageTextCP', pageTextCP);
+				console.log('xxx', x, 'yyy', y);
+				console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
 
 				$scope.pixel = pixel;
 				$scope.colorRGB_R = pixel[0];
@@ -12821,7 +12838,14 @@ angular
 						.then(function (res) {
 							vm.colorValidDataShort = res.data;
 							if (res && res.data.length > 0) {
-								vm.paintColorNamesData = res.data
+								// vm.paintColorNamesData = res.data
+								var RGB = '',
+									colorName = '';
+								vm.paintColorNamesData = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
+								});
 								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {
 									params: {shortname: vm.data.color}
 								})
@@ -12854,9 +12878,7 @@ angular
 
 			vm.paintColorNames = searchColor.getPaintColorNames();
       vm.colorAssociationNames = searchColor.getColorAssociationNames();
-
       vm.searchColorName = [];
-
 			$scope.pageSize = 80;
 
       // if (colorRgb !== undefined) {
@@ -12934,13 +12956,13 @@ angular
                 .timeInterval(20)
                 .words(word_entries)
                 .fontSize(function (d) {
-                  return xScale(Number(d.value)); 
+                  return xScale(Number(d.value));
                 })
                 .text(function (d) {
-                  return d.key; 
+                  return d.key;
                 })
                 .rotate(function () {
-                  return ~~(Math.random() * 2) * 90; 
+                  return ~~(Math.random() * 2) * 90;
                 })
                 .font('Impact')
                 .on('end', draw)
@@ -12971,7 +12993,7 @@ angular
                       return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
                     })
                     .text(function (d) {
-                      return d.key; 
+                      return d.key;
                     });
         }
         d3.layout.cloud().stop();
@@ -12995,14 +13017,14 @@ angular
         var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
         var emptyElements = integerElementsOnRow - elementsOnRow;
         var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
-        
+
         for(var i = 0; i < emptyElements; i++) {
           $('.color-index-accordion-item__last-line').append(emptyBlock);
         }
-        
+
         $(document).click(function(event) {
           if ($(event.target).closest(".selectPerPage").length) return;
-          $('.selectPerPage__list').removeClass('show');          
+          $('.selectPerPage__list').removeClass('show');
           event.stopPropagation();
         });
       });
@@ -13046,6 +13068,21 @@ angular
 
 
 
+    }
+  });
+
+angular
+  .module('app')
+  .component('cartThankComponent', {
+    templateUrl: 'app/components/cart-thank/cart-thank.tmpl.html',
+    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
+      var vm = this;
+
+      vm.orderId = localStorageService.get('orderId');
+      localStorageService.remove('orderId');
+      localStorageService.remove('purchase');
+      localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
+      vm.products = localStorageService.get('purchaseItems');
     }
   });
 
@@ -13150,21 +13187,6 @@ angular
           vm.removeProduct(id, type, index);
         }
       };
-    }
-  });
-
-angular
-  .module('app')
-  .component('cartThankComponent', {
-    templateUrl: 'app/components/cart-thank/cart-thank.tmpl.html',
-    controller: function ($state, $http, appConfig, localStorageService, $stateParams) {
-      var vm = this;
-
-      vm.orderId = localStorageService.get('orderId');
-      localStorageService.remove('orderId');
-      localStorageService.remove('purchase');
-      localStorageService.set('products', {courses: {}, reports: {}, teaching_materials: {}});
-      vm.products = localStorageService.get('purchaseItems');
     }
   });
 
@@ -13696,6 +13718,797 @@ angular
       };
     }
   })
+
+// angular.module('app').directive('uiColorpicker', function () {
+//     return {
+//         restrict: 'E',
+//         require: 'ngModel',
+//         scope: false,
+//         replace: true,
+//         template: "<span><input class='input-small' /></span>",
+//         link: function (scope, element, attrs, ngModel) {
+//             var input = element.find('input');
+//             // var buttonColorpicker = element.find('.sp-replacer .sp-light');
+//             // var buttonColorpicker = element[0].childNodes[1];
+//             // buttonColorpicker.addClass('sp-active');
+//             // console.log('div', div);
+//
+//             // scope.clickPicker = function () {
+//             //     console.log('$scope--picker-derictive', scope);
+//             // };
+//
+//             console.log('scope', scope);
+//             console.log('buttonColorpicker=1', element);
+//             console.log('buttonColorpicker', element.find('.sp-replacer'));
+//             var options = angular.extend({
+//                 color: ngModel.$viewValue,
+//                 change: function (color) {
+//                     scope.$apply(function () {
+//                         ngModel.$setViewValue(color.toHexString());
+//                     });
+//                 }
+//             }, scope.$eval(attrs.options));
+//
+//             ngModel.$render = function () {
+//                 input.spectrum('set', ngModel.$viewValue || '');
+//             };
+//
+//             input.spectrum(options);
+//         }
+//     };
+// });
+//
+// app.controller('MyCtrl', function($scope) {
+//     $scope.targetColor = '#ebebeb';
+// });
+
+// angular.bootstrap(document, ['app']);
+
+angular.module('app').directive('hueTooltipster', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    angular.element(element).ready(function () {
+      angular.element(element).tooltipster(scope.hueTooltipster);
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      hueTooltipster: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueSvg', function () {
+  return {
+    restrict: 'E',
+    scope: {
+      id: '@',
+      source: '@',
+      class: '@',
+      onLoad: '&'
+    },
+    link: function (scope, element, attrs) {
+      angular.element.get(attrs.source, function (data) {
+        var svg = $('svg', data).removeAttr('xmlns xmlns:i xmlns:a xmlns:x xmlns:xlink xmlns:graph xml:space');
+
+        if (attrs.id)
+          svg.attr('id', attrs.id);
+        else
+          svg.removeAttr('id');
+
+        if (attrs.class)
+          svg.attr('class', attrs.class);
+
+        element.replaceWith(svg.prop('outerHTML'));
+
+        if (scope.onLoad)
+          scope.onLoad();
+      }, 'xml');
+    }
+  };
+});
+
+angular.module('app').directive('hueReadMore', function () {
+  function link(scope, element, attrs) {
+    scope.$watch('text', function (newValue, oldValue) {
+      var elem = $('span:first-child', element);
+      elem.readmore('destroy');
+      elem.text($.trim(newValue));
+      elem.readmore({
+        speed: 200,
+        moreLink: '<a href="#">More</a>',
+        lessLink: '<a href="#">Less</a>',
+        collapsedHeight: parseInt(scope.collapsedHeight),
+        heightMargin: 0
+      });
+    });
+  }
+
+  return {
+    restrict: 'A',
+    transclude: true,
+    template: '<span></span>',
+    link: link,
+    scope: {
+      text: '=hueReadMore',
+      collapsedHeight: '@'
+    }
+  };
+});
+
+angular.module('app').filter('truncate', function () {
+  return function (text, length, end) {
+    if (isNaN(length)) {
+      length = 10;
+    }
+
+    if (end === undefined) {
+      end = '...';
+    }
+
+    if (text.length <= length || text.length - end.length <= length) {
+      return text;
+    } else {
+      return String(text).substring(0, length - end.length) + end;
+    }
+  };
+}).directive('readMore', function ($filter) {
+  return {
+    restrict: 'A',
+    scope: {
+      text: '=readMore',
+      labelExpand: '@readMoreLabelExpand',
+      labelCollapse: '@readMoreLabelCollapse',
+      limit: '@readMoreLimit'
+    },
+    transclude: true,
+    template: '<span ng-transclude ng-bind-html="text"></span><a href="javascript:;" ng-click="toggleReadMore()" ng-bind="label"></a>',
+    link: function (scope /*, element, attrs */) {
+
+      var originalText = scope.text;
+
+      scope.label = scope.labelExpand;
+
+      scope.$watch('expanded', function (expandedNew) {
+        if (expandedNew) {
+          scope.text = originalText;
+          scope.label = scope.labelCollapse;
+        } else {
+          scope.text = $filter('truncate')(originalText, scope.limit, '...');
+          scope.label = scope.labelExpand;
+        }
+      });
+
+      scope.toggleReadMore = function () {
+        scope.expanded = !scope.expanded;
+      };
+    }
+  };
+});
+angular.module('app').directive('huePieChart', ['$timeout', '$location', function (timeout, location) {
+  function link(scope, element, attrs) {
+    var buildChart = function (data) { //array of { c: HEX color, p: percentage, t: title }
+      $(element).empty();
+
+      var config = scope.config;
+
+      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+      var diameter = scope.config.diameter;
+      var outerRadius = diameter / 2;
+      var innerRadius = outerRadius - donutWidth;
+      var animationDuration = 400;
+      var animationStep = 1 / (animationDuration / 20);
+      var defaultAngleMargin = 0.008;
+
+      var draw = SVG(element[0]).size(diameter, diameter);
+      var groupMain = draw.group();
+      var groupExpanded = draw.group();
+      var expandedColorPath = groupExpanded.path('');
+
+      var getSectionPathData = function (angle1, angle2, angleMargin) {
+        var sinStart = angleMargin ? Math.sin(angle1 + angleMargin) : Math.sin(angle1);
+        var cosStart = angleMargin ? Math.cos(angle1 + angleMargin) : Math.cos(angle1);
+        var sinEnd = angleMargin ? Math.sin(angle2 - angleMargin) : Math.sin(angle2);
+        var cosEnd = angleMargin ? Math.cos(angle2 - angleMargin) : Math.cos(angle2);
+
+        var xO1 = outerRadius + (sinStart * outerRadius); //outer
+        var yO1 = outerRadius - (cosStart * outerRadius);
+        var xO2 = outerRadius + (sinEnd * outerRadius);
+        var yO2 = outerRadius - (cosEnd * outerRadius);
+
+        var xI1 = outerRadius + (sinStart * innerRadius); //inner
+        var yI1 = outerRadius - (cosStart * innerRadius);
+        var xI2 = outerRadius + (sinEnd * innerRadius);
+        var yI2 = outerRadius - (cosEnd * innerRadius);
+
+        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+        return new SVG.PathArray([
+          ['M', xO1, yO1],
+          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+          ['L', xI2, yI2],
+          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+          ['Z']
+        ]).toString();
+      };
+
+      //Toggle color animation
+      var expandedColor = null;
+      var toggleExpandedColor = function (index, show, callback) {
+        var eaProgress = show ? 0 : 1;
+        var eaProgressLimit = show ? 1 : 0;
+        var eaAngleStart = _.reduce(data.slice(0, index), function (memo, value) {
+            return memo + value.p;
+          }, 0) * Math.PI / 50;
+        var eaAngleDelta = (100 - data[index].p) * Math.PI / 50;
+        var eaStep = show ? animationStep : -animationStep;
+        var eaSectionAngleWidth = data[index].p * Math.PI / 50 - 0.001;
+        var eAnimation = function () {
+          eaProgress += eaStep;
+
+          if (eaProgress > 1)
+            eaProgress = 1;
+          else if (eaProgress < 0)
+            eaProgress = 0;
+
+          expandedColorPath.plot(getSectionPathData(eaAngleStart, eaAngleStart + (eaAngleDelta * eaProgress) + eaSectionAngleWidth));
+
+          if (eaProgress == 0)
+            groupExpanded.hide();
+
+          if (eaProgress != eaProgressLimit)
+            timeout(eAnimation, 20);
+          else if (callback)
+            callback();
+        }
+
+        expandedColorPath.attr('fill', data[index].c);
+        if (show)
+          groupExpanded.show();
+        eAnimation();
+      };
+
+      //Initialization
+      var clickColorHandler = function (event) {
+        if (scope.colorClickHandler())
+          scope.colorClickHandler()(groupMain.index(event.currentTarget.instance));
+      };
+      var clickExpandedColorHandler = function (event) {
+        if (scope.collapseClickHandler())
+          scope.collapseClickHandler()();
+      };
+
+      var attrNs = location.absUrl();
+      var itemCount = data.length;
+      for (var i = 0; i < itemCount; i++) {
+        var p = groupMain.path('');
+        p.attr('fill', data[i].c);
+        p.click(clickColorHandler);
+      }
+
+      expandedColorPath.click(clickExpandedColorHandler);
+
+      //Opening animation
+      var easeOutFunction = BezierEasing.css['ease-out'];
+      var animationProgress = 0;
+      var processAnimation = function () {
+        animationProgress += animationStep;
+        if (animationProgress > 1)
+          animationProgress = 1;
+
+        var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
+        var groupMainChildren = groupMain.children();
+        var angleStart = 0;
+        for (var i = 0; i < itemCount; i++) {
+          var angleEnd = angleStart + (data[i].p * coeff * Math.PI / 50);
+          groupMainChildren[i].plot(getSectionPathData(angleStart, angleEnd, defaultAngleMargin));
+          angleStart = angleEnd;
+        }
+
+        if (animationProgress != 1)
+          timeout(processAnimation, 20);
+        else if (scope.animationCompleteHandler())
+          scope.animationCompleteHandler()();
+      };
+
+      groupExpanded.hide();
+      if (!element[0].isVisible()) //don't play animation on invisible charts
+        animationProgress = 1;
+      processAnimation();
+
+      scope.$watch('selectedIndex', function (newValue, oldValue) {
+        if (newValue != null) {
+          if (oldValue == null)
+            toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
+          else {
+            toggleExpandedColor(oldValue, false, function () {
+              toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
+            });
+          }
+        }
+        else if (oldValue != null)
+          toggleExpandedColor(oldValue, false, scope.animationCompleteHandler());
+      });
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length > 0)
+        buildChart(newValue);
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=huePieChart',
+      data: '=',
+      selectedIndex: '=',
+      colorClickHandler: '&onColorClick',
+      collapseClickHandler: '&onCollapseClick',
+      animationCompleteHandler: '&onAnimationComplete'
+    }
+  };
+}]);
+
+angular.module('app').directive('onRepeatLastElement', function () {
+  function link(scope, element, attrs) {
+    if (scope.$last)
+      scope.$parent[attrs.onRepeatLastElement]();
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+    // scope: {
+    // 	onRepeatLastElement: '&'
+    // }
+  };
+});
+
+// angular.module('app').directive('hueMcustomscrollbar', function () {
+// 	function link(scope, element, attrs) {
+// 		$(element).mCustomScrollbar();
+// 	}
+//
+// 	return {
+// 		restrict: 'A',
+// 		link: link
+// 	};
+// });
+
+/**
+ *  Angular directive to truncate multi-line text to visible height
+ *
+ *  @param bind (angular bound value to append) REQUIRED
+ *  @param ellipsisAppend (string) string to append at end of truncated text after ellipsis, can be HTML OPTIONAL
+ *  @param ellipsisAppendClick (function) function to call if ellipsisAppend is clicked (ellipsisAppend must be clicked) OPTIONAL
+ *  @param ellipsisSymbol (string) string to use as ellipsis, replaces default '...' OPTIONAL
+ *  @param ellipsisSeparator (string) separator to split string, replaces default ' ' OPTIONAL
+ *
+ *  @example <p data-ellipsis data-ng-bind="boundData"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-symbol="---"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more" data-ellipsis-append-click="displayFull()"></p>
+ *
+ */
+angular.module('app')
+
+  .directive('ellipsis', ['$timeout', '$window', '$sce', function ($timeout, $window, $sce) {
+
+    var AsyncDigest = function (delay) {
+      var timeout = null;
+      var queue = [];
+
+      this.remove = function (fn) {
+        if (queue.indexOf(fn) !== -1) {
+          queue.splice(queue.indexOf(fn), 1);
+          if (queue.length === 0) {
+            $timeout.cancel(timeout);
+            timeout = null;
+          }
+        }
+      };
+      this.add = function (fn) {
+        if (queue.indexOf(fn) === -1) {
+          queue.push(fn);
+        }
+        if (!timeout) {
+          timeout = $timeout(function () {
+            var copy = queue.slice();
+            timeout = null;
+            // reset scheduled array first in case one of the functions throws an error
+            queue.length = 0;
+            copy.forEach(function (fn) {
+              fn();
+            });
+          }, delay);
+        }
+      };
+    };
+
+    var asyncDigestImmediate = new AsyncDigest(0);
+    var asyncDigestDebounced = new AsyncDigest(75);
+
+    return {
+      restrict: 'A',
+      scope: {
+        ngShow: '=',
+        ngBind: '=',
+        ngBindHtml: '=',
+        ellipsisAppend: '@',
+        ellipsisAppendClick: '&',
+        ellipsisSymbol: '@',
+        ellipsisSeparator: '@',
+        useParent: "@",
+        ellipsisSeparatorReg: '=',
+        ellipsisFallbackFontSize: '@'
+      },
+      compile: function (elem, attr, linker) {
+
+        return function (scope, element, attributes) {
+          /* Window Resize Variables */
+          attributes.lastWindowResizeTime = 0;
+          attributes.lastWindowResizeWidth = 0;
+          attributes.lastWindowResizeHeight = 0;
+          attributes.lastWindowTimeoutEvent = null;
+          /* State Variables */
+          attributes.isTruncated = false;
+
+          function _isDefined(value) {
+            return typeof(value) !== 'undefined';
+          }
+
+          function getParentHeight(element) {
+            var heightOfChildren = 0;
+            angular.forEach(element.parent().children(), function (child) {
+              if (child != element[0]) {
+                heightOfChildren += child.clientHeight;
+              }
+            });
+            return element.parent()[0].clientHeight - heightOfChildren;
+          }
+
+          function buildEllipsis() {
+            var binding = scope.ngBind || scope.ngBindHtml;
+            var isTrustedHTML = false;
+            if ($sce.isEnabled() && angular.isObject(binding) && $sce.getTrustedHtml(binding)) {
+              isTrustedHTML = true;
+              binding = $sce.getTrustedHtml(binding);
+            }
+            if (binding) {
+              var isHtml = (!(!!scope.ngBind) && !!(scope.ngBindHtml));
+              var i = 0,
+                ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
+                ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
+                ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
+                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
+                bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
+
+              attributes.isTruncated = false;
+              if (isHtml) {
+                element.html(binding);
+              } else {
+                element.text(binding);
+              }
+
+              if (_isDefined(attributes.ellipsisFallbackFontSize) && isOverflowed(element)) {
+                element.css('font-size', attributes.ellipsisFallbackFontSize);
+              }
+
+              // If text has overflow
+              if (isOverflowed(element, scope.useParent)) {
+                var bindArrayStartingLength = bindArray.length,
+                  initialMaxHeight = scope.useParent ? getParentHeight(element) : element[0].clientHeight;
+
+                if (isHtml) {
+                  element.html(binding + appendString);
+                } else {
+                  element.text(binding).html(element.html() + appendString);
+                }
+                //Set data-overflow on element for targeting
+                element.attr('data-overflowed', 'true');
+
+                // Set complete text and remove one word at a time, until there is no overflow
+                for (; i < bindArrayStartingLength; i++) {
+                  var current = bindArray.pop();
+
+                  //if the last string still overflowed, then truncate the last string
+                  if (bindArray.length === 0) {
+                    bindArray[0] = current.substring(0, Math.min(current.length, 5));
+                  }
+
+                  if (isHtml) {
+                    element.html(bindArray.join(ellipsisSeparator) + appendString);
+                  } else {
+                    element.text(bindArray.join(ellipsisSeparator)).html(element.html() + appendString);
+                  }
+
+                  if ((scope.useParent ? element.parent()[0] : element[0]).scrollHeight < initialMaxHeight || isOverflowed(element, scope.useParent) === false) {
+                    attributes.isTruncated = true;
+                    break;
+                  }
+                }
+                // else if (scope.onceOverFlowed) {
+                //   console.log()
+                // }
+
+                // If append string was passed and append click function included
+
+
+                if (!isTrustedHTML && $sce.isEnabled()) {
+                  $sce.trustAsHtml(binding);
+                }
+              } else if (scope.onceOverFlowed) {
+                element.attr('data-overflowed', 'false');
+                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
+
+                if (isHtml) {
+                  element.html(binding + tempAppend);
+                } else {
+                  element.text(binding).html(element.html() + tempAppend);
+                }
+
+              } else {
+                element.attr('data-overflowed', 'false');
+
+              }
+
+              if (ellipsisSymbol != appendString && typeof(scope.ellipsisAppendClick) !== 'undefined' && scope.ellipsisAppendClick !== '') {
+                element.find('span.angular-ellipsis-append').bind("click", function (e) {
+                  var text = element.find('span.angular-ellipsis-append a').text()
+                  if (text === 'Read more') {
+                    scope.onceOverFlowed = true;
+                    angular.element(element).css('max-height', '1000px')
+
+                  } else {
+                    angular.element(element).css({'max-height': ''})
+
+                  }
+
+
+                  buildEllipsis()
+                  scope.$apply(function () {
+                    scope.ellipsisAppendClick.call(scope, {
+                      event: e
+                    });
+                  });
+                });
+              }
+            }
+          }
+
+          /**
+           *  Test if element has overflow of text beyond height or max-height
+           *
+           *  @param element (DOM object)
+           *
+           *  @return bool
+           *
+           */
+          function isOverflowed(thisElement, useParent) {
+            thisElement = useParent ? thisElement.parent() : thisElement;
+            return thisElement[0].scrollHeight > thisElement[0].clientHeight;
+          }
+
+          function onceOverFlowed() {
+            if (isOverflowed(element, scope.useParent)) {
+              return true;
+            }
+          }
+
+          /**
+           *  Watchers
+           */
+
+          /**
+           *  Execute ellipsis truncate on ngShow update
+           */
+          scope.$watch('ngShow', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBind update
+           */
+          scope.$watch('ngBind', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBindHtml update
+           */
+          scope.$watch('ngBindHtml', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBind update
+           */
+          scope.$watch('ellipsisAppend', function () {
+            buildEllipsis();
+          });
+
+          /**
+           *  Execute ellipsis truncate when element becomes visible
+           */
+          scope.$watch(function () {
+            return element[0].offsetWidth != 0 && element[0].offsetHeight != 0
+          }, function () {
+            asyncDigestDebounced.add(buildEllipsis);
+          });
+
+          function checkWindowForRebuild() {
+            if (attributes.lastWindowResizeWidth != window.innerWidth || attributes.lastWindowResizeHeight != window.innerHeight) {
+              buildEllipsis();
+            }
+
+            attributes.lastWindowResizeWidth = window.innerWidth;
+            attributes.lastWindowResizeHeight = window.innerHeight;
+          }
+
+          var unbindRefreshEllipsis = scope.$on('dibari:refresh-ellipsis', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  When window width or height changes - re-init truncation
+           */
+
+          function onResize() {
+            asyncDigestDebounced.add(checkWindowForRebuild);
+          }
+
+          var $win = angular.element($window);
+          $win.bind('resize', onResize);
+
+          /**
+           * Clean up after ourselves
+           */
+          scope.$on('$destroy', function () {
+            $win.unbind('resize', onResize);
+            asyncDigestImmediate.remove(buildEllipsis);
+            asyncDigestDebounced.remove(checkWindowForRebuild);
+            if (unbindRefreshEllipsis) {
+              unbindRefreshEllipsis();
+              unbindRefreshEllipsis = null;
+            }
+          });
+        };
+      }
+    };
+  }]);
+
+angular.module('app').directive('hueDbInfoTooltip', ['searchMenuRepository', function (searchMenuRepository) {
+  function link(scope, element, attrs) {
+    var e = angular.element(element);
+
+    searchMenuRepository.getMain(function (data) {
+      e.ready(function () {
+        e.attr('title', data.tooltips[attrs.hueDbInfoTooltip]);
+        e.tooltipster({
+          animation: 'fade',
+          theme: 'tooltipster-module-info',
+          trigger: 'hover',
+          minWidth: 300,
+          maxWidth: 300,
+          position: 'bottom'
+        });
+      });
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+  };
+}]);
+
+angular.module('app').directive('hueDbInfoIcon', ['searchMenuRepository', '$state', function (searchMenuRepository, $state) {
+  function link(scope, element, attrs) {
+    var icon = angular.element('img', element);
+    var repositoryAction = 'getMain';
+    if ($state.current) {
+      if ($state.current.parent === 'branding') {
+        repositoryAction = 'getControlsDataBranding';
+      } else if ($state.current.parent === 'auto') {
+        repositoryAction = 'getControlsDataAuto';
+      } else if ($state.current.parent === 'legal') {
+        repositoryAction = 'getControlsDataLegal';
+      } else if ($state.current.parent === 'fashion') {
+        repositoryAction = 'getControlsData';
+      }
+    }
+
+    searchMenuRepository[repositoryAction]().then(function (data) {
+      if (!data.tooltips) {
+        return;
+      }
+
+      icon.attr('title', data.tooltips[scope.textKey]);
+      icon.tooltipster({
+        animation: 'fade',
+        theme: 'tooltipster-module-info',
+        trigger: 'hover',
+        minWidth: 300,
+        maxWidth: 300,
+        position: 'bottom'
+      });
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<img src="assets/img/icons/info.svg" class="icon-info" />',
+    link: link,
+    scope: {
+      textKey: '@'
+    }
+  };
+}]);
+
+// angular.module('app').directive('hueDashboardScroll', function () {
+// 	function link(scope, element, attrs) {
+// 		$(element).mCustomScrollbar({
+// 			theme: 'minimal-dark',
+// 			scrollInertia: 0,
+// 			mouseWheel: {
+// 				scrollAmount: 70
+// 			}
+// 		});
+// 	}
+//
+// 	return {
+// 		restrict: 'A',
+// 		link: link
+// 	};
+// });
+
+angular.module('app').directive('hueCarousel', function () {
+  function link(scope, element, attrs) {
+    scope.$watch('initialized', function (newValue, oldValue) {
+      if (newValue) {
+        if (scope.config) {
+          if (scope.config.responsive && !scope.config.onCreate) {
+            scope.config.onCreate = function () {
+              angular.element(element).trigger('updateSizes');
+              if (scope.onCreate) {
+                scope.onCreate(this);
+              }
+            };
+          }
+          angular.element(element).carouFredSel(scope.config);
+
+          if (scope.config.buttonNextId) {
+            angular.element('#' + scope.config.buttonNextId).click(function () {
+              angular.element(element).trigger('next');
+            });
+          }
+          if (scope.config.buttonPrevId) {
+            angular.element('#' + scope.config.buttonPrevId).click(function () {
+              angular.element(element).trigger('prev');
+            });
+          }
+        } else {
+          angular.element(element).carouFredSel();
+        }
+      }
+      angular.element(element).trigger('updateSizes');
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=hueCarousel',
+      initialized: '=',
+      onCreate: '='
+    }
+  };
+});
 
 angular.module('app').service('userDataRepository',
   ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
@@ -16219,797 +17032,6 @@ angular.module('app').service('analyticsService', ['$location', '$analytics', 'a
       analytics.eventTrack('open', {category: 'DB_EV', label: type});
   };
 }]);
-
-// angular.module('app').directive('uiColorpicker', function () {
-//     return {
-//         restrict: 'E',
-//         require: 'ngModel',
-//         scope: false,
-//         replace: true,
-//         template: "<span><input class='input-small' /></span>",
-//         link: function (scope, element, attrs, ngModel) {
-//             var input = element.find('input');
-//             // var buttonColorpicker = element.find('.sp-replacer .sp-light');
-//             // var buttonColorpicker = element[0].childNodes[1];
-//             // buttonColorpicker.addClass('sp-active');
-//             // console.log('div', div);
-//
-//             // scope.clickPicker = function () {
-//             //     console.log('$scope--picker-derictive', scope);
-//             // };
-//
-//             console.log('scope', scope);
-//             console.log('buttonColorpicker=1', element);
-//             console.log('buttonColorpicker', element.find('.sp-replacer'));
-//             var options = angular.extend({
-//                 color: ngModel.$viewValue,
-//                 change: function (color) {
-//                     scope.$apply(function () {
-//                         ngModel.$setViewValue(color.toHexString());
-//                     });
-//                 }
-//             }, scope.$eval(attrs.options));
-//
-//             ngModel.$render = function () {
-//                 input.spectrum('set', ngModel.$viewValue || '');
-//             };
-//
-//             input.spectrum(options);
-//         }
-//     };
-// });
-//
-// app.controller('MyCtrl', function($scope) {
-//     $scope.targetColor = '#ebebeb';
-// });
-
-// angular.bootstrap(document, ['app']);
-
-angular.module('app').directive('hueTooltipster', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    angular.element(element).ready(function () {
-      angular.element(element).tooltipster(scope.hueTooltipster);
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      hueTooltipster: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueSvg', function () {
-  return {
-    restrict: 'E',
-    scope: {
-      id: '@',
-      source: '@',
-      class: '@',
-      onLoad: '&'
-    },
-    link: function (scope, element, attrs) {
-      angular.element.get(attrs.source, function (data) {
-        var svg = $('svg', data).removeAttr('xmlns xmlns:i xmlns:a xmlns:x xmlns:xlink xmlns:graph xml:space');
-
-        if (attrs.id)
-          svg.attr('id', attrs.id);
-        else
-          svg.removeAttr('id');
-
-        if (attrs.class)
-          svg.attr('class', attrs.class);
-
-        element.replaceWith(svg.prop('outerHTML'));
-
-        if (scope.onLoad)
-          scope.onLoad();
-      }, 'xml');
-    }
-  };
-});
-
-angular.module('app').directive('hueReadMore', function () {
-  function link(scope, element, attrs) {
-    scope.$watch('text', function (newValue, oldValue) {
-      var elem = $('span:first-child', element);
-      elem.readmore('destroy');
-      elem.text($.trim(newValue));
-      elem.readmore({
-        speed: 200,
-        moreLink: '<a href="#">More</a>',
-        lessLink: '<a href="#">Less</a>',
-        collapsedHeight: parseInt(scope.collapsedHeight),
-        heightMargin: 0
-      });
-    });
-  }
-
-  return {
-    restrict: 'A',
-    transclude: true,
-    template: '<span></span>',
-    link: link,
-    scope: {
-      text: '=hueReadMore',
-      collapsedHeight: '@'
-    }
-  };
-});
-
-angular.module('app').filter('truncate', function () {
-  return function (text, length, end) {
-    if (isNaN(length)) {
-      length = 10;
-    }
-
-    if (end === undefined) {
-      end = '...';
-    }
-
-    if (text.length <= length || text.length - end.length <= length) {
-      return text;
-    } else {
-      return String(text).substring(0, length - end.length) + end;
-    }
-  };
-}).directive('readMore', function ($filter) {
-  return {
-    restrict: 'A',
-    scope: {
-      text: '=readMore',
-      labelExpand: '@readMoreLabelExpand',
-      labelCollapse: '@readMoreLabelCollapse',
-      limit: '@readMoreLimit'
-    },
-    transclude: true,
-    template: '<span ng-transclude ng-bind-html="text"></span><a href="javascript:;" ng-click="toggleReadMore()" ng-bind="label"></a>',
-    link: function (scope /*, element, attrs */) {
-
-      var originalText = scope.text;
-
-      scope.label = scope.labelExpand;
-
-      scope.$watch('expanded', function (expandedNew) {
-        if (expandedNew) {
-          scope.text = originalText;
-          scope.label = scope.labelCollapse;
-        } else {
-          scope.text = $filter('truncate')(originalText, scope.limit, '...');
-          scope.label = scope.labelExpand;
-        }
-      });
-
-      scope.toggleReadMore = function () {
-        scope.expanded = !scope.expanded;
-      };
-    }
-  };
-});
-angular.module('app').directive('huePieChart', ['$timeout', '$location', function (timeout, location) {
-  function link(scope, element, attrs) {
-    var buildChart = function (data) { //array of { c: HEX color, p: percentage, t: title }
-      $(element).empty();
-
-      var config = scope.config;
-
-      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-      var diameter = scope.config.diameter;
-      var outerRadius = diameter / 2;
-      var innerRadius = outerRadius - donutWidth;
-      var animationDuration = 400;
-      var animationStep = 1 / (animationDuration / 20);
-      var defaultAngleMargin = 0.008;
-
-      var draw = SVG(element[0]).size(diameter, diameter);
-      var groupMain = draw.group();
-      var groupExpanded = draw.group();
-      var expandedColorPath = groupExpanded.path('');
-
-      var getSectionPathData = function (angle1, angle2, angleMargin) {
-        var sinStart = angleMargin ? Math.sin(angle1 + angleMargin) : Math.sin(angle1);
-        var cosStart = angleMargin ? Math.cos(angle1 + angleMargin) : Math.cos(angle1);
-        var sinEnd = angleMargin ? Math.sin(angle2 - angleMargin) : Math.sin(angle2);
-        var cosEnd = angleMargin ? Math.cos(angle2 - angleMargin) : Math.cos(angle2);
-
-        var xO1 = outerRadius + (sinStart * outerRadius); //outer
-        var yO1 = outerRadius - (cosStart * outerRadius);
-        var xO2 = outerRadius + (sinEnd * outerRadius);
-        var yO2 = outerRadius - (cosEnd * outerRadius);
-
-        var xI1 = outerRadius + (sinStart * innerRadius); //inner
-        var yI1 = outerRadius - (cosStart * innerRadius);
-        var xI2 = outerRadius + (sinEnd * innerRadius);
-        var yI2 = outerRadius - (cosEnd * innerRadius);
-
-        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-        return new SVG.PathArray([
-          ['M', xO1, yO1],
-          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-          ['L', xI2, yI2],
-          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-          ['Z']
-        ]).toString();
-      };
-
-      //Toggle color animation
-      var expandedColor = null;
-      var toggleExpandedColor = function (index, show, callback) {
-        var eaProgress = show ? 0 : 1;
-        var eaProgressLimit = show ? 1 : 0;
-        var eaAngleStart = _.reduce(data.slice(0, index), function (memo, value) {
-            return memo + value.p;
-          }, 0) * Math.PI / 50;
-        var eaAngleDelta = (100 - data[index].p) * Math.PI / 50;
-        var eaStep = show ? animationStep : -animationStep;
-        var eaSectionAngleWidth = data[index].p * Math.PI / 50 - 0.001;
-        var eAnimation = function () {
-          eaProgress += eaStep;
-
-          if (eaProgress > 1)
-            eaProgress = 1;
-          else if (eaProgress < 0)
-            eaProgress = 0;
-
-          expandedColorPath.plot(getSectionPathData(eaAngleStart, eaAngleStart + (eaAngleDelta * eaProgress) + eaSectionAngleWidth));
-
-          if (eaProgress == 0)
-            groupExpanded.hide();
-
-          if (eaProgress != eaProgressLimit)
-            timeout(eAnimation, 20);
-          else if (callback)
-            callback();
-        }
-
-        expandedColorPath.attr('fill', data[index].c);
-        if (show)
-          groupExpanded.show();
-        eAnimation();
-      };
-
-      //Initialization
-      var clickColorHandler = function (event) {
-        if (scope.colorClickHandler())
-          scope.colorClickHandler()(groupMain.index(event.currentTarget.instance));
-      };
-      var clickExpandedColorHandler = function (event) {
-        if (scope.collapseClickHandler())
-          scope.collapseClickHandler()();
-      };
-
-      var attrNs = location.absUrl();
-      var itemCount = data.length;
-      for (var i = 0; i < itemCount; i++) {
-        var p = groupMain.path('');
-        p.attr('fill', data[i].c);
-        p.click(clickColorHandler);
-      }
-
-      expandedColorPath.click(clickExpandedColorHandler);
-
-      //Opening animation
-      var easeOutFunction = BezierEasing.css['ease-out'];
-      var animationProgress = 0;
-      var processAnimation = function () {
-        animationProgress += animationStep;
-        if (animationProgress > 1)
-          animationProgress = 1;
-
-        var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
-        var groupMainChildren = groupMain.children();
-        var angleStart = 0;
-        for (var i = 0; i < itemCount; i++) {
-          var angleEnd = angleStart + (data[i].p * coeff * Math.PI / 50);
-          groupMainChildren[i].plot(getSectionPathData(angleStart, angleEnd, defaultAngleMargin));
-          angleStart = angleEnd;
-        }
-
-        if (animationProgress != 1)
-          timeout(processAnimation, 20);
-        else if (scope.animationCompleteHandler())
-          scope.animationCompleteHandler()();
-      };
-
-      groupExpanded.hide();
-      if (!element[0].isVisible()) //don't play animation on invisible charts
-        animationProgress = 1;
-      processAnimation();
-
-      scope.$watch('selectedIndex', function (newValue, oldValue) {
-        if (newValue != null) {
-          if (oldValue == null)
-            toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
-          else {
-            toggleExpandedColor(oldValue, false, function () {
-              toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
-            });
-          }
-        }
-        else if (oldValue != null)
-          toggleExpandedColor(oldValue, false, scope.animationCompleteHandler());
-      });
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length > 0)
-        buildChart(newValue);
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=huePieChart',
-      data: '=',
-      selectedIndex: '=',
-      colorClickHandler: '&onColorClick',
-      collapseClickHandler: '&onCollapseClick',
-      animationCompleteHandler: '&onAnimationComplete'
-    }
-  };
-}]);
-
-angular.module('app').directive('onRepeatLastElement', function () {
-  function link(scope, element, attrs) {
-    if (scope.$last)
-      scope.$parent[attrs.onRepeatLastElement]();
-  }
-
-  return {
-    restrict: 'A',
-    link: link
-    // scope: {
-    // 	onRepeatLastElement: '&'
-    // }
-  };
-});
-
-// angular.module('app').directive('hueMcustomscrollbar', function () {
-// 	function link(scope, element, attrs) {
-// 		$(element).mCustomScrollbar();
-// 	}
-//
-// 	return {
-// 		restrict: 'A',
-// 		link: link
-// 	};
-// });
-
-/**
- *  Angular directive to truncate multi-line text to visible height
- *
- *  @param bind (angular bound value to append) REQUIRED
- *  @param ellipsisAppend (string) string to append at end of truncated text after ellipsis, can be HTML OPTIONAL
- *  @param ellipsisAppendClick (function) function to call if ellipsisAppend is clicked (ellipsisAppend must be clicked) OPTIONAL
- *  @param ellipsisSymbol (string) string to use as ellipsis, replaces default '...' OPTIONAL
- *  @param ellipsisSeparator (string) separator to split string, replaces default ' ' OPTIONAL
- *
- *  @example <p data-ellipsis data-ng-bind="boundData"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-symbol="---"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more" data-ellipsis-append-click="displayFull()"></p>
- *
- */
-angular.module('app')
-
-  .directive('ellipsis', ['$timeout', '$window', '$sce', function ($timeout, $window, $sce) {
-
-    var AsyncDigest = function (delay) {
-      var timeout = null;
-      var queue = [];
-
-      this.remove = function (fn) {
-        if (queue.indexOf(fn) !== -1) {
-          queue.splice(queue.indexOf(fn), 1);
-          if (queue.length === 0) {
-            $timeout.cancel(timeout);
-            timeout = null;
-          }
-        }
-      };
-      this.add = function (fn) {
-        if (queue.indexOf(fn) === -1) {
-          queue.push(fn);
-        }
-        if (!timeout) {
-          timeout = $timeout(function () {
-            var copy = queue.slice();
-            timeout = null;
-            // reset scheduled array first in case one of the functions throws an error
-            queue.length = 0;
-            copy.forEach(function (fn) {
-              fn();
-            });
-          }, delay);
-        }
-      };
-    };
-
-    var asyncDigestImmediate = new AsyncDigest(0);
-    var asyncDigestDebounced = new AsyncDigest(75);
-
-    return {
-      restrict: 'A',
-      scope: {
-        ngShow: '=',
-        ngBind: '=',
-        ngBindHtml: '=',
-        ellipsisAppend: '@',
-        ellipsisAppendClick: '&',
-        ellipsisSymbol: '@',
-        ellipsisSeparator: '@',
-        useParent: "@",
-        ellipsisSeparatorReg: '=',
-        ellipsisFallbackFontSize: '@'
-      },
-      compile: function (elem, attr, linker) {
-
-        return function (scope, element, attributes) {
-          /* Window Resize Variables */
-          attributes.lastWindowResizeTime = 0;
-          attributes.lastWindowResizeWidth = 0;
-          attributes.lastWindowResizeHeight = 0;
-          attributes.lastWindowTimeoutEvent = null;
-          /* State Variables */
-          attributes.isTruncated = false;
-
-          function _isDefined(value) {
-            return typeof(value) !== 'undefined';
-          }
-
-          function getParentHeight(element) {
-            var heightOfChildren = 0;
-            angular.forEach(element.parent().children(), function (child) {
-              if (child != element[0]) {
-                heightOfChildren += child.clientHeight;
-              }
-            });
-            return element.parent()[0].clientHeight - heightOfChildren;
-          }
-
-          function buildEllipsis() {
-            var binding = scope.ngBind || scope.ngBindHtml;
-            var isTrustedHTML = false;
-            if ($sce.isEnabled() && angular.isObject(binding) && $sce.getTrustedHtml(binding)) {
-              isTrustedHTML = true;
-              binding = $sce.getTrustedHtml(binding);
-            }
-            if (binding) {
-              var isHtml = (!(!!scope.ngBind) && !!(scope.ngBindHtml));
-              var i = 0,
-                ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
-                ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
-                ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
-                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
-                bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
-
-              attributes.isTruncated = false;
-              if (isHtml) {
-                element.html(binding);
-              } else {
-                element.text(binding);
-              }
-
-              if (_isDefined(attributes.ellipsisFallbackFontSize) && isOverflowed(element)) {
-                element.css('font-size', attributes.ellipsisFallbackFontSize);
-              }
-
-              // If text has overflow
-              if (isOverflowed(element, scope.useParent)) {
-                var bindArrayStartingLength = bindArray.length,
-                  initialMaxHeight = scope.useParent ? getParentHeight(element) : element[0].clientHeight;
-
-                if (isHtml) {
-                  element.html(binding + appendString);
-                } else {
-                  element.text(binding).html(element.html() + appendString);
-                }
-                //Set data-overflow on element for targeting
-                element.attr('data-overflowed', 'true');
-
-                // Set complete text and remove one word at a time, until there is no overflow
-                for (; i < bindArrayStartingLength; i++) {
-                  var current = bindArray.pop();
-
-                  //if the last string still overflowed, then truncate the last string
-                  if (bindArray.length === 0) {
-                    bindArray[0] = current.substring(0, Math.min(current.length, 5));
-                  }
-
-                  if (isHtml) {
-                    element.html(bindArray.join(ellipsisSeparator) + appendString);
-                  } else {
-                    element.text(bindArray.join(ellipsisSeparator)).html(element.html() + appendString);
-                  }
-
-                  if ((scope.useParent ? element.parent()[0] : element[0]).scrollHeight < initialMaxHeight || isOverflowed(element, scope.useParent) === false) {
-                    attributes.isTruncated = true;
-                    break;
-                  }
-                }
-                // else if (scope.onceOverFlowed) {
-                //   console.log()
-                // }
-
-                // If append string was passed and append click function included
-
-
-                if (!isTrustedHTML && $sce.isEnabled()) {
-                  $sce.trustAsHtml(binding);
-                }
-              } else if (scope.onceOverFlowed) {
-                element.attr('data-overflowed', 'false');
-                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
-
-                if (isHtml) {
-                  element.html(binding + tempAppend);
-                } else {
-                  element.text(binding).html(element.html() + tempAppend);
-                }
-
-              } else {
-                element.attr('data-overflowed', 'false');
-
-              }
-
-              if (ellipsisSymbol != appendString && typeof(scope.ellipsisAppendClick) !== 'undefined' && scope.ellipsisAppendClick !== '') {
-                element.find('span.angular-ellipsis-append').bind("click", function (e) {
-                  var text = element.find('span.angular-ellipsis-append a').text()
-                  if (text === 'Read more') {
-                    scope.onceOverFlowed = true;
-                    angular.element(element).css('max-height', '1000px')
-
-                  } else {
-                    angular.element(element).css({'max-height': ''})
-
-                  }
-
-
-                  buildEllipsis()
-                  scope.$apply(function () {
-                    scope.ellipsisAppendClick.call(scope, {
-                      event: e
-                    });
-                  });
-                });
-              }
-            }
-          }
-
-          /**
-           *  Test if element has overflow of text beyond height or max-height
-           *
-           *  @param element (DOM object)
-           *
-           *  @return bool
-           *
-           */
-          function isOverflowed(thisElement, useParent) {
-            thisElement = useParent ? thisElement.parent() : thisElement;
-            return thisElement[0].scrollHeight > thisElement[0].clientHeight;
-          }
-
-          function onceOverFlowed() {
-            if (isOverflowed(element, scope.useParent)) {
-              return true;
-            }
-          }
-
-          /**
-           *  Watchers
-           */
-
-          /**
-           *  Execute ellipsis truncate on ngShow update
-           */
-          scope.$watch('ngShow', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBind update
-           */
-          scope.$watch('ngBind', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBindHtml update
-           */
-          scope.$watch('ngBindHtml', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBind update
-           */
-          scope.$watch('ellipsisAppend', function () {
-            buildEllipsis();
-          });
-
-          /**
-           *  Execute ellipsis truncate when element becomes visible
-           */
-          scope.$watch(function () {
-            return element[0].offsetWidth != 0 && element[0].offsetHeight != 0
-          }, function () {
-            asyncDigestDebounced.add(buildEllipsis);
-          });
-
-          function checkWindowForRebuild() {
-            if (attributes.lastWindowResizeWidth != window.innerWidth || attributes.lastWindowResizeHeight != window.innerHeight) {
-              buildEllipsis();
-            }
-
-            attributes.lastWindowResizeWidth = window.innerWidth;
-            attributes.lastWindowResizeHeight = window.innerHeight;
-          }
-
-          var unbindRefreshEllipsis = scope.$on('dibari:refresh-ellipsis', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  When window width or height changes - re-init truncation
-           */
-
-          function onResize() {
-            asyncDigestDebounced.add(checkWindowForRebuild);
-          }
-
-          var $win = angular.element($window);
-          $win.bind('resize', onResize);
-
-          /**
-           * Clean up after ourselves
-           */
-          scope.$on('$destroy', function () {
-            $win.unbind('resize', onResize);
-            asyncDigestImmediate.remove(buildEllipsis);
-            asyncDigestDebounced.remove(checkWindowForRebuild);
-            if (unbindRefreshEllipsis) {
-              unbindRefreshEllipsis();
-              unbindRefreshEllipsis = null;
-            }
-          });
-        };
-      }
-    };
-  }]);
-
-angular.module('app').directive('hueDbInfoTooltip', ['searchMenuRepository', function (searchMenuRepository) {
-  function link(scope, element, attrs) {
-    var e = angular.element(element);
-
-    searchMenuRepository.getMain(function (data) {
-      e.ready(function () {
-        e.attr('title', data.tooltips[attrs.hueDbInfoTooltip]);
-        e.tooltipster({
-          animation: 'fade',
-          theme: 'tooltipster-module-info',
-          trigger: 'hover',
-          minWidth: 300,
-          maxWidth: 300,
-          position: 'bottom'
-        });
-      });
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link
-  };
-}]);
-
-angular.module('app').directive('hueDbInfoIcon', ['searchMenuRepository', '$state', function (searchMenuRepository, $state) {
-  function link(scope, element, attrs) {
-    var icon = angular.element('img', element);
-    var repositoryAction = 'getMain';
-    if ($state.current) {
-      if ($state.current.parent === 'branding') {
-        repositoryAction = 'getControlsDataBranding';
-      } else if ($state.current.parent === 'auto') {
-        repositoryAction = 'getControlsDataAuto';
-      } else if ($state.current.parent === 'legal') {
-        repositoryAction = 'getControlsDataLegal';
-      } else if ($state.current.parent === 'fashion') {
-        repositoryAction = 'getControlsData';
-      }
-    }
-
-    searchMenuRepository[repositoryAction]().then(function (data) {
-      if (!data.tooltips) {
-        return;
-      }
-
-      icon.attr('title', data.tooltips[scope.textKey]);
-      icon.tooltipster({
-        animation: 'fade',
-        theme: 'tooltipster-module-info',
-        trigger: 'hover',
-        minWidth: 300,
-        maxWidth: 300,
-        position: 'bottom'
-      });
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<img src="assets/img/icons/info.svg" class="icon-info" />',
-    link: link,
-    scope: {
-      textKey: '@'
-    }
-  };
-}]);
-
-// angular.module('app').directive('hueDashboardScroll', function () {
-// 	function link(scope, element, attrs) {
-// 		$(element).mCustomScrollbar({
-// 			theme: 'minimal-dark',
-// 			scrollInertia: 0,
-// 			mouseWheel: {
-// 				scrollAmount: 70
-// 			}
-// 		});
-// 	}
-//
-// 	return {
-// 		restrict: 'A',
-// 		link: link
-// 	};
-// });
-
-angular.module('app').directive('hueCarousel', function () {
-  function link(scope, element, attrs) {
-    scope.$watch('initialized', function (newValue, oldValue) {
-      if (newValue) {
-        if (scope.config) {
-          if (scope.config.responsive && !scope.config.onCreate) {
-            scope.config.onCreate = function () {
-              angular.element(element).trigger('updateSizes');
-              if (scope.onCreate) {
-                scope.onCreate(this);
-              }
-            };
-          }
-          angular.element(element).carouFredSel(scope.config);
-
-          if (scope.config.buttonNextId) {
-            angular.element('#' + scope.config.buttonNextId).click(function () {
-              angular.element(element).trigger('next');
-            });
-          }
-          if (scope.config.buttonPrevId) {
-            angular.element('#' + scope.config.buttonPrevId).click(function () {
-              angular.element(element).trigger('prev');
-            });
-          }
-        } else {
-          angular.element(element).carouFredSel();
-        }
-      }
-      angular.element(element).trigger('updateSizes');
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=hueCarousel',
-      initialized: '=',
-      onCreate: '='
-    }
-  };
-});
 
 /**
  * Author: Jason Farrell
@@ -51540,7 +51562,7 @@ $templateCache.put('app/components/color-index-accordion/color-index-accordion.t
 $templateCache.put('app/components/color-index-search/color-index-search.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="color-naming-info">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-md-12 col-lg-12 text-center">\r\n        <img class="color-search-pen-img" src="../assets/images/pen.png" alt="">\r\n        <h5 class="color-search-title">WHAT COLOR NAME DO YOU HAVE IN MIND?</h5>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="col-lg-2 col-md-2"></div>\r\n      <div class="col-md-8 col-lg-8 center">\r\n        <form class="search-container">\r\n          <input ng-model="$ctrl.data.color" ng-value="$ctrl.data.color" type="text" id="search-bar" placeholder="TYPE HERE">\r\n          <button class="btn-color-search" ng-click="$ctrl.colorSearch()"></button>\r\n        </form>\r\n\r\n        <div ng-if="$ctrl.colorValidDataShort.length === 0" class="msg-inf" style="height: 0px!important;">\r\n          <p style="text-align: center"> Not found.</p>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-2 col-md-2"></div>\r\n    </div>\r\n      <div class="row equal" style="margin-top: 100px"></div>\r\n  </div>\r\n</section>');
 $templateCache.put('app/components/color-naming-index/color-naming-index.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n\r\n\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top" class="">\r\n  <div class="container-fluid">\r\n    <div class="row color-names-block">\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            37\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n          <div class="title-color-naming">\r\n            <span>COLOR  </span>\r\n            <span>  ASSOCIATION</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            22\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>PAINT  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            139\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>COLOURLOVERS  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="col-lg-3 col-md-3 col-sm-3">\r\n        <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            18\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n          <div class="title-color-naming">\r\n            <span>RESEARCH  </span>\r\n            <span>  COLOR</span>\r\n            <span>  NAMES</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="center-color-block">\r\n        <div class="button">\r\n          <a class="btn join-btn" ui-sref="colorIndexAccordion">NEXT</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/color-naming-info/color-naming-info.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="color-naming-info">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-md-2 col-lg-2"></div>\r\n      <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2 center-block text-center color-naming-info-part_text">\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam autem commodi consequuntur dicta dolore eius eligendi expedita incidunt inventore laudantium, mollitia natus nulla officiis perspiciatis placeat quo repellat sunt tenetur!\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n      <div class="col-md-12 col-lg-12">\r\n        <div class="button center-block scroll_down" style="width: 153px;">\r\n          <a class="btn join-btn color-index-btn">CLICK TO START</a>\r\n        </div>\r\n    </div>\r\n  </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM THINKING OF THIS COLOR AND WANT TO LEARN NOW ITS CALLED </h5>\r\n          <img id="color-naming-block-desc_img_2" src="../assets/images/picker.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorPicker">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM LOOKING TO LEARN WHAT COLORS ARE ASSOCIATED WITH THIS WORD /NAME </h5>\r\n          <img id="color-naming-block-desc_img_1" src="../assets/images/pen.png" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorNamingIndex">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>');
-$templateCache.put('app/components/color-picker/color-picker.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-6">\r\n                <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n\r\n            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n                <div class="title-color-index">The Color Naming Index</div>\r\n                <div class="button membership">\r\n                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n                </div>\r\n                <div class="line"></div>\r\n            </div>\r\n\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n\r\n<!--<div id="s_color_picker_id">-->\r\n<!--<canvas id="color_picker" width="200" height="200"></canvas>-->\r\n<!--<div id="color_id"></div>-->\r\n<!--<div>{{pixelColor ? pixelColor : \'rgb(0,0,0)\'}}</div>-->\r\n<!--</div>-->\r\n\r\n<section class="bg-color-picker-block">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <h5 class="title-link-color-picker h-data ng-binding color-picker-title">WHAT COLOR NAMES ARE ASSOCIATED WITH MY COLOR SELECTION? </h5>\r\n                <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/picker.png" alt=""></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-4 col-md-4 color-piker-item_canvas">\r\n                <div id="s_color_picker_id">\r\n                    <div class="wrapper-color-picker">\r\n                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\r\n                    </div>\r\n                    <div class="slidecontainer">\r\n                        <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\r\n                        <span class="slider-title-opacity">OPACITY</span>\r\n                        <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\r\n                        <label id="value_span"></label>\r\n                    </div>\r\n                    <div class="rgb-display">\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">R</span>\r\n                            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">G</span>\r\n                            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">B</span>\r\n                            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div id="color_id"></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <div class="button button-color-picker scroll_down">\r\n                    <button ng-click="$ctrl.searchByRGB()" class="btn join-btn">LET\'S START</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section id="education-top" class="scroll-end">\r\n    <div class="container-fluid">\r\n        <div class="row color-names-block">\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames">\r\n            {{$ctrl.numOfcolorAssociationNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOR  </span>\r\n                        <span>  ASSOCIATION</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>PAINT  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            0\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOURLOVERS  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>RESEARCH  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="center-color-block">\r\n                <div class="button">\r\n                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames($ctrl.colorAssociationNameWord)">NEXT</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n');
+$templateCache.put('app/components/color-picker/color-picker.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-6">\r\n                <h3 id="color-picker-page_text" class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n\r\n            <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n                <div class="title-color-index">The Color Naming Index</div>\r\n                <div class="button membership">\r\n                    <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n                </div>\r\n                <div class="line"></div>\r\n            </div>\r\n\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n\r\n<!--<div id="s_color_picker_id">-->\r\n<!--<canvas id="color_picker" width="200" height="200"></canvas>-->\r\n<!--<div id="color_id"></div>-->\r\n<!--<div>{{pixelColor ? pixelColor : \'rgb(0,0,0)\'}}</div>-->\r\n<!--</div>-->\r\n\r\n<section class="bg-color-picker-block">\r\n    <div class="container-fluid">\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <h5 class="title-link-color-picker h-data ng-binding color-picker-title">WHAT COLOR NAMES ARE ASSOCIATED WITH MY COLOR SELECTION? </h5>\r\n                <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/picker.png" alt=""></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-4 col-md-4 color-piker-item_canvas">\r\n                <div id="s_color_picker_id">\r\n                    <div class="wrapper-color-picker">\r\n                        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\r\n                    </div>\r\n                    <div class="slidecontainer">\r\n                        <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\r\n                        <span class="slider-title-opacity">OPACITY</span>\r\n                        <input class="slider" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\r\n                        <label id="value_span"></label>\r\n                    </div>\r\n                    <div class="rgb-display">\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">R</span>\r\n                            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">G</span>\r\n                            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                        <div class="rgb-display_item">\r\n                            <span class="rgb-display-title">B</span>\r\n                            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div class="color-picker-title-img"><img src="../assets/images/arrow_picker.png" alt=""></div>\r\n            </div>\r\n            <div class="col-lg-4 col-md-4 color-piker-item">\r\n                <div id="color_id"></div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="col-lg-12 col-md-12">\r\n                <div class="button button-color-picker scroll_down">\r\n                    <button ng-click="$ctrl.searchByRGB()" class="btn join-btn">LET\'S START</button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n\r\n<section id="education-top" class="scroll-end">\r\n    <div class="container-fluid">\r\n        <div class="row color-names-block">\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames">\r\n            {{$ctrl.numOfcolorAssociationNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n        </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfcolorAssociationNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOR  </span>\r\n                        <span>  ASSOCIATION</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>PAINT  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming">\r\n            0\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <div class="title-color-naming">\r\n                        <span>COLOURLOVERS  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class="col-lg-3 col-md-3 col-sm-3">\r\n                <div class="color-names-index_item">\r\n          <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames">\r\n            {{$ctrl.numOfpaintColorNames}}\r\n          <div class="modal-color-naming">\r\n            <div class="modal-color-naming_text">\r\n              The Colourlovers Database is composed of nearly one million colors uploaded and named by the 1.6 members of the Colourlovers community <p>(www.colourlovers.com)</p>\r\n            </div>\r\n          <div class="triangle-with-shadow"></div>\r\n          </div>\r\n          </span>\r\n                    <span class="big-num-color-naming" ng-if="$ctrl.numOfpaintColorNames == 0 ">\r\n                        0\r\n                    </span>\r\n                    <div class="title-color-naming">\r\n                        <span>RESEARCH  </span>\r\n                        <span>  COLOR</span>\r\n                        <span>  NAMES</span>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class="row">\r\n            <div class="center-color-block">\r\n                <div class="button">\r\n                    <a class="btn join-btn" ng-click="$ctrl.searchByShortNames($ctrl.colorAssociationNameWord)">NEXT</a>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</section>\r\n');
 $templateCache.put('app/components/contact-us/contact-us.tmpl.html','<update-title title="Contact Us"></update-title>\r\n<update-meta name="description" content="Contact form for HUEDATA"></update-meta>\r\n<update-meta name="keywords" content="Contact us"></update-meta>\r\n\r\n<section>\r\n  <div class="container-fluid text-center">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Contact Us</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section class="contact-us-page">\r\n  <form name="contact">\r\n    <div class="container-fluid text-center">\r\n      <div class="row">\r\n        <div class="contact-us-form membership-form">\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.firstName.value" ng-value="$ctrl.data.firstName.value" type="text" id="firstName" name="firstName" ng-class="\'ng-dirty\' && contact.firstName.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="firstName">FIRST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.lastName.value" ng-value="$ctrl.data.lastName.value" type="text" id="lastName" name="lastName" ng-class="\'ng-dirty\' && contact.lastName.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="lastName">LAST NAME <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.title.value" ng-value="$ctrl.data.title.value" type="text" id="title" name="title" ng-class="\'ng-dirty\' && contact.title.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="title">TITLE <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="company" name="company" ng-class="\'ng-dirty\' && contact.company.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="company">COMPANY <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.phone.value" ng-value="$ctrl.data.phone.value" type="text" id="phone" name="phone" ng-class="\'ng-dirty\' && contact.phone.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="phone">PHONE</label>\r\n          </div>\r\n\r\n          <div class="form-item">\r\n            <input ng-model="$ctrl.data.companyEmail.value" ng-value="$ctrl.data.companyEmail.value" type="text" id="companyEmail" name="companyEmail" ng-class="\'ng-dirty\' && contact.companyEmail.$invalid ?  \'error\' :\'\'" required>\r\n            <label for="companyEmail">COMPANY EMAIL <span class="red-text">*</span></label>\r\n          </div>\r\n\r\n          <div class="form-item">\r\n          <textarea ng-model="$ctrl.data.comments.value" ng-value="$ctrl.data.comments.value" type="text" id="comments" name="comments" ng-class="\'ng-dirty\' && contact.comments.$invalid ?  \'error\' :\'\'" required></textarea>\r\n            <label for="comments">COMMENTS <span class="red-text">*</span></label>\r\n          </div>\r\n          <div class="button">\r\n            <button class="btn" ng-click="$ctrl.contactUs()">SUBMIT</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </form>\r\n</section>\r\n');
 $templateCache.put('app/components/courses/courses.tmpl.html','<update-title title="Color Courses"></update-title>\n<update-meta name="description" content="Online color education platform to teach various color subjects"></update-meta>\n<update-meta name="keywords" content="Color Fundamentals, Color Education, color theory courses, color courses online,\ncolor theory and application, foundations of color, Theory of color, color preferences"></update-meta>\n\n<section>\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()" )>\n    <div class="row">\n      <div class="col-lg-6 col-lg-offset-3"><h3>Color Courses</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-3 buttons-group">\n        <div class="button membership">\n          <button class="btn" ui-sref="educationInquire">BECOME AN EDUCATION PARTNER</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid text-center">\n    <div class="row search-fields">\n      <div class="col-lg-2 col-lg-offset-3 search-fields2">\n        <div class="select-style">\n          <select ng-model="$ctrl.topicModel" ng-change="$ctrl.select()">\n            <option>TOPIC</option>\n            <option ng-repeat="item in $ctrl.topic">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.providerModel" ng-change="$ctrl.select()">\n            <option>PROVIDER</option>\n            <option ng-repeat="item in $ctrl.provider">{{item}}</option>\n          </select>\n        </div>\n      </div>\n\n      <div class="col-lg-2">\n        <div class="select-style">\n          <select ng-model="$ctrl.levelModel" ng-change="$ctrl.select()">\n            <option>LEVEL</option>\n            <option ng-repeat="item in $ctrl.level">{{item}}</option>\n          </select>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="min-h">\n  <div class="container-fluid text-left course course-items-min-h">\n    <div class="row equal">\n      <div style="{{item.style}}" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 item text-dn" ng-repeat="item in $ctrl.items">\n        <a style="text-decoration: none" ng-href="#!/color-education-courses/{{item.id}}">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + item.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n          </div>\n        </a>\n        <h5>{{item.header}}</h5>\n        <div class="justify">\n          <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div class="row" ng-if="!$ctrl.flag">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
 $templateCache.put('app/components/courses-details/courses-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Course"></update-title>\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\n<update-meta name="keywords" content="HUEDATA course, detailed page"></update-meta>\n\n<div class="test-separator"></div>\n<h4 class="membership-product title-text-left">HUEDATA MEMBERSHIP PRODUCT</h4>\n\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\n  <section class="top">\n    <div class="container-fluid text-left title">\n      <div class="row">\n        <div class="col-lg-6 col-md-12">\n          <div class="list-item">\n            <div>\n              <span class="list-category">HUEDATA Education</span>\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\n            </div>\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\n          </div>\n        </div>\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\n          <div class="button membership">\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n          </div>\n          <div class="button membership white" ng-if="$ctrl.pageData.excerpts.length > 0">\n            <a class="btn white-btn" ng-click="$ctrl.downloadExcerpt()">DOWNLOAD\n              EXCERPT</a>\n          </div>\n        </div>\n      </div>\n      <div class="row">\n        <div class="col-lg-12">\n          <div class="border"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid text-left">\n\n    </div>\n  </section>\n\n  <section class="detailed-content-min-h">\n    <div class="container-fluid text-left report detailed-content">\n      <div class="row">\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <div class="img-responsive background-image" style="background: {{\'url(\' + $ctrl.pageData.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;\n                    background-color: #e1e1e126;">\n          </div>\n        </div>\n\n        <div class="col-lg-6 col-md-6 col-sm-12">\n          <span ng-bind-html="$ctrl.pageData.description"></span>\n          <a class="pointer" ng-if="$ctrl.pageData.file" ng-click="$ctrl.downloadExcerpt()">Download Excerpt</a>\n          <div class="prise">\n            <p><span>Pri\u0441e: </span>{{($ctrl.pageData.price === 0) ? \'Free\' : \'&#36;\' + $ctrl.pageData.price}}</p>\n          </div>\n          <button class="btn buy-btn" ng-click="$ctrl.aggProduct()">BUY</button>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section class="detailed-bottom-content detailed-bottom-content-min-h" ng-if="$ctrl.pageData.analitic.length">\n    <div class="container-fluid">\n      <div class="row top-row">\n        <div class="col-lg-6 col-md-12">\n          <h4>Key Analytics</h4>\n        </div>\n        <div class="col-lg-6 col-md-12">\n          <div class="button membership white text-right">\n            <button class="btn white-btn" ng-click="$ctrl.more()">VIEW ALL FROM THIS REPORT</button>\n          </div>\n        </div>\n      </div>\n      <div class="row slider-images">\n        <a ng-repeat="item in $ctrl.pageData.analitic">\n          <div ng-repeat="i in item">\n            <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">\n              <div class="img-responsive background-image" style="background: {{\'url(\' + i.image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    padding-bottom: 56%;;\n                    background-color: #e1e1e126;">\n              </div>\n            </div>\n            <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12 slider">\n              <h5>RTW SS18</h5>\n              <div class="short-line"></div>\n            </div>\n          </div>\n        </a>\n      </div>\n    </div>\n  </section>\n</div>\n');
@@ -51555,7 +51577,7 @@ $templateCache.put('app/components/infographics/infographics.tmpl.html','<update
 $templateCache.put('app/components/infographics-details/infographics-details.tmpl.html','<update-title title="{{$ctrl.pageData.header}} | HUEDATA Infographic"></update-title>\r\n<update-meta name="description" content="{{$ctrl.pageData.description}}"></update-meta>\r\n<update-meta name="keywords" content="HUEDATA infographic, detailed page, infographic"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<div class="detailed-page-wrapper" ng-init="$ctrl.init()">\r\n  <section class="top">\r\n    <div class="container-fluid text-left title">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-12">\r\n          <div class="list-item">\r\n            <div>\r\n              <span class="list-category">HUEDATA Infographics</span>\r\n              <span class="list-date">{{$ctrl.pageData.date}}</span>\r\n            </div>\r\n            <div class="list-text">{{$ctrl.pageData.header}}</div>\r\n          </div>\r\n        </div>\r\n        <div class="col-lg-6 col-md-12 text-right buttons-group">\r\n          <div class="button membership">\r\n            <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n          </div>\r\n        </div>\r\n      </div>\r\n      <div class="row">\r\n        <div class="col-lg-12">\r\n          <div class="border"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left">\r\n\r\n    </div>\r\n  </section>\r\n\r\n  <section>\r\n    <div class="container-fluid text-left report detailed-content">\r\n      <div class="row">\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <div class="category {{$ctrl.pageData.hue}} text-center" style="text-transform: uppercase"><p>HUE{{$ctrl.pageData.hue}}</p>\r\n          </div>\r\n          <img class="img-responsive" src="{{$ctrl.pageData.image_url}}">\r\n        </div>\r\n\r\n        <div class="col-lg-6 col-md-6 col-sm-12">\r\n          <span ng-bind-html="$ctrl.pageData.description"></span>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
 $templateCache.put('app/components/inquiries/inquiries.tmpl.html','<update-title title="{{$ctrl.title}}"></update-title>\n<update-meta name="description" content="{{$ctrl.caption}}"></update-meta>\n<update-meta name="keywords" content="{{$ctrl.keywords}}"></update-meta>\n\n\n<section class="inquiries">\n  <div class="container-fluid text-center">\n    <h3>{{$ctrl.caption}}</h3>\n    <div class="line"></div>\n  </div>\n  <div class="row">\n    <div class="container-fluid">\n      <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 justify" style="font-size: 17px">\n        <p>HUEDATA color intelligence helps you benchmark your color performance relative to trends and competitors,\n          inspires your color innovation, optimizes color decisions for your customer segment and supports rationalizing\n          your color decisions.</p>\n      </div>\n      <div ng-if="$ctrl.inquire2" class="col-lg-4 col-md-4" style="font-size: 17px">\n        <p>Typical ways in which Data partners collaborate with HUEDATA include:</p>\n        <ol class="list-huegroup">\n          <li>Seeking help structuring company color data</li>\n          <li>Looking to benchmark company color data against\n            HUEDATA specific color datasets for comparative and\n            competitive insights</li>\n          <li>Participate in invited research</li>\n          <li>Customize color dashboards and infographics using HUEDATA API</li>\n          <li>Co-Promoting unique color datasets\n            on HUEDATA\u2019s growing Color Intelligence Platform</li>\n        </ol>\n      </div>\n\n      <div ng-if="$ctrl.inquire3" class="col-lg-4 col-md-4 justify" style="font-size: 17px">\n        <p>HUEDATA collaborates with Academic Partners (Institutions and Faculty)\n          to develop, accredit, host and deliver educational offerings from\n          various online color courses to customize color training programs\n          and teaching materials leveraging HUEDATA rich color datasets,\n          analytics and insights.</p>\n      </div>\n      <form name="inquiries" class="inq">\n        <div class="col-lg-4 col-md-4 membership-form">\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && inquiries.first_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && inquiries.last_name.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="email" name="email" ng-class="\'ng-dirty\' && inquiries.Email.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="email">EMAIL <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-if="$ctrl.inquire3" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="institute" name="institute" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="institute">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-if="$ctrl.inquire1 || $ctrl.inquire2" ng-model="$ctrl.data.company.value" ng-value="$ctrl.data.company.value" type="text" id="Company" name="Company" ng-class="\'ng-dirty\' && inquiries.institute.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="Company">ACADEMIC INSTITUTION/COMPANY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.job_title.value" ng-value="$ctrl.data.job_title.value" type="text" id="job_title" name="job_title" ng-class="\'ng-dirty\' && inquiries.job_title.$invalid ?  \'error\' :\'\'" style="border: 0px" required>\n            <label for="job_title">JOB TITLE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.job_function.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="job in $ctrl.jobs">\n                <span ng-bind-html="job.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.company_size.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="companySize in $ctrl.companySizes">\n                <span ng-bind-html="companySize.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.industry.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="ind in $ctrl.industries">\n                <span ng-bind-html="ind.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="select-style select-mrg">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize" search-enabled="false">\n              <ui-select-match ng-bind-html="$select.selected.title"></ui-select-match>\n              <ui-select-choices class="without-border" repeat="cntry in $ctrl.countries">\n                <span ng-bind-html="cntry.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <textarea ng-if="$ctrl.inquire2" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR DATA NEEDS" style="border: 0px"></textarea>\n          <textarea ng-if="$ctrl.inquire3" ng-model="$ctrl.data.description.value" ng-value="$ctrl.data.description.value" placeholder="TELL US ABOUT YOUR COLOR EDUCATION INTERESTS" style="border: 0px"></textarea>\n\n          <div ng-if="$ctrl.inquire2" class="button">\n            <button ng-click="$ctrl.send(\'data\')" class="btn pull-right">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n          <div ng-if="$ctrl.inquire3" class="button">\n            <button ng-click="$ctrl.send(\'edu\')" class="btn pull-right">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n        </div>\n\n        <div ng-if="$ctrl.inquire1" class="col-lg-4 col-md-4 membership-form">\n          <h4>Join our Email list</h4>\n          <div>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.daily" type="checkbox" id="dailyInsight">\n              <label for="dailyInsight">Daily Insight</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.research" type="checkbox" id="researchReport">\n              <label for="researchReport">Research Reports</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.permissions.edu" ng-value="$ctrl.educationOfferings" type="checkbox" id="educationOfferings">\n              <label for="educationOfferings">Education Offerings</label>\n            </p>\n            <p style="float: none">\n              <input ng-model="$ctrl.data.relationship.expert" type="checkbox" id="joinPanel">\n              <label for="joinPanel">Join Expert Panel</label>\n            </p>\n          </div>\n\n          <div ng-if="$ctrl.inquire1" class="button">\n            <button ng-click="$ctrl.send(\'inquire\')" class="btn">\n              SUBMIT INQUIRY\n            </button>\n          </div>\n        </div>\n      </form>\n    </div>\n  </div>\n</section>\n\n\n\n');
 $templateCache.put('app/components/landing/landing.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n  <div class="container-fluid text-center">\n    <div class="logo">\n      <a style="padding-left: 40px; position: relative">\n        <svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">\n          <g>\n          \t<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>\n          </g>\n          <line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>\n        </svg>\n        <img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">\n      </a>\n    </div>\n  </div>\n\n  <div class="container-fluid menu text-center">\n    <ul>\n      <li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>\n        <p>Our Color Intelligence</p>\n      </li>\n      <li><a href="#!/color-research" class="outline-style">Color<br>Research</a>\n        <p>Color Reports & Infographic</p>\n      </li>\n      <li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>\n        <p>Who we are</p>\n      </li>\n      <li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>\n        <p>Our Blog</p>\n      </li>\n      <li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>\n        <p>Say Hi!</p>\n      </li>\n    </ul>\n  </div>\n\n  <!--</div>-->\n  <div class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n');
-$templateCache.put('app/components/landing-page/landing-page.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n\n  <!--<div class="container-fluid  text-center">-->\n    <!--<div class="logo">-->\n      <!--<a style="padding-left: 40px; position: relative">-->\n        <!--<svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"-->\n\t        <!--width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">-->\n          <!--<g>-->\n          \t<!--<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>-->\n          <!--</g>-->\n          <!--<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>-->\n        <!--</svg>-->\n        <!--<img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">-->\n      <!--</a>-->\n    <!--</div>-->\n  <!--</div>-->\n\n  <!--<div class="container-fluid  menu text-center">-->\n    <!--<ul>-->\n      <!--<li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>-->\n        <!--<p>Our Color Intelligence</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-research" class="outline-style">Color<br>Research</a>-->\n        <!--<p>Color Reports & Infographic</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>-->\n        <!--<p>Who we are</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>-->\n        <!--<p>Our Blog</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>-->\n        <!--<p>Say Hi!</p>-->\n      <!--</li>-->\n    <!--</ul>-->\n  <!--</div>-->\n\n  <!--</div>-->\n  <div id="landing-header-slider-block" class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n<section class="landing-video">\n    <div class="container">\n      <div class="row center">\n        <div class="landing_vimeo_video">\n          <video width="855" height="480" controls poster="../../../assets/img/landing/video_preview_HD.jpg">\n            <source src="../../../assets/img/landing/HueData_2018.mp4" type="video/mp4">\n            <!--<source src="movie.ogg" type="video/ogg">-->\n            Your browser does not support the video tag.\n          </video>\n          <!--<iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo"-->\n                  <!--id="companyVimeoVideo"-->\n                  <!--frameborder="0" webkitallowfullscreen mozallowfullscreen-->\n                  <!--allowfullscreen>-->\n          <!--</iframe>-->\n        </div>\n      </div>\n    </div>\n</section>\n\n<section class="landing-analytics-description">\n  <div class="container">\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">We love <br> colors analytics</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_1.jpg" alt="img">\n      </div>\n    </div>\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">..and publish 100s <br> of color reports <br> and infographic <br> every year</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_2.jpg" alt="">\n\n      </div>\n    </div>\n  </div>\n</section>\n<section class="landing-reports-section">\n  <div class="container">\n    <div class="row flex landing-reports">\n      <div class="landing-report-item" ng-repeat="report in $ctrl.reports_on_landing">\n        <img class="download-img" ng-src="{{report.image}}">\n        <span>{{report.hue}}</span>\n        <p>{{report.header}}</p>\n      </div>\n    </div>\n    <div class="landing-color-index-title">\n      <p>Check out our propraitery</p>\n      <p>Color Naming Index</p>\n      <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n    </div>\n  </div>\n</section>\n\n<section class="landing-color-picker">\n  <div class="container-fluid" id="color-picker-responsive-block">\n    <div class="row landing-color-picker-block">\n    <div class="col-md-2 col-lg-2 landing-color-picker-title" id="color-picker-title">\n      <p>SELECT A COLOR TO&nbsp;START</p>\n    </div>\n      <div class="col-lg-3 col-md-3">\n        <div id="s_color_picker_id">\n          <div class="wrapper-color-picker">\n            <canvas id="color_picker_landing" width="200" height="200" ng-click="changeColorLanding()"></canvas>\n          </div>\n\n          <div class="slidecontainer">\n            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\n            <span class="slider-title-opacity">OPACITY</span>\n            <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\n            <label id="value_span"></label>\n          </div>\n\n\n          <div class="rgb-display">\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">R</span>\n              <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">G</span>\n              <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">B</span>\n              <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n          </div>\n        </div>\n      </div>\n      <div class="col-lg-2 col-md-2 color-piker-item">\n        <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/arrow_picker.png" alt=""></div>\n      </div>\n      <div class="col-lg-3 col-md-3 landing-color-piker-image">\n        <div id="color_id"></div>\n      </div>\n      <div class="col-md-2 col-lg-2 landing-color-picker-title">\n        <p>HOW IS THIS&nbsp;COLOR CALLED</p>\n        <div class="button landing-color-picker-button">\n          <a class="btn join-btn" ng-click="$ctrl.colorWordSearchLanding()">FIND OUT</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n');
+$templateCache.put('app/components/landing-page/landing-page.tmpl.html','<update-title title="Our Color Intelligence Enhances Your Color Decision"></update-title>\n<update-meta name="description" content="Color Intelligence Enhances Your Color Decision"></update-meta>\n<update-meta name="keywords" content="Color Intelligence, Color Decisions, Color analytics, Color insights, Color inspiration,\nColor validation, Color information, Color dataset, Color database, Color design, Color strategy, color big data"></update-meta>\n\n<section class="landing">\n\n  <!--<div class="container-fluid  text-center">-->\n    <!--<div class="logo">-->\n      <!--<a style="padding-left: 40px; position: relative">-->\n        <!--<svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"-->\n\t        <!--width="389px" height="92px" viewBox="29.49 5.998 389 92" enable-background="new 29.49 5.998 389 92" xml:space="preserve">-->\n          <!--<g>-->\n          \t<!--<path id="H" d="M32.536,28.032H46.98v19.5h18.417v-19.5H79.84v51.999H65.396v-19.68H46.979v19.682H32.536V28.032z"/>-->\n          <!--</g>-->\n          <!--<line fill="none" stroke="#000000" stroke-miterlimit="10" x1="106.02" y1="13.046" x2="106.02" y2="94.294"/>-->\n        <!--</svg>-->\n        <!--<img class="landing-logo" src="../assets/images/huedata.png" id="logo" alt="logo">-->\n      <!--</a>-->\n    <!--</div>-->\n  <!--</div>-->\n\n  <!--<div class="container-fluid  menu text-center">-->\n    <!--<ul>-->\n      <!--<li><a href="#!/fashion-color-trends" class="outline-style">Color<br>Trends</a>-->\n        <!--<p>Our Color Intelligence</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-research" class="outline-style">Color<br>Research</a>-->\n        <!--<p>Color Reports & Infographic</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/about-huedata" class="outline-style">About<br>HUEDATA</a>-->\n        <!--<p>Who we are</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/color-blog" class="outline-style">Color<br>Daily</a>-->\n        <!--<p>Our Blog</p>-->\n      <!--</li>-->\n      <!--<li><a href="#!/contact-huedata" class="outline-style">Contact<br>Us</a>-->\n        <!--<p>Say Hi!</p>-->\n      <!--</li>-->\n    <!--</ul>-->\n  <!--</div>-->\n\n  <!--</div>-->\n  <div id="landing-header-slider-block" class="container-fluid text-center">\n    <div id="slideshow">\n      <!--<div class="slideitem current">-->\n        <!--<img src="../../../assets/img/landing/auto-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/numbers-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/lipstick-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/hue-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/pills-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/colors-H.png">\n      </div>\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/perfume-H.png">\n      </div>\n      <!--<div class="slideitem ">-->\n        <!--<img src="../../../assets/img/landing/fashion-H.png">-->\n      <!--</div>-->\n      <div class="slideitem">\n        <img src="../../../assets/img/landing/furniture-H.png">\n      </div>\n    </div>\n    <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>\n    <div class="icons">\n      <div class="icon"><h3>18 Ys</h3>\n        <p>Fashion colors</p><img src="../../../assets/img/landing/fashion.png"></div>\n      <div class="icon"><h3>100 Ys</h3>\n        <p>Car colors</p><img src="../../../assets/img/landing/car.png"></div>\n      <div class="icon"><h3>5M</h3>\n        <p>Interior colors</p><img src="../../../assets/img/landing/furniture.png"></div>\n      <div class="icon"><h3>23K</h3>\n        <p>Beauty colors</p><img src="../../../assets/img/landing/cosmetics.png"></div>\n      <div class="icon"><h3>45K</h3>\n        <p>Paint colors</p><img src="../../../assets/img/landing/paint.png"></div>\n      <div class="icon"><h3>82K</h3>\n        <p>Logo colors</p><img src="../../../assets/img/landing/global.png"></div>\n      <div class="icon"><h3>All pills</h3>\n        <p>Pharma colors</p><img src="../../../assets/img/landing/pill.png"></div>\n    </div>\n  </div>\n</section>\n<section class="landing-video">\n    <div class="container">\n      <div class="row center">\n        <div class="landing_vimeo_video">\n          <video width="855" height="480" controls poster="../../../assets/img/landing/video_preview_HD.jpg">\n            <source src="../../../assets/img/landing/HueData_2018.mp4" type="video/mp4">\n            <!--<source src="movie.ogg" type="video/ogg">-->\n            Your browser does not support the video tag.\n          </video>\n          <!--<iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo"-->\n                  <!--id="companyVimeoVideo"-->\n                  <!--frameborder="0" webkitallowfullscreen mozallowfullscreen-->\n                  <!--allowfullscreen>-->\n          <!--</iframe>-->\n        </div>\n      </div>\n    </div>\n</section>\n\n<section class="landing-analytics-description">\n  <div class="container">\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">We love <br> colors analytics</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_1.jpg" alt="img">\n      </div>\n    </div>\n    <div class="row">\n      <div class="col-md-5 col-lg-5">\n        <h1 class="landing-analytics_title">..and publish 100s <br> of color reports <br> and infographic <br> every year</h1>\n        <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n      </div>\n      <div class="col-md-7 col-lg-7">\n        <img class="landing-analytics-description__img" src="../../../assets/img/landing/landing-analytics-block_2.jpg" alt="">\n\n      </div>\n    </div>\n  </div>\n</section>\n<section class="landing-reports-section">\n  <div class="container">\n    <div class="row flex landing-reports">\n      <div class="landing-report-item" ng-repeat="report in $ctrl.reports_on_landing">\n        <img class="download-img" ng-src="{{report.image}}">\n        <span>{{report.hue}}</span>\n        <p>{{report.header}}</p>\n      </div>\n    </div>\n    <div class="landing-color-index-title">\n      <p>Check out our propraitery</p>\n      <p>Color Naming Index</p>\n      <img src="../../../assets/img/landing/landing_analytic-arrow.jpg" alt="">\n    </div>\n  </div>\n</section>\n\n<section class="landing-color-picker">\n  <div class="container-fluid color-picker-landing_responsive" id="color-picker-responsive-block">\n    <div class="row landing-color-picker-block">\n    <div class="col-md-2 col-lg-2 landing-color-picker-title" id="color-picker-title">\n      <p>SELECT A COLOR TO&nbsp;START</p>\n    </div>\n      <div class="col-lg-3 col-md-3">\n        <div id="s_color_picker_id">\n          <div class="wrapper-color-picker">\n            <canvas id="color_picker_landing" width="200" height="200" ng-click="changeColorLanding()"></canvas>\n          </div>\n\n          <div class="slidecontainer">\n            <input class="slider" type="range" id="rg" min="0" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\n            <span class="slider-title-opacity">OPACITY</span>\n            <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\n            <label id="value_span"></label>\n          </div>\n\n\n          <div class="rgb-display">\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">R</span>\n              <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">G</span>\n              <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n            <div class="rgb-display_item">\n              <span class="rgb-display-title">B</span>\n              <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n            </div>\n          </div>\n        </div>\n      </div>\n      <div class="col-lg-2 col-md-2 color-piker-item">\n        <div class="color-picker-title-img"><img class="color-picker-img" src="../assets/images/arrow_picker.png" alt=""></div>\n      </div>\n      <div class="col-lg-3 col-md-3 landing-color-piker-image">\n        <div id="color_id"></div>\n      </div>\n      <div class="col-md-2 col-lg-2 landing-color-picker-title">\n        <p>HOW IS THIS&nbsp;COLOR CALLED</p>\n        <div class="button landing-color-picker-button">\n          <a class="btn join-btn" ng-click="$ctrl.colorWordSearchLanding()">FIND OUT</a>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>\n');
 $templateCache.put('app/components/login/login.tmpl.html','<update-title title="Login"></update-title>\r\n<update-meta name="description" content="HUEDATA login page"></update-meta>\r\n<update-meta name="keywords" content="HUEDATA, login, login page"></update-meta>\r\n\r\n\r\n<div class="login-page">\r\n  <div class="container-fluid text-center">\r\n    <h3>Member Login</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n\r\n  <section>\r\n    <div class="container-fluid">\r\n      <div class="row">\r\n        <div class="login-container text-center">\r\n          <div ng-show="$ctrl.error" class="error-message afade text-left">\r\n            <span>ERROR: </span><a>The username or password you entered is incorrect</a>\r\n          </div>\r\n          <form>\r\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\r\n            <input ng-focus="$ctrl.error = false" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\r\n            <div class="remember-checkbox">\r\n              <p>\r\n                <input type="checkbox" id="rememberMe" ng-model="$ctrl.isRemembered">\r\n                <label for="rememberMe">Remember Me</label>\r\n              </p>\r\n            </div>\r\n            <div class="button login-btn">\r\n              <button ng-click="$ctrl.login()" class="btn">MEMBER LOGIN</button>\r\n            </div>\r\n          </form>\r\n\r\n          <div class="additional-links text-left">\r\n            <a ng-href="#!/recover">Forgot your password</a>\r\n            <p>Not a HUEDATA member? <a ui-sref="membership({scrollTo: true})">Learn more about Huedata Membership</a></p>\r\n            <a ng-href="#!/staff-login">HUEDATA Staff - Login here</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </section>\r\n</div>\r\n');
 $templateCache.put('app/components/members/members.tmpl.html','<update-title title="HUEDATA Members"></update-title>\r\n<update-meta name="description" content="HUEDATA members"></update-meta>\r\n<update-meta name="keywords" content="Our members"></update-meta>\r\n\r\n<section id="members">\r\n  <div class="container-fluid text-center title" ng-init="$ctrl.init()">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>HUEDATA Members</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid text-left">\r\n    <div class="row">\r\n      <div class="col-lg-3 col-md-12">\r\n        <input ng-model="$ctrl.filter" ng-change="$ctrl.filterChange()" class="search" placeholder="A-Z" type="text">\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="container-fluid members-list" style="padding-top:20px">\r\n    <div class="row members-list-min-h">\r\n      <div class="col-lg-3 col-md-4 col-sm-4" ng-repeat="group in $ctrl.dataGroups">\r\n        <ul>\r\n          <li ng-repeat="item in group">{{item.first_name}} {{item.last_name}}</li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/members-analytics/members-analytics.tmpl.html','<update-title title="Members Analytics"></update-title>\n<update-meta name="description" content="HUEDATA members private area"></update-meta>\n<update-meta name="keywords" content=""></update-meta>\n\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\n<section ng-init="$ctrl.init()">\n\n  <div class="container-fluid text-center title">\n    <div class="row">\n\n      <div class="col-lg-4 col-lg-offset-4">\n\n        <h3>Members Analytics</h3>\n        <div class="line"></div>\n      </div>\n      <div class="col-lg-4 col-md-12 buttons-group">\n        <div class="button membership">\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\n        </div>\n        <div class="button membership">\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\n        </div>\n      </div>\n\n    </div>\n  </div>\n\n</section>\n\n<section>\n  <div class="container-fluid text-left">\n    <div class="row">\n      <div class="col-lg-3 col-md-12">\n        <input class="search" placeholder="A-Z" type="text" ng-model="$ctrl.searchModel" ng-change="$ctrl.search()">\n      </div>\n    </div>\n  </div>\n</section>\n\n<section class="analytics-section min-h analytics-min-h">\n  <div class="group">\n    <div class="item" ng-repeat="item in $ctrl.items" style="padding: 0">\n      <div class="img-container">\n        <div class="img" style="background: {{\'url(\' + item.logo_url +\') center center\'}};\n                    background-repeat: no-repeat;\n                    background-size: contain;">\n        </div>\n      </div>\n      <h6 class="analytic-title">{{item.member_name}}</h6>\n    </div>\n  </div>\n\n  <div class="row" ng-show="$ctrl.pageData.length > $ctrl.items.length">\n    <div class="col-lg-12 text-center">\n      <div class="viewmore"><a ng-click="$ctrl.more()">view more</a></div>\n    </div>\n  </div>\n</section>\n');
@@ -52189,4 +52211,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-a1b5252050.js.map
+//# sourceMappingURL=../maps/scripts/app-2f89c04ec8.js.map
