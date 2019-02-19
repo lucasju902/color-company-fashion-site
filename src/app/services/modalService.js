@@ -20,6 +20,10 @@ angular.module('app').service('modalService', function ($rootScope, $uibModal) {
       {
         tmpl: 'app/components/modal/cat-survey-modal.tmpl.html',
         class: 'cart-modal'
+      },
+      {
+        tmpl: 'app/components/modal/color-search.tmpl.html',
+        class: 'modal-err'
       }];
 
     $uibModal.open({

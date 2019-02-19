@@ -5174,8 +5174,9 @@ footer {
 #color_picker:hover {
   //cursor: crosshair;
 }
-#color_picker  {
-
+#color_picker,
+#color_picker_landing  {
+  border-radius: 50%;
 }
 #color_id {
   background-color: #000;
@@ -5359,6 +5360,8 @@ footer {
 .button-color-picker {
   text-align: center;
   padding: 0 0 20px 0;
+  width: 130px;
+  margin: 0 auto;
 }
 input[type=range] {
   margin: auto;
@@ -5799,10 +5802,11 @@ input#search-bar{
   }
 }
 .landing-color-picker-block #value_span {
-  right: -2%;
-  @media (max-width: 1200px) {
-    right: -45px;
-  }
+  right: -52px;
+  bottom: -14px;
+}
+.landing-color-picker-block .slidecontainer {
+  position: relative;
 }
 .landing-color-picker {
   margin-top: 40px;
