@@ -148,9 +148,9 @@ angular
 				// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
 				// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
 				// pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
-				console.log('heigthHeader', heightHeader)
-				console.log('widthTitle', widthTitle)
-				console.log('marginLeft', marginLeft)
+				// console.log('heigthHeader', heightHeader)
+				// console.log('widthTitle', widthTitle)
+				// console.log('marginLeft', marginLeft)
 			});
 
         //																																			RESPONSIVE COLOR PICKER
