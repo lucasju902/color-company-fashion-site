@@ -15,7 +15,14 @@ angular
 						.then(function (res) {
 							vm.colorValidDataShort = res.data;
 							if (res && res.data.length > 0) {
-								vm.paintColorNamesData = res.data
+								// vm.paintColorNamesData = res.data
+								var RGB = '',
+									colorName = '';
+								vm.paintColorNamesData = res.data.map(function (item) {
+									RGB = item.Red + ', ' + item.Green + ', ' + item.Blue;
+									colorName = item.ShortName;
+									return {colorName: colorName, RGB: RGB};
+								});
 								$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_shortnamecontains', {
 									params: {shortname: vm.data.color}
 								})
