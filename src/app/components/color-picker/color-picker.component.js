@@ -74,14 +74,12 @@ angular
 				palette = new color_picker_element(center_x, center_y, sx, sy);
 				palette.draw();
 			}
-			var pageTextCP = '';
-			function select_color(e) {
-				// console.log('e.pageX', e.pageX);
-				// console.log('e.pageY', e.pageY);
 
-				var styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
-				pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
-				// color-picker-page_text
+			var styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text')),
+			     pageTextCP = '';
+			pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+
+			function select_color(e) {
 				var x = e.pageX - color_picker.offsetLeft - 48,
 					y = e.pageY - color_picker.offsetTop - pageTextCP - 510,
 					pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,

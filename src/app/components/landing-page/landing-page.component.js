@@ -12,7 +12,7 @@ angular
       });
 
       $(document).ready(function(){
-				sizeParamsOfColorPicker();
+
         $("#slideshow > div:gt(0)").hide();
 
         var interval = setInterval(slide, 3000);
@@ -137,21 +137,21 @@ angular
 			example.addEventListener('onresize', function(){
 				console.log('color-picker-landing_responsive');
 			});
-			$(window).resize(function(){
-				sizeParamsOfColorPicker();
-				// styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
-				// styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
-				// styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
-				// styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
-				//
-				// marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
-				// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
-				// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
-				// pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
-				// console.log('heigthHeader', heightHeader)
-				// console.log('widthTitle', widthTitle)
-				// console.log('marginLeft', marginLeft)
-			});
+			// $(window).resize(function(){
+			// 	// sizeParamsOfColorPicker();
+			// 	styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+			// 	styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+			// 	styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+			// 	styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
+			//
+			// 	marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+			// 	widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+			// 	heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+			// 	pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+			// 	// console.log('heigthHeader', heightHeader)
+			// 	// console.log('widthTitle', widthTitle)
+			// 	// console.log('marginLeft', marginLeft)
+			// });
 
         //																																			RESPONSIVE COLOR PICKER
         var styleParentCP = '',
@@ -163,7 +163,8 @@ angular
 				    	styleTextCP = '',
 					  	 pageTextCP = '';
 
-        function sizeParamsOfColorPicker () {
+        // function sizeParamsOfColorPicker () {
+
 					styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
 					styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
 					styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
@@ -177,15 +178,17 @@ angular
 					console.log('heigthHeader', heightHeader)
 					console.log('widthTitle', widthTitle)
 					console.log('marginLeft', marginLeft)
-				}
+				// }
 
 			function select_color(e) {
             var x = e.pageX - marginLeft - widthTitle - color_picker_landing.offsetLeft,
-                y = e.pageY - color_picker_landing.offsetTop - heightHeader - 2980,
+                y = e.pageY - color_picker_landing.offsetTop - heightHeader - 3027,
                 pixel = color_picker_landing.getContext("2d").getImageData(x, y, 2, 2).data,
                 pixelColor = "rgb(" + pixel[0] + ", " + pixel[1] + ", "+ pixel[2] + ")";
             color_id.style.backgroundColor = pixelColor;
-
+				// console.log('heigthHeader', heightHeader)
+				// console.log('widthTitle', widthTitle)
+				// console.log('marginLeft', marginLeft)
             $scope.pixel = pixel;
             $scope.colorRGB_R = pixel[0];
             $scope.colorRGB_G = pixel[1];
