@@ -2601,6 +2601,343 @@ angular.module('app').controller('autoController',
       });
     }]);
 
+(function () {
+  'use strict';
+  var serviceId = 'common';
+  angular.module('app').service(serviceId, ['$q', function ($q) {
+    return {
+      $q: $q,
+
+      generic: {
+        regions: [
+          {
+            id: 'europe',
+            name: 'europe',
+            title: 'Europe',
+            serverName: 'europe',
+            cities: [
+              {name: 'london'}, {name: 'paris'}, {name: 'milan'}
+            ]
+          },
+          {
+            id: 'north_america',
+            name: 'namerica',
+            title: 'North America',
+            serverName: 'north_america',
+            cities: [{name: 'ny', serverName: 'new york'}]
+          },
+          {
+            id: 'latin_america',
+            name: 'samerica',
+            title: 'South America',
+            serverName: 'latin_america',
+            cities: [{name: 'mex', serverName: 'mexico'},
+              {name: 'rio', serverName: 'rio de janeiro'},
+              {name: 'sao', serverName: 'sao paulo'}
+            ]
+          },
+          {
+            id: 'asia_pacific',
+            name: 'asia',
+            title: 'Asia and Pacific',
+            serverName: 'asia_pacific',
+            cities: [{name: 'tokyo'}, {name: 'seoul'}]
+          }
+        ]
+      }
+    }
+  }
+  ]);
+}());
+
+(function () {
+  'use strict';
+  var serviceId = 'charts';
+  angular
+    .module('app')
+    .service(serviceId,
+      [
+        '$q', 'repo.hue',
+        function ($q, hue) {
+
+          var regions = ['europe', 'asia', 'namerica', 'samerica'];
+
+          function colorGroupsByCityPeriod(req) {
+            return hue.colorGroupsByCityPeriod(req)
+              .then(function (result) {
+                _.each(result, function (d) {
+                  var value = d.value;
+                  // d.value = d.percentage * 100; // overriding
+                  d.valueTitle = Math.round(d.percentage * 100) + '%';
+                  d.valueTitle2 = value;
+                  d.color = d.name;
+                });
+                result = _.sortBy(result, 'group');
+                return result;
+              });
+          }
+
+          function citiesByColorPeriod(req) {
+            return hue.citiesByColorPeriod(req)
+              .then(function (result) {
+                _.each(result, function (d) {
+                  var value = d.value;
+                  // d.value = d.percentage * 100;
+                  d.valueTitle = d.percentage === null ? 'N/A' : Math.round(d.percentage * 100) + '%';
+                  d.valueTitle2 = d.percentage === null ? '' : value;
+                  d.color = '#' + req.color;
+                });
+                result = _.sortBy(result, 'group');
+                return result;
+              });
+          }
+
+          function colorsPerRegions(req) {
+            return $q.all(_.map(regions, function (r) {
+                return hue.colorsByRegionCityPeriod({
+                  year: req.year,
+                  season: req.season,
+                  category: req.category,
+                  region: r
+                }).then(function (response) {
+                  return {
+                    name: r,
+                    title: r,
+                    data: response
+                  };
+                });
+              })
+            )/*.then(function(responses) {
+             return responses;
+             })*/;
+          }
+
+          function colorsByPeriodYearsRange(req, yearsRange) {
+            return $q.all(_.map(yearsRange, function (y) {
+              req.year = y;
+              return $q.all([
+                hue.colorsByRegionPeriod(req),
+                hue.colorsUniqueByRegionPeriod(req)
+              ]).then(function (responses) {
+                return {
+                  year: y,
+                  season: req.season,
+                  colors: responses[0],
+                  colorsUnique: responses[1]
+                };
+              });
+
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorsUniqueGroupsPerSeason(year, city, category) {
+            // var seasons = ['spring', 'spring', 'fall', 'fall'];
+            var seasons = ['winter', 'spring', 'summer', 'fall'];
+            return $q.all(_.map(seasons, function (s) {
+              var req = {year: year, season: s, city: city, category: category};
+              if (s === 'winter') {
+                req.season = 'spring';
+              } else if (s === 'summer') {
+                req.season = 'fall';
+              }
+              return $q.all([
+                hue.colorGroupsByCityPeriod(req),
+                hue.colorsUniqueByRegionPeriod(req)])
+                .then(function (responses) {
+                  return {
+                    year: year,
+                    name: s,
+                    groups: responses[0],
+                    unique: responses[1]
+                  };
+                });
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorGroupsByCategories(categories, region, year, season) {
+            return $q.all(_.map(categories, function (c) {
+              return hue.colorGroupsByCategories({category: c, region: region, year: year, season: season})
+                .then(function (response) {
+                  return {
+                    name: c,
+                    title: c,
+                    data: response
+                  };
+                });
+
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorsWithGroupsByRegionPeriod(req, region) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByRegionCitiesPeriod(req)
+            ]).then(function (results) {
+              var cities = results[1];
+              var data = results[0];
+
+              var result = {
+                region: {
+                  name: region,
+                  cities: {
+                    title: 'Top 4 colors',
+                    settings: {},
+                    data: cities
+                  }
+                },
+                charts: {
+                  settings: {},
+                  data: data
+                }
+              };
+
+              _.each(result.region.cities.data, function (c) {
+                // c.name = 'ny';
+                _.each(c.data, function (d) {
+                  d.value = d.percentage;
+                });
+              });
+
+              result.region.cities.settings = {
+                bars: {
+                  radius: 62,
+                  radiusInner: 46
+                }
+              };
+
+              return result;
+            });
+          }
+
+          function colorsWithGroups(req, year) {
+            req.year = year;
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByRegionCityPeriod(req)
+            ]).then(function (results) {
+              var groups = results[0];
+              var colors = results[1];
+              return {
+                groups: groups,
+                colors: colors
+              };
+            });
+          }
+
+          function colorsUniqueGroupsCommon(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByCityPeriod(req),
+              hue.colorsUniqueByRegionPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var common = results[1];
+              var unique = results[2];
+
+              return {
+                groups: data,
+                common: common,
+                unique: unique
+              };
+            });
+          }
+
+          function designersWithTopColors(req) {
+            var params = {region: req.region, year: req.year, season: req.season};
+            return hue.designersWithTopColors(params)
+              .then(function (results) {
+                return results;
+              });
+          }
+
+          function colorsGroupsCommon(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByCityPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var common = results[1];
+
+              return {
+                groups: data,
+                common: common
+              };
+            });
+          }
+
+          function colorsUniqueGroups(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsUniqueByRegionPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var unique = results[1];
+              return {
+                groups: data,
+                unique: unique
+              };
+            });
+          }
+
+          return {
+            colorGroupsByCityPeriod: colorGroupsByCityPeriod,
+            colorsWithGroupsByRegionPeriod: colorsWithGroupsByRegionPeriod,
+            colorsWithGroups: colorsWithGroups,
+            citiesByColorPeriod: citiesByColorPeriod,
+            colorsUniqueGroupsPerSeason: colorsUniqueGroupsPerSeason,
+
+            colorsByPeriodYearsRange: colorsByPeriodYearsRange,
+            colorGroupsByCategories: colorGroupsByCategories,
+            colorsUniqueGroupsCommon: colorsUniqueGroupsCommon,
+            colorsGroupsCommon: colorsGroupsCommon,
+            designersWithTopColors: designersWithTopColors,
+            colorsUniqueGroups: colorsUniqueGroups,
+            colorsPerRegions: colorsPerRegions
+          }
+        }
+      ]);
+}());
+
+(function () {
+  'use strict';
+  var serviceId = 'chartsHelper';
+  angular.module('app').service(serviceId, ['$q', 'repo.hue',
+    function ($q, hue) {
+      function initContainer(element, childPath) {
+        element = $(element);
+
+        var container = !!childPath ? $(element).find(childPath) : element;
+        var containerItself = !!childPath;
+
+        var innerContainer;
+        if (containerItself) {
+          innerContainer = container;
+        } else {
+          innerContainer = container.find('>*:first-child');
+        }
+
+        if (innerContainer.length === 0) {
+          innerContainer = $('<div></div>');
+          innerContainer.appendTo(container);
+        } else {
+          innerContainer.html('');
+        }
+        return innerContainer;
+      }
+
+      return {
+        initContainer: initContainer
+      }
+    }
+  ]);
+}());
+
 angular.module('app').directive('hueTrialExpiredMessage', function () {
   function link(scope, element, attrs) {
     scope.tryMoreClick = function () {
@@ -8618,343 +8955,6 @@ angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', functi
   };
 }]);
 
-(function () {
-  'use strict';
-  var serviceId = 'common';
-  angular.module('app').service(serviceId, ['$q', function ($q) {
-    return {
-      $q: $q,
-
-      generic: {
-        regions: [
-          {
-            id: 'europe',
-            name: 'europe',
-            title: 'Europe',
-            serverName: 'europe',
-            cities: [
-              {name: 'london'}, {name: 'paris'}, {name: 'milan'}
-            ]
-          },
-          {
-            id: 'north_america',
-            name: 'namerica',
-            title: 'North America',
-            serverName: 'north_america',
-            cities: [{name: 'ny', serverName: 'new york'}]
-          },
-          {
-            id: 'latin_america',
-            name: 'samerica',
-            title: 'South America',
-            serverName: 'latin_america',
-            cities: [{name: 'mex', serverName: 'mexico'},
-              {name: 'rio', serverName: 'rio de janeiro'},
-              {name: 'sao', serverName: 'sao paulo'}
-            ]
-          },
-          {
-            id: 'asia_pacific',
-            name: 'asia',
-            title: 'Asia and Pacific',
-            serverName: 'asia_pacific',
-            cities: [{name: 'tokyo'}, {name: 'seoul'}]
-          }
-        ]
-      }
-    }
-  }
-  ]);
-}());
-
-(function () {
-  'use strict';
-  var serviceId = 'charts';
-  angular
-    .module('app')
-    .service(serviceId,
-      [
-        '$q', 'repo.hue',
-        function ($q, hue) {
-
-          var regions = ['europe', 'asia', 'namerica', 'samerica'];
-
-          function colorGroupsByCityPeriod(req) {
-            return hue.colorGroupsByCityPeriod(req)
-              .then(function (result) {
-                _.each(result, function (d) {
-                  var value = d.value;
-                  // d.value = d.percentage * 100; // overriding
-                  d.valueTitle = Math.round(d.percentage * 100) + '%';
-                  d.valueTitle2 = value;
-                  d.color = d.name;
-                });
-                result = _.sortBy(result, 'group');
-                return result;
-              });
-          }
-
-          function citiesByColorPeriod(req) {
-            return hue.citiesByColorPeriod(req)
-              .then(function (result) {
-                _.each(result, function (d) {
-                  var value = d.value;
-                  // d.value = d.percentage * 100;
-                  d.valueTitle = d.percentage === null ? 'N/A' : Math.round(d.percentage * 100) + '%';
-                  d.valueTitle2 = d.percentage === null ? '' : value;
-                  d.color = '#' + req.color;
-                });
-                result = _.sortBy(result, 'group');
-                return result;
-              });
-          }
-
-          function colorsPerRegions(req) {
-            return $q.all(_.map(regions, function (r) {
-                return hue.colorsByRegionCityPeriod({
-                  year: req.year,
-                  season: req.season,
-                  category: req.category,
-                  region: r
-                }).then(function (response) {
-                  return {
-                    name: r,
-                    title: r,
-                    data: response
-                  };
-                });
-              })
-            )/*.then(function(responses) {
-             return responses;
-             })*/;
-          }
-
-          function colorsByPeriodYearsRange(req, yearsRange) {
-            return $q.all(_.map(yearsRange, function (y) {
-              req.year = y;
-              return $q.all([
-                hue.colorsByRegionPeriod(req),
-                hue.colorsUniqueByRegionPeriod(req)
-              ]).then(function (responses) {
-                return {
-                  year: y,
-                  season: req.season,
-                  colors: responses[0],
-                  colorsUnique: responses[1]
-                };
-              });
-
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorsUniqueGroupsPerSeason(year, city, category) {
-            // var seasons = ['spring', 'spring', 'fall', 'fall'];
-            var seasons = ['winter', 'spring', 'summer', 'fall'];
-            return $q.all(_.map(seasons, function (s) {
-              var req = {year: year, season: s, city: city, category: category};
-              if (s === 'winter') {
-                req.season = 'spring';
-              } else if (s === 'summer') {
-                req.season = 'fall';
-              }
-              return $q.all([
-                hue.colorGroupsByCityPeriod(req),
-                hue.colorsUniqueByRegionPeriod(req)])
-                .then(function (responses) {
-                  return {
-                    year: year,
-                    name: s,
-                    groups: responses[0],
-                    unique: responses[1]
-                  };
-                });
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorGroupsByCategories(categories, region, year, season) {
-            return $q.all(_.map(categories, function (c) {
-              return hue.colorGroupsByCategories({category: c, region: region, year: year, season: season})
-                .then(function (response) {
-                  return {
-                    name: c,
-                    title: c,
-                    data: response
-                  };
-                });
-
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorsWithGroupsByRegionPeriod(req, region) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByRegionCitiesPeriod(req)
-            ]).then(function (results) {
-              var cities = results[1];
-              var data = results[0];
-
-              var result = {
-                region: {
-                  name: region,
-                  cities: {
-                    title: 'Top 4 colors',
-                    settings: {},
-                    data: cities
-                  }
-                },
-                charts: {
-                  settings: {},
-                  data: data
-                }
-              };
-
-              _.each(result.region.cities.data, function (c) {
-                // c.name = 'ny';
-                _.each(c.data, function (d) {
-                  d.value = d.percentage;
-                });
-              });
-
-              result.region.cities.settings = {
-                bars: {
-                  radius: 62,
-                  radiusInner: 46
-                }
-              };
-
-              return result;
-            });
-          }
-
-          function colorsWithGroups(req, year) {
-            req.year = year;
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByRegionCityPeriod(req)
-            ]).then(function (results) {
-              var groups = results[0];
-              var colors = results[1];
-              return {
-                groups: groups,
-                colors: colors
-              };
-            });
-          }
-
-          function colorsUniqueGroupsCommon(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByCityPeriod(req),
-              hue.colorsUniqueByRegionPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var common = results[1];
-              var unique = results[2];
-
-              return {
-                groups: data,
-                common: common,
-                unique: unique
-              };
-            });
-          }
-
-          function designersWithTopColors(req) {
-            var params = {region: req.region, year: req.year, season: req.season};
-            return hue.designersWithTopColors(params)
-              .then(function (results) {
-                return results;
-              });
-          }
-
-          function colorsGroupsCommon(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByCityPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var common = results[1];
-
-              return {
-                groups: data,
-                common: common
-              };
-            });
-          }
-
-          function colorsUniqueGroups(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsUniqueByRegionPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var unique = results[1];
-              return {
-                groups: data,
-                unique: unique
-              };
-            });
-          }
-
-          return {
-            colorGroupsByCityPeriod: colorGroupsByCityPeriod,
-            colorsWithGroupsByRegionPeriod: colorsWithGroupsByRegionPeriod,
-            colorsWithGroups: colorsWithGroups,
-            citiesByColorPeriod: citiesByColorPeriod,
-            colorsUniqueGroupsPerSeason: colorsUniqueGroupsPerSeason,
-
-            colorsByPeriodYearsRange: colorsByPeriodYearsRange,
-            colorGroupsByCategories: colorGroupsByCategories,
-            colorsUniqueGroupsCommon: colorsUniqueGroupsCommon,
-            colorsGroupsCommon: colorsGroupsCommon,
-            designersWithTopColors: designersWithTopColors,
-            colorsUniqueGroups: colorsUniqueGroups,
-            colorsPerRegions: colorsPerRegions
-          }
-        }
-      ]);
-}());
-
-(function () {
-  'use strict';
-  var serviceId = 'chartsHelper';
-  angular.module('app').service(serviceId, ['$q', 'repo.hue',
-    function ($q, hue) {
-      function initContainer(element, childPath) {
-        element = $(element);
-
-        var container = !!childPath ? $(element).find(childPath) : element;
-        var containerItself = !!childPath;
-
-        var innerContainer;
-        if (containerItself) {
-          innerContainer = container;
-        } else {
-          innerContainer = container.find('>*:first-child');
-        }
-
-        if (innerContainer.length === 0) {
-          innerContainer = $('<div></div>');
-          innerContainer.appendTo(container);
-        } else {
-          innerContainer.html('');
-        }
-        return innerContainer;
-      }
-
-      return {
-        initContainer: initContainer
-      }
-    }
-  ]);
-}());
-
 angular
   .module('app')
   .component('verticalCoverageComponent', {
@@ -10225,17 +10225,18 @@ angular
 			});
 			$(window).resize(function(){
 				sizeParamsOfColorPicker();
-				console.log('dd');
-				// styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
-				// styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
-				// styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
-				// styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
-				//
-				// marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
-				// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
-				// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
-				// pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+				styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+				styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+				styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+				styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
 
+				marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+				widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+				heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+				pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+				console.log('heigthHeader', heightHeader)
+				console.log('widthTitle', widthTitle)
+				console.log('marginLeft', marginLeft)
 			});
 
         //																																			RESPONSIVE COLOR PICKER
@@ -10249,16 +10250,12 @@ angular
 					  	 pageTextCP = '';
 
         function sizeParamsOfColorPicker () {
-					// styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
-					// styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
-					// styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
-					// marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
-					// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
-					// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
-					console.log('document.getElementById(olor-picker-responsive-block)', document.getElementById('color-picker-responsive-block'));
-					console.log('heigthHeader', heightHeader);
-					console.log('widthTitle', widthTitle);
-					console.log('marginLeft', marginLeft);
+					styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+					styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+					styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+					marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+					widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+					heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
 				}
 
 			function select_color(e) {
@@ -13719,797 +13716,6 @@ angular
     }
   })
 
-// angular.module('app').directive('uiColorpicker', function () {
-//     return {
-//         restrict: 'E',
-//         require: 'ngModel',
-//         scope: false,
-//         replace: true,
-//         template: "<span><input class='input-small' /></span>",
-//         link: function (scope, element, attrs, ngModel) {
-//             var input = element.find('input');
-//             // var buttonColorpicker = element.find('.sp-replacer .sp-light');
-//             // var buttonColorpicker = element[0].childNodes[1];
-//             // buttonColorpicker.addClass('sp-active');
-//             // console.log('div', div);
-//
-//             // scope.clickPicker = function () {
-//             //     console.log('$scope--picker-derictive', scope);
-//             // };
-//
-//             console.log('scope', scope);
-//             console.log('buttonColorpicker=1', element);
-//             console.log('buttonColorpicker', element.find('.sp-replacer'));
-//             var options = angular.extend({
-//                 color: ngModel.$viewValue,
-//                 change: function (color) {
-//                     scope.$apply(function () {
-//                         ngModel.$setViewValue(color.toHexString());
-//                     });
-//                 }
-//             }, scope.$eval(attrs.options));
-//
-//             ngModel.$render = function () {
-//                 input.spectrum('set', ngModel.$viewValue || '');
-//             };
-//
-//             input.spectrum(options);
-//         }
-//     };
-// });
-//
-// app.controller('MyCtrl', function($scope) {
-//     $scope.targetColor = '#ebebeb';
-// });
-
-// angular.bootstrap(document, ['app']);
-
-angular.module('app').directive('hueTooltipster', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    angular.element(element).ready(function () {
-      angular.element(element).tooltipster(scope.hueTooltipster);
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      hueTooltipster: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueSvg', function () {
-  return {
-    restrict: 'E',
-    scope: {
-      id: '@',
-      source: '@',
-      class: '@',
-      onLoad: '&'
-    },
-    link: function (scope, element, attrs) {
-      angular.element.get(attrs.source, function (data) {
-        var svg = $('svg', data).removeAttr('xmlns xmlns:i xmlns:a xmlns:x xmlns:xlink xmlns:graph xml:space');
-
-        if (attrs.id)
-          svg.attr('id', attrs.id);
-        else
-          svg.removeAttr('id');
-
-        if (attrs.class)
-          svg.attr('class', attrs.class);
-
-        element.replaceWith(svg.prop('outerHTML'));
-
-        if (scope.onLoad)
-          scope.onLoad();
-      }, 'xml');
-    }
-  };
-});
-
-angular.module('app').directive('hueReadMore', function () {
-  function link(scope, element, attrs) {
-    scope.$watch('text', function (newValue, oldValue) {
-      var elem = $('span:first-child', element);
-      elem.readmore('destroy');
-      elem.text($.trim(newValue));
-      elem.readmore({
-        speed: 200,
-        moreLink: '<a href="#">More</a>',
-        lessLink: '<a href="#">Less</a>',
-        collapsedHeight: parseInt(scope.collapsedHeight),
-        heightMargin: 0
-      });
-    });
-  }
-
-  return {
-    restrict: 'A',
-    transclude: true,
-    template: '<span></span>',
-    link: link,
-    scope: {
-      text: '=hueReadMore',
-      collapsedHeight: '@'
-    }
-  };
-});
-
-angular.module('app').filter('truncate', function () {
-  return function (text, length, end) {
-    if (isNaN(length)) {
-      length = 10;
-    }
-
-    if (end === undefined) {
-      end = '...';
-    }
-
-    if (text.length <= length || text.length - end.length <= length) {
-      return text;
-    } else {
-      return String(text).substring(0, length - end.length) + end;
-    }
-  };
-}).directive('readMore', function ($filter) {
-  return {
-    restrict: 'A',
-    scope: {
-      text: '=readMore',
-      labelExpand: '@readMoreLabelExpand',
-      labelCollapse: '@readMoreLabelCollapse',
-      limit: '@readMoreLimit'
-    },
-    transclude: true,
-    template: '<span ng-transclude ng-bind-html="text"></span><a href="javascript:;" ng-click="toggleReadMore()" ng-bind="label"></a>',
-    link: function (scope /*, element, attrs */) {
-
-      var originalText = scope.text;
-
-      scope.label = scope.labelExpand;
-
-      scope.$watch('expanded', function (expandedNew) {
-        if (expandedNew) {
-          scope.text = originalText;
-          scope.label = scope.labelCollapse;
-        } else {
-          scope.text = $filter('truncate')(originalText, scope.limit, '...');
-          scope.label = scope.labelExpand;
-        }
-      });
-
-      scope.toggleReadMore = function () {
-        scope.expanded = !scope.expanded;
-      };
-    }
-  };
-});
-angular.module('app').directive('huePieChart', ['$timeout', '$location', function (timeout, location) {
-  function link(scope, element, attrs) {
-    var buildChart = function (data) { //array of { c: HEX color, p: percentage, t: title }
-      $(element).empty();
-
-      var config = scope.config;
-
-      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-      var diameter = scope.config.diameter;
-      var outerRadius = diameter / 2;
-      var innerRadius = outerRadius - donutWidth;
-      var animationDuration = 400;
-      var animationStep = 1 / (animationDuration / 20);
-      var defaultAngleMargin = 0.008;
-
-      var draw = SVG(element[0]).size(diameter, diameter);
-      var groupMain = draw.group();
-      var groupExpanded = draw.group();
-      var expandedColorPath = groupExpanded.path('');
-
-      var getSectionPathData = function (angle1, angle2, angleMargin) {
-        var sinStart = angleMargin ? Math.sin(angle1 + angleMargin) : Math.sin(angle1);
-        var cosStart = angleMargin ? Math.cos(angle1 + angleMargin) : Math.cos(angle1);
-        var sinEnd = angleMargin ? Math.sin(angle2 - angleMargin) : Math.sin(angle2);
-        var cosEnd = angleMargin ? Math.cos(angle2 - angleMargin) : Math.cos(angle2);
-
-        var xO1 = outerRadius + (sinStart * outerRadius); //outer
-        var yO1 = outerRadius - (cosStart * outerRadius);
-        var xO2 = outerRadius + (sinEnd * outerRadius);
-        var yO2 = outerRadius - (cosEnd * outerRadius);
-
-        var xI1 = outerRadius + (sinStart * innerRadius); //inner
-        var yI1 = outerRadius - (cosStart * innerRadius);
-        var xI2 = outerRadius + (sinEnd * innerRadius);
-        var yI2 = outerRadius - (cosEnd * innerRadius);
-
-        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-        return new SVG.PathArray([
-          ['M', xO1, yO1],
-          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-          ['L', xI2, yI2],
-          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-          ['Z']
-        ]).toString();
-      };
-
-      //Toggle color animation
-      var expandedColor = null;
-      var toggleExpandedColor = function (index, show, callback) {
-        var eaProgress = show ? 0 : 1;
-        var eaProgressLimit = show ? 1 : 0;
-        var eaAngleStart = _.reduce(data.slice(0, index), function (memo, value) {
-            return memo + value.p;
-          }, 0) * Math.PI / 50;
-        var eaAngleDelta = (100 - data[index].p) * Math.PI / 50;
-        var eaStep = show ? animationStep : -animationStep;
-        var eaSectionAngleWidth = data[index].p * Math.PI / 50 - 0.001;
-        var eAnimation = function () {
-          eaProgress += eaStep;
-
-          if (eaProgress > 1)
-            eaProgress = 1;
-          else if (eaProgress < 0)
-            eaProgress = 0;
-
-          expandedColorPath.plot(getSectionPathData(eaAngleStart, eaAngleStart + (eaAngleDelta * eaProgress) + eaSectionAngleWidth));
-
-          if (eaProgress == 0)
-            groupExpanded.hide();
-
-          if (eaProgress != eaProgressLimit)
-            timeout(eAnimation, 20);
-          else if (callback)
-            callback();
-        }
-
-        expandedColorPath.attr('fill', data[index].c);
-        if (show)
-          groupExpanded.show();
-        eAnimation();
-      };
-
-      //Initialization
-      var clickColorHandler = function (event) {
-        if (scope.colorClickHandler())
-          scope.colorClickHandler()(groupMain.index(event.currentTarget.instance));
-      };
-      var clickExpandedColorHandler = function (event) {
-        if (scope.collapseClickHandler())
-          scope.collapseClickHandler()();
-      };
-
-      var attrNs = location.absUrl();
-      var itemCount = data.length;
-      for (var i = 0; i < itemCount; i++) {
-        var p = groupMain.path('');
-        p.attr('fill', data[i].c);
-        p.click(clickColorHandler);
-      }
-
-      expandedColorPath.click(clickExpandedColorHandler);
-
-      //Opening animation
-      var easeOutFunction = BezierEasing.css['ease-out'];
-      var animationProgress = 0;
-      var processAnimation = function () {
-        animationProgress += animationStep;
-        if (animationProgress > 1)
-          animationProgress = 1;
-
-        var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
-        var groupMainChildren = groupMain.children();
-        var angleStart = 0;
-        for (var i = 0; i < itemCount; i++) {
-          var angleEnd = angleStart + (data[i].p * coeff * Math.PI / 50);
-          groupMainChildren[i].plot(getSectionPathData(angleStart, angleEnd, defaultAngleMargin));
-          angleStart = angleEnd;
-        }
-
-        if (animationProgress != 1)
-          timeout(processAnimation, 20);
-        else if (scope.animationCompleteHandler())
-          scope.animationCompleteHandler()();
-      };
-
-      groupExpanded.hide();
-      if (!element[0].isVisible()) //don't play animation on invisible charts
-        animationProgress = 1;
-      processAnimation();
-
-      scope.$watch('selectedIndex', function (newValue, oldValue) {
-        if (newValue != null) {
-          if (oldValue == null)
-            toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
-          else {
-            toggleExpandedColor(oldValue, false, function () {
-              toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
-            });
-          }
-        }
-        else if (oldValue != null)
-          toggleExpandedColor(oldValue, false, scope.animationCompleteHandler());
-      });
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length > 0)
-        buildChart(newValue);
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=huePieChart',
-      data: '=',
-      selectedIndex: '=',
-      colorClickHandler: '&onColorClick',
-      collapseClickHandler: '&onCollapseClick',
-      animationCompleteHandler: '&onAnimationComplete'
-    }
-  };
-}]);
-
-angular.module('app').directive('onRepeatLastElement', function () {
-  function link(scope, element, attrs) {
-    if (scope.$last)
-      scope.$parent[attrs.onRepeatLastElement]();
-  }
-
-  return {
-    restrict: 'A',
-    link: link
-    // scope: {
-    // 	onRepeatLastElement: '&'
-    // }
-  };
-});
-
-// angular.module('app').directive('hueMcustomscrollbar', function () {
-// 	function link(scope, element, attrs) {
-// 		$(element).mCustomScrollbar();
-// 	}
-//
-// 	return {
-// 		restrict: 'A',
-// 		link: link
-// 	};
-// });
-
-/**
- *  Angular directive to truncate multi-line text to visible height
- *
- *  @param bind (angular bound value to append) REQUIRED
- *  @param ellipsisAppend (string) string to append at end of truncated text after ellipsis, can be HTML OPTIONAL
- *  @param ellipsisAppendClick (function) function to call if ellipsisAppend is clicked (ellipsisAppend must be clicked) OPTIONAL
- *  @param ellipsisSymbol (string) string to use as ellipsis, replaces default '...' OPTIONAL
- *  @param ellipsisSeparator (string) separator to split string, replaces default ' ' OPTIONAL
- *
- *  @example <p data-ellipsis data-ng-bind="boundData"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-symbol="---"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more" data-ellipsis-append-click="displayFull()"></p>
- *
- */
-angular.module('app')
-
-  .directive('ellipsis', ['$timeout', '$window', '$sce', function ($timeout, $window, $sce) {
-
-    var AsyncDigest = function (delay) {
-      var timeout = null;
-      var queue = [];
-
-      this.remove = function (fn) {
-        if (queue.indexOf(fn) !== -1) {
-          queue.splice(queue.indexOf(fn), 1);
-          if (queue.length === 0) {
-            $timeout.cancel(timeout);
-            timeout = null;
-          }
-        }
-      };
-      this.add = function (fn) {
-        if (queue.indexOf(fn) === -1) {
-          queue.push(fn);
-        }
-        if (!timeout) {
-          timeout = $timeout(function () {
-            var copy = queue.slice();
-            timeout = null;
-            // reset scheduled array first in case one of the functions throws an error
-            queue.length = 0;
-            copy.forEach(function (fn) {
-              fn();
-            });
-          }, delay);
-        }
-      };
-    };
-
-    var asyncDigestImmediate = new AsyncDigest(0);
-    var asyncDigestDebounced = new AsyncDigest(75);
-
-    return {
-      restrict: 'A',
-      scope: {
-        ngShow: '=',
-        ngBind: '=',
-        ngBindHtml: '=',
-        ellipsisAppend: '@',
-        ellipsisAppendClick: '&',
-        ellipsisSymbol: '@',
-        ellipsisSeparator: '@',
-        useParent: "@",
-        ellipsisSeparatorReg: '=',
-        ellipsisFallbackFontSize: '@'
-      },
-      compile: function (elem, attr, linker) {
-
-        return function (scope, element, attributes) {
-          /* Window Resize Variables */
-          attributes.lastWindowResizeTime = 0;
-          attributes.lastWindowResizeWidth = 0;
-          attributes.lastWindowResizeHeight = 0;
-          attributes.lastWindowTimeoutEvent = null;
-          /* State Variables */
-          attributes.isTruncated = false;
-
-          function _isDefined(value) {
-            return typeof(value) !== 'undefined';
-          }
-
-          function getParentHeight(element) {
-            var heightOfChildren = 0;
-            angular.forEach(element.parent().children(), function (child) {
-              if (child != element[0]) {
-                heightOfChildren += child.clientHeight;
-              }
-            });
-            return element.parent()[0].clientHeight - heightOfChildren;
-          }
-
-          function buildEllipsis() {
-            var binding = scope.ngBind || scope.ngBindHtml;
-            var isTrustedHTML = false;
-            if ($sce.isEnabled() && angular.isObject(binding) && $sce.getTrustedHtml(binding)) {
-              isTrustedHTML = true;
-              binding = $sce.getTrustedHtml(binding);
-            }
-            if (binding) {
-              var isHtml = (!(!!scope.ngBind) && !!(scope.ngBindHtml));
-              var i = 0,
-                ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
-                ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
-                ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
-                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
-                bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
-
-              attributes.isTruncated = false;
-              if (isHtml) {
-                element.html(binding);
-              } else {
-                element.text(binding);
-              }
-
-              if (_isDefined(attributes.ellipsisFallbackFontSize) && isOverflowed(element)) {
-                element.css('font-size', attributes.ellipsisFallbackFontSize);
-              }
-
-              // If text has overflow
-              if (isOverflowed(element, scope.useParent)) {
-                var bindArrayStartingLength = bindArray.length,
-                  initialMaxHeight = scope.useParent ? getParentHeight(element) : element[0].clientHeight;
-
-                if (isHtml) {
-                  element.html(binding + appendString);
-                } else {
-                  element.text(binding).html(element.html() + appendString);
-                }
-                //Set data-overflow on element for targeting
-                element.attr('data-overflowed', 'true');
-
-                // Set complete text and remove one word at a time, until there is no overflow
-                for (; i < bindArrayStartingLength; i++) {
-                  var current = bindArray.pop();
-
-                  //if the last string still overflowed, then truncate the last string
-                  if (bindArray.length === 0) {
-                    bindArray[0] = current.substring(0, Math.min(current.length, 5));
-                  }
-
-                  if (isHtml) {
-                    element.html(bindArray.join(ellipsisSeparator) + appendString);
-                  } else {
-                    element.text(bindArray.join(ellipsisSeparator)).html(element.html() + appendString);
-                  }
-
-                  if ((scope.useParent ? element.parent()[0] : element[0]).scrollHeight < initialMaxHeight || isOverflowed(element, scope.useParent) === false) {
-                    attributes.isTruncated = true;
-                    break;
-                  }
-                }
-                // else if (scope.onceOverFlowed) {
-                //   console.log()
-                // }
-
-                // If append string was passed and append click function included
-
-
-                if (!isTrustedHTML && $sce.isEnabled()) {
-                  $sce.trustAsHtml(binding);
-                }
-              } else if (scope.onceOverFlowed) {
-                element.attr('data-overflowed', 'false');
-                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
-
-                if (isHtml) {
-                  element.html(binding + tempAppend);
-                } else {
-                  element.text(binding).html(element.html() + tempAppend);
-                }
-
-              } else {
-                element.attr('data-overflowed', 'false');
-
-              }
-
-              if (ellipsisSymbol != appendString && typeof(scope.ellipsisAppendClick) !== 'undefined' && scope.ellipsisAppendClick !== '') {
-                element.find('span.angular-ellipsis-append').bind("click", function (e) {
-                  var text = element.find('span.angular-ellipsis-append a').text()
-                  if (text === 'Read more') {
-                    scope.onceOverFlowed = true;
-                    angular.element(element).css('max-height', '1000px')
-
-                  } else {
-                    angular.element(element).css({'max-height': ''})
-
-                  }
-
-
-                  buildEllipsis()
-                  scope.$apply(function () {
-                    scope.ellipsisAppendClick.call(scope, {
-                      event: e
-                    });
-                  });
-                });
-              }
-            }
-          }
-
-          /**
-           *  Test if element has overflow of text beyond height or max-height
-           *
-           *  @param element (DOM object)
-           *
-           *  @return bool
-           *
-           */
-          function isOverflowed(thisElement, useParent) {
-            thisElement = useParent ? thisElement.parent() : thisElement;
-            return thisElement[0].scrollHeight > thisElement[0].clientHeight;
-          }
-
-          function onceOverFlowed() {
-            if (isOverflowed(element, scope.useParent)) {
-              return true;
-            }
-          }
-
-          /**
-           *  Watchers
-           */
-
-          /**
-           *  Execute ellipsis truncate on ngShow update
-           */
-          scope.$watch('ngShow', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBind update
-           */
-          scope.$watch('ngBind', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBindHtml update
-           */
-          scope.$watch('ngBindHtml', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBind update
-           */
-          scope.$watch('ellipsisAppend', function () {
-            buildEllipsis();
-          });
-
-          /**
-           *  Execute ellipsis truncate when element becomes visible
-           */
-          scope.$watch(function () {
-            return element[0].offsetWidth != 0 && element[0].offsetHeight != 0
-          }, function () {
-            asyncDigestDebounced.add(buildEllipsis);
-          });
-
-          function checkWindowForRebuild() {
-            if (attributes.lastWindowResizeWidth != window.innerWidth || attributes.lastWindowResizeHeight != window.innerHeight) {
-              buildEllipsis();
-            }
-
-            attributes.lastWindowResizeWidth = window.innerWidth;
-            attributes.lastWindowResizeHeight = window.innerHeight;
-          }
-
-          var unbindRefreshEllipsis = scope.$on('dibari:refresh-ellipsis', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  When window width or height changes - re-init truncation
-           */
-
-          function onResize() {
-            asyncDigestDebounced.add(checkWindowForRebuild);
-          }
-
-          var $win = angular.element($window);
-          $win.bind('resize', onResize);
-
-          /**
-           * Clean up after ourselves
-           */
-          scope.$on('$destroy', function () {
-            $win.unbind('resize', onResize);
-            asyncDigestImmediate.remove(buildEllipsis);
-            asyncDigestDebounced.remove(checkWindowForRebuild);
-            if (unbindRefreshEllipsis) {
-              unbindRefreshEllipsis();
-              unbindRefreshEllipsis = null;
-            }
-          });
-        };
-      }
-    };
-  }]);
-
-angular.module('app').directive('hueDbInfoTooltip', ['searchMenuRepository', function (searchMenuRepository) {
-  function link(scope, element, attrs) {
-    var e = angular.element(element);
-
-    searchMenuRepository.getMain(function (data) {
-      e.ready(function () {
-        e.attr('title', data.tooltips[attrs.hueDbInfoTooltip]);
-        e.tooltipster({
-          animation: 'fade',
-          theme: 'tooltipster-module-info',
-          trigger: 'hover',
-          minWidth: 300,
-          maxWidth: 300,
-          position: 'bottom'
-        });
-      });
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link
-  };
-}]);
-
-angular.module('app').directive('hueDbInfoIcon', ['searchMenuRepository', '$state', function (searchMenuRepository, $state) {
-  function link(scope, element, attrs) {
-    var icon = angular.element('img', element);
-    var repositoryAction = 'getMain';
-    if ($state.current) {
-      if ($state.current.parent === 'branding') {
-        repositoryAction = 'getControlsDataBranding';
-      } else if ($state.current.parent === 'auto') {
-        repositoryAction = 'getControlsDataAuto';
-      } else if ($state.current.parent === 'legal') {
-        repositoryAction = 'getControlsDataLegal';
-      } else if ($state.current.parent === 'fashion') {
-        repositoryAction = 'getControlsData';
-      }
-    }
-
-    searchMenuRepository[repositoryAction]().then(function (data) {
-      if (!data.tooltips) {
-        return;
-      }
-
-      icon.attr('title', data.tooltips[scope.textKey]);
-      icon.tooltipster({
-        animation: 'fade',
-        theme: 'tooltipster-module-info',
-        trigger: 'hover',
-        minWidth: 300,
-        maxWidth: 300,
-        position: 'bottom'
-      });
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<img src="assets/img/icons/info.svg" class="icon-info" />',
-    link: link,
-    scope: {
-      textKey: '@'
-    }
-  };
-}]);
-
-// angular.module('app').directive('hueDashboardScroll', function () {
-// 	function link(scope, element, attrs) {
-// 		$(element).mCustomScrollbar({
-// 			theme: 'minimal-dark',
-// 			scrollInertia: 0,
-// 			mouseWheel: {
-// 				scrollAmount: 70
-// 			}
-// 		});
-// 	}
-//
-// 	return {
-// 		restrict: 'A',
-// 		link: link
-// 	};
-// });
-
-angular.module('app').directive('hueCarousel', function () {
-  function link(scope, element, attrs) {
-    scope.$watch('initialized', function (newValue, oldValue) {
-      if (newValue) {
-        if (scope.config) {
-          if (scope.config.responsive && !scope.config.onCreate) {
-            scope.config.onCreate = function () {
-              angular.element(element).trigger('updateSizes');
-              if (scope.onCreate) {
-                scope.onCreate(this);
-              }
-            };
-          }
-          angular.element(element).carouFredSel(scope.config);
-
-          if (scope.config.buttonNextId) {
-            angular.element('#' + scope.config.buttonNextId).click(function () {
-              angular.element(element).trigger('next');
-            });
-          }
-          if (scope.config.buttonPrevId) {
-            angular.element('#' + scope.config.buttonPrevId).click(function () {
-              angular.element(element).trigger('prev');
-            });
-          }
-        } else {
-          angular.element(element).carouFredSel();
-        }
-      }
-      angular.element(element).trigger('updateSizes');
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=hueCarousel',
-      initialized: '=',
-      onCreate: '='
-    }
-  };
-});
-
 angular.module('app').service('userDataRepository',
   ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
 	var getUserUrl = function (userId, service) {
@@ -17032,6 +16238,797 @@ angular.module('app').service('analyticsService', ['$location', '$analytics', 'a
       analytics.eventTrack('open', {category: 'DB_EV', label: type});
   };
 }]);
+
+// angular.module('app').directive('uiColorpicker', function () {
+//     return {
+//         restrict: 'E',
+//         require: 'ngModel',
+//         scope: false,
+//         replace: true,
+//         template: "<span><input class='input-small' /></span>",
+//         link: function (scope, element, attrs, ngModel) {
+//             var input = element.find('input');
+//             // var buttonColorpicker = element.find('.sp-replacer .sp-light');
+//             // var buttonColorpicker = element[0].childNodes[1];
+//             // buttonColorpicker.addClass('sp-active');
+//             // console.log('div', div);
+//
+//             // scope.clickPicker = function () {
+//             //     console.log('$scope--picker-derictive', scope);
+//             // };
+//
+//             console.log('scope', scope);
+//             console.log('buttonColorpicker=1', element);
+//             console.log('buttonColorpicker', element.find('.sp-replacer'));
+//             var options = angular.extend({
+//                 color: ngModel.$viewValue,
+//                 change: function (color) {
+//                     scope.$apply(function () {
+//                         ngModel.$setViewValue(color.toHexString());
+//                     });
+//                 }
+//             }, scope.$eval(attrs.options));
+//
+//             ngModel.$render = function () {
+//                 input.spectrum('set', ngModel.$viewValue || '');
+//             };
+//
+//             input.spectrum(options);
+//         }
+//     };
+// });
+//
+// app.controller('MyCtrl', function($scope) {
+//     $scope.targetColor = '#ebebeb';
+// });
+
+// angular.bootstrap(document, ['app']);
+
+angular.module('app').directive('hueTooltipster', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    angular.element(element).ready(function () {
+      angular.element(element).tooltipster(scope.hueTooltipster);
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      hueTooltipster: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueSvg', function () {
+  return {
+    restrict: 'E',
+    scope: {
+      id: '@',
+      source: '@',
+      class: '@',
+      onLoad: '&'
+    },
+    link: function (scope, element, attrs) {
+      angular.element.get(attrs.source, function (data) {
+        var svg = $('svg', data).removeAttr('xmlns xmlns:i xmlns:a xmlns:x xmlns:xlink xmlns:graph xml:space');
+
+        if (attrs.id)
+          svg.attr('id', attrs.id);
+        else
+          svg.removeAttr('id');
+
+        if (attrs.class)
+          svg.attr('class', attrs.class);
+
+        element.replaceWith(svg.prop('outerHTML'));
+
+        if (scope.onLoad)
+          scope.onLoad();
+      }, 'xml');
+    }
+  };
+});
+
+angular.module('app').directive('hueReadMore', function () {
+  function link(scope, element, attrs) {
+    scope.$watch('text', function (newValue, oldValue) {
+      var elem = $('span:first-child', element);
+      elem.readmore('destroy');
+      elem.text($.trim(newValue));
+      elem.readmore({
+        speed: 200,
+        moreLink: '<a href="#">More</a>',
+        lessLink: '<a href="#">Less</a>',
+        collapsedHeight: parseInt(scope.collapsedHeight),
+        heightMargin: 0
+      });
+    });
+  }
+
+  return {
+    restrict: 'A',
+    transclude: true,
+    template: '<span></span>',
+    link: link,
+    scope: {
+      text: '=hueReadMore',
+      collapsedHeight: '@'
+    }
+  };
+});
+
+angular.module('app').filter('truncate', function () {
+  return function (text, length, end) {
+    if (isNaN(length)) {
+      length = 10;
+    }
+
+    if (end === undefined) {
+      end = '...';
+    }
+
+    if (text.length <= length || text.length - end.length <= length) {
+      return text;
+    } else {
+      return String(text).substring(0, length - end.length) + end;
+    }
+  };
+}).directive('readMore', function ($filter) {
+  return {
+    restrict: 'A',
+    scope: {
+      text: '=readMore',
+      labelExpand: '@readMoreLabelExpand',
+      labelCollapse: '@readMoreLabelCollapse',
+      limit: '@readMoreLimit'
+    },
+    transclude: true,
+    template: '<span ng-transclude ng-bind-html="text"></span><a href="javascript:;" ng-click="toggleReadMore()" ng-bind="label"></a>',
+    link: function (scope /*, element, attrs */) {
+
+      var originalText = scope.text;
+
+      scope.label = scope.labelExpand;
+
+      scope.$watch('expanded', function (expandedNew) {
+        if (expandedNew) {
+          scope.text = originalText;
+          scope.label = scope.labelCollapse;
+        } else {
+          scope.text = $filter('truncate')(originalText, scope.limit, '...');
+          scope.label = scope.labelExpand;
+        }
+      });
+
+      scope.toggleReadMore = function () {
+        scope.expanded = !scope.expanded;
+      };
+    }
+  };
+});
+angular.module('app').directive('huePieChart', ['$timeout', '$location', function (timeout, location) {
+  function link(scope, element, attrs) {
+    var buildChart = function (data) { //array of { c: HEX color, p: percentage, t: title }
+      $(element).empty();
+
+      var config = scope.config;
+
+      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+      var diameter = scope.config.diameter;
+      var outerRadius = diameter / 2;
+      var innerRadius = outerRadius - donutWidth;
+      var animationDuration = 400;
+      var animationStep = 1 / (animationDuration / 20);
+      var defaultAngleMargin = 0.008;
+
+      var draw = SVG(element[0]).size(diameter, diameter);
+      var groupMain = draw.group();
+      var groupExpanded = draw.group();
+      var expandedColorPath = groupExpanded.path('');
+
+      var getSectionPathData = function (angle1, angle2, angleMargin) {
+        var sinStart = angleMargin ? Math.sin(angle1 + angleMargin) : Math.sin(angle1);
+        var cosStart = angleMargin ? Math.cos(angle1 + angleMargin) : Math.cos(angle1);
+        var sinEnd = angleMargin ? Math.sin(angle2 - angleMargin) : Math.sin(angle2);
+        var cosEnd = angleMargin ? Math.cos(angle2 - angleMargin) : Math.cos(angle2);
+
+        var xO1 = outerRadius + (sinStart * outerRadius); //outer
+        var yO1 = outerRadius - (cosStart * outerRadius);
+        var xO2 = outerRadius + (sinEnd * outerRadius);
+        var yO2 = outerRadius - (cosEnd * outerRadius);
+
+        var xI1 = outerRadius + (sinStart * innerRadius); //inner
+        var yI1 = outerRadius - (cosStart * innerRadius);
+        var xI2 = outerRadius + (sinEnd * innerRadius);
+        var yI2 = outerRadius - (cosEnd * innerRadius);
+
+        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+        return new SVG.PathArray([
+          ['M', xO1, yO1],
+          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+          ['L', xI2, yI2],
+          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+          ['Z']
+        ]).toString();
+      };
+
+      //Toggle color animation
+      var expandedColor = null;
+      var toggleExpandedColor = function (index, show, callback) {
+        var eaProgress = show ? 0 : 1;
+        var eaProgressLimit = show ? 1 : 0;
+        var eaAngleStart = _.reduce(data.slice(0, index), function (memo, value) {
+            return memo + value.p;
+          }, 0) * Math.PI / 50;
+        var eaAngleDelta = (100 - data[index].p) * Math.PI / 50;
+        var eaStep = show ? animationStep : -animationStep;
+        var eaSectionAngleWidth = data[index].p * Math.PI / 50 - 0.001;
+        var eAnimation = function () {
+          eaProgress += eaStep;
+
+          if (eaProgress > 1)
+            eaProgress = 1;
+          else if (eaProgress < 0)
+            eaProgress = 0;
+
+          expandedColorPath.plot(getSectionPathData(eaAngleStart, eaAngleStart + (eaAngleDelta * eaProgress) + eaSectionAngleWidth));
+
+          if (eaProgress == 0)
+            groupExpanded.hide();
+
+          if (eaProgress != eaProgressLimit)
+            timeout(eAnimation, 20);
+          else if (callback)
+            callback();
+        }
+
+        expandedColorPath.attr('fill', data[index].c);
+        if (show)
+          groupExpanded.show();
+        eAnimation();
+      };
+
+      //Initialization
+      var clickColorHandler = function (event) {
+        if (scope.colorClickHandler())
+          scope.colorClickHandler()(groupMain.index(event.currentTarget.instance));
+      };
+      var clickExpandedColorHandler = function (event) {
+        if (scope.collapseClickHandler())
+          scope.collapseClickHandler()();
+      };
+
+      var attrNs = location.absUrl();
+      var itemCount = data.length;
+      for (var i = 0; i < itemCount; i++) {
+        var p = groupMain.path('');
+        p.attr('fill', data[i].c);
+        p.click(clickColorHandler);
+      }
+
+      expandedColorPath.click(clickExpandedColorHandler);
+
+      //Opening animation
+      var easeOutFunction = BezierEasing.css['ease-out'];
+      var animationProgress = 0;
+      var processAnimation = function () {
+        animationProgress += animationStep;
+        if (animationProgress > 1)
+          animationProgress = 1;
+
+        var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
+        var groupMainChildren = groupMain.children();
+        var angleStart = 0;
+        for (var i = 0; i < itemCount; i++) {
+          var angleEnd = angleStart + (data[i].p * coeff * Math.PI / 50);
+          groupMainChildren[i].plot(getSectionPathData(angleStart, angleEnd, defaultAngleMargin));
+          angleStart = angleEnd;
+        }
+
+        if (animationProgress != 1)
+          timeout(processAnimation, 20);
+        else if (scope.animationCompleteHandler())
+          scope.animationCompleteHandler()();
+      };
+
+      groupExpanded.hide();
+      if (!element[0].isVisible()) //don't play animation on invisible charts
+        animationProgress = 1;
+      processAnimation();
+
+      scope.$watch('selectedIndex', function (newValue, oldValue) {
+        if (newValue != null) {
+          if (oldValue == null)
+            toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
+          else {
+            toggleExpandedColor(oldValue, false, function () {
+              toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
+            });
+          }
+        }
+        else if (oldValue != null)
+          toggleExpandedColor(oldValue, false, scope.animationCompleteHandler());
+      });
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length > 0)
+        buildChart(newValue);
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=huePieChart',
+      data: '=',
+      selectedIndex: '=',
+      colorClickHandler: '&onColorClick',
+      collapseClickHandler: '&onCollapseClick',
+      animationCompleteHandler: '&onAnimationComplete'
+    }
+  };
+}]);
+
+angular.module('app').directive('onRepeatLastElement', function () {
+  function link(scope, element, attrs) {
+    if (scope.$last)
+      scope.$parent[attrs.onRepeatLastElement]();
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+    // scope: {
+    // 	onRepeatLastElement: '&'
+    // }
+  };
+});
+
+// angular.module('app').directive('hueMcustomscrollbar', function () {
+// 	function link(scope, element, attrs) {
+// 		$(element).mCustomScrollbar();
+// 	}
+//
+// 	return {
+// 		restrict: 'A',
+// 		link: link
+// 	};
+// });
+
+/**
+ *  Angular directive to truncate multi-line text to visible height
+ *
+ *  @param bind (angular bound value to append) REQUIRED
+ *  @param ellipsisAppend (string) string to append at end of truncated text after ellipsis, can be HTML OPTIONAL
+ *  @param ellipsisAppendClick (function) function to call if ellipsisAppend is clicked (ellipsisAppend must be clicked) OPTIONAL
+ *  @param ellipsisSymbol (string) string to use as ellipsis, replaces default '...' OPTIONAL
+ *  @param ellipsisSeparator (string) separator to split string, replaces default ' ' OPTIONAL
+ *
+ *  @example <p data-ellipsis data-ng-bind="boundData"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-symbol="---"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more" data-ellipsis-append-click="displayFull()"></p>
+ *
+ */
+angular.module('app')
+
+  .directive('ellipsis', ['$timeout', '$window', '$sce', function ($timeout, $window, $sce) {
+
+    var AsyncDigest = function (delay) {
+      var timeout = null;
+      var queue = [];
+
+      this.remove = function (fn) {
+        if (queue.indexOf(fn) !== -1) {
+          queue.splice(queue.indexOf(fn), 1);
+          if (queue.length === 0) {
+            $timeout.cancel(timeout);
+            timeout = null;
+          }
+        }
+      };
+      this.add = function (fn) {
+        if (queue.indexOf(fn) === -1) {
+          queue.push(fn);
+        }
+        if (!timeout) {
+          timeout = $timeout(function () {
+            var copy = queue.slice();
+            timeout = null;
+            // reset scheduled array first in case one of the functions throws an error
+            queue.length = 0;
+            copy.forEach(function (fn) {
+              fn();
+            });
+          }, delay);
+        }
+      };
+    };
+
+    var asyncDigestImmediate = new AsyncDigest(0);
+    var asyncDigestDebounced = new AsyncDigest(75);
+
+    return {
+      restrict: 'A',
+      scope: {
+        ngShow: '=',
+        ngBind: '=',
+        ngBindHtml: '=',
+        ellipsisAppend: '@',
+        ellipsisAppendClick: '&',
+        ellipsisSymbol: '@',
+        ellipsisSeparator: '@',
+        useParent: "@",
+        ellipsisSeparatorReg: '=',
+        ellipsisFallbackFontSize: '@'
+      },
+      compile: function (elem, attr, linker) {
+
+        return function (scope, element, attributes) {
+          /* Window Resize Variables */
+          attributes.lastWindowResizeTime = 0;
+          attributes.lastWindowResizeWidth = 0;
+          attributes.lastWindowResizeHeight = 0;
+          attributes.lastWindowTimeoutEvent = null;
+          /* State Variables */
+          attributes.isTruncated = false;
+
+          function _isDefined(value) {
+            return typeof(value) !== 'undefined';
+          }
+
+          function getParentHeight(element) {
+            var heightOfChildren = 0;
+            angular.forEach(element.parent().children(), function (child) {
+              if (child != element[0]) {
+                heightOfChildren += child.clientHeight;
+              }
+            });
+            return element.parent()[0].clientHeight - heightOfChildren;
+          }
+
+          function buildEllipsis() {
+            var binding = scope.ngBind || scope.ngBindHtml;
+            var isTrustedHTML = false;
+            if ($sce.isEnabled() && angular.isObject(binding) && $sce.getTrustedHtml(binding)) {
+              isTrustedHTML = true;
+              binding = $sce.getTrustedHtml(binding);
+            }
+            if (binding) {
+              var isHtml = (!(!!scope.ngBind) && !!(scope.ngBindHtml));
+              var i = 0,
+                ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
+                ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
+                ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
+                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
+                bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
+
+              attributes.isTruncated = false;
+              if (isHtml) {
+                element.html(binding);
+              } else {
+                element.text(binding);
+              }
+
+              if (_isDefined(attributes.ellipsisFallbackFontSize) && isOverflowed(element)) {
+                element.css('font-size', attributes.ellipsisFallbackFontSize);
+              }
+
+              // If text has overflow
+              if (isOverflowed(element, scope.useParent)) {
+                var bindArrayStartingLength = bindArray.length,
+                  initialMaxHeight = scope.useParent ? getParentHeight(element) : element[0].clientHeight;
+
+                if (isHtml) {
+                  element.html(binding + appendString);
+                } else {
+                  element.text(binding).html(element.html() + appendString);
+                }
+                //Set data-overflow on element for targeting
+                element.attr('data-overflowed', 'true');
+
+                // Set complete text and remove one word at a time, until there is no overflow
+                for (; i < bindArrayStartingLength; i++) {
+                  var current = bindArray.pop();
+
+                  //if the last string still overflowed, then truncate the last string
+                  if (bindArray.length === 0) {
+                    bindArray[0] = current.substring(0, Math.min(current.length, 5));
+                  }
+
+                  if (isHtml) {
+                    element.html(bindArray.join(ellipsisSeparator) + appendString);
+                  } else {
+                    element.text(bindArray.join(ellipsisSeparator)).html(element.html() + appendString);
+                  }
+
+                  if ((scope.useParent ? element.parent()[0] : element[0]).scrollHeight < initialMaxHeight || isOverflowed(element, scope.useParent) === false) {
+                    attributes.isTruncated = true;
+                    break;
+                  }
+                }
+                // else if (scope.onceOverFlowed) {
+                //   console.log()
+                // }
+
+                // If append string was passed and append click function included
+
+
+                if (!isTrustedHTML && $sce.isEnabled()) {
+                  $sce.trustAsHtml(binding);
+                }
+              } else if (scope.onceOverFlowed) {
+                element.attr('data-overflowed', 'false');
+                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
+
+                if (isHtml) {
+                  element.html(binding + tempAppend);
+                } else {
+                  element.text(binding).html(element.html() + tempAppend);
+                }
+
+              } else {
+                element.attr('data-overflowed', 'false');
+
+              }
+
+              if (ellipsisSymbol != appendString && typeof(scope.ellipsisAppendClick) !== 'undefined' && scope.ellipsisAppendClick !== '') {
+                element.find('span.angular-ellipsis-append').bind("click", function (e) {
+                  var text = element.find('span.angular-ellipsis-append a').text()
+                  if (text === 'Read more') {
+                    scope.onceOverFlowed = true;
+                    angular.element(element).css('max-height', '1000px')
+
+                  } else {
+                    angular.element(element).css({'max-height': ''})
+
+                  }
+
+
+                  buildEllipsis()
+                  scope.$apply(function () {
+                    scope.ellipsisAppendClick.call(scope, {
+                      event: e
+                    });
+                  });
+                });
+              }
+            }
+          }
+
+          /**
+           *  Test if element has overflow of text beyond height or max-height
+           *
+           *  @param element (DOM object)
+           *
+           *  @return bool
+           *
+           */
+          function isOverflowed(thisElement, useParent) {
+            thisElement = useParent ? thisElement.parent() : thisElement;
+            return thisElement[0].scrollHeight > thisElement[0].clientHeight;
+          }
+
+          function onceOverFlowed() {
+            if (isOverflowed(element, scope.useParent)) {
+              return true;
+            }
+          }
+
+          /**
+           *  Watchers
+           */
+
+          /**
+           *  Execute ellipsis truncate on ngShow update
+           */
+          scope.$watch('ngShow', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBind update
+           */
+          scope.$watch('ngBind', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBindHtml update
+           */
+          scope.$watch('ngBindHtml', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBind update
+           */
+          scope.$watch('ellipsisAppend', function () {
+            buildEllipsis();
+          });
+
+          /**
+           *  Execute ellipsis truncate when element becomes visible
+           */
+          scope.$watch(function () {
+            return element[0].offsetWidth != 0 && element[0].offsetHeight != 0
+          }, function () {
+            asyncDigestDebounced.add(buildEllipsis);
+          });
+
+          function checkWindowForRebuild() {
+            if (attributes.lastWindowResizeWidth != window.innerWidth || attributes.lastWindowResizeHeight != window.innerHeight) {
+              buildEllipsis();
+            }
+
+            attributes.lastWindowResizeWidth = window.innerWidth;
+            attributes.lastWindowResizeHeight = window.innerHeight;
+          }
+
+          var unbindRefreshEllipsis = scope.$on('dibari:refresh-ellipsis', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  When window width or height changes - re-init truncation
+           */
+
+          function onResize() {
+            asyncDigestDebounced.add(checkWindowForRebuild);
+          }
+
+          var $win = angular.element($window);
+          $win.bind('resize', onResize);
+
+          /**
+           * Clean up after ourselves
+           */
+          scope.$on('$destroy', function () {
+            $win.unbind('resize', onResize);
+            asyncDigestImmediate.remove(buildEllipsis);
+            asyncDigestDebounced.remove(checkWindowForRebuild);
+            if (unbindRefreshEllipsis) {
+              unbindRefreshEllipsis();
+              unbindRefreshEllipsis = null;
+            }
+          });
+        };
+      }
+    };
+  }]);
+
+angular.module('app').directive('hueDbInfoTooltip', ['searchMenuRepository', function (searchMenuRepository) {
+  function link(scope, element, attrs) {
+    var e = angular.element(element);
+
+    searchMenuRepository.getMain(function (data) {
+      e.ready(function () {
+        e.attr('title', data.tooltips[attrs.hueDbInfoTooltip]);
+        e.tooltipster({
+          animation: 'fade',
+          theme: 'tooltipster-module-info',
+          trigger: 'hover',
+          minWidth: 300,
+          maxWidth: 300,
+          position: 'bottom'
+        });
+      });
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+  };
+}]);
+
+angular.module('app').directive('hueDbInfoIcon', ['searchMenuRepository', '$state', function (searchMenuRepository, $state) {
+  function link(scope, element, attrs) {
+    var icon = angular.element('img', element);
+    var repositoryAction = 'getMain';
+    if ($state.current) {
+      if ($state.current.parent === 'branding') {
+        repositoryAction = 'getControlsDataBranding';
+      } else if ($state.current.parent === 'auto') {
+        repositoryAction = 'getControlsDataAuto';
+      } else if ($state.current.parent === 'legal') {
+        repositoryAction = 'getControlsDataLegal';
+      } else if ($state.current.parent === 'fashion') {
+        repositoryAction = 'getControlsData';
+      }
+    }
+
+    searchMenuRepository[repositoryAction]().then(function (data) {
+      if (!data.tooltips) {
+        return;
+      }
+
+      icon.attr('title', data.tooltips[scope.textKey]);
+      icon.tooltipster({
+        animation: 'fade',
+        theme: 'tooltipster-module-info',
+        trigger: 'hover',
+        minWidth: 300,
+        maxWidth: 300,
+        position: 'bottom'
+      });
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<img src="assets/img/icons/info.svg" class="icon-info" />',
+    link: link,
+    scope: {
+      textKey: '@'
+    }
+  };
+}]);
+
+// angular.module('app').directive('hueDashboardScroll', function () {
+// 	function link(scope, element, attrs) {
+// 		$(element).mCustomScrollbar({
+// 			theme: 'minimal-dark',
+// 			scrollInertia: 0,
+// 			mouseWheel: {
+// 				scrollAmount: 70
+// 			}
+// 		});
+// 	}
+//
+// 	return {
+// 		restrict: 'A',
+// 		link: link
+// 	};
+// });
+
+angular.module('app').directive('hueCarousel', function () {
+  function link(scope, element, attrs) {
+    scope.$watch('initialized', function (newValue, oldValue) {
+      if (newValue) {
+        if (scope.config) {
+          if (scope.config.responsive && !scope.config.onCreate) {
+            scope.config.onCreate = function () {
+              angular.element(element).trigger('updateSizes');
+              if (scope.onCreate) {
+                scope.onCreate(this);
+              }
+            };
+          }
+          angular.element(element).carouFredSel(scope.config);
+
+          if (scope.config.buttonNextId) {
+            angular.element('#' + scope.config.buttonNextId).click(function () {
+              angular.element(element).trigger('next');
+            });
+          }
+          if (scope.config.buttonPrevId) {
+            angular.element('#' + scope.config.buttonPrevId).click(function () {
+              angular.element(element).trigger('prev');
+            });
+          }
+        } else {
+          angular.element(element).carouFredSel();
+        }
+      }
+      angular.element(element).trigger('updateSizes');
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=hueCarousel',
+      initialized: '=',
+      onCreate: '='
+    }
+  };
+});
 
 /**
  * Author: Jason Farrell
@@ -52211,4 +52208,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-2f89c04ec8.js.map
+//# sourceMappingURL=../maps/scripts/app-d7657e6666.js.map
