@@ -442,17 +442,12 @@ angular.module('app').controller('attributeBrandingController',
     };
   }]);
 
-angular.module('app').controller('yearAutoController',
+angular.module('app').controller('modelAutoController',
   ['$scope', function (scope) {
     // Behaviour
     scope.topColorsExpanded = false;
     scope.toggleTopColorsExpandedMode = function () {
       scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.topFamiliesExpanded = false;
-    scope.toggleTopFamiliesExpandedMode = function () {
-      scope.topFamiliesExpanded = !scope.topFamiliesExpanded;
     };
 
     scope.colorFrequencyExpanded = false;
@@ -466,12 +461,17 @@ angular.module('app').controller('yearAutoController',
     };
   }]);
 
-angular.module('app').controller('modelAutoController',
+angular.module('app').controller('yearAutoController',
   ['$scope', function (scope) {
     // Behaviour
     scope.topColorsExpanded = false;
     scope.toggleTopColorsExpandedMode = function () {
       scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.topFamiliesExpanded = false;
+    scope.toggleTopFamiliesExpandedMode = function () {
+      scope.topFamiliesExpanded = !scope.topFamiliesExpanded;
     };
 
     scope.colorFrequencyExpanded = false;
@@ -12994,12 +12994,22 @@ angular
         var widthContainer = window.innerWidth - 200;
         var widthOneElement = $('.checkbox-accordion-item').width();
         var integerElementsOnRow = Math.floor(widthContainer / widthOneElement);
-        var allElements = vm.paintColorNames.length;
-        var elementsOnRow = allElements - (Math.floor(allElements / integerElementsOnRow) * integerElementsOnRow);
-        var emptyElements = integerElementsOnRow - elementsOnRow;
-        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
 
-        for(var i = 0; i < emptyElements; i++) {
+        var paintColorNamesElements = vm.paintColorNames.length;
+        var paintColorNamesOnRow = paintColorNamesElements - (Math.floor(paintColorNamesElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyPainColorsElements = integerElementsOnRow - paintColorNamesOnRow;
+
+        var colorAssociationNamesElements = vm.colorAssociationNames.length;
+        var colorAssociationOnRow = colorAssociationNamesElements - (Math.floor(colorAssociationNamesElements / integerElementsOnRow) * integerElementsOnRow);
+        var emptyColorAssociationsElements = integerElementsOnRow - colorAssociationOnRow;
+
+        var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
+        
+        for(var i = 0; i < emptyPainColorsElements; i++) {
+          $('.color-index-accordion-item__last-line').append(emptyBlock);
+        }
+
+        for(var i = 0; i < emptyColorAssociationsElements; i++) {
           $('.color-index-accordion-item__last-line').append(emptyBlock);
         }
 
@@ -14780,6 +14790,10 @@ angular.module('app')
       return result;
     };
   });
+
+angular.module('app').service('colorRequest', function() {
+     
+});
 
 angular.module('app')
   .factory('categoryValues', function () {
@@ -52197,4 +52211,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-ef4822dcbb.js.map
+//# sourceMappingURL=../maps/scripts/app-2112237781.js.map
