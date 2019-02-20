@@ -7,9 +7,7 @@ angular
 
 			vm.paintColorNames = searchColor.getPaintColorNames();
       vm.colorAssociationNames = searchColor.getColorAssociationNames();
-
       vm.searchColorName = [];
-
 			$scope.pageSize = 80;
 
       // if (colorRgb !== undefined) {
@@ -87,13 +85,13 @@ angular
                 .timeInterval(20)
                 .words(word_entries)
                 .fontSize(function (d) {
-                  return xScale(Number(d.value)); 
+                  return xScale(Number(d.value));
                 })
                 .text(function (d) {
-                  return d.key; 
+                  return d.key;
                 })
                 .rotate(function () {
-                  return ~~(Math.random() * 2) * 90; 
+                  return ~~(Math.random() * 2) * 90;
                 })
                 .font('Impact')
                 .on('end', draw)
@@ -124,7 +122,7 @@ angular
                       return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
                     })
                     .text(function (d) {
-                      return d.key; 
+                      return d.key;
                     });
         }
         d3.layout.cloud().stop();
@@ -162,10 +160,10 @@ angular
         for(var i = 0; i < emptyColorAssociationsElements; i++) {
           $('.color-index-accordion-item__last-line').append(emptyBlock);
         }
-        
+
         $(document).click(function(event) {
           if ($(event.target).closest(".selectPerPage").length) return;
-          $('.selectPerPage__list').removeClass('show');          
+          $('.selectPerPage__list').removeClass('show');
           event.stopPropagation();
         });
       });
