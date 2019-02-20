@@ -24,6 +24,7 @@ angular
 			vm.colorAssociationNameWord = '';
 
 			$scope.changeColor = function () {
+				$scope.colorPickerGray = 100;
 				color_picker.onmousedown = select_color;
 			};
 
