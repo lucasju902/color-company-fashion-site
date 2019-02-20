@@ -12,7 +12,7 @@ angular
       });
 
       $(document).ready(function(){
-
+				sizeParamsOfColorPicker();
         $("#slideshow > div:gt(0)").hide();
 
         var interval = setInterval(slide, 3000);
@@ -66,7 +66,6 @@ angular
               currentSlide.fadeOut(it_before).removeClass('current');
               Slide.fadeIn(it).addClass('current');
           }
-          sizeParamsOfColorPicker();
       });
 
 //                                                                                                          REPORTS ON LANDING
@@ -133,17 +132,25 @@ angular
             palette.draw();
         }
 
+			console.log('$(.color-picker-landing_responsive', $('.color-picker-landing_responsive'));
+			example = document.getElementById('color-picker-responsive-block');
+			example.addEventListener('onresize', function(){
+				console.log('color-picker-landing_responsive');
+			});
 			$(window).resize(function(){
 				sizeParamsOfColorPicker();
-				styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
-				styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
-				styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
-				marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
-				widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
-				heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
-				// console.log('heigthHeader', heightHeader)
-				// console.log('widthTitle', widthTitle)
-				// console.log('marginLeft', marginLeft)
+				// styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
+				// styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
+				// styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+				// styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
+				//
+				// marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
+				// widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
+				// heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+				// pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+				console.log('heigthHeader', heightHeader)
+				console.log('widthTitle', widthTitle)
+				console.log('marginLeft', marginLeft)
 			});
 
         //																																			RESPONSIVE COLOR PICKER
@@ -152,15 +159,24 @@ angular
         	  	styleHeader = '',
 					     marginLeft = '',
                widthTitle = '',
-             heightHeader = '';
+             heightHeader = '',
+				    	styleTextCP = '',
+					  	 pageTextCP = '';
 
         function sizeParamsOfColorPicker () {
 					styleParentCP = window.getComputedStyle(document.getElementById('color-picker-responsive-block'));
 					styleTitleCP = window.getComputedStyle(document.getElementById('color-picker-title'));
 					styleHeader = window.getComputedStyle(document.getElementById('landing-header-slider-block'));
+					// styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
+
 					marginLeft = parseInt(styleParentCP.getPropertyValue('margin-left'), 10);
 					widthTitle = parseInt(styleTitleCP.getPropertyValue('width'), 10);
 					heightHeader = parseInt(styleHeader.getPropertyValue('height'), 10);
+					// pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+
+					console.log('heigthHeader', heightHeader)
+					console.log('widthTitle', widthTitle)
+					console.log('marginLeft', marginLeft)
 				}
 
 			function select_color(e) {
@@ -253,6 +269,7 @@ angular
 									var RGB = '',
 									colorName = '';
 									vm.colorAssociationNames = res.data.short_namecontains.map(function (item) {
+										res.data
 										RGB = item.RGB;
 										colorName = item.colorName;
 										return {colorName: colorName, RGB: RGB};

@@ -74,19 +74,23 @@ angular
 				palette = new color_picker_element(center_x, center_y, sx, sy);
 				palette.draw();
 			}
-
+			var pageTextCP = '';
 			function select_color(e) {
 				// console.log('e.pageX', e.pageX);
 				// console.log('e.pageY', e.pageY);
+
+				var styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text'));
+				pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
+				// color-picker-page_text
 				var x = e.pageX - color_picker.offsetLeft - 48,
-					y = e.pageY - color_picker.offsetTop - 550,
+					y = e.pageY - color_picker.offsetTop - pageTextCP - 510,
 					pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
 					// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
 					pixelColor = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
 				color_id.style.backgroundColor = pixelColor;
-				// console.log('color_picker', color_picker);
-				// console.log('xxx', x, 'yyy', y);
-				// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
+				console.log('pageTextCP', pageTextCP);
+				console.log('xxx', x, 'yyy', y);
+				console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
 
 				$scope.pixel = pixel;
 				$scope.colorRGB_R = pixel[0];
