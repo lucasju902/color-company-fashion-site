@@ -2,7 +2,7 @@ angular
 	.module('app')
 	.component('colorPickerComponent', {
 		templateUrl: 'app/components/color-picker/color-picker.tmpl.html',
-		controller: function ($location, $scope, $http, appConfig, anchorSmoothScroll, searchColor, modalService) {
+		controller: function ($location, $scope, $http, appConfig, anchorSmoothScroll, searchColor, modalService, colorRequest) {
 			var vm = this;
 
 			vm.gotoElement = function (eID) {
@@ -118,21 +118,17 @@ angular
 
 				var RGB = {red: $scope.colorRGB_R, green: $scope.colorRGB_G, blue: $scope.colorRGB_B};
 
-				$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
-					.then(function (res) {
-						if (res.data.rgb) {
-							vm.paintColorNamesByPicker = res.data.rgb.map(function (item) {
-								RGB = item.RGB;
-								colorName = item.colorName;
-								return {colorName: colorName, RGB: RGB};
-							});
-							vm.validData = res.data;
-							vm.numOfcolorAssociationNames = res.data.short_namecontains.length;
-							vm.numOfpaintColorNames = vm.paintColorNamesByPicker.length;
+				colorRequest.getRgb(RGB)
+					.then(function(data){
+						if (data.rgb) {
+							vm.paintColorNamesByPicker = data.short_name;
+							vm.validData = data;
+							vm.numOfcolorAssociationNames = data.short_namecontains.length;
+							vm.numOfpaintColorNames = data.short_name.length;
 						} else {
 							modalService.showModal(5);
 						}
-					});
+				});
 			};
 			// RGB to HSL																																																		RGB_TO_HSL
 			function rgb2hsl(rgbArr) {
@@ -175,13 +171,7 @@ angular
 
 			this.searchByShortNames = function () {
 				if(vm.validData && vm.validData.short_namecontains.length > 0) {
-					var RGB = '',
-						colorName = '';
-						vm.colorAssociationNamesByPicker = vm.validData.short_namecontains.map(function (item) {
-							RGB = item.RGB;
-							colorName = item.colorName;
-							return {colorName: colorName, RGB: RGB};
-						});
+						vm.colorAssociationNamesByPicker = vm.validData.short_namecontains;
 						searchColor.set(vm.paintColorNamesByPicker, vm.colorAssociationNamesByPicker);
 						$location.url('/color-index-accordion');
 				}

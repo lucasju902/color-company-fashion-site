@@ -2,7 +2,7 @@ angular
   .module('app')
   .component('landingPageComponent', {
     templateUrl: 'app/components/landing-page/landing-page.tmpl.html',
-    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location, modalService) {
+    controller: function (authService, $scope, $state, localStorageService, $http, searchColor, dataValidate, appConfig, $window, $location, modalService,  colorRequest) {
     var vm =this;
 
       $(document).ready(function () {
@@ -259,31 +259,20 @@ angular
 					// var str = [];
 					var RGB = {'red': $scope.colorRGB_R, 'green': $scope.colorRGB_G, 'blue': $scope.colorRGB_B};
 
-					$http.get(appConfig.dashboardServiceUrl + 'api_colors/search_rgb', {params: RGB})
-						.then(function (res) {
-							if (res.data.rgb) {
-								vm.paintColorNames = res.data.rgb.map(function (item) {
-									RGB = item.RGB;
-									colorName = item.colorName;
-									return {colorName: colorName, RGB: RGB};
-								});
-								vm.validData = res.data;
-								if (res && res.data.short_namecontains.length > 0) {
-									var RGB = '',
-									colorName = '';
-									vm.colorAssociationNames = res.data.short_namecontains.map(function (item) {
-										res.data
-										RGB = item.RGB;
-										colorName = item.colorName;
-										return {colorName: colorName, RGB: RGB};
-									});
-									searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
-									$location.url('/color-index-accordion');
-								}
-							} else {
-                                modalService.showModal(5);
-                            }
-						});
+                    colorRequest.getRgb(RGB)
+					.then(function(data){
+                        if (data.rgb) {
+                            vm.paintColorNames = data.short_name;
+                            vm.validData = data;
+                            	if (data && data.short_namecontains.length > 0) {
+                            		vm.colorAssociationNames = data.short_namecontains;
+                            		searchColor.set(vm.paintColorNames, vm.colorAssociationNames);
+                            		$location.url('/color-index-accordion');
+                            	}
+                        } else {
+                            modalService.showModal(5);
+                        }
+				    });
         };
     }
   });
