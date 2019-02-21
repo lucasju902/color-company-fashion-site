@@ -35,7 +35,7 @@
                             <!--{{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>-->
                             {{$ctrl.colorAssociationNames.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
-                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames">
+                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames.length !== 0">
                             <!--<div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">-->
                                 <!--<div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>-->
                             <!--</div>-->
@@ -75,12 +75,12 @@
                                                 <span class="checkbox-accordion-tooltip_text">{{color.colorName}}</span>
                                                 <div class="checkbox-accordion-tooltip_triangle-with-shadow"></div>
                                             </div>
-                                            <span class="checkbox-accordion_small_text">{{color.RGB}}</span>
+                                            <!--<span class="checkbox-accordion_small_text">{{color.RGB}}</span>-->
                                         </div>
                                     </div>
                                 </div>
                         </div>
-                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined">Not found</div>
+                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined || $ctrl.colorAssociationNames.length == 0">Not found</div>
                     </div>
                     <div uib-accordion-group class="color-index-accordion-title">
                         <uib-accordion-heading>
@@ -95,7 +95,7 @@
                                         <label class="title-checkbox-accordion"></label>
                                         <input type="checkbox" class="option-input checkbox"
                                                style="background: rgb({{color.RGB}});"/>
-                                        <span class="checkbox-accordion_text">{{color.colorName}}</span>
+                                        <span class="checkbox-accordion_text checkbox-accordion_text__paint_name">{{color.colorName}}</span>
                                         <div class="checkbox-accordion-tooltip">
                                                 <span class="checkbox-accordion-tooltip_text">{{color.colorName}}</span>
                                                 <div class="checkbox-accordion-tooltip_triangle-with-shadow"></div>
@@ -136,10 +136,10 @@
                         <uib-accordion-heading>
                             COLOR WORD CLOUD <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
-                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames">
+                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames.length !== 0">
                             <div id="chart"></div>
                         </div>
-                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined">Not found</div>
+                        <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames == undefined || $ctrl.colorAssociationNames.length == 0">Not found</div>
                     </div>
                 </uib-accordion>
             <div class="container">

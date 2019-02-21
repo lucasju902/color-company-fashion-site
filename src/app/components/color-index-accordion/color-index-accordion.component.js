@@ -7,6 +7,7 @@ angular
 
 			vm.paintColorNames = searchColor.getPaintColorNames();
       vm.colorAssociationNames = searchColor.getColorAssociationNames();
+			console.log('vm.colorAssociationNames', vm.colorAssociationNames.length);
       vm.searchColorName = [];
 			$scope.pageSize = 80;
 
@@ -14,19 +15,21 @@ angular
       //
       //   var similarSaturateColors = [];
       //   var similarDarkenColors = [];
-      //
+      //   var similarSaturateColors = [];
+			//
       //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
-      //     similarSaturateColors.push(chroma(colorRgb).saturate(0.7 * i).hex());
-      //     similarDarkenColors.push(chroma(colorRgb).darken(0.05 * i).hex());
+      //     similarSaturateColors.push(chroma(200, 50, 10).saturate(0.1 * i).rgb());
+      //     similarDarkenColors.push(chroma(200, 50, 10).darken(0.01 * i).rgb());
       //   }
-      //   // let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
-      //   // notDuplicateColors(similarSaturateColors);
-      //   // console.log('colors(similarDarkenColors)', notDuplicateColors(similarSaturateColors));
-      //
-      //   vm.similarSaturateColors = similarSaturateColors;
-      //   // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
-      //   vm.similarDarkenColors = similarDarkenColors;
-      //   // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
+      //   let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
+      //   notDuplicateColors(similarSaturateColors);
+      //   console.log('colors(similarDarkenColors)', notDuplicateColors(similarDarkenColors));
+      //   console.log('colors(similarSaturateColors)', notDuplicateColors(similarSaturateColors));
+
+        // vm.similarSaturateColors = similarSaturateColors;
+        // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
+        // vm.similarDarkenColors = similarDarkenColors;
+        // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
       // }
 
       var colorNamesItems = [],
@@ -152,7 +155,7 @@ angular
         var emptyColorAssociationsElements = integerElementsOnRow - colorAssociationOnRow;
 
         var emptyBlock = '<div style="width:'+ widthOneElement +'px"'+'</div>';
-        
+
         for(var i = 0; i < emptyPainColorsElements; i++) {
           $('.color-index-accordion-item__last-line').append(emptyBlock);
         }
