@@ -10,14 +10,6 @@ angular
 				anchorSmoothScroll.scrollTo(eID);
 				$location.hash('');
 			};
-			// vm.paintColorNamesByPicker = [];
-			// vm.colorAssociationNamesByPicker = [];
-
-			// var color_picker = document.getElementById('color_picker'),
-			// 				color_id = document.getElementById('color_id');
-			// $scope.colorPickerGray = 100;
-			// $scope.colorPickerOpacity = 1;
-			// document.getElementById('value_span').innerHTML = '100%';
 
 			vm.numOfpaintColorNames = 0;
 			vm.numOfcolorAssociationNames = 0;

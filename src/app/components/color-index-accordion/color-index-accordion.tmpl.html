@@ -32,16 +32,9 @@
                 <uib-accordion close-others="oneAtATime">
                     <div uib-accordion-group class="color-index-accordion-title">
                         <uib-accordion-heading>
-                            <!--{{$ctrl.similarDarkenColors.length + $ctrl.similarDarkenColors.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>-->
                             {{$ctrl.colorAssociationNames.length}} COLOR ASSOCIATION NAMES <i class="pull-right glyphicon"></i>
                         </uib-accordion-heading>
                         <div class="color-index-accordion-item" ng-if="$ctrl.colorAssociationNames">
-                            <!--<div ng-repeat="similarColor2 in $ctrl.similarDarkenColors">-->
-                                <!--<div style="width: 40px; height: 40px; background: {{similarColor2}}"></div>-->
-                            <!--</div>-->
-                            <!--<div ng-repeat="similarColor1 in $ctrl.similarSaturateColors">-->
-                                <!--<div style="width: 40px; height: 40px; background: {{similarColor1}}"></div>-->
-                            <!--</div>-->
                             <ul class="selectPerPage">
                                 <button ng-click="showSelect()" class="selectPerPage__btn">{{pageSize}}</button>
                                 <ul class="selectPerPage__list">
@@ -116,15 +109,6 @@
                             Not found
                         </div>
                     </div>
-                    <!--<div uib-accordion-group class="color-index-accordion-title">-->
-                    <!--<uib-accordion-heading>-->
-                    <!--18 RESEARCH COLOR NAMES <i class="pull-right glyphicon"></i>-->
-                    <!--</uib-accordion-heading>-->
-                    <!--<div class="color-index-accordion-item">-->
-                    <!--<img class="img-accordion img-responsive img50" alt="Image" src="../../../assets/images/accordion-color-music.png">-->
-                    <!--</div>-->
-                    <!--</div>-->
-
                     <div ng-if="$ctrl.searchColorName === undefined" uib-accordion-group class="color-index-accordion-title">
                         <uib-accordion-heading>
                             COLOR MOSAIC FOR (COLOR NAME) <i class="pull-right glyphicon"></i>
