@@ -3,7 +3,6 @@ angular.module('app').directive('hueDbColorPicker', function () {
 		var vm = this;
 		var color_picker = document.getElementById('color_picker'),
 			color_id = document.getElementById('color_id');
-		console.log('scope', $scope);
 		$scope.colorPickerGray = 100;
 		$scope.colorPickerOpacity = 1;
 		document.getElementById('value_span').innerHTML = '100%';
@@ -13,6 +12,7 @@ angular.module('app').directive('hueDbColorPicker', function () {
 		vm.colorAssociationNameWord = '';
 
 		$scope.changeColor = function () {
+			$scope.colorPickerGray = 100;
 			color_picker.onmousedown = select_color;
 		};
 
