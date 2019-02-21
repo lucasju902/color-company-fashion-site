@@ -11,27 +11,6 @@ angular
       vm.searchColorName = [];
 			$scope.pageSize = 80;
 
-      // if (colorRgb !== undefined) {
-      //
-      //   var similarSaturateColors = [];
-      //   var similarDarkenColors = [];
-      //   var similarSaturateColors = [];
-			//
-      //   for (var i = 0; similarSaturateColors.length <= 12; ++i) {
-      //     similarSaturateColors.push(chroma(200, 50, 10).saturate(0.1 * i).rgb());
-      //     similarDarkenColors.push(chroma(200, 50, 10).darken(0.01 * i).rgb());
-      //   }
-      //   let notDuplicateColors = similarSaturateColors => similarSaturateColors.filter((v, i) => similarSaturateColors.indexOf(v) === i);
-      //   notDuplicateColors(similarSaturateColors);
-      //   console.log('colors(similarDarkenColors)', notDuplicateColors(similarDarkenColors));
-      //   console.log('colors(similarSaturateColors)', notDuplicateColors(similarSaturateColors));
-
-        // vm.similarSaturateColors = similarSaturateColors;
-        // vm.similarSaturateColors = notDuplicateColors(similarSaturateColors);
-        // vm.similarDarkenColors = similarDarkenColors;
-        // vm.similarDarkenColors = notDuplicateColors(similarDarkenColors.reverse());
-      // }
-
       var colorNamesItems = [],
         		colorRgbItems = [];
 
@@ -105,11 +84,8 @@ angular
           d3.select(svg_location).append('svg')
                     .attr('width', width)
                     .attr('height', height)
-						        // .attr("preserveAspectRatio", "xMidYMid meet")
-						        // .attr("viewBox", "0 0 1000 450")
                     .append('g')
                     .attr('transform', 'translate(' + [widthOf84per/2, 225] + ')')
-                    // .attr('transform', 'scale(2)')
                     .selectAll('text')
                     .data(words)
                     .enter().append('text')
