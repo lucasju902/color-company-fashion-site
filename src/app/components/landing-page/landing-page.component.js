@@ -82,6 +82,7 @@ angular
 			  document.getElementById('value_span').innerHTML = '100%';
 
         $scope.changeColorLanding = function () {
+            $scope.colorPickerGray = 100;
             color_picker_landing.onmousedown = select_color;
         };
         color_picker_landing_add();
@@ -219,9 +220,8 @@ angular
 				var r1 = rgbArr[0] / 255;
 				var g1 = rgbArr[1] / 255;
 				var b1 = rgbArr[2] / 255;
-
 				var maxColor = Math.max(r1, g1, b1);
-				var minColor = Math.min(r1, g1, b1);
+                var minColor = Math.min(r1, g1, b1);
 				// Calculate L:
 				var L = (maxColor + minColor) / 2;
 				var S = 0;
