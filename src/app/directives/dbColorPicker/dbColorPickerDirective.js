@@ -13,7 +13,6 @@ angular.module('app').directive('hueDbColorPicker', function () {
 
 		$scope.changeColor = function () {
 			$scope.colorPickerGray = 100;
-			console.log('$scope.color_picker_y', $scope.color_picker_y);
 			color_picker.onmousedown = select_color;
 		};
 
