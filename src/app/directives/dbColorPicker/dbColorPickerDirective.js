@@ -71,7 +71,6 @@ angular.module('app').directive('hueDbColorPicker', function () {
 		function select_color(e) {
 			color_picker_y = $('#color_picker').offset().top;
 			color_picker_x = $('#color_picker').offset().left;
-			// console.log('$scope.color_picker_y1', $scope.color_picker_y1);
 			var x = e.pageX - color_picker_x,
 				y = e.pageY - color_picker_y,
 				pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
