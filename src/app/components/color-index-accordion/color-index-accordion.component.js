@@ -7,7 +7,7 @@ angular
 
 			vm.paintColorNames = searchColor.getPaintColorNames();
       vm.colorAssociationNames = searchColor.getColorAssociationNames();
-			console.log('vm.colorAssociationNames', vm.colorAssociationNames.length);
+
       vm.searchColorName = [];
 			$scope.pageSize = 80;
 
