@@ -8,7 +8,8 @@ angular
       $(document).ready(function () {
         $("nav").find("li").on("click", "a", function () {
         });
-      });
+				$scope.color_picker_y = $('#color_picker').offset().top;
+			});
 
       $(document).ready(function(){
 
@@ -119,7 +120,7 @@ angular
 					// console.log('widthTitle', widthTitle)
                     // console.log('marginLeft', marginLeft)
                     $scope.color_picker_x = marginLeft + widthTitle;
-                    $scope.color_picker_y = heightHeader + 3027;
+                    // $scope.color_picker_y = heightHeader + 3027;
 				// }
 
         this.colorWordSearchLanding = function () {
