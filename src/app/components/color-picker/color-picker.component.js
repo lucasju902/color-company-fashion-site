@@ -13,12 +13,6 @@ angular
 			vm.numOfpaintColorNames = 0;
 			vm.numOfcolorAssociationNames = 0;
 			vm.colorAssociationNameWord = '';
-			
-			var styleTextCP = window.getComputedStyle(document.getElementById('color-picker-page_text')),
-				pageTextCP = '';
-			pageTextCP = parseInt(styleTextCP.getPropertyValue('height'), 10);
-			$scope.color_picker_x = 48;
-			$scope.color_picker_y = 510 + pageTextCP;
 
 			this.searchByRGB = function () {
 				var RGB = {red: $scope.colorRGB_R, green: $scope.colorRGB_G, blue: $scope.colorRGB_B};
