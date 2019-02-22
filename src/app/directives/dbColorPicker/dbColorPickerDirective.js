@@ -64,16 +64,19 @@ angular.module('app').directive('hueDbColorPicker', function () {
 			palette.draw();
 		}
 
+		var color_picker_y = 0;
+		var color_picker_x = 0;
+
 		function select_color(e) {
-			var x = e.pageX - color_picker.offsetLeft - $scope.color_picker_x,
-				y = e.pageY - color_picker.offsetTop - $scope.color_picker_y,
+			color_picker_y = $('#color_picker').offset().top;
+			color_picker_x = $('#color_picker').offset().left;
+			var x = e.pageX - color_picker_x,
+				y = e.pageY - color_picker_y,
 				pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
 				// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
 				pixelColor = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
-			color_id.style.backgroundColor = pixelColor;
-			// console.log('xxx', x, 'yyy', y);
-			// console.log('color_picker.offsetLeft', color_picker.offsetLeft, 'color_picker.offsetTop', color_picker.offsetTop);
 
+			color_id.style.backgroundColor = pixelColor;
 			$scope.pixel = pixel;
 			$scope.colorRGB_R = pixel[0];
 			$scope.colorRGB_G = pixel[1];
