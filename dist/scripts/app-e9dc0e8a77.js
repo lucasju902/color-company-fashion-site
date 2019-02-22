@@ -2937,6175 +2937,6 @@ angular.module('app').controller('autoController',
   ]);
 }());
 
-angular.module('app').directive('hueTrialExpiredMessage', function () {
-  function link(scope, element, attrs) {
-    scope.tryMoreClick = function () {
-      scope.hideMessage();
-    };
-
-    scope.signUpClick = function () {
-      window.location = "http://www.hue-data.com";
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="trial-expired-message"><div class="message-box"><p>Trial time has expired</p><div class="button-container"><button ng-click="tryMoreClick()" ng-if="!siteLocked">Try for one more hour</button><button ng-click="signUpClick()">Sign Up</button></div></div></div>',
-    link: link,
-    scope: {
-      hideMessage: '&',
-      siteLocked: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueSiteHeader',
-  ['$location', '$interval', 'authService', 'trialService',
-    function (location, interval, authService, trialService) {
-      function link(scope, element, attrs) {
-        // scope.activeControl = route.current.controller == 'homeController' ? 'search' : null;
-        scope.activeControl = 'search';
-        scope.showTrialTime = false;
-        scope.daysLeft = null;
-        scope.expirationTimer = null;
-
-        var expirationTimerFunction = function () {
-          if (trialService.isSiteLocked()) {
-            scope.daysLeft = 0;
-            interval.cancel(scope.expirationTimer);
-            return;
-          }
-
-          var t = trialService.isTrialExpired() ? trialService.getTimeToLock() : trialService.getRemainingTime();
-          scope.daysLeft = Math.ceil(t / 86400000);
-        };
-
-        scope.toggleControl = function (cname) {
-          scope.activeControl = scope.activeControl == cname ? null : cname;
-        };
-        scope.isControlActive = function (cname) {
-          return scope.activeControl == cname;
-        };
-        scope.turnOffControl = function () {
-          scope.activeControl = null;
-        };
-
-        scope.currentUser = null;
-        scope.isUserLoggedIn = function () {
-          if (scope.currentUser)
-            return true;
-          return false;
-        };
-
-        scope.logOff = function () {
-          authService.logOff(function (success) {
-            if (success)
-              location.url('login');
-          });
-        };
-
-        scope.$watch(function () {
-          return authService.currentUser;
-        }, function (newValue, oldValue) {
-          scope.currentUser = newValue;
-
-          if (newValue) {
-            if (scope.expirationTimer)
-              interval.cancel(scope.expirationTimer);
-
-            if (newValue.is_member)
-              scope.showTrialTime = false;
-            else {
-              expirationTimerFunction();
-              scope.expirationTimer = interval(expirationTimerFunction, 5000);
-              scope.showTrialTime = true;
-            }
-          }
-        }, true);
-
-        scope.$on('searchMenuOpenTab', function (event, tabName) {
-          scope.activeControl = 'search';
-        });
-      }
-
-      return {
-        restrict: 'E',
-        templateUrl: 'app/directives/siteHeader/siteHeaderView.html',
-        link: link
-      };
-    }]);
-
-angular.module('app').directive('hueSearchMenuYearSelector', function () {
-  function link(scope, element, attrs) {
-    scope.keyPressHandler = function (event, numberIndex) {
-      var inputs = $('input', element);
-      var yearArr = [$(inputs[0]).val(), $(inputs[1]).val(), $(inputs[2]).val(), $(inputs[3]).val()];
-      if (_.every(yearArr, function (item) {
-          return item != null && item.length == 1;
-        })) {
-        var year = parseInt(yearArr.join(''));
-        var yearItem = _.find(scope.years, function (item) {
-          return item.id == year;
-        });
-
-        if (yearItem)
-          scope.selectedYear = yearItem;
-      }
-    }
-
-    var keyDownHandler = function (event) {
-      var kc = event.keyCode;
-
-      if (kc > 47 && kc < 58) {
-        var e = $(event.target);
-        e.val(String.fromCharCode(event.keyCode));
-        e.next('input').focus();
-      } else if (kc == 37) //left
-        $(event.target).prev('input').focus();
-      else if (kc == 39) //right
-        $(event.target).next('input').focus();
-      else if (kc == 13) //allow Enter
-        return true;
-
-      return false;
-    };
-
-    $('input', element).keydown(keyDownHandler);
-
-    scope.$on('destroy', function () {
-      $('input', element).off("keydown", keyDownHandler);
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<span class="year-selector">Select year between 2000 - Present: <input type="text" ng-keypress="keyPressHandler()"/><input type="text" ng-keypress="keyPressHandler()"/><input type="text" ng-keypress="keyPressHandler()"/><input type="text" ng-keypress="keyPressHandler()"/><span>',
-    link: link,
-    scope: {
-      years: '=',
-      selectedYear: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueSearchMenuTrending', function () {
-  function link(scope, element, attrs) {
-    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    var date = new Date();
-    scope.date = months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/siteHeader/searchMenuTrendingView.html',
-    link: link,
-    scope: {}
-  };
-});
-
-angular.module('app').directive('hueSearchMenuSelectList', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    var listElement = $('.selector-list-container ul', element);
-    var elementClick = function (event) {
-      if (!scope.listDisabled)
-        timeout(function () {
-          if ($(event.target).index()) {
-            var newId = scope.listData.items[$(event.target).index() - 1].id;
-            scope.listData.selectedId = newId == scope.listData.selectedId ? null : newId;
-          } else
-            scope.listData.selectedId = -1;
-
-          scope.onItemSelected();
-        }, 0);
-    };
-
-    scope.$watch('listData.selectedId', function (newValue, oldValue) {
-      if (oldValue == -1)
-        listElement.children().first().removeClass('active');
-      else if (oldValue != null)
-        listElement.children().eq(_.findIndex(scope.listData.items, function (item) {
-            return item.id == oldValue;
-          }) + 1).removeClass('active');
-
-      if (newValue == -1)
-        listElement.children().first().addClass('active');
-      else if (newValue != null)
-        listElement.children().eq(_.findIndex(scope.listData.items, function (item) {
-            return item.id == newValue;
-          }) + 1).addClass('active');
-    });
-
-    scope.$watch('listData.items', function (newValue, oldValue) {
-      listElement.empty();
-
-      if (newValue)
-        timeout(function () {
-          var selectAll = $('<li>All</li>');
-          selectAll.click(elementClick);
-          listElement.append(selectAll);
-
-          var count = newValue.length;
-          for (var i = 0; i < count; i++) {
-            var e = $('<li></li>');
-            e.text(newValue[i].title);
-            e.click(elementClick);
-            listElement.append(e);
-          }
-
-          var sid = scope.listData.selectedId;
-          if (sid == -1)
-            listElement.children().first().addClass('active');
-          else if (sid != null)
-            listElement.children().eq(_.findIndex(scope.listData.items, function (item) {
-                return item.id == sid;
-              }) + 1).addClass('active');
-        }, 0);
-    });
-
-    scope.$on('destroy', function () {
-      listElement.find('li').off('click', elementClick);
-    });
-  }
-
-  return {
-    restrict: 'E',
-    // template: '<div class="selector-container" ng-class="{disabled: listDisabled}"><div class="selector-title" ng-bind="listData.title"></div><div class="selector-list-container" hue-mcustomscrollbar><ul></ul></div></div>',
-    template: '<div class="selector-container" ng-class="{disabled: listDisabled}">' +
-    '<div class="selector-title" ng-bind="listData.title"></div>' +
-    '<div class="selector-list-container"><ul></ul></div></div>',
-    link: link,
-    scope: {
-      listData: '=',
-      listDisabled: '=',
-      onItemSelected: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueSearchMenu', ['searchMenuRepository', '$location', 'authService', function (searchMenuRepository, location, authService) {
-  function link(scope, element, attrs) {
-    scope.tabs = [{name: 'season', title: 'Season'}, {name: 'year', title: 'Year'}, {
-      name: 'category',
-      title: 'Category'
-    }, {name: 'region', title: 'Region'}, {name: 'city', title: 'City'}, {
-      name: 'color',
-      title: 'Color'
-    }, {name: 'designer', title: 'Designer'}];
-    scope.letterTabs = ['1-9', 'A-C', 'D-F', 'G-I', 'J-L', 'M-O', 'P-R', 'S-U', 'V-Z'];
-    scope.selectLists = {
-      'season': {title: 'Select a season', items: [], selectedId: null},
-      'year': {title: 'Select a year', items: [], selectedId: null},
-      'category': {title: 'Select a category', items: [], selectedId: null},
-      'city': {title: 'Select a city', items: [], selectedId: null}
-    };
-    scope.secondaryCriteria = [['year', 'category', 'city'], ['season', 'category', 'city'], ['season', 'year', 'city'], ['season', 'year', 'category'], ['season', 'year', 'category'], ['season', 'year', 'category', 'city'], ['season', 'year', 'category', 'city']];
-    scope.selectListsDisabled = false;
-
-    scope.selectedSeason = null;
-    scope.selectedYear = null;
-    scope.selectedCategory = null;
-    scope.selectedRegion = null;
-    scope.selectedCity = null;
-    scope.selectedColor = null;
-    scope.selectedDesigner = null;
-
-    scope.seasonsData = [];
-    scope.yearsData = [];
-    scope.categoriesData = [];
-    scope.regionsData = [];
-    scope.citiesData = [];
-    scope.colorsData = [];
-    scope.designersData = [];
-
-    var resetSelections = function () {
-      scope.selectedSeason = null;
-      scope.selectedYear = null;
-      scope.selectedCategory = null;
-      scope.selectedRegion = null;
-      scope.selectedCity = null;
-      scope.selectedColor = null;
-      scope.selectedDesigner = null;
-
-      _.each(scope.selectLists, function (item) {
-        item.selectedId = null;
-      });
-    };
-
-    var loadListsData = function () {
-      var getParam = function (selectList, selectedObject) {
-        return selectedObject ? selectedObject.id :
-          (selectList ?
-            (scope.selectLists[selectList].selectedId == -1 ?
-              null : scope.selectLists[selectList].selectedId) : null);
-      };
-
-      scope.selectListsDisabled = true;
-      searchMenuRepository.getMain(getParam(null, scope.selectedRegion),
-        getParam(null, scope.selectedDesigner),
-        getParam('category', scope.selectedCategory),
-        getParam('season', scope.selectedSeason),
-        getParam('year', scope.selectedYear),
-        getParam('city', scope.selectedCity), function (data) {
-          var filtersSeason = authService.currentUser.filters.fashion_season_id;
-          var filtersYear = authService.currentUser.filters.fashion_year_id;
-          var filtersCategory = authService.currentUser.filters.fashion_category_id;
-          var filtersCity = authService.currentUser.filters.fashion_city_id;
-
-          // scope.selectLists['season'].items = filtersSeason && filtersSeason.length ? _.filter(data.seasons, function (item) {
-          //   return _.contains(filtersSeason, item.id);
-          // }) : data.seasons;
-          // scope.selectLists['year'].items = filtersYear && filtersYear.length ? _.filter(data.years, function (item) {
-          //   return _.contains(filtersYear, item.id);
-          // }) : data.years;
-          // scope.selectLists['category'].items = filtersCategory && filtersCategory.length ? _.filter(data.categories, function (item) {
-          //   return _.contains(filtersCategory, item.id);
-          // }) : data.categories;
-          // scope.selectLists['city'].items = filtersCity && filtersCity.length ? _.filter(data.cities, function (item) {
-          //   return _.contains(filtersCity, item.id);
-          // }) : data.cities;
-          // scope.selectListsDisabled = false;
-          // scope.selectLists['season'].items = data.seasons;
-          // scope.selectLists['year'].items = data.years;
-          // scope.selectLists['category'].items = data.categories;
-          // scope.selectLists['city'].items = data.cities;
-
-        }).then(function (data) {
-        scope.selectLists['season'].items = data.seasons;
-        scope.selectLists['year'].items = data.years;
-        scope.selectLists['category'].items = data.categories;
-        scope.selectLists['city'].items = data.cities;
-      });
-    };
-
-    scope.secondaryItemSelected = function () {
-      if (_.every(scope.secondaryCriteria[scope.activeTab], function (item) {
-          return scope.selectLists[item].selectedId != null;
-        })) {
-        var params = {};
-        switch (scope.activeTab) {
-          case 0:
-            params.season = scope.selectedSeason.id;
-            break;
-          case 1:
-            params.year = scope.selectedYear.id;
-            break;
-          case 2:
-            params.category = scope.selectedCategory.id;
-            break;
-          case 3:
-            params.region = scope.selectedRegion.id;
-            break;
-          case 4:
-            params.city = scope.selectedCity.id;
-            break;
-          case 5:
-            params.color = scope.selectedColor.id;
-            break;
-          case 6:
-            params.designer = scope.selectedDesigner.id;
-            break;
-        }
-
-        _.each(scope.secondaryCriteria[scope.activeTab], function (item) {
-          if (scope.selectLists[item].selectedId != null && scope.selectLists[item].selectedId != -1)
-            params[item] = scope.selectLists[item].selectedId;
-        });
-
-        scope.doSearch(scope.tabs[scope.activeTab].name, params);
-        resetSelections();
-      } else {
-        loadListsData();
-      }
-    };
-
-    scope.selectSeason = function (item) {
-      scope.selectedSeason = item;
-      scope.setStep(1);
-    };
-
-    scope.selectYear = function (item) {
-      scope.setStep(1);
-    };
-
-    scope.selectCategory = function (item) {
-      scope.selectedCategory = item;
-      scope.setStep(1);
-    };
-
-    scope.selectRegion = function (item) {
-      scope.selectedRegion = item;
-      scope.setStep(1);
-    };
-
-    scope.selectCity = function (item) {
-      scope.selectedCity = item;
-      scope.setStep(1);
-    };
-
-    scope.selectColor = function (item) {
-      scope.selectedColor = item;
-      scope.setStep(1);
-    };
-
-    scope.selectDesigner = function (item) {
-      scope.selectedDesigner = item;
-      scope.setStep(1);
-    };
-
-    var getMainHandler = function (data) {
-      // var data = data.data;
-      var filtersSeason = authService.currentUser.filters.fashion_season_id;
-      var filtersYear = authService.currentUser.filters.fashion_year_id;
-      var filtersCategory = authService.currentUser.filters.fashion_category_id;
-      var filtersRegion = authService.currentUser.filters.fashion_region_id;
-      var filtersCity = authService.currentUser.filters.fashion_city_id;
-      var filtersColor = authService.currentUser.filters.fashion_color_id;
-      var filtersDesigner = authService.currentUser.filters.fashion_designer_id;
-
-      scope.seasonsData = data.seasons;
-      scope.yearsData = data.yearsData;
-      scope.categoriesData = data.categoriesData;
-      scope.regionsData = data.regionsData;
-      scope.citiesData = data.citiesData;
-      scope.colorsData = data.colorsData;
-      scope.designersData = data.designersData;
-      // scope.selectLists['season'].items = filtersSeason && filtersSeason.length ? _.filter(data.seasons, function (item) {
-      //   return _.contains(filtersSeason, item.id);
-      // }) : data.seasons;
-      // scope.yearsData = filtersYear && filtersYear.length ? _.filter(data.years, function (item) {
-      //   return _.contains(filtersYear, item.id);
-      // }) : data.years;
-      // scope.categoriesData = filtersCategory && filtersCategory.length ? _.filter(data.categories, function (item) {
-      //   return _.contains(filtersCategory, item.id);
-      // }) : data.categories;
-      // scope.regionsData = filtersRegion && filtersRegion.length ? _.filter(data.regions, function (item) {
-      //   return _.contains(filtersRegion, item.id);
-      // }) : data.regions;
-      // scope.citiesData = filtersCity && filtersCity.length ? _.filter(data.cities, function (item) {
-      //   return _.contains(filtersCity, item.id);
-      // }) : data.cities;
-      // scope.colorsData = filtersColor && filtersColor.length ? _.filter(data.colors, function (item) {
-      //   return _.contains(filtersColor, item.id);
-      // }) : data.colors;
-      // scope.designersData = filtersDesigner && filtersDesigner.length ? _.filter(data.designers, function (item) {
-      //   return _.contains(filtersDesigner, item.id);
-      // }) : data.designers;
-    };
-
-    //------------------------------------------------------------
-    scope.isTrendingVisible = false;
-    scope.showTrending = function () {
-      scope.isTrendingVisible = true;
-    };
-
-    scope.activeStep = 0;
-    scope.setStep = function (index) {
-      scope.activeStep = index;
-
-      switch (index) {
-        case 0:
-          resetSelections();
-          break;
-        case 1:
-          loadListsData();
-          break;
-      }
-    };
-    scope.isStepActive = function (index) {
-      return scope.activeStep == index;
-    };
-
-    scope.activeTab = null;
-    scope.setTab = function (index) {
-      scope.activeTab = index;
-      scope.isTrendingVisible = true;
-      scope.setStep(0);
-    };
-    scope.isTabActive = function (index) {
-      return scope.activeTab == index;
-    };
-
-    scope.doSearch = function (page, params) {
-      location.url(page).search(params);
-      scope.hide();
-      scope.setTab(scope.activeTab);
-      scope.setStep(0);
-    };
-
-    scope.$on('searchMenuOpenTab', function (event, tabName) {
-      scope.setTab(_.findIndex(scope.tabs, function (item) {
-        return item.name == tabName;
-      }));
-    });
-    scope.$watch(function () {
-      return authService.currentUser;
-    }, function (newValue, oldValue) {
-      if (newValue) {
-        searchMenuRepository.getMain(getMainHandler);
-      }
-    });
-
-    scope.$watch('selectedYear', function (newValue, oldValue) {
-      if (newValue)
-        scope.selectYear(newValue.originalObject);
-    });
-    scope.$watch('selectedColor', function (newValue, oldValue) {
-      if (newValue && newValue.originalObject) //only for autocomplete
-        scope.selectColor(newValue.originalObject);
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/siteHeader/searchMenuView.html',
-    link: link,
-    scope: {
-      show: '=',
-      hide: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueSearchMenuAlphanumericSelector', function (userDataRepository) {
-  function link(scope, element, attrs) {
-    scope.groups = null;
-    scope.activeTab = 0;
-    scope.setTab = function (index) {
-      scope.activeTab = index;
-    };
-    scope.isTabActive = function (index) {
-      return scope.activeTab == index;
-    };
-
-    scope.isItemSelected = function (id) {
-      return scope.multiselectIds.indexOf(id) != -1;
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue) {
-        scope.groups = [];
-        _.each(scope.tabs, function (tab, tabIndex) {
-          var groups = [];
-          var charStart = tab.charCodeAt(0);
-          var charEnd = tab.charCodeAt(2);
-
-          for (var i = charStart; i <= charEnd; i++) { //for letters (subgroups)
-            var items = _.filter(scope.data, function (item) {
-              return item.title.toUpperCase().charCodeAt(0) == i
-            });
-            if (!items.length)
-              continue;
-
-            groups.push({title: String.fromCharCode(i), items: items});
-          }
-
-          scope.groups[tabIndex] = groups;
-        });
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="search-alphanumeric-selector" ng-class="{multiselect: multiselectIds}">'
-    + '<ul class="group-tabs disable-text-selection"><li ng-repeat="item in tabs" ng-class="{active: isTabActive($index)}" ng-click="setTab($index)" ng-bind="item"></li></ul>'
-    + '<div class="items-group" ng-repeat="groupItem in groups" ng-show="isTabActive($index)" ><div class="items-subgroup" ng-repeat="subgroupItem in groupItem"><div class="subgroup-title"><h2 ng-bind="subgroupItem.title"></h2></div>'
-    + '<ul ng-if="multiselectIds"><li ng-class="{active: isItemSelected(item.id)}" ng-repeat="item in subgroupItem.items" ng-click="onItemSelect()(item)" ng-bind="::item.title"></li></ul>'
-    + '<ul ng-if="!multiselectIds"><li ng-repeat="item in subgroupItem.items" ng-click="onItemSelect()(item)" ng-bind="::item.title"></li></ul>'
-    + '</div></div></div>',
-    link: link,
-    scope: {
-      tabs: '=',
-      data: '=',
-      onItemSelect: '&',
-      multiselectIds: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueMainMenu', ['$location', '$timeout', 'authService', 'userDataRepository', 'exportService', function (location, timeout, authService, userDataRepository, exportService) {
-  function link(scope, element, attrs) {
-    scope.activeTab = 0;
-    scope.setTab = function (index) {
-      scope.activeTab = index;
-    };
-    scope.isTabActive = function (index) {
-      return scope.activeTab == index;
-    };
-
-    scope.currentUser = null;
-    scope.isUserDeveloper = function () {
-      if (scope.currentUser && scope.currentUser.profession == 'developer')
-        return true;
-      return false;
-    };
-    scope.goToLogin = function () {
-      scope.hide();
-      location.url('login');
-    };
-
-    scope.projectActionsDisabled = false;
-    scope.projects = [];
-    scope.loadProjects = function () {
-      scope.openTab.expandedProjects = [];
-      scope.saveTab.selectedProjectIndex = null;
-      scope.projectActionsDisabled = true;
-      userDataRepository.project.getItems(scope.currentUser.id, function (data) {
-        scope.projects = data;
-        scope.projectActionsDisabled = false;
-      });
-    };
-    scope.openTab = {
-      images: [],
-      imageActionsDisabled: false,
-      expandedProjects: null,
-      expandProject: function (index) {
-        scope.openTab.expandedProjects[index] = scope.openTab.expandedProjects[index] ? false : true;
-      },
-      isProjectExpanded: function (index) {
-        return scope.openTab.expandedProjects[index] == true;
-      },
-      deleteProject: function (index) {
-        if (!scope.projectActionsDisabled && confirm('Do you want to delete this Project?')) {
-          scope.projectActionsDisabled = true;
-          userDataRepository.project.deleteItem(scope.currentUser.id, scope.projects[index].id, function (data) {
-            scope.loadProjects();
-          });
-        }
-      },
-      goToBoard: function (projectIndex, boardIndex) {
-        scope.hide();
-        location.url(scope.projects[projectIndex].boards[boardIndex].url);
-      },
-      deleteBoard: function (projectIndex, boardIndex) {
-        if (!scope.projectActionsDisabled && confirm('Do you want to delete this Board?')) {
-          scope.projectActionsDisabled = true;
-          userDataRepository.board.deleteItem(scope.currentUser.id, scope.projects[projectIndex].id, scope.projects[projectIndex].boards[boardIndex].id, function (data) {
-            scope.loadProjects();
-          });
-        }
-      },
-      loadImages: function () {
-        userDataRepository.image.getItems(scope.currentUser.id, function (data) {
-          scope.openTab.images = data;
-          scope.openTab.imageActionsDisabled = false;
-        });
-      },
-      openImage: function (index) {
-        //scope.openTab.images[index].id
-      },
-      deleteImage: function (index) {
-        if (!scope.openTab.imageActionsDisabled && confirm('Do you want to delete this Image?')) {
-          scope.openTab.imageActionsDisabled = true;
-          userDataRepository.image.deleteItem(scope.currentUser.id, scope.openTab.images[index].id, function (data) {
-            scope.openTab.loadImages();
-          });
-        }
-      }
-    };
-
-    scope.saveTab = {
-      tabMode: 0, //0 - save board, 1 - create project
-      selectedProjectIndex: null,
-      boardName: null,
-      projectName: null,
-      setTabMode: function (mode) {
-        scope.saveTab.tabMode = mode;
-      },
-      isTabMode: function (mode) {
-        return scope.saveTab.tabMode == mode;
-      },
-      selectProject: function (index) {
-        scope.saveTab.selectedProjectIndex = index;
-      },
-      isProjectSelected: function (index) {
-        return scope.saveTab.selectedProjectIndex == index;
-      },
-      createBoard: function () {
-        if (scope.projectActionsDisabled || !scope.saveTab.boardName || scope.saveTab.selectedProjectIndex == null)
-          return;
-
-        scope.projectActionsDisabled = true;
-        userDataRepository.board.createItem(scope.currentUser.id, scope.projects[scope.saveTab.selectedProjectIndex].id, scope.saveTab.boardName, location.url(), function (data) {
-          scope.saveTab.boardName = null;
-          scope.loadProjects();
-          alert('Board has been saved successfully!');
-        });
-      },
-      createProject: function () {
-        if (scope.projectActionsDisabled || !scope.saveTab.projectName)
-          return;
-
-        scope.projectActionsDisabled = true;
-        userDataRepository.project.createItem(scope.currentUser.id, scope.saveTab.projectName, function (data) {
-          scope.saveTab.projectName = null;
-          scope.loadProjects();
-          alert('Project has been saved successfully!');
-        });
-      }
-    };
-
-    scope.userProfileTab = {
-      mode: 0,
-      actionsDisabled: false,
-      fullName: null,
-      company: null,
-      profession: null,
-      position: null,
-      password: null,
-      passwordConfirmation: null,
-      isMode: function (mode) {
-        return scope.userProfileTab.mode == mode;
-      },
-      setMode: function (mode) {
-        scope.userProfileTab.mode = mode;
-      },
-      loadData: function (user) {
-        scope.userProfileTab.fullName = scope.currentUser.full_name;
-        scope.userProfileTab.company = scope.currentUser.company;
-        scope.userProfileTab.profession = scope.currentUser.profession;
-        scope.userProfileTab.position = scope.currentUser.position;
-      },
-      saveData: function () {
-        if (scope.userProfileTab.actionsDisabled)
-          return;
-
-        if (scope.userProfileTab.mode == 0) {
-          scope.userProfileTab.actionsDisabled = true;
-          authService.currentUser.full_name = scope.userProfileTab.fullName;
-          authService.currentUser.company = scope.userProfileTab.company;
-          authService.currentUser.profession = scope.userProfileTab.profession;
-          authService.currentUser.position = scope.userProfileTab.position;
-          authService.updateUser(function (data) {
-            scope.userProfileTab.loadData();
-            alert("User profile has been updated.");
-            scope.userProfileTab.actionsDisabled = false;
-          });
-        } else {
-          if (scope.userProfileTab.password == null || scope.userProfileTab.password.length == 0) {
-            alert("Password can not be empty.");
-            return;
-          }
-          if (scope.userProfileTab.password.length < 6) {
-            alert("Password must be 6 symbols or longer.");
-            return;
-          }
-          if (scope.userProfileTab.password != scope.userProfileTab.passwordConfirmation) {
-            alert("Passwords do not match.");
-            return;
-          }
-
-          scope.userProfileTab.actionsDisabled = true;
-          authService.updatePassword(scope.userProfileTab.password, function (data) {
-            scope.userProfileTab.loadData();
-            alert("User password has been changed.");
-            scope.userProfileTab.password = null;
-            scope.userProfileTab.passwordConfirmation = null;
-            scope.userProfileTab.actionsDisabled = false;
-          });
-        }
-      }
-    };
-
-    scope.saveAsJpg = function () {
-      scope.hide();
-      timeout(function () {
-        exportService.exportJpg();
-      }, 250);
-    };
-    scope.saveAsPdf = function () {
-      scope.hide();
-      timeout(function () {
-        exportService.exportPdf();
-      }, 250);
-    };
-
-    scope.$watch(function () {
-      return authService.currentUser;
-    }, function (newValue, oldValue) {
-      scope.currentUser = newValue;
-      if (newValue) {
-        scope.loadProjects();
-        scope.openTab.loadImages();
-        scope.userProfileTab.loadData();
-      }
-    }, true);
-
-    scope.$on('mainMenuReloadSavedImages', function (event) {
-      scope.openTab.loadImages();
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/siteHeader/mainMenuView.html',
-    link: link,
-    scope: {
-      show: '=',
-      hide: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueProductsMenu', function (authService, mainMenuRepository) {
-  function link(scope, element, attrs) {
-    scope.data = [];
-    scope.logoClick = function (item) {
-      window.location = authService.token ? (item.url + '#/?token=' + authService.token) : item.url;
-    };
-
-    // mainMenuRepository.getHueProducts(function (data) {
-    //   scope.data = data;
-    // });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="hue-products-menu"><div class="menu-title">Select the HUE you would like to search</div><div ng-repeat="itemGroup in data"><ul class="menu-products"><li ng-repeat="item in itemGroup"><img ng-src="{{item.icon}}" ng-click="logoClick(item)" /></li></ul><div class="product-spacer" ng-if="!$last">The following HUEs are in development, click on an individual HUEs to learn more.</div></div></div>',
-    link: link,
-    scope: {}
-  };
-});
-
-angular.module('app').directive('hueFiltersConfigurationMenu',
-  function ($timeout, authService, searchMenuRepository) {
-    function link(scope, element, attrs) {
-      scope.letterTabs = ['1-9', 'A-C', 'D-F', 'G-I', 'J-L', 'M-O', 'P-R', 'S-U', 'V-Z'];
-      scope.entities = [
-        {title: 'Season', mainKey: 'seasons', filterKey: 'fashion_season_id'},
-        {title: 'Year', mainKey: 'years', filterKey: 'fashion_year_id'},
-        {title: 'Category', mainKey: 'categories', filterKey: 'fashion_category_id'},
-        {title: 'City', mainKey: 'cities', filterKey: 'fashion_city_id'},
-        {title: 'Color', mainKey: 'colors', filterKey: 'fashion_color_id'},
-        {title: 'Designer', mainKey: 'designers', filterKey: 'fashion_designer_id', aplhanumericSelector: true}
-      ];
-      scope.mainData = null;
-      scope.currentUser = null;
-      scope.selectedEntity = null;
-      scope.selectedEntityIndex = null;
-      scope.selectedEntityIds = null;
-      scope.selectedOption = null;
-      scope.options = [];
-      scope.filters = {};
-
-      scope.selectEntity = function (entity) {
-        if (entity == null) {
-          scope.selectedEntity = null;
-          scope.selectedEntityIndex = null;
-          scope.selectedEntityIds = null;
-          scope.selectedOption = null;
-          return;
-        }
-
-        var ent = scope.entities[entity];
-
-        scope.selectedEntity = ent;
-        scope.selectedEntityIndex = entity;
-        scope.selectedOption = null;
-
-        if (!scope.filters[ent.filterKey])
-          scope.filters[ent.filterKey] = [];
-        scope.selectedEntityIds = scope.filters[ent.filterKey];
-
-        scope.options = scope.mainData[scope.entities[entity].mainKey];
-      };
-      scope.isEntitySelected = function (entity) {
-        return scope.selectedEntityIndex == entity;
-      };
-
-      scope.toggleId = function (id) {
-        var i = scope.selectedEntityIds.indexOf(id);
-        if (i != -1)
-          scope.selectedEntityIds.splice(i, 1);
-        else
-          scope.selectedEntityIds.push(id);
-      };
-      scope.toggleItem = function (item) {
-        scope.toggleId(item.id);
-      };
-      scope.isIdSelected = function (id) {
-        return scope.selectedEntityIds.indexOf(id) != -1;
-      };
-
-      scope.resetConfig = function () {
-        if (confirm('Are you sure you want to reset all filters?')) {
-          _.each(scope.entities, function (item) {
-            scope.filters[item.filterKey] = [];
-          });
-          scope.selectEntity(scope.selectedEntityIndex);
-          scope.saveConfig();
-        }
-      };
-      scope.saveConfig = function () {
-        authService.currentUser.filters = scope.filters;
-        authService.updateUser(function (data) {
-          alert("Filters have been updated.");
-        });
-      };
-
-      searchMenuRepository.getMain(function (data) {
-        scope.mainData = data;
-      });
-
-      scope.$watch('selectedOption', function (newValue, oldValue) {
-        if (newValue) {
-          scope.toggleItem(newValue.originalObject);
-          $timeout(function () {
-            scope.selectedOption = null;
-          }, 0);
-        }
-      });
-
-      scope.$watch(function () {
-        return authService.currentUser;
-      }, function (newValue, oldValue) {
-        scope.currentUser = newValue;
-        if (newValue) {
-          var f = {};
-          _.each(newValue.filters, function (value, key) {
-            f[key] = _.clone(value);
-          });
-
-          scope.filters = f;
-
-          if (scope.selectedEntity)
-            scope.selectEntity(scope.selectedEntityIndex);
-        }
-      }, true);
-    }
-
-    return {
-      restrict: 'E',
-      templateUrl: 'app/directives/siteHeader/filtersConfigurationMenuView.html',
-      link: link,
-      scope: {}
-    };
-  });
-
-angular.module('app').directive('hueDeactivateAccountDialog', ['userDataRepository', function (userDataRepository) {
-  function link(scope, element, attrs) {
-    scope.reasons = ['Was not relevant to me', 'Love but will not use', 'The subscription fee was too high'];
-    scope.step = 0;
-    scope.isStep = function (step) {
-      return step == scope.step;
-    };
-    scope.setStep = function (step) {
-      scope.step = step;
-    };
-
-    scope.customReason = null;
-
-    scope.selectedReason = function (reasonId) {
-      userDataRepository.deactivateAccount(reasonId);
-      scope.setStep(2);
-    };
-    scope.selectedCustomReason = function () {
-      if (!scope.customReason) {
-        alert('Please tell us why you are closing your account');
-        return;
-      }
-
-      userDataRepository.deactivateAccount(scope.customReason);
-      scope.setStep(2);
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="deactivate-account-dialog"><div class="close-account" ng-click="setStep(1)" ng-show="isStep(0)">Close my account</div><div ng-show="isStep(1)"><p>Please tell us why you are closing your account</p><ul><li class="reason-option" ng-repeat="item in reasons" ng-bind="item" ng-click="selectedReason($index)"></li><li>Other <input type="text" ng-model="customReason"/> <button ng-click="selectedCustomReason()">Ok</button></li></ul></div><div ng-show="isStep(2)">Thank you</div></div>',
-    link: link,
-    scope: {}
-  };
-}]);
-
-angular.module('app').directive('hueFooter', function () {
-  function link(scope, element, attrs) {
-    scope.browserIsNotChrome = window.chrome == null || window.chrome == undefined || window.navigator.vendor != "Google Inc." || (window.navigator.userAgent.indexOf("OPR") > -1);
-    scope.infoUrl = null;
-
-    scope.showInfoWindow = function (type) {
-      scope.infoUrl = 'app/directives/' + type + 'Partial.html';
-    };
-    scope.hideInfoWindow = function () {
-      scope.infoUrl = null;
-    };
-    scope.isInfoWindowVisible = function () {
-      return scope.infoUrl != null;
-    };
-  }
-
-  return {
-    restrict: 'A',
-    template: '<ul><li><a ng-click="showInfoWindow(\'about\')">About</a></li><li><a href="mailto:investors@hue-data.com">Investors</a></li><li><a ng-click="showInfoWindow(\'terms\')">Terms Of Use</a></li><li><a ng-click="showInfoWindow(\'privacy\')">Privacy</a></li><li><a href="mailto:hello@hue-group.com">Contact</a></li><li class="not-chrome-message" ng-show="browserIsNotChrome"><a href="https://www.google.com/chrome/">For best results please use Google Chrome. If you do not have Google Chrome, you can download using this link.</a></li></ul><div class="info-window" ng-if="isInfoWindowVisible()"><div class="button-close" ng-click="hideInfoWindow()"></div><div class="window-content-container"><div class="window-content" ng-include="infoUrl"></div></div></div>',
-    link: link,
-    scope: {}
-  };
-});
-
-angular.module('app').directive('hueDbTopProductsCopyrightsView', function ($timeout) {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'hover',
-      position: 'top'
-    };
-
-    scope.percentageData = null;
-    scope.axisData = null;
-    scope.colorUsa = null;
-    scope.colorInt = null;
-
-    var lightenDarkenColor = function (col, amt) {
-      var usePound = false;
-
-      if (col[0] == "#") {
-        col = col.slice(1);
-        usePound = true;
-      }
-
-      var num = parseInt(col, 16);
-
-      var r = (num >> 16) + amt;
-
-      if (r > 255) r = 255;
-      else if (r < 0) r = 0;
-
-      var b = ((num >> 8) & 0x00FF) + amt;
-
-      if (b > 255) b = 255;
-      else if (b < 0) b = 0;
-
-      var g = (num & 0x0000FF) + amt;
-
-      if (g > 255) g = 255;
-      else if (g < 0) g = 0;
-
-      return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
-    };
-
-    var setColors = function (color) {
-
-    };
-
-    var parseData = function (data) {
-      var max = data.length === 0 ? 0 : _.max(_.map(data, function (item) {
-        return _.max([item.total_copyrights, item.us_copyrights, item.int_copyrights]);
-      }));
-      max = Math.round(max * 1.05 / 10) * 10 || 1;
-
-      scope.axisData = _.map(_.range(5), function (n) {
-        n++;
-        return max > 10 ? Math.round(max / 6 * n) : (Math.round(max / 6 * n * 10) / 10);
-      });
-
-      scope.percentageData = _.map(data, function (item) {
-        return {total: '0%', us: '0%', int: '0%'};
-      });
-
-      $timeout(function () {
-        scope.percentageData = _.map(scope.data, function (item) {
-          return {
-            total: (item.total_copyrights / max * 100) + '%',
-            us: (item.us_copyrights / max * 100) + '%',
-            int: (item.int_copyrights / max * 100) + '%'
-          };
-        });
-      }, 10);
-    }
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue) {
-        parseData(newValue);
-      }
-    });
-
-    scope.$watch('chartColor', function (newValue, oldValue) {
-      if (newValue) {
-        scope.colorUsa = newValue;
-        scope.colorInt = lightenDarkenColor(newValue, 128);
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopProductsCopyrights/dbTopProductsCopyrightsView.html',
-    link: link,
-    scope: {
-      data: '=',
-      chartColor: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDonutChart',
-  ['$timeout', '$location',
-    function (timeout, location) {
-      function link(scope, element, attrs) {
-        var config = scope.config;
-
-        var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-        var diameter = scope.config.diameter;
-        var outerRadius = diameter / 2;
-        var innerSectionRadius = outerRadius - donutWidth;
-        var innerStrokeRadius = outerRadius - 2;
-        var animationDuration = 400;
-        var animationStep = 1 / (animationDuration / 20);
-        var strokePercentage = 100 - scope.percentage;
-
-        var draw = SVG(element[0]).size(diameter, diameter);
-
-        var getSectionPathData = function (angle1, angle2, innerRadius) {
-          var sinStart = Math.sin(angle1);
-          var cosStart = Math.cos(angle1);
-          var sinEnd = Math.sin(angle2);
-          var cosEnd = Math.cos(angle2);
-
-          var xO1 = outerRadius + (sinStart * outerRadius); //outer
-          var yO1 = outerRadius - (cosStart * outerRadius);
-          var xO2 = outerRadius + (sinEnd * outerRadius);
-          var yO2 = outerRadius - (cosEnd * outerRadius);
-
-          var xI1 = outerRadius + (sinStart * innerRadius); //inner
-          var yI1 = outerRadius - (cosStart * innerRadius);
-          var xI2 = outerRadius + (sinEnd * innerRadius);
-          var yI2 = outerRadius - (cosEnd * innerRadius);
-
-          var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-          return new SVG.PathArray([
-            ['M', xO1, yO1],
-            ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-            ['L', xI2, yI2],
-            ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-            ['Z']
-          ]).toString();
-        };
-
-        // Initialization
-        draw.path('').attr('fill', scope.color); //section
-        draw.path('').attr('fill', scope.color); //stroke
-
-        // Opening animation
-        var easeOutFunction = BezierEasing.css['ease-out'];
-        var animationProgress = 0;
-        var drawChildren = draw.children();
-        var processAnimation = function () {
-          animationProgress += animationStep;
-          if (animationProgress > 1) {
-            animationProgress = 1;
-          }
-          var coeff = easeOutFunction(animationProgress) * 0.999; // multiply by 0.999 to prevent arcs from closing and disappearing
-
-          var angleStart = 0;
-          var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
-          drawChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
-
-          angleStart = angleEnd;
-          angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
-          drawChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
-
-          if (animationProgress != 1) {
-            timeout(processAnimation, 20);
-          }
-        };
-
-        processAnimation();
-
-        scope.$watch('color', function (newValue, oldValue) {
-          if (newValue) {
-            draw.first().attr('fill', newValue); //section
-            draw.last().attr('fill', newValue); //stroke
-          }
-        });
-      }
-
-      return {
-        restrict: 'A',
-        link: link,
-        scope: {
-          config: '=hueDonutChart',
-          percentage: '=',
-          color: '='
-        }
-      };
-    }]);
-
-angular.module('app').directive('hueDbTopItemsDonuts', function () {
-  function link(scope, element, attrs) {
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopItemsDonuts/dbTopItemsDonutsView.html',
-    link: link,
-    scope: {
-      data: '=',
-      donutColor: '=',
-      itemClick: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueTopIndustriesChart', ['$timeout', '$location', function (timeout, location) {
-	function link(scope, element, attrs) {
-		var config = scope.config;
-
-		var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-		var diameter = scope.config.diameter;
-		var outerRadius = diameter / 2;
-		var innerSectionRadius = outerRadius - donutWidth;
-		var innerStrokeRadius = outerRadius - 2;
-		var animationDuration = 400;
-		var animationStep = 1 / (animationDuration / 20);
-		var strokePercentage = 100 - scope.percentage;
-
-		var draw = SVG(element[0]).size(diameter, diameter);
-		var group = draw.group();
-
-		var getSectionPathData = function (angle1, angle2, innerRadius) {
-			var sinStart = Math.sin(angle1);
-			var cosStart = Math.cos(angle1);
-			var sinEnd = Math.sin(angle2);
-			var cosEnd = Math.cos(angle2);
-
-			var xO1 = outerRadius + (sinStart * outerRadius); //outer
-			var yO1 = outerRadius - (cosStart * outerRadius);
-			var xO2 = outerRadius + (sinEnd * outerRadius);
-			var yO2 = outerRadius - (cosEnd * outerRadius);
-
-			var xI1 = outerRadius + (sinStart * innerRadius); //inner
-			var yI1 = outerRadius - (cosStart * innerRadius);
-			var xI2 = outerRadius + (sinEnd * innerRadius);
-			var yI2 = outerRadius - (cosEnd * innerRadius);
-
-			var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-			return new SVG.PathArray([
-					['M', xO1, yO1],
-					['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-					['L', xI2, yI2],
-					['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-					['Z']
-			]).toString();
-		};
-
-
-		//Initialization
-		group.path('').attr('fill', scope.color); //section
-		group.path('').attr('fill', scope.color); //stroke
-
-		//Opening animation
-		var easeOutFunction = BezierEasing.css['ease-out'];
-		var animationProgress = 0;
-		var groupChildren = group.children();
-		var processAnimation = function () {
-			animationProgress += animationStep;
-			if (animationProgress > 1)
-				animationProgress = 1;
-
-			var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
-
-			var angleStart = 0;
-			var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
-			groupChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
-
-			angleStart = angleEnd;
-			angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
-			groupChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
-
-			if (animationProgress != 1)
-				timeout(processAnimation, 20);
-		};
-
-		processAnimation();
-
-		scope.$watch('color', function (newValue, oldValue) {
-			if (newValue) {
-				group.first().attr('fill', newValue); //section
-				group.last().attr('fill', newValue); //stroke
-			}
-		});
-	}
-
-	return {
-		restrict: 'A',
-		link: link,
-		scope: {
-			config: '=hueTopIndustriesChart',
-			percentage: '=',
-			color: '='
-		}
-	};
-}]);
-angular.module('app').directive('hueDbTopIndustries', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.industryClick = function (id) {
-      location.url('industry').search({industry: id});
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopIndustries/dbTopIndustriesView.html',
-    link: link,
-    scope: {
-      data: '=',
-      chartColor: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueTopFinishesChart',
-  ['$timeout', '$location', function (timeout, location) {
-    function link(scope, element, attrs) {
-      var config = scope.config;
-
-      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-      var diameter = scope.config.diameter;
-      var outerRadius = diameter / 2;
-      var innerSectionRadius = outerRadius - donutWidth;
-      var innerStrokeRadius = outerRadius - 2;
-      var animationDuration = 400;
-      var animationStep = 1 / (animationDuration / 20);
-      var strokePercentage = 100 - scope.percentage;
-
-      var draw = SVG(element[0]).size(diameter, diameter);
-
-      var getSectionPathData = function (angle1, angle2, innerRadius) {
-        var sinStart = Math.sin(angle1);
-        var cosStart = Math.cos(angle1);
-        var sinEnd = Math.sin(angle2);
-        var cosEnd = Math.cos(angle2);
-
-        var xO1 = outerRadius + (sinStart * outerRadius); // outer
-        var yO1 = outerRadius - (cosStart * outerRadius);
-        var xO2 = outerRadius + (sinEnd * outerRadius);
-        var yO2 = outerRadius - (cosEnd * outerRadius);
-
-        var xI1 = outerRadius + (sinStart * innerRadius); // inner
-        var yI1 = outerRadius - (cosStart * innerRadius);
-        var xI2 = outerRadius + (sinEnd * innerRadius);
-        var yI2 = outerRadius - (cosEnd * innerRadius);
-
-        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-        return new SVG.PathArray([
-          ['M', xO1, yO1],
-          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-          ['L', xI2, yI2],
-          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-          ['Z']
-        ]).toString();
-      };
-
-      // Initialization
-      draw.path('').attr('fill', scope.color); // section
-      draw.path('').attr('fill', scope.color); // stroke
-
-      // Opening animation
-      var easeOutFunction = BezierEasing.css['ease-out'];
-      var animationProgress = 0;
-      var drawChildren = draw.children();
-      var processAnimation = function () {
-        animationProgress += animationStep;
-        if (animationProgress > 1) {
-          animationProgress = 1;
-        }
-        var coeff = easeOutFunction(animationProgress) * 0.999; // multiply by 0.999 to prevent arcs from closing and disappearing
-
-        var angleStart = 0;
-        var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
-        drawChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
-
-        angleStart = angleEnd;
-        angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
-        drawChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
-
-        if (animationProgress != 1) {
-          timeout(processAnimation, 20);
-        }
-      };
-
-      processAnimation();
-
-      scope.$watch('color', function (newValue, oldValue) {
-        if (newValue) {
-          draw.first().attr('fill', newValue); // section
-          draw.last().attr('fill', newValue); // stroke
-        }
-      });
-    }
-
-    return {
-      restrict: 'A',
-      link: link,
-      scope: {
-        config: '=hueTopFinishesChart',
-        percentage: '=',
-        color: '='
-      }
-    };
-  }]);
-
-angular.module('app').directive('hueDbTopFinishes', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    //scope.industryClick = function (id) {
-    //	location.url('finish').search({ finish: id });
-    //}
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopFinishes/dbTopFinishesView.html',
-    link: link,
-    scope: {
-      data: '=',
-      chartColor: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbTopColorsByYear', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    scope.activeBars = [];
-    scope.tooltipsterOddConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'top'
-    };
-
-    scope.dataRendered = false;
-    scope.onDataRendered = function () {
-      scope.dataRendered = true;
-    };
-
-    scope.getButtonId = function (btnName) {
-      return 'db-tcby-' + scope.$id + '-btn-' + btnName;
-    };
-    scope.carouselVisibleFunction = function (items) {
-      return items - 1;
-    };
-
-    var activeElement;
-    scope.selectBar = function (event, groupIndex, barIndex) {
-      if (activeElement)
-        activeElement.tooltipster('hide');
-
-      activeElement = angular.element(event.currentTarget);
-
-      scope.activeBars[groupIndex] = scope.activeBars[groupIndex] == barIndex ? null : barIndex;
-
-      if (scope.activeBars[groupIndex] != null)
-        timeout(function () {
-          activeElement.tooltipster('show');
-        }, 250);
-    };
-    scope.isBarSelected = function (groupIndex, barIndex) {
-      return scope.activeBars[groupIndex] == barIndex;
-    }
-
-    scope.$watch('data', function (newValue, oldValue) {
-      scope.activeBars = [];
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopColorsByYear/dbTopColorsByYearView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbTopColorsExpanded', function () {
-  function link(scope, element, attrs) {
-
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopColors/dbTopColorsExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbTopColors', function () {
-  function link(scope, element, attrs) {
-    scope.selectedColor = null;
-    scope.toggleColor = function (index) {
-      scope.selectedColor = scope.selectedColor == index ? null : index;
-    };
-    scope.isColorSelected = function (index) {
-      if (index != null)
-        return scope.selectedColor == index;
-      return scope.selectedColor != null;
-    };
-    scope.getBarHeight = function (index) {
-      if (scope.selectedColor == null)
-        return scope.data[index].percentage + '%';
-      return scope.selectedColor == index ? '100%' : '0%';
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopColors/dbTopColorsView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbSingleLineChart', function ($timeout, $interval) {
-  function link(scope, element, attrs) {
-    var defaultLineColor = '#96FF0D';
-    var chartOffsetTop = 10;
-    var chartOffsetBottom = 40;
-    var chartOffsetLeft = 50;
-    var chartOffsetRight = 20;
-    var chartYAxisStep = 1;
-    var fontX = {family: 'Gotham Cond SSm A","Gotham Cond SSm B', size: 15, weight: 600};
-    var fontY = {family: 'Open Sans', size: 14};
-    var tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'hover',
-      position: 'top',
-      offsetX: 6
-    };
-
-    scope.chartData = null;
-    scope.chartMinValue = 0;
-    scope.chartMaxValue = 10;
-
-    var draw = SVG(angular.element('.graph', element)[0]);
-    var drawChart = function () {
-      draw.clear();
-
-      if (scope.chartData == null) {
-        return;
-      }
-
-      var lineColor = scope.lineColor ? scope.lineColor : defaultLineColor;
-      var graphContainer = angular.element('.graph', element);
-      var width = graphContainer.width() - chartOffsetLeft - chartOffsetRight;
-      var height = graphContainer.height() - chartOffsetTop - chartOffsetBottom;
-      var chartXMax = graphContainer.width() - chartOffsetRight;
-      var chartYMax = graphContainer.height() - chartOffsetBottom;
-
-      var itemCountRange = scope.chartMaxValue - scope.chartMinValue;
-      for (var i = 0; i <= itemCountRange; i += chartYAxisStep) {
-        var y = chartOffsetTop + Math.round(height * (i / itemCountRange));
-        draw.line(chartOffsetLeft, y, chartXMax, y).stroke({width: 1, color: '#ccc'});
-
-        var label = draw.text((scope.chartMaxValue - i).toString()).fill('#ccc').font(fontY).cy(y);
-        label.x(chartOffsetLeft - label.bbox().width - 12);
-      }
-
-      var cdx = scope.chartData.x;
-      var cdy = scope.chartData.y;
-      var cdt = scope.chartData.titles;
-      var cdv = scope.chartData.values;
-      var count = cdx.length;
-      var items = [];
-
-      var pl = draw.polyline([]).fill('none').stroke({color: lineColor, width: 4});
-
-      for (var i = 0; i < count; i++) {
-        var x = Math.round(width * cdx[i] + chartOffsetLeft);
-        var y = chartOffsetTop + Math.round(height * cdy[i]);
-
-        var circle = draw.circle(12).fill('#FFF').stroke({
-          color: lineColor,
-          width: 4
-        }).cx(x).cy(y).attr('title', cdv[i].toString());
-        draw.text(cdt[i]).fill('#000').font(fontX).cx(x).cy(chartYMax + (i % 2 ? 32 : 16));
-        items.push([x, y]);
-
-        angular.element(circle.node).tooltipster(tooltipsterConfig);
-      }
-
-      pl.plot(items);
-    };
-
-    var parseData = function (data) {
-      var count = data.length;
-      var minItemsCount = null;
-      var maxItemsCount = 0;
-
-      for (var i = 0; i < count; i++) {
-        if (minItemsCount == null || minItemsCount > data[i][1]) {
-          minItemsCount = data[i][1];
-        }
-        if (maxItemsCount < data[i][1]) {
-          maxItemsCount = data[i][1];
-        }
-      }
-
-      chartYAxisStep = (maxItemsCount - minItemsCount + 1) <= 5 ? 1 : Math.round((maxItemsCount - minItemsCount + 1) / 5);
-
-      maxItemsCount = minItemsCount + (Math.ceil((maxItemsCount - minItemsCount + 1) / chartYAxisStep) * chartYAxisStep);
-      scope.chartMinValue = minItemsCount;
-      scope.chartMaxValue = maxItemsCount;
-
-      var xCoeff = count > 1 ? (1 / (count - 1)) : 0;
-      var graphYLength = maxItemsCount - minItemsCount;
-      var result = {titles: [], values: [], x: [], y: []};
-
-      for (var i = 0; i < count; i++) {
-        result.x.push(i * xCoeff);
-        result.y.push(1 - ((data[i][1] - minItemsCount) / graphYLength));
-        result.titles.push(data[i][0]);
-        result.values.push(data[i][1]);
-      }
-
-      scope.chartData = result;
-
-      drawChart();
-      $timeout(drawChart, 500);
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length) {
-        parseData(newValue.slice(0, 10));
-      }
-    });
-
-    var container = element.find('.db-single-line-chart');
-    var containerWidth = container.width();
-    var updateInterval = $interval(function () {
-      if (container.width() != containerWidth) {
-        if (scope.data && scope.data.length) {
-          parseData(scope.data.slice(0, 10));
-        }
-        containerWidth = container.width();
-      }
-    }, 250);
-
-    scope.$on('$destroy', function () {
-      if (updateInterval) {
-        $interval.cancel(updateInterval);
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="db-single-line-chart"><div class="graph"></div></div>',
-    link: link,
-    scope: {
-      data: '=',
-      lineColor: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbMapExpanded', ['$timeout', 'searchMenuRepository', function (timeout, searchMenuRepository) {
-  function link(scope, element, attrs) {
-    scope.maps = null;
-
-    var mainIsLoaded = false;
-    var mapsToRender = null;
-    var countries = null;
-    var countriesInRegions = [];
-    var selectedRegions = [];
-    var americasRegion = [];
-
-    var highlightGroup = function (group, color) {
-      var c = group.children();
-      var cc = c.length;
-
-      if (color)
-        for (var i = 0; i < cc; i++) {
-          var e = c[i];
-          e.style('fill', color);
-          e.style('stroke', '#ccc');
-          e.style('stroke-width', '2px');
-        }
-      else
-        for (var i = 0; i < cc; i++) {
-          var e = c[i];
-          e.style('fill', null);
-          e.style('stroke', null);
-          e.style('stroke-width', null);
-        }
-    };
-
-    if (!scope.hideMap)
-      searchMenuRepository.getControlsDataBranding().then(function (data) {
-        countries = data.countries;
-
-        var regGroups = _.groupBy(data.countries, function (item) {
-          return item.region_id;
-        });
-        _.each(regGroups, function (item, key) {
-          var parsedKey = parseInt(key);
-          if (!isNaN(parsedKey))
-            countriesInRegions.push({
-              id: parsedKey,
-              name: _.find(data.countries, function (ritem) {
-                return ritem.region_id == parsedKey;
-              }).region_name,
-              countries: _.map(item, function (citem) {
-                return {id: citem.id, code: citem.code};
-              })
-            });
-        });
-
-        mainIsLoaded = true;
-        if (mapsToRender != null)
-          _.each(mapsToRender, function (item) {
-            scope.mapLoaded(item);
-          });
-      });
-
-    scope.mapLoaded = function (mapIndex) {
-      if (scope.hideMap)
-        return;
-
-      if (!mainIsLoaded) {
-        if (mapsToRender == null)
-          mapsToRender = [];
-
-        mapsToRender.push(mapIndex);
-        return;
-      }
-
-      var mapContainer = angular.element('.map-container', element).eq(mapIndex);
-      var mapImage = angular.element('.map-image', mapContainer);
-      var draw = SVG(mapContainer[0]);
-      draw.svg(mapImage.html());
-      draw.viewbox(0, 0, 1008, 651);
-      draw.addClass('map-image');
-      mapImage.remove();
-      angular.element(draw.node).prependTo(mapContainer);
-
-      var mapTilesGroup = _.find(draw.children(), function (item) {
-        return item.children().length > 100;
-      });
-
-      var color = scope.maps[mapIndex].color;
-      var companies = scope.maps[mapIndex].companies;
-      var regions = _.filter(countriesInRegions, function (item) {
-        return _.some(item.countries, function (countryItem) {
-          return _.some(companies, function (company) {
-            return company.country.id == countryItem.id;
-          });
-        });
-      });
-
-      _.each(regions, function (item, index) {
-        var rGroup = draw.group();
-        _.each(item.countries, function (countryItem) {
-          var elemId = 'map_region_' + countryItem.code;
-          var elem = _.find(mapTilesGroup.children(), function (item) {
-            return item.node.id == elemId;
-          });
-
-          if (!elem)
-            return;
-
-          rGroup.add(elem);
-        });
-
-        if (item.id == 4) { //Americas
-          americasRegion[mapIndex] = rGroup;
-          highlightGroup(rGroup, color);
-        } else {
-          rGroup.on('mouseover', function (event) {
-            if (selectedRegions[mapIndex] != rGroup)
-              highlightGroup(rGroup, color);
-          });
-
-          rGroup.on('mouseout', function (event) {
-            if (selectedRegions[mapIndex] != rGroup)
-              highlightGroup(rGroup, null);
-          });
-        }
-
-        var brandCount = _.reduce(
-          _.filter(companies, function (companyItem) {
-            return _.some(item.countries, function (countryItem) {
-              return companyItem.country.id == countryItem.id;
-            });
-          }),
-          function (memo, companyItem) {
-            return memo + companyItem.brands_count;
-          }, 0);
-        var rGroupBbox = rGroup.node.getBoundingClientRect();
-        rGroup.attr('title', item.name + ' (' + brandCount + ' brands)');
-        angular.element(rGroup.node).tooltipster({
-          animation: 'fade',
-          theme: 'tooltipster-default',
-          trigger: 'custom',
-          position: 'top',
-          offsetX: item.id == 4 ? Math.round(rGroupBbox.width / 2) - 25 : Math.round(rGroupBbox.width / 2),
-          offsetY: -Math.round(rGroupBbox.height / 2)
-        });
-        rGroup.click(function (event) {
-          var sr = selectedRegions[mapIndex];
-
-          if (sr) {
-            if (sr != americasRegion[mapIndex])
-              highlightGroup(sr, null);
-
-            angular.element(sr.node).tooltipster('hide');
-          }
-
-          if (sr == rGroup)
-            selectedRegions[mapIndex] = null;
-          else {
-            selectedRegions[mapIndex] = rGroup;
-            angular.element(rGroup.node).tooltipster('show');
-          }
-        });
-      });
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length)
-        scope.maps = _.map(newValue, function (item) {
-          return {
-            companies: item.companies,
-            color: item.color.color.hex,
-            title: item.color.title,
-            attributes: item.attributes
-          };
-        });
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbMap/dbMapExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&',
-      hideMap: '=',
-      evTitle: '@'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbMap',
-  ['$timeout', 'searchMenuRepository',
-    function (timeout, searchMenuRepository) {
-      function link(scope, element, attrs) {
-        scope.maps = null;
-
-        var mainIsLoaded = false;
-        var mapsToRender = null;
-        var countries = null;
-        var countriesInRegions = [];
-        var selectedRegions = [];
-        var regionsBrandsCount = [];
-
-        if (!scope.hideMap)
-          searchMenuRepository.getControlsDataBranding().then(function (data) {
-            countries = data.countries;
-
-            var regGroups = _.groupBy(data.countries, function (item) {
-              return item.region_id;
-            });
-            _.each(regGroups, function (item, key) {
-              var parsedKey = parseInt(key);
-              if (!isNaN(parsedKey))
-                countriesInRegions.push({
-                  id: parsedKey,
-                  name: _.find(data.countries, function (ritem) {
-                    return ritem.region_id == parsedKey;
-                  }).region_name,
-                  countries: _.map(item, function (citem) {
-                    return {id: citem.id, code: citem.code};
-                  })
-                });
-            });
-
-            mainIsLoaded = true;
-            if (mapsToRender != null)
-              _.each(mapsToRender, function (item) {
-                scope.mapLoaded(item);
-              });
-          });
-
-        scope.mapLoaded = function (mapIndex) {
-          if (scope.hideMap)
-            return;
-
-          if (!mainIsLoaded) {
-            if (mapsToRender == null)
-              mapsToRender = [];
-
-            mapsToRender.push(mapIndex);
-            return;
-          }
-
-          var mapImage = angular.element('.map-image', element).eq(mapIndex);
-          var color = scope.maps[mapIndex].color;
-          var companies = scope.maps[mapIndex].companies;
-          var regions = _.filter(countriesInRegions, function (item) {
-            return _.some(item.countries, function (countryItem) {
-              return _.some(companies, function (company) {
-                return company.country.id == countryItem.id;
-              });
-            });
-          });
-
-          regionsBrandsCount[mapIndex] = [];
-          _.each(regions, function (item, index) {
-            regionsBrandsCount[mapIndex][index] = _.reduce(
-              _.filter(companies, function (companyItem) {
-                return _.some(item.countries, function (countryItem) {
-                  return companyItem.country.id == countryItem.id;
-                });
-              }),
-              function (memo, companyItem) {
-                return memo + companyItem.brands_count;
-              }, 0);
-
-            var regionCountryElems = [];
-            _.each(item.countries, function (countryItem) {
-              var elem = angular.element('#map_region_' + countryItem.code, mapImage);
-
-              if (!elem.length)
-                return;
-
-              regionCountryElems.push(elem);
-
-              elem.css('fill', color);
-              elem.css('stroke', '#ccc');
-              elem.css('stroke-width', '2px');
-            });
-          });
-
-          mapImage.click(function (event) {
-            if (event.target.id && event.target.id.indexOf('map_region_') != -1) {
-              var ccode = event.target.id.slice(-2);
-              var region = _.find(regions, function (item) {
-                return _.some(item.countries, function (citem) {
-                  return citem.code == ccode;
-                });
-              })
-
-              if (region) {
-                if (typeof selectedRegions[mapIndex] == 'number')
-                  mapImage.tooltipster('destroy');
-
-                if (selectedRegions[mapIndex] != region.id) {
-                  selectedRegions[mapIndex] = region.id;
-                  mapImage.attr('title', region.name + ' (' + regionsBrandsCount[mapIndex][regions.indexOf(region)] + ' brands)');
-                  mapImage.tooltipster({
-                    animation: 'fade',
-                    theme: 'tooltipster-default',
-                    trigger: 'custom',
-                    position: 'top-left',
-                    offsetX: event.offsetX - 15,
-                    offsetY: -event.offsetY
-                  });
-                  mapImage.tooltipster('show');
-                } else
-                  selectedRegions[mapIndex] = null;
-              }
-            }
-          });
-        };
-
-        scope.$watch('data', function (newValue, oldValue) {
-          if (newValue && newValue.length)
-            scope.maps = _.map(newValue, function (item) {
-              return {
-                companies: item.companies,
-                color: item.color.color.hex,
-                title: item.color.title,
-                attributes: item.attributes
-              };
-            });
-        });
-      }
-
-      return {
-        restrict: 'E',
-        templateUrl: 'app/directives/dbMap/dbMapView.html',
-        link: link,
-        scope: {
-          data: '=',
-          hideMap: '='
-        }
-      };
-    }]);
-
-angular.module('app').directive('hueDbLogos', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.page = 1;
-    scope.maxElementsPerGroup = 0;
-    scope.data = [];
-    scope.dataExpanded = [];
-    scope.groupNames = [];
-    scope.showLogoDetails = false;
-    scope.logoDetailsId = null;
-
-    var calculateMaxElementsPerGroup = function () {
-      return Math.floor(element.children().first().width() / 170) * 2;
-    };
-    var updateData = function () {
-      scope.data = _.map(scope.originalData, function (item, index) {
-        if (!scope.dataExpanded[index])
-          return item[1].slice(0, scope.maxElementsPerGroup);
-        else
-          return item[1];
-      });
-    };
-
-    scope.showGroupNames = function () {
-      return scope.colorDashboard != true;
-    };
-
-    scope.isShowMoreVisible = function (groupIndex) {
-      return !scope.dataExpanded[groupIndex] && scope.originalData[groupIndex][1].length > scope.maxElementsPerGroup;
-    };
-    scope.isShowLessVisible = function (groupIndex) {
-      return scope.dataExpanded[groupIndex];
-    };
-
-    scope.showMoreClick = function (groupIndex) {
-      scope.dataExpanded[groupIndex] = true;
-      updateData();
-    };
-
-    scope.showLessClick = function (groupIndex) {
-      scope.dataExpanded[groupIndex] = false;
-      updateData();
-    };
-
-    scope.toggleLogoDetails = function () {
-      scope.showLogoDetails = scope.showLogoDetails ? false : true;
-    };
-
-    scope.logoClick = function (parentIndex, index) {
-      scope.logoDetailsId = scope.data[parentIndex][index].id;
-      scope.toggleLogoDetails();
-    };
-
-    scope.$watch('originalData', function (newValue, oldValue) {
-      if (newValue && (scope.colorDashboard != true || (scope.colorDashboard && newValue.length))) { // IF not color dashboard OR is color dashboard and not empty array
-        scope.groupNames = _.map(scope.originalData, function (item, key) {
-          return item[0];
-        });
-
-        scope.maxElementsPerGroup = calculateMaxElementsPerGroup();
-        updateData();
-        scope.dataExpanded = [];
-      } else {
-        scope.data = [];
-        scope.dataExpanded = [];
-      }
-    });
-
-    var lazyDigest = _.debounce(function () {
-      scope.$digest();
-    }, 300);
-    $(window).resize(function () {
-      var maxElems = calculateMaxElementsPerGroup();
-      if (scope.maxElementsPerGroup != maxElems) {
-        scope.maxElementsPerGroup = maxElems;
-        updateData();
-        lazyDigest();
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbLogos/dbLogosView.html',
-    link: link,
-    scope: {
-      originalData: '=data',
-      colorDashboard: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbLogoDetails', ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
-  function link(scope, element, attrs) {
-    scope.url = null;
-    scope.title = null;
-    scope.industry = null;
-    scope.country = null;
-    scope.symbol = null;
-    scope.attributes = [];
-    scope.colors = [];
-
-    scope.saveInputVisible = false;
-    scope.imageName = null;
-
-    scope.showMoreVisible = false;
-    scope.showLessVisible = false;
-    scope.showAttributes = true;
-    scope.maxColors = 4;
-    scope.showMoreClick = function () {
-      scope.maxColors = scope.colors.length;
-      scope.showMoreVisible = false;
-      scope.showLessVisible = true;
-      scope.showAttributes = false;
-    };
-    scope.showLessClick = function () {
-      scope.maxColors = 4;
-      scope.showMoreVisible = true;
-      scope.showLessVisible = false;
-      scope.showAttributes = true;
-    };
-
-    http.jsonp(appConfig.webServiceUrl + 'bio.jsonp', {
-      params: {
-        id: scope.logoId,
-        token: authService.token,
-        callback: 'JSON_CALLBACK'
-      }
-    }).success(function (data) {
-      scope.url = data.url;
-      scope.title = data.bio.company_title;
-      scope.industry = data.bio.industry_title;
-      scope.country = data.bio.country;
-      scope.symbol = data.bio.symbol;
-      scope.attributes = data.bio.attributes;
-      scope.colors = data.bio.colors;
-
-      if (scope.colors.length > 4)
-        scope.showMoreVisible = true;
-    });
-
-    scope.closeClickHandler = function () {
-      scope.onClose();
-    };
-
-    scope.showSaveInput = function () {
-      scope.saveInputVisible = true;
-    };
-
-    scope.saveImage = function () {
-      scope.imageName = null;
-      scope.saveInputVisible = false;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbLogos/dbLogoDetailsView.html',
-    link: link,
-    scope: {
-      logoId: '=',
-      onClose: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbImageGallery', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.page = 1;
-    scope.maxElementsPerGroup = 0;
-    scope.data = [];
-    scope.dataExpanded = [];
-    scope.groupNames = [];
-
-    var calculateMaxElementsPerGroup = function () {
-      return Math.floor(element.children().first().width() / 170) * 2;
-    };
-    var updateData = function () {
-      scope.data = _.map(scope.originalData, function (item, index) {
-        if (!scope.dataExpanded[index])
-          return item[1].slice(0, scope.maxElementsPerGroup);
-        else
-          return item[1];
-      });
-    };
-
-    scope.showGroupNames = function () {
-      return scope.colorDashboard != true;
-    };
-
-    scope.isShowMoreVisible = function (groupIndex) {
-      return !scope.dataExpanded[groupIndex] && scope.originalData[groupIndex][1].length > scope.maxElementsPerGroup;
-    };
-    scope.isShowLessVisible = function (groupIndex) {
-      return scope.dataExpanded[groupIndex];
-    };
-
-    scope.showMoreClick = function (groupIndex) {
-      scope.dataExpanded[groupIndex] = true;
-      updateData();
-    };
-
-    scope.showLessClick = function (groupIndex) {
-      scope.dataExpanded[groupIndex] = false;
-      updateData();
-    };
-
-    scope.$watch('originalData', function (newValue, oldValue) {
-      if (newValue && (scope.colorDashboard != true || (scope.colorDashboard && newValue.length))) { //IF not color dashboard OR is color dashboard and not empty array
-        scope.groupNames = _.map(scope.originalData, function (item, key) {
-          return item[0];
-        });
-
-        scope.maxElementsPerGroup = calculateMaxElementsPerGroup();
-        updateData();
-        scope.dataExpanded = [];
-      } else {
-        scope.data = [];
-        scope.dataExpanded = [];
-      }
-    });
-
-    var lazyDigest = _.debounce(function () {
-      scope.$digest();
-    }, 300);
-    $(window).resize(function () {
-      var maxElems = calculateMaxElementsPerGroup();
-      if (scope.maxElementsPerGroup != maxElems) {
-        scope.maxElementsPerGroup = maxElems;
-        updateData();
-        lazyDigest();
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbImageGallery/dbImageGalleryView.html',
-    link: link,
-    scope: {
-      originalData: '=data',
-      colorDashboard: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbHeader', ['$compile', '$timeout', 'searchMenuService', function (compile, timeout, searchMenuService) {
-  function link(scope, element, attrs) {
-    scope.headerHeight = null; //only for description expanding
-    scope.getHeaderHeight = function () {
-      return scope.headerHeight ? scope.headerHeight + 'px' : null;
-    };
-
-    scope.isIconClickable = function () {
-      return typeof attrs.iconClick != 'undefined';
-    };
-
-    var pageInfoContainer = element.find('.header-page-info');
-    var pageInfoScopes = null;
-
-    var generateCellTag = function (cell) {
-      var classes = cell.classes;
-
-      if (!classes)
-        switch (cell.type) {
-          case 'countTo':
-            classes = cell.data.menuTab ? 'cell-clickable' : null;
-            break;
-          case 'desc':
-            classes = 'cell-description';
-            break;
-        }
-
-      var result = '<div class="info-cell cell-' + cell.width + (classes ? ' ' + classes + '"' : '"');
-
-      if (cell.tooltip)
-        result += ' hue-db-info-tooltip="' + cell.tooltip + '"';
-      if (cell.attrs)
-        result += ' ' + cell.attrs;
-
-      if (cell.type == 'countTo' && cell.data.menuTab)
-        result += ' ng-click="openSearchMenuTab(\'' + cell.data.menuTab + '\')"';
-
-      if ((cell.type == 'title' || cell.type == 'custom') && cell.onClick)
-        result += ' ng-click="onClick()"';
-
-      result += '>';
-
-      return result;
-    };
-
-    scope.$watch('pageInfo', function (newValue, oldValue) {
-      if (pageInfoScopes)
-        _.each(pageInfoScopes, function (item) {
-          item.$destroy();
-        });
-      descriptionScope = null;
-      pageInfoContainer.empty();
-
-      if (newValue) {
-        pageInfoScopes = [];
-        _.each(newValue, function (item) {
-          var childScope = scope.$new();
-          var compiledDirective;
-
-          switch (item.type) {
-            case 'title':
-              compiledDirective = compile(generateCellTag(item) + '<div class="cell-subcontainer"><div class="cell-content"><span class="cell-title" ng-bind="data.title"></span><br /><span class="cell-subtitle" ng-bind="data.subtitle"></span></div></div></div>');
-              break;
-            case 'countTo':
-              compiledDirective = compile(generateCellTag(item) + '<div class="cell-subcontainer"><div class="cell-content"><span class="cell-title" count-to="{{data.count}}" duration="1"></span><br /><span class="cell-subtitle" ng-bind="data.subtitle"></span></div></div></div>');
-              childScope.openSearchMenuTab = function (tabName) {
-                searchMenuService.openTab(tabName);
-              };
-              break;
-            case 'desc':
-              compiledDirective = compile(generateCellTag(item) + '<hue-db-header-description text="data.text" header-height="$parent.headerHeight"></hue-db-header-description></div>');
-              break;
-            case 'custom':
-              compiledDirective = compile(generateCellTag(item) + item.content + '</div>');
-              break;
-          }
-
-          if (item.onClick)
-            childScope.onClick = item.onClick;
-          childScope.data = item.data;
-          pageInfoContainer.append(compiledDirective(childScope));
-          pageInfoScopes.push(childScope);
-        });
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbHeader/dbHeaderView.html',
-    link: link,
-    scope: {
-      title: '=headerTitle',
-      subtitle: '=headerSubtitle',
-      icon: '=headerIcon',
-      iconType: '@',
-      iconClick: '&',
-      pageInfo: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbHeaderDescription', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    scope.textOverflow = false;
-
-    var getDescriptionLineHeight = function () {
-      var t = element.find('.description-text');
-      var lh = t.css('line-height');
-
-      if (lh.indexOf('.'))
-        return lh.substring(0, lh.indexOf('.'));
-      return lh.substring(0, lh.indexOf('p'));
-    };
-    var descriptionTextElem = element.find('.description-text');
-    var isExpanded = false;
-
-    var checkOverflow = function () {
-      scope.textOverflow = descriptionTextElem.height() > 75; //if more than 4 lines
-    };
-    var windowResizeHandler = _.debounce(function () {
-      timeout(checkOverflow, 10);
-    }, 200);
-
-    scope.isShowMoreVisible = function () {
-      return scope.textOverflow && !isExpanded;
-    };
-    scope.isShowLessVisible = function () {
-      return scope.textOverflow && isExpanded;
-    };
-    scope.showMoreClick = function () {
-      isExpanded = true;
-      scope.headerHeight = 100 + descriptionTextElem.height() - 55; //55 - three lines which are visible always
-    };
-    scope.showLessClick = function () {
-      isExpanded = false;
-      scope.headerHeight = null;
-    };
-
-    $(window).resize(windowResizeHandler);
-
-    scope.$watch('text', function (newValue, oldValue) {
-      if (newValue)
-        timeout(checkOverflow, 10);
-    });
-
-    scope.$on('$destroy', function () {
-      $(window).off('resize', windowResizeHandler);
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="description-container" ng-class="{\'three-lines\': textOverflow}"><div class="description-text" ng-bind="text"></div></div><div class="show-button" ng-show="isShowMoreVisible()" ng-click="showMoreClick()">Show More</div><div class="show-button" ng-show="isShowLessVisible()" ng-click="showLessClick()">Show Less</div>',
-    link: link,
-    scope: {
-      text: '=',
-      headerHeight: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbFlagColors', function () {
-  function link(scope, element, attrs) {
-    scope.itemWidth = '0%';
-    scope.flagIndex = 0;
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue) {
-        scope.itemWidth = 100 / (newValue.length - 1) + '%';
-        scope.flagIndex = newValue.length - 1;
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbFlagColors/dbFlagColorsView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbDistributionByCategory', function () {
-  function link(scope, element, attrs) {
-    scope.chartColor = 'assets/img/noise_texture.png';
-    scope.chartStrokeColor = '#000';
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbDistributionByCategory/dbDistributionByCategoryView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbDesignerImages',
-  ['$timeout', 'dashboardRepository', function (timeout, dashboardRepository) {
-    function link(scope, element, attrs) {
-      scope.data = [];
-      scope.collectionData = [];
-      scope.showCollection = false;
-      scope.showImageDetails = false;
-      scope.collectionLoading = false;
-      scope.imageDetailsData = null;
-      window.scr = scope
-
-      scope.openFullCollection = function (index) {
-        // if (scope.collectionLoading)
-        //   return;
-        scope.collectionData = [];
-        dashboardRepository.designer.getDesignerImages(scope.data[index].id, scope.menus)
-          .then(function (data) {
-            scope.collectionLoading = false;
-            scope.collectionData = data;
-            timeout(function () {
-              scope.showCollection = true;
-            }, 300);
-          });
-        scope.collectionLoading = true;
-      };
-
-      scope.closeFullCollection = function () {
-        scope.showCollection = false;
-        adjustPreviewData();
-      };
-
-      scope.toggleImageDetails = function () {
-        scope.showImageDetails = scope.showImageDetails ? false : true;
-      };
-
-      scope.imageClickHandler = function (index) {
-        scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
-        scope.toggleImageDetails();
-      };
-
-      var imagesContainer = $('.db-designer-images', element);
-      var adjustPreviewData = function () {
-        var elemCount = Math.floor(imagesContainer.width() / 190);
-        scope.data = scope.originalData.slice(0, elemCount);
-      };
-
-      $(window).resize(function (event) {
-        if (!scope.isExpanded) {
-          adjustPreviewData();
-          scope.$digest();
-        }
-      });
-
-      scope.$watch('originalData', function (newValue, oldValue) {
-        adjustPreviewData();
-      });
-
-      scope.$watch('isExpanded', function (newValue, oldValue) {
-        scope.showCollection = false;
-
-        if (newValue)
-          scope.data = scope.originalData;
-        else
-          adjustPreviewData();
-      });
-    }
-
-    return {
-      restrict: 'E',
-      templateUrl: 'app/directives/dbDesignerImages/dbDesignerImagesView.html',
-      link: link,
-      scope: {
-        originalData: '=data',
-        isExpanded: '=',
-        singleDesigner: '=',
-        yearId: '=',
-        seasonId: '=',
-        categoryId: '=',
-        cityId: '=',
-        regionId: '=',
-        colorId: '=',
-        menus: '='
-      }
-    };
-  }]);
-
-angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService) {
-  function link(scope, element, attrs) {
-    scope.designer = null;
-    scope.season = null;
-    scope.year = null;
-    scope.category = null;
-    scope.city = null;
-    scope.region = null;
-    scope.source = null;
-    scope.colorActual = null;
-    scope.colorNcs = null;
-    scope.colorNcsTitle = null;
-
-    scope.footerMode = 0;
-    scope.imageName = null;
-
-    scope.currentUser = null;
-
-    if (scope.data.bio.color) {
-      scope.colorNcs = scope.data.bio.color.color.hex;
-      scope.colorNcsTitle = scope.data.bio.color.title;
-    }
-
-    scope.closeClickHandler = function () {
-      scope.onClose();
-    };
-
-    scope.isFooterMode = function (index) {
-      return scope.footerMode == index;
-    };
-
-    scope.showSaveInput = function () { //on SAVE button click
-      scope.footerMode = 1;
-    };
-
-    scope.exportImageCard = function () {
-      $timeout(function () {
-        html2canvas($('.image-details-dialog', element)[0], {
-          background: '#000',
-          //useCORS: true,
-          proxy: '/proxy',
-          onrendered: function (canvas) {
-            var img = canvas.toDataURL("image/jpeg");
-            var name = scope.designer;
-
-            if (scope.season)
-              name += '_' + scope.season;
-            if (scope.year)
-              name += '_' + scope.year;
-
-            download(img, name.replace(/[|&;$%@"<>()+,]/g, "-") + '.jpg', "image/jpeg");
-          }
-        });
-      }, 50);
-    };
-
-    scope.saveImage = function () {
-      userDataRepository.image.createItem(scope.currentUser.id, scope.data.id, scope.imageName, function (data) {
-        mainMenuService.reloadSavedImages();
-      });
-      scope.imageName = null;
-      scope.footerMode = 2;
-    };
-
-    searchMenuRepository.getMain(function (data) {
-      var desId = scope.data.bio.fashion_designer_id;
-      scope.designer = _.find(data.designers, function (item) {
-        return item.id == desId
-      }).title;
-      scope.season = _.find(data.seasons, function (item) {
-        return item.id == scope.data.bio.fashion_season_id
-      }).title;
-      scope.year = scope.data.bio.fashion_year_id;
-      scope.category = _.find(data.categories, function (item) {
-        return item.id == scope.data.bio.fashion_category_id
-      }).title;
-      scope.city = scope.data.bio.city;
-      scope.region = _.find(data.regions, function (item) {
-        return item.id == scope.data.bio.fashion_region_id
-      }).title;
-      scope.source = scope.data.bio.source;
-      scope.colorActual = 'rgb(' + scope.data.bio.rgb + ')';
-    });
-
-    scope.$watch(function () {
-      return authService.currentUser;
-    }, function (newValue, oldValue) {
-      scope.currentUser = newValue;
-    }, true);
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbDesignerImages/dbDesignerImageDetailsView.html',
-    link: link,
-    scope: {
-      data: '=',
-      onClose: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbCopyrightsOverTimeRangeSelector', ['$location', function (location) {
-	function link(scope, element, attrs) {
-		scope.data = [{ title: '5', value: 5 }, { title: '10', value: 10 }, { title: '20', value: 20 }];
-		scope.selectedValue = scope.data[0].value;
-
-		scope.isYear = function (bucket) {
-			return bucket == scope.selectedValue;
-		};
-		scope.setYear = function (bucket) {
-			scope.selectedValue = bucket;
-		};
-	}
-
-	return {
-		restrict: 'E',
-		template: '<ul class="db-copyrights-over-time-range-selector"><li ng-class="{active: isYear(item.value)}" ng-click="setYear(item.value)" ng-bind="item.title" ng-repeat="item in data"></li></ul>',
-		link: link,
-		scope: {
-			selectedValue: '='
-		}
-	};
-}]);
-angular.module('app').directive('hueDbCopyrightsOverTime', function ($interval) {
-  function link(scope, element, attrs) {
-    var chartYOffset = 30;
-    var chartXOffset = 15;
-    var chartYAxisStep = 5;
-    var fontX = {family: 'Gotham Cond SSm A","Gotham Cond SSm B', size: 15, weight: 600};
-
-    scope.colorBarItemHeight = '0%';
-    scope.chartData = null;
-    scope.chartMinValue = 0;
-    scope.chartMaxValue = 10;
-
-    var draw = SVG(angular.element('.graph', element)[0]);
-    var drawChart = function () {
-      draw.clear();
-
-      if (scope.chartData == null) {
-        return;
-      }
-      var graphContainer = angular.element('.graph', element);
-      var width = graphContainer.width() - chartXOffset - chartXOffset;
-      var height = graphContainer.height() - 6 - chartYOffset;
-      var chartXMax = graphContainer.width() - chartXOffset;
-      var chartYMax = graphContainer.height() - chartYOffset;
-
-      draw.line(chartXOffset, chartYMax, chartXMax, chartYMax).stroke({width: 1, color: '#ccc'});
-
-      var yearStart = new Date().getFullYear() - scope.yearRange;
-      for (var i = 0; i <= scope.yearRange; i++) {
-        var x = Math.round(width * (i / scope.yearRange) + chartXOffset);
-        if (i % 2) {
-          draw.line(x, chartYMax, x, chartYMax + 14).stroke({width: 1, color: '#ccc'});
-          draw.text((yearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 24);
-        } else {
-          draw.line(x, chartYMax, x, chartYMax + 4).stroke({width: 1, color: '#ccc'});
-          draw.text((yearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 12);
-        }
-      }
-
-      _.each(scope.chartData, function (line, index) {
-        var x = line.x;
-        var y = line.y;
-        var count = x.length;
-        var items = [];
-
-        for (var i = 0; i < count; i++) {
-          items.push([Math.round(width * x[i] + chartXOffset), Math.round(height * y[i] + 3)]);
-        }
-        draw.polyline(items).fill('none').stroke({color: line.color, width: 2});
-      });
-    };
-
-    var parseData = function (data) {
-      var minItemsCount = null;
-      var maxItemsCount = 0;
-      var count = data.length;
-
-      for (var i = 0; i < count; i++) {
-        if (minItemsCount == null || minItemsCount > data[i].us_copyrights || minItemsCount > data[i].int_copyrights) {
-          minItemsCount = data[i].us_copyrights > data[i].int_copyrights ? data[i].int_copyrights : data[i].us_copyrights;
-        }
-        if (maxItemsCount < data[i].us_copyrights || maxItemsCount < data[i].int_copyrights) {
-          maxItemsCount = data[i].us_copyrights < data[i].int_copyrights ? data[i].int_copyrights : data[i].us_copyrights;
-        }
-      }
-
-      minItemsCount = Math.floor(minItemsCount / chartYAxisStep) * chartYAxisStep;
-      maxItemsCount = Math.ceil(maxItemsCount / chartYAxisStep) * chartYAxisStep;
-
-      var graphYLength = maxItemsCount - minItemsCount;
-      var yearStart = new Date().getFullYear() - scope.yearRange;
-
-      scope.chartData = [{color: '#F00', x: [], y: []}, {color: '#000', x: [], y: []}]; //USA, INT
-
-      var i = 0;
-      while (data[i] && data[i].year >= yearStart) {
-        var x = (data[i].year - yearStart) / scope.yearRange;
-        scope.chartData[0].x.push(x);
-        scope.chartData[0].y.push(1 - ((data[i].us_copyrights - minItemsCount) / graphYLength));
-
-        scope.chartData[1].x.push(x);
-        scope.chartData[1].y.push(1 - ((data[i].int_copyrights - minItemsCount) / graphYLength));
-        i++;
-      }
-
-      drawChart();
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length) {
-        parseData(newValue);
-      }
-    });
-
-    scope.$watch('yearRange', function (newValue, oldValue) {
-      if (scope.data && scope.data.length) {
-        parseData(scope.data);
-      }
-    });
-
-    var container = element.find('.db-copyrights-over-time');
-    var containerWidth = container.width();
-    var updateInterval = $interval(function () {
-      if (container.width() != containerWidth) {
-        if (scope.data && scope.data.length) {
-          parseData(scope.data);
-        }
-        containerWidth = container.width();
-      }
-    }, 250);
-
-    scope.$on('$destroy', function () {
-      if (updateInterval) {
-        $interval.cancel(updateInterval);
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="db-copyrights-over-time"><div class="graph-legend"><div class="legend-item">USA<div class="color-box item-usa"></div></div><div class="legend-item">Int<div class="color-box item-int"></div></div></div><div class="graph"></div></div>',
-    link: link,
-    scope: {
-      data: '=',
-      yearRange: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbCopyrightListPagination', function ($timeout) {
-  function link(scope, element, attrs) {
-    scope.currentPageDisplayed = scope.currentPage;
-    window.sc = scope;
-
-    var setPageDebounced = _.debounce(function () {
-      $timeout(function () {
-        scope.currentPage = scope.currentPageDisplayed;
-      });
-    }, 1000);
-
-    scope.switchPage = function (delta) {
-      var newPage = scope.currentPageDisplayed + delta;
-      if (newPage > 0 && newPage <= scope.totalPages) {
-        scope.currentPageDisplayed = newPage;
-        setPageDebounced();
-      }
-    };
-
-    scope.$watch('currentPage', function (newValue, oldValue) {
-      scope.currentPageDisplayed = newValue;
-    });
-
-    scope.setPage = function (delta) {
-      var newPage = scope.currentPageDisplayed + delta;
-      if (newPage > 0 && newPage <= scope.totalPages) {
-        scope.currentPageDisplayed = newPage;
-        setPageDebounced();
-        scope.changePage()(newPage);
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="db-copyright-list-pagination">' +
-    '<div class="pagination-button disable-text-selection" ng-click="setPage(-1)">' +
-    '<i class="fa fa-caret-left"></i></div>' +
-    '<div class="pagination-current">' +
-    '<input type="number" min="1" max="{{totalPages}}" ng-model="currentPageDisplayed" ng-change="setPage(0)"/> / <span ng-bind="totalPages"></span></div>' +
-    '<div class="pagination-button disable-text-selection" ng-click="setPage(1)">' +
-    '<i class="fa fa-caret-right"></i>' +
-    '</div></div>',
-    link: link,
-    scope: {
-      currentPage: '=',
-      totalPages: '=',
-      changePage: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbCopyrightListExpanded', function ($location) {
-  function link(scope, element, attrs) {
-    scope.details = scope.itemData;
-    scope.otherColorCopyrights = [];
-    scope.otherColorsPages = [];
-    scope.activePage = 0;
-
-    var updateData = function () {
-      var currentColorId = scope.itemData.color.id;
-      var otherColors = _.sortBy(_.filter(scope.data, function (d) {
-        return d.color.id == currentColorId;
-      }), function (d) {
-        return new Date(d.filedAt);
-      });
-
-      var pagesCount = otherColors.length > 10 ? 10 : otherColors.length;
-      scope.otherColorsPages = [];
-      for (var i = 0; i < pagesCount; i++)
-        scope.otherColorsPages.push(otherColors[i]);
-
-      var data = scope.data;
-      var dataCount = scope.data.length;
-      scope.otherColorCopyrights = [];
-      for (var i = 0; i < dataCount; i++) {
-        var colorId = data[i].color.id;
-        if (colorId != currentColorId && !_.find(scope.otherColorCopyrights, function (c) {
-            return c.id == colorId
-          }))
-          scope.otherColorCopyrights.push(data[i].color);
-      }
-    }
-
-    updateData();
-
-    scope.colorClick = function (id) {
-      $location.url('color').search({color: id});
-    };
-
-    scope.selectOtherColor = function (color) {
-      scope.colorClick(color.id);
-    };
-
-    scope.selectPage = function (index) {
-      scope.details = scope.otherColorsPages[index];
-      scope.activePage = index;
-    };
-
-    scope.isPageActive = function (index) {
-      return scope.activePage == index;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbCopyrightList/dbCopyrightListExpandedView.html',
-    link: link,
-    scope: {
-      itemData: '=',
-      data: '=',
-      hideView: '&',
-      pageTitle: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbCopyrightList', function ($location) {
-  function link(scope, element, attrs) {
-    scope.selectedItem = null;
-
-    scope.colorClick = function (item) {
-      // console.log('item🎅🎅🎅🎅🎅', '', item.color_code);
-      // scope.setColor()(item.color_code);
-    };
-
-    scope.selectItem = function (item) {
-      scope.selectedItem = item;
-    };
-    scope.hideExpandedView = function () {
-      scope.selectedItem = null;
-    };
-    scope.isExpandedViewVisible = function () {
-      return scope.selectedItem != null;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbCopyrightList/dbCopyrightListView.html',
-    link: link,
-    scope: {
-      data: '=',
-      pageTitle: '=',
-      setColor: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorsByFamilyRangeSelector', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.data = [{title: '5', value: 5}, {title: '10', value: 10}, {title: '20', value: 20}];
-    scope.selectedValue = scope.data[0].value;
-
-    scope.isYear = function (bucket) {
-      return bucket == scope.selectedValue;
-    };
-    scope.setYear = function (bucket) {
-      scope.selectedValue = bucket;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<ul class="db-colors-by-family-range-selector"><li ng-class="{active: isYear(item.value)}" ng-click="setYear(item.value)" ng-bind="item.title" ng-repeat="item in data"></li></ul>',
-    link: link,
-    scope: {
-      selectedValue: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorsByFamily', function ($timeout) {
-  function link(scope, element, attrs) {
-    var chartYOffset = 30;
-    var chartXOffset = 30;
-    var chartYAxisStep = 5;
-    var fontX = {family: 'Gotham Cond SSm A","Gotham Cond SSm B', size: 15, weight: 600};
-
-    scope.colorBarItemHeight = '0%';
-    scope.chartData = null;
-    scope.chartMinValue = 0;
-    scope.chartMaxValue = 10;
-    scope.visibleColors = [];
-
-    scope.showAllLines = function () {
-      var count = scope.data.length;
-      for (var i = 0; i < count; i++)
-        scope.visibleColors[i] = true;
-      drawChart();
-    };
-
-    scope.toggleLine = function (index) {
-      scope.visibleColors[index] = scope.visibleColors[index] ? false : true;
-      drawChart();
-    };
-
-    var draw = SVG($('.graph', element)[0]);
-    var drawChart = function () {
-      draw.clear();
-
-      if (scope.chartData == null)
-        return;
-
-      var graphContainer = $('.graph', element);
-      var width = graphContainer.width() - chartXOffset - chartXOffset;
-      var height = graphContainer.height() - 6 - chartYOffset;
-      var chartXMax = graphContainer.width() - chartXOffset;
-      var chartYMax = graphContainer.height() - chartYOffset;
-
-      var graphYearStart = new Date().getFullYear() - scope.yearRange;
-      for (var i = 0; i <= scope.yearRange; i++) {
-        var x = Math.round(width * (i / scope.yearRange) + chartXOffset);
-        if (i % 2) {
-          draw.line(x, 3, x, chartYMax + 10).stroke({width: 1, color: '#ccc'});
-          draw.text((graphYearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 18);
-        } else {
-          draw.line(x, 3, x, chartYMax).stroke({width: 1, color: '#ccc'});
-          draw.text((graphYearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 10);
-        }
-      }
-
-      var itemCountRange = scope.chartMaxValue - scope.chartMinValue;
-      for (var i = 0; i <= itemCountRange; i += chartYAxisStep) {
-        var y = Math.round(height * (i / itemCountRange) + 3);
-        draw.line(chartXOffset, y, chartXMax, y).stroke({width: 1, color: '#ccc'});
-
-        if (i == 0)
-          draw.text((scope.chartMaxValue - i).toString()).fill('#000').font(fontX).cx(chartXOffset - 15).cy(y + 5);
-        else if (i == itemCountRange)
-          draw.text((scope.chartMaxValue - i).toString()).fill('#000').font(fontX).cx(chartXOffset - 15).cy(y - 5);
-        else
-          draw.text((scope.chartMaxValue - i).toString()).fill('#000').font(fontX).cx(chartXOffset - 15).cy(y);
-      }
-
-      _.each(scope.chartData, function (line, index) {
-        if (!scope.visibleColors[index])
-          return;
-
-        var x = line.x;
-        var y = line.y;
-        var count = x.length;
-        var items = [];
-
-        for (var i = 0; i < count; i++)
-          items.push([Math.round(width * x[i] + chartXOffset), Math.round(height * y[i] + 3)]);
-
-        draw.polyline(items).fill('none').stroke({color: line.color, width: 2});
-      });
-    };
-
-    var parseData = function (data) {
-      var minItemsCount = null;
-      var maxItemsCount = 0;
-      _.each(data, function (line) {
-        var items = line.items;
-        var ic = items.length;
-        for (var i = 0; i < ic; i++) {
-          if (minItemsCount == null || minItemsCount > items[i][1])
-            minItemsCount = items[i][1];
-          if (maxItemsCount < items[i][1])
-            maxItemsCount = items[i][1];
-        }
-      });
-      chartYAxisStep = ((maxItemsCount - minItemsCount) + 1) <= 5 ? 1 : Math.round(((maxItemsCount - minItemsCount) + 1) / 5);
-
-      minItemsCount = Math.floor(minItemsCount / chartYAxisStep) * chartYAxisStep;
-      maxItemsCount = Math.ceil(maxItemsCount / chartYAxisStep) * chartYAxisStep;
-      scope.chartMinValue = minItemsCount;
-      scope.chartMaxValue = maxItemsCount;
-
-      var currentDate = new Date();
-      var graphXStart = currentDate.getFullYear() - scope.yearRange;
-      var graphXEnd = currentDate.getFullYear();
-      var graphXLength = scope.yearRange;
-      var graphYLength = maxItemsCount - minItemsCount;
-
-      scope.chartData = _.map(data, function (line) {
-        var items = line.items;
-        var result = {color: line.color.color.hex, title: line.color.title, x: [], y: []};
-        var x = result.x;
-        var y = result.y;
-        var count = items.length;
-
-        if (!_.some(items, function (i) {
-            return i[0] == graphXStart;
-          }) && _.some(items, function (i) {
-            return i[0] > graphXStart;
-          })) { // if there is no zero point and there are visible points
-          var itemsBeforeXMin = _.filter(items, function (i) {
-            return i[0] < graphXStart;
-          });
-          if (itemsBeforeXMin.length && _.some(items, function (i) {
-              return i[0] > graphXStart;
-            })) { // find Y at zero point
-            var p1 = _.max(itemsBeforeXMin, function (i) {
-              return i[0];
-            }); // find closest points to zero X
-            var p2 = _.find(items, function (i) {
-              return i[0] > graphXStart;
-            });
-            var slope = (p2[1] - p1[1]) / (p2[0] - p1[0]);
-            var b = -(slope * p1[0] - p1[1]);
-
-            x.push(0);
-            y.push(1 - (((slope * graphXStart + b) - minItemsCount) / graphYLength));
-          }
-        }
-
-        for (var i = 0; i < count; i++) {
-          var year = items[i][0];
-          if (year < graphXStart || year > graphXEnd)
-            continue;
-          x.push((year - graphXStart) / graphXLength);
-          y.push(1 - ((items[i][1] - minItemsCount) / graphYLength));
-        }
-
-        return result;
-      });
-
-      scope.colorBarItemHeight = (100 / data.length) + '%';
-      drawChart();
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length) {
-        scope.visibleColors = [];
-
-        var count = newValue.length;
-        if (scope.defaultColorId != null && scope.defaultColorId != undefined) {
-          var id = _.isNumber(scope.defaultColorId) ? scope.defaultColorId : parseInt(scope.defaultColorId);
-          for (var i = 0; i < count; i++)
-            scope.visibleColors[i] = newValue[i].color.id === id;
-        }
-        else
-          for (var i = 0; i < count; i++)
-            scope.visibleColors[i] = true;
-
-        $timeout(function () {
-          parseData(newValue);
-        }, 300);
-      }
-    });
-
-    scope.$watch('yearRange', function (newValue, oldValue) {
-      if (scope.data && scope.data.length)
-        $timeout(function () {
-          parseData(scope.data);
-        }, 0);
-    });
-
-    var windowResizeHandler = _.debounce(drawChart, 200);
-    scope.$on('$destroy', function () {
-      $(window).off('resize', windowResizeHandler);
-    });
-    $(window).resize(windowResizeHandler);
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorsByFamily/dbColorsByFamilyView.html',
-    link: link,
-    scope: {
-      data: '=',
-      yearRange: '=',
-      defaultColorId: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorPicker', function () {
-	function link($scope, element, attrs) {
-		var vm = this;
-		var color_picker = document.getElementById('color_picker'),
-			color_id = document.getElementById('color_id');
-		$scope.colorPickerGray = 100;
-		$scope.colorPickerOpacity = 1;
-		document.getElementById('value_span').innerHTML = '100%';
-
-		vm.numOfpaintColorNames = 0;
-		vm.numOfcolorAssociationNames = 0;
-		vm.colorAssociationNameWord = '';
-
-		$scope.changeColor = function () {
-			$scope.colorPickerGray = 100;
-			console.log('$scope.color_picker_y', $scope.color_picker_y);
-			color_picker.onmousedown = select_color;
-		};
-
-		color_picker_add();
-
-		$scope.colorPickerSliderGray = function () {
-			var value = document.getElementById('rg').value,
-				inputRGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B],
-				hsl = rgb2hsl(inputRGB);
-
-			color_id.style.background = 'hsl(' + hsl[0] + ',' + value + '%,' + hsl[2] + '%';
-			var rgbArr = color_id.style.background.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-
-			$scope.colorRGB_R = rgbArr[1];
-			$scope.colorRGB_G = rgbArr[2];
-			$scope.colorRGB_B = rgbArr[3];
-		};
-
-		$scope.colorPickerSliderOpacity = function () {
-			var value = document.getElementById('range_opacity').value;
-			document.getElementById('value_span').innerHTML = value * 100 + '%';
-			color_id.style.opacity = value;
-		};
-
-		$scope.colorPickerRGB = function () {
-			var colorInputR = document.getElementById('colorInputR').value,
-				colorInputG = document.getElementById('colorInputG').value,
-				colorInputB = document.getElementById('colorInputB').value;
-
-			$scope.colorRGB_R = colorInputR;
-			$scope.colorRGB_G = colorInputG;
-			$scope.colorRGB_B = colorInputB;
-
-			var inputRGB = 'rgb(' + $scope.colorRGB_R + ', ' + $scope.colorRGB_G + ', ' + $scope.colorRGB_B + ')';
-			color_id.style.backgroundColor = inputRGB;
-		};
-
-		function color_picker_add() {
-			color_picker_ = color_picker.getContext('2d'),
-				center_x = (color_picker.width) / 2,
-				center_y = (color_picker.height) / 2,
-				sx = center_x,
-				sy = center_y;
-
-			$scope.colorRGB_R = 0;
-			$scope.colorRGB_G = 0;
-			$scope.colorRGB_B = 0;
-			palette = new color_picker_element(center_x, center_y, sx, sy);
-			palette.draw();
-		}
-
-		var color_picker_y = 0;
-		var color_picker_x = 0;
-
-		function select_color(e) {
-			color_picker_y = $('#color_picker').offset().top;
-			color_picker_x = $('#color_picker').offset().left;
-			// console.log('$scope.color_picker_y1', $scope.color_picker_y1);
-			var x = e.pageX - color_picker_x,
-				y = e.pageY - color_picker_y,
-				pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
-				// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
-				pixelColor = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
-
-			color_id.style.backgroundColor = pixelColor;
-			$scope.pixel = pixel;
-			$scope.colorRGB_R = pixel[0];
-			$scope.colorRGB_G = pixel[1];
-			$scope.colorRGB_B = pixel[2];
-		}
-
-		function color_picker_element(center_x, center_y, sx, sy) {
-			this.center_x = center_x;
-			this.center_y = center_y;
-			this.sx = sx;
-			this.sy = sy;
-			this.draw = function () {
-				for (var i = 0; i < 360; i += 0.1) {
-					var rad = (i - 45) * (Math.PI) / 180;
-					color_picker_.strokeStyle = 'hsla(' + i + ', 100%, 50%, 1.0)';
-					color_picker_.beginPath();
-					color_picker_.moveTo(center_x, center_y);
-					color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
-					color_picker_.stroke();
-				}
-			};
-		}
-
-		// RGB to HSL																																																		RGB_TO_HSL
-		function rgb2hsl(rgbArr) {
-			var r1 = rgbArr[0] / 255;
-			var g1 = rgbArr[1] / 255;
-			var b1 = rgbArr[2] / 255;
-
-			var maxColor = Math.max(r1, g1, b1);
-			var minColor = Math.min(r1, g1, b1);
-			// Calculate L:
-			var L = (maxColor + minColor) / 2;
-			var S = 0;
-			var H = 0;
-			if (maxColor != minColor) {
-				// Calculate S:
-				if (L < 0.5) {
-					S = (maxColor - minColor) / (maxColor + minColor);
-				} else {
-					S = (maxColor - minColor) / (2.0 - maxColor - minColor);
-				}
-				// Calculate H:
-				if (r1 == maxColor) {
-					H = (g1 - b1) / (maxColor - minColor);
-				} else if (g1 == maxColor) {
-					H = 2.0 + (b1 - r1) / (maxColor - minColor);
-				} else {
-					H = 4.0 + (r1 - g1) / (maxColor - minColor);
-				}
-			}
-
-			L *= 100;
-			S *= 100;
-			H *= 60;
-			if (H < 0) {
-				H += 360;
-			}
-			var result = [H, S, L];
-			return result;
-		}
-	}
-
-	return {
-		restrict: 'E',
-		templateUrl: 'app/directives/dbColorPicker/dbColorPickerView.html',
-		link: link,
-		scope: false
-	};
-});
-
-angular.module('app').directive('hueDbColorPalette', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.expandedViewTables = [];
-
-    scope.goToColor = function (index) {
-      scope.setColor()(scope.data[index].color);
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue) {
-        var tableCount = Math.ceil(newValue.length / 24);
-        scope.expandedViewTables = [];
-        for (var i = 0; i < tableCount; i++)
-          scope.expandedViewTables.push(i);
-      } else
-        scope.expandedViewTables = [];
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorPalette/dbColorPaletteView.html',
-    link: link,
-    scope: {
-      data: '=',
-      isExpanded: '=',
-      setColor: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorPaletteBucketSelector', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.data = [
-      {title: '38', value: 38},
-      {title: '250', value: 250},
-      {title: '1025', value: 1025},
-      {title: 'NCS', value: 1950}
-    ];
-    scope.selectedValue = scope.data[0].value;
-
-    scope.isColorPaletteBucket = function (bucket) {
-      return bucket == scope.selectedValue;
-    };
-    scope.setColorPaletteBucket = function (bucket) {
-      scope.onChange()(bucket);
-      scope.selectedValue = bucket;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<ul class="color-palette-bucket-selector">' +
-    '<li ng-class="{active: isColorPaletteBucket(item.value)}"' +
-    'ng-click="setColorPaletteBucket(item.value)" ' +
-    'ng-bind="item.title" ' +
-    'ng-repeat="item in data"></li>' +
-    '</ul>',
-    link: link,
-    scope: {
-      selectedValue: '=',
-      onChange: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorFrequencyBySeasonExpanded', function () {
-  function link(scope, element, attrs) {
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequencyBySeason/dbColorFrequencyBySeasonExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFrequencyBySeasonExpandedChart', function () {
-  function link(scope, element, attrs) {
-    //config
-    var linesColor = '#BBB';
-    var margin = 30;
-    var marginTop = 10;
-    var yLabelsWidth = 40;
-    var xLabelsHeight = 60;
-    var xLabelsSpacing = 10;
-    var yAxisStep = 5;
-    var barSpaceCoeff = 0.25;
-    var fontY = {family: 'Open Sans', size: 14};
-    var fontX = {family: 'Open Sans', size: 12};
-
-    //variables
-    var colorData = scope.data;
-    var barCount = colorData.length;
-    var maxValue = _.max(scope.data, function (item) {
-      return item.percentage;
-    }).percentage;
-    var graphMaxValue = Math.ceil(maxValue / yAxisStep) * yAxisStep;
-    var lineCount = graphMaxValue / yAxisStep;
-    var draw = SVG(element[0]);
-    var labelsGroup = draw.group();
-    var barsGroup = draw.group();
-
-    //create
-    var linePercentage = graphMaxValue;
-    for (var i = 0; i <= lineCount; i++) {
-      labelsGroup.line(0, 0, 0, 0).stroke({width: 1, color: linesColor});
-      labelsGroup.text(linePercentage + '%').fill(linesColor).font(fontY);
-      linePercentage -= yAxisStep;
-    }
-
-    for (var i = 0; i < barCount; i++) {
-      barsGroup.rect(0, 0).attr('fill', colorData[i].color.hex);
-      labelsGroup.text(colorData[i].color.ncs).fill(linesColor).font(fontX);
-    }
-
-    var resizeChart = function () {
-      var elementWidth = element.width();
-      var elementHeight = element.height();
-      var graphWidth = elementWidth - yLabelsWidth - margin - margin;
-      var graphHeight = elementHeight - xLabelsHeight - marginTop;
-      var labelsGroupChildren = labelsGroup.children();
-      var barsGroupChildren = barsGroup.children();
-
-      draw.size(elementWidth, elementHeight);
-      barsGroup.x(yLabelsWidth + margin);
-
-      //lines
-      var linePos = marginTop + 1;
-      var linePosStep = graphHeight / lineCount;
-      var yLabelsXPos = yLabelsWidth / 2;
-
-      for (var i = 0; i <= lineCount; i++) {
-        var rpos = Math.round(linePos);
-        labelsGroupChildren[i * 2].plot(yLabelsWidth, rpos, elementWidth, rpos);
-        labelsGroupChildren[(i * 2) + 1].cx(yLabelsXPos).cy(rpos);
-        linePos += linePosStep;
-      }
-
-      //bars
-      var barWidth = graphWidth / (barCount + ((barCount - 1) * barSpaceCoeff));
-      var barHeightCoeff = graphHeight / graphMaxValue;
-      var spaceWidth = barWidth * barSpaceCoeff;
-      var xLabelsYPos = elementHeight - (xLabelsHeight / 2) - xLabelsSpacing;
-      var xLabelsYPosOdd = elementHeight - (xLabelsHeight / 2) + xLabelsSpacing;
-      var xLabelsXPosOffset = yLabelsWidth + margin + Math.round(barWidth / 2) + 8;
-
-      barWidth = Math.floor(barWidth);
-      spaceWidth = Math.floor(spaceWidth);
-
-      var barPos = 0;
-      var barPosStep = barWidth + spaceWidth;
-      var linesGroupIndexOffset = (lineCount * 2) + 2;
-      for (var i = 0; i < barCount; i++) {
-        var item = colorData[i];
-        var barHeight = Math.round(barHeightCoeff * item.percentage);
-        barsGroupChildren[i].size(barWidth, barHeight).x(barPos).y(marginTop + graphHeight - barHeight);
-        if (i % 2)
-          labelsGroupChildren[linesGroupIndexOffset + i].cx(barPos + xLabelsXPosOffset).cy(xLabelsYPosOdd);
-        else
-          labelsGroupChildren[linesGroupIndexOffset + i].cx(barPos + xLabelsXPosOffset).cy(xLabelsYPos);
-        barPos += barPosStep;
-      }
-    };
-
-    resizeChart();
-    $(window).resize(_.debounce(resizeChart, 500));
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      data: '=hueDbColorFrequencyBySeasonExpandedChart'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFrequencyBySeason', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.dataRendered = false;
-    scope.dataRenderedPie = false;
-    scope.onDataRendered = function () {
-      scope.dataRendered = true;
-      scope.dataRenderedPie = true;
-    };
-
-    scope.getButtonId = function (btnName) {
-      return 'db-cfbs-' + scope.$id + '-btn-' + btnName;
-    };
-
-    scope.goToSeason = function (index) {
-      // location.url('season').search({
-      //   season: scope.data[index].season_id,
-      //   year: routeParams.year,
-      //   category: routeParams.category
-      // });
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequencyBySeason/dbColorFrequencyBySeasonView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorFrequencyByRegionExpanded', function () {
-  function link(scope, element, attrs) {
-    scope.activeTab = 0;
-    scope.setTab = function (index) {
-      scope.activeTab = index;
-    };
-    scope.isTabActive = function (index) {
-      return scope.activeTab == index;
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue)
-        scope.activeTab = _.findIndex(newValue, function (item) {
-          return item.colors.length > 0;
-        });
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequencyByRegion/dbColorFrequencyByRegionExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFrequencyByRegion', function () {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.selectedBar = null;
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.currentTarget) {
-        angular.element(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          angular.element(scope.selectedBar).tooltipster('hide');
-
-        angular.element(event.currentTarget).tooltipster('show');
-        scope.selectedBar = event.currentTarget;
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequencyByRegion/dbColorFrequencyByRegionView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFrequencyByCityExpanded', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    scope.columns = [];
-    scope.data = [];
-    scope.activeRegionIndex = null;
-    scope.activeCityIndex = null;
-    scope.activeColorIndex = null;
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-
-    var activeElement;
-    scope.toggleActiveBar = function (event, regionIndex, cityIndex, colorIndex) {
-      if (scope.activeRegionIndex == regionIndex && scope.activeCityIndex == cityIndex && scope.activeColorIndex == colorIndex) {
-        scope.activeRegionIndex = null;
-        scope.activeCityIndex = null;
-        scope.activeColorIndex = null;
-      } else {
-        scope.activeRegionIndex = regionIndex;
-        scope.activeCityIndex = cityIndex;
-        scope.activeColorIndex = colorIndex;
-      }
-
-      if (activeElement)
-        activeElement.tooltipster('hide');
-
-      activeElement = $(event.currentTarget);
-
-      if (scope.activeRegionIndex != null)
-        timeout(function () {
-          activeElement.tooltipster('show');
-        }, 250);
-    };
-    scope.isBarActive = function (regionIndex, cityIndex, colorIndex) {
-      return scope.activeRegionIndex == regionIndex && scope.activeCityIndex == cityIndex && scope.activeColorIndex == colorIndex;
-    };
-
-    scope.$watch('originalData', function (newValue, oldValue) {
-      if (newValue && newValue.length) {
-        scope.columns = new Array(_.max(newValue, function (item) {
-          return item.colors.length;
-        }).colors.length);
-        scope.data = _.groupBy(newValue, 'regionId');
-      }
-      else {
-        scope.columns = [];
-        scope.data = [];
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequencyByCity/dbColorFrequencyByCityExpandedView.html',
-    link: link,
-    scope: {
-      originalData: '=data',
-      toggleView: '&'
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorFrequencyByCity', [
-  '$location', '$timeout', function (location, $timeout) {
-    function link(scope, element, attrs) {
-      scope.cityNames = [];
-
-      scope.dataRendered = false;
-      scope.dataRenderedPie = false;
-      scope.onDataRendered = function () {
-        scope.dataRendered = true;
-        scope.dataRenderedPie = true;
-      };
-
-      scope.getButtonId = function (btnName) {
-        return 'db-cfbc-' + scope.$id + '-btn-' + btnName;
-      };
-
-      scope.goToCity = function (index) {
-        location.url('city').search({
-          city: scope.data[index].cityId,
-          year: 2017,
-          season: 42,
-          category: 1
-        });
-      };
-
-      scope.$watchCollection('data', function (newValue) {
-        // scope.dataRenderedPie = false;
-        if (newValue) {
-          var newCityNames = [];
-          _.each(newValue, function (item, index) {
-            if (item.cityId == 12) { // rio 12
-              newCityNames[index] = 'Rio';
-            } else {
-              newCityNames[index] = item.city;
-            }
-          });
-          scope.cityNames = newCityNames;
-        }
-      });
-    }
-
-    return {
-      restrict: 'E',
-      templateUrl: 'app/directives/dbColorFrequencyByCity/dbColorFrequencyByCityView.html',
-      link: link,
-      scope: {
-        data: '='
-      }
-    };
-  }]);
-
-angular.module('app').directive('hueDbColorFrequencyByCategory', function () {
-  function link(scope, element, attrs) {
-
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequencyByCategory/dbColorFrequencyByCategoryView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueColorFrequencyByCategoryChart', ['$timeout', '$location', function (timeout, location) {
-  function link(scope, element, attrs) {
-    var config = scope.config;
-
-    var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-    var strokeWidth = scope.config.strokeWidth ? scope.config.strokeWidth : 2;
-    var diameter = scope.config.diameter;
-
-    var outerStrokeRadius = diameter / 2;
-    var innerStrokeRadius = outerStrokeRadius - strokeWidth;
-    var innerSectionRadius = outerStrokeRadius - donutWidth;
-    var animationDuration = 400;
-    var animationStep = 1 / (animationDuration / 20);
-    var strokePercentage = 100 - scope.percentage;
-
-    var draw = SVG(element[0]).size(diameter, diameter);
-    var donutGroup = draw.group();
-
-    var getSectionPathData = function (angle1, angle2, xpos, ypos, outerRadius, innerRadius) {
-      var sinStart = Math.sin(angle1);
-      var cosStart = Math.cos(angle1);
-      var sinEnd = Math.sin(angle2);
-      var cosEnd = Math.cos(angle2);
-
-      var xO1 = xpos + (sinStart * outerRadius); //outer
-      var yO1 = ypos - (cosStart * outerRadius);
-      var xO2 = xpos + (sinEnd * outerRadius);
-      var yO2 = ypos - (cosEnd * outerRadius);
-
-      var xI1 = xpos + (sinStart * innerRadius); //inner
-      var yI1 = ypos - (cosStart * innerRadius);
-      var xI2 = xpos + (sinEnd * innerRadius);
-      var yI2 = ypos - (cosEnd * innerRadius);
-
-      var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-      return new SVG.PathArray([
-        ['M', xO1, yO1],
-        ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-        ['L', xI2, yI2],
-        ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-        ['Z']
-      ]).toString();
-    };
-
-    //Initialization
-    donutGroup.path('').attr('fill', scope.color); //section
-    donutGroup.path('').attr('fill', scope.strokeColor ? scope.strokeColor : scope.color); //stroke
-
-    //Opening animation
-    var easeOutFunction = BezierEasing.css['ease-out'];
-    var animationProgress = 0;
-    var donutChildren = donutGroup.children();
-    var processAnimation = function () {
-      animationProgress += animationStep;
-      if (animationProgress > 1)
-        animationProgress = 1;
-
-      var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
-
-      var angleStart = 0;
-      var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
-      donutChildren[0].plot(getSectionPathData(angleStart, angleEnd, outerStrokeRadius, outerStrokeRadius, innerStrokeRadius, innerSectionRadius));
-
-      //angleStart = angleEnd;
-      angleEnd = angleStart + (coeff * Math.PI * 2);
-      donutChildren[1].plot(getSectionPathData(angleStart, angleEnd, outerStrokeRadius, outerStrokeRadius, outerStrokeRadius, innerStrokeRadius));
-
-      if (animationProgress != 1)
-        timeout(processAnimation, 20);
-    };
-
-    processAnimation();
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=hueColorFrequencyByCategoryChart',
-      percentage: '=',
-      color: '=',
-      strokeColor: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorFrequencyExpanded', function () {
-  function link(scope, element, attrs) {
-    scope.data = [];
-    scope.barWidths = [];
-    scope.colorPickerData = [];
-    scope.activeColor = 0;
-    scope.showColorPicker = false;
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'hover',
-      position: 'bottom'
-    };
-
-    var updateData = function (newData) {
-      var data = newData.mostPopular.concat(newData.moderate).concat(newData.infrequent).concat(newData.not_used);
-      scope.data = _.filter(data, function (item) {
-        return item.percentage_abs > 0;
-      });
-      scope.barWidths = [];
-
-      var count = scope.data.length - 1;
-      var sum = 0;
-      for (var i = 0; i < count; i++) {
-        sum += scope.data[i].percentage_abs;
-        scope.barWidths.push(scope.data[i].percentage_abs + '%');
-      }
-      sum += scope.data[count].percentage_abs;
-      if (sum > 100)
-        scope.barWidths.push((scope.data[count].percentage_abs - (sum - 100)) + '%'); //trim last element if sum is more than 100
-      else
-        scope.barWidths.push(scope.data[count].percentage_abs + '%');
-    };
-
-    scope.$watch('originalData', function (newValue, oldValue) {
-      if (newValue) {
-        if (newValue instanceof Array) {
-          scope.showColorPicker = newValue.length > 1;
-          scope.colorPickerData = newValue;
-          updateData(newValue[scope.activeColor]);
-        }
-        else {
-          scope.showColorPicker = false;
-          scope.colorPickerData = [];
-          updateData(newValue);
-        }
-      } else
-        scope.data = [];
-    });
-
-    scope.$watch('activeColor', function (newValue, oldValue) {
-      if (scope.originalData instanceof Array && newValue != null)
-        updateData(scope.originalData[newValue]);
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequency/dbColorFrequencyExpandedView.html',
-    link: link,
-    scope: {
-      originalData: '=data',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFrequency', function () {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-
-    scope.activeIndex = 0;
-    scope.data = null;
-    scope.selectedBar = null;
-
-    scope.expandedGroupClass = null;
-    scope.setExpandedGroupClass = function (groupClass) {
-      scope.expandedGroupClass = groupClass;
-    };
-    scope.showSearchedColor = function () {
-      return scope.searchedColor != null;
-    };
-    scope.getClass = function () {
-      var result = [];
-      if (scope.expandedGroupClass)
-        result.push(scope.expandedGroupClass);
-      if (scope.showSearchedColor())
-        result.push('with-searched-color');
-
-      return result.join(' ');
-    };
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.target) {
-        angular.element(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          angular.element(scope.selectedBar).tooltipster('hide');
-
-        angular.element(event.target).tooltipster('show');
-        scope.selectedBar = event.target;
-      }
-    };
-
-    scope.$watch('originalData', function (newValue, oldValue) {
-      if (newValue instanceof Array)
-        scope.data = newValue[scope.activeColor];
-      else
-        scope.data = newValue;
-    });
-
-    scope.$watch('activeColor', function (newValue, oldValue) {
-      if (scope.originalData instanceof Array && newValue != null)
-        scope.data = scope.originalData[newValue];
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFrequency/dbColorFrequencyView.html',
-    link: link,
-    scope: {
-      originalData: '=data',
-      searchedColor: '=',
-      activeColor: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFrequencyColorPicker', function () {
-  function link(scope, element, attrs) {
-    scope.setActiveColor = function (index) {
-      scope.activeColor = index;
-    };
-    scope.isColorActive = function (index) {
-      return scope.activeColor == index;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<ul class="db-color-frequency-color-picker"><li ng-style="{\'border-top-color\': item.hex}" ng-class="{active: isColorActive($index)}" ng-bind="item.color" ng-click="setActiveColor($index)" ng-repeat="item in data"></li></ul>',
-    link: link,
-    scope: {
-      data: '=',
-      activeColor: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFamiliesByBrandExpanded', function () {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.selectedBar = null;
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.currentTarget) {
-        $(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          $(scope.selectedBar).tooltipster('hide');
-
-        $(event.currentTarget).tooltipster('show');
-        scope.selectedBar = event.currentTarget;
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFamiliesByBrand', function () {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.selectedBar = null;
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.currentTarget) {
-        $(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          $(scope.selectedBar).tooltipster('hide');
-
-        $(event.currentTarget).tooltipster('show');
-        scope.selectedBar = event.currentTarget;
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorCountByModel', ['$location', function (location) {
-	function link(scope, element, attrs) {
-		scope.maxItems = 100;
-
-		scope.$watch('isExpanded', function (newValue, oldValue) {
-			if (newValue === true)
-				scope.maxItems = 100;
-			else if (newValue === false)
-				scope.maxItems = 6;
-		});
-	}
-
-	return {
-		restrict: 'E',
-		template: '<div class="db-color-count-by-model"><div class="color-count-row" ng-repeat="item in data | limitTo: maxItems"><div class="color-count" ng-bind="::item[0]"></div><div class="color-percentage">{{::item[1]}}</div></div></div>',
-		link: link,
-		scope: {
-			data: '=',
-			isExpanded: '='
-		}
-	};
-}]);
-angular.module('app').directive('hueDbColorCount', ['$location', function (location) {
-  function link(scope, element, attrs) {
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="db-color-count"><div class="color-count-row"><div class="color-count">1</div><div class="color-percentage">{{data[0]}} <span class="unit">%</span></div></div>' +
-    '<div class="color-count-row"><div class="color-count">2</div><div class="color-percentage">{{data[1]}} <span class="unit">%</span></div></div>' +
-    '<div class="color-count-row"><div class="color-count">3+</div><div class="color-percentage">{{data[2]}} <span class="unit">%</span></div></div></div>',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueDbColorCopyrightsByColorFamily', function ($location) {
-  function link(scope, element, attrs) {
-    scope.Math = Math;
-    scope.itemClick = function (item) {
-      $location.url('color').search({id: item.id});
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorCopyrightsByColorFamily/dbColorCopyrightsByColorFamilyView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorComparison', function () {
-  function link(scope, element, attrs) {
-    scope.Math = Math;
-
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.selectedBar = null;
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.currentTarget) {
-        $(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          $(scope.selectedBar).tooltipster('hide');
-
-        $(event.currentTarget).tooltipster('show');
-        scope.selectedBar = event.currentTarget;
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorComparison/dbColorComparisonView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbCategoriesWithHighestActivity', function ($timeout) {
-  function link(scope, element, attrs) {
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbCategoriesWithHighestActivity/dbCategoriesWithHighestActivityView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbCarousel', function ($timeout, $interval) {
-  function link(scope, element, attrs) {
-    var animationDelay = 200;
-
-    var carouselContainer = angular.element('.carousel-container', element);
-    var containerSize = carouselContainer.width();
-
-    var maxVisibleElementsCount = parseInt(scope.visibleElements);
-    var visibleElementsCount;
-
-    var linkedList;
-    var firstElement;
-    var lastElement;
-
-    var animTimeout;
-    var updateInterval;
-
-    var setupCarousel = function () {
-      var elements = _.map(carouselContainer.children(), function (item) {
-        return angular.element(item);
-      });
-
-      if (elements.length == 0) {
-        return;
-      }
-      visibleElementsCount = elements.length > maxVisibleElementsCount ? maxVisibleElementsCount : elements.length;
-      linkedList = [];
-
-      var count = elements.length;
-      for (var i = 0; i < count; i++) {
-        var e = elements[i];
-        e.addClass('carousel-element');
-        e.css('display', 'none');
-
-        linkedList.push({e: e, p: linkedList[i - 1]});
-      }
-
-      for (var i = 0; i < count; i++) {
-        linkedList[i].n = linkedList[i + 1];
-      }
-      linkedList[0].p = linkedList[count - 1];
-      linkedList[count - 1].n = linkedList[0];
-
-      firstElement = linkedList[0];
-    };
-
-    scope.rotateCarousel = function (delta) {
-      if (!linkedList || linkedList.length == 0 || linkedList.length <= maxVisibleElementsCount || animTimeout)
-        return;
-
-      var elementWidth = firstElement.e.width();
-      var elementSpacing = parseInt(scope.elementSpacing);
-      var visibleAreaWidth = visibleElementsCount * elementWidth + (visibleElementsCount - 1) * elementSpacing;
-      var elemOffset = Math.round((containerSize - visibleAreaWidth) / 2);
-
-      var setElemPos = function (e, index) {
-        e.css('left', (elemOffset + index * elementSpacing + index * elementWidth));
-      };
-
-      if (delta == 1) {
-        // setup
-        var listElem = firstElement;
-        for (var i = 0; i < visibleElementsCount; i++) {
-          var e = listElem.e;
-          e.addClass('element-animated');
-          listElem = listElem.n;
-        }
-        setElemPos(lastElement.n.e, visibleElementsCount);
-        lastElement.n.e.css('opacity', 0);
-        lastElement.n.e.css('display', '');
-        lastElement.n.e.addClass('element-animated');
-
-        //animate
-        $timeout(function () {
-          listElem = firstElement;
-          for (var i = 0; i < visibleElementsCount; i++) {
-            var e = listElem.e;
-            setElemPos(e, i - 1);
-            listElem = listElem.n;
-          }
-          firstElement.e.css('opacity', 0);
-
-          lastElement.n.e.css('opacity', 1);
-          setElemPos(lastElement.n.e, visibleElementsCount - 1);
-
-          firstElement = firstElement.n;
-          lastElement = lastElement.n;
-
-          // cleanup
-          animTimeout = $timeout(function () {
-            carouselContainer.children().removeClass('element-animated');
-            firstElement.p.e.css('display', 'none');
-
-            animTimeout = null;
-          }, animationDelay);
-        }, 0);
-      } else if (delta == -1) {
-        // setup
-        var listElem = firstElement;
-        for (var i = 0; i < visibleElementsCount; i++) {
-          var e = listElem.e;
-          e.addClass('element-animated');
-          listElem = listElem.n;
-        }
-        setElemPos(firstElement.p.e, -1);
-        firstElement.p.e.css('opacity', 0);
-        firstElement.p.e.css('display', '');
-        firstElement.p.e.addClass('element-animated');
-
-        //animate
-        $timeout(function () {
-          listElem = firstElement;
-          for (var i = 0; i < visibleElementsCount; i++) {
-            var e = listElem.e;
-            setElemPos(e, i + 1);
-            listElem = listElem.n;
-          }
-          lastElement.e.css('opacity', 0);
-
-          firstElement.p.e.css('opacity', 1);
-          setElemPos(firstElement.p.e, 0);
-
-          firstElement = firstElement.p;
-          lastElement = lastElement.p;
-
-          //cleanup
-          animTimeout = $timeout(function () {
-            carouselContainer.children().removeClass('element-animated');
-            firstElement.p.e.css('display', 'none');
-
-            animTimeout = null;
-          }, animationDelay);
-        }, 0);
-      } else {
-        var listElem = firstElement;
-        for (var i = 0; i < visibleElementsCount; i++) {
-          var e = listElem.e;
-          setElemPos(e, i);
-          e.css('display', '');
-          listElem = listElem.n;
-        }
-        lastElement = listElem.p;
-      }
-    };
-
-    var childrenChanged = function () {
-      var children = carouselContainer.children();
-      if (!linkedList || linkedList.length != children.length) {
-        return true;
-      }
-      var children = carouselContainer.children();
-      var count = children.length;
-      for (var i = 0; i < count; i++)
-        if (children[i] !== linkedList[i].e[0]) {
-          return true;
-        }
-      return false;
-    };
-
-    scope.showButtons = function (delta) {
-      if (!linkedList)
-        return false;
-      return linkedList.length > maxVisibleElementsCount;
-    };
-
-    setupCarousel();
-    scope.rotateCarousel();
-
-    updateInterval = $interval(function () {
-      if (childrenChanged()) {
-        setupCarousel();
-        scope.rotateCarousel();
-      }
-
-      if (carouselContainer.width() != containerSize) {
-        containerSize = carouselContainer.width();
-        scope.rotateCarousel();
-      }
-    }, 250);
-
-    scope.$on('$destroy', function () {
-      if (animTimeout) {
-        $timeout.cancel(animTimeout);
-      }
-      if (updateInterval) {
-        $interval.cancel(updateInterval);
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    transclude: true,
-    template: '<div class="db-carousel"><div class="carousel-container" ng-transclude></div><div class="carousel-button button-prev" ng-show="showButtons()" ng-click="rotateCarousel(-1)"></div><div class="carousel-button button-next" ng-show="showButtons()" ng-click="rotateCarousel(1)"></div></div>',
-    link: link,
-    scope: {
-      visibleElements: '@',
-      elementSpacing: '@'
-    }
-  };
-});
-
-angular.module('app').directive('hueDashboardOverlay', ['dashboardOverlayService', function (dashboardOverlayService) {
-  function link(scope, element, attrs) {
-    scope.showErrorMessage = false;
-
-    scope.$watch(function () {
-      return dashboardOverlayService.showErrorMessage;
-    }, function (newValue, oldValue) {
-      scope.showErrorMessage = newValue;
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    template: '<div class="overlay-message message-loading" ng-show="!showErrorMessage"></div><div class="overlay-message message-error" ng-show="showErrorMessage"></div>',
-    scope: true
-  };
-}]);
-
-(function () {
-  'use strict';
-  angular.module('app')
-    .directive('hueTop4Grid', ['common', 'config', 'chartsHelper', '$timeout',
-      function (common, config, chartsHelper, $timeout) {
-        function link(scope, element, attributes) {
-          scope.$watch('data', bindData);
-          scope.alphabet = [
-            "a",
-            "à",
-            "b",
-            "c",
-            "d",
-            "e",
-            "é",
-            "f",
-            "g",
-            "h",
-            "i",
-            "j",
-            "k",
-            "l",
-            "m",
-            "n",
-            "o",
-            "ö",
-            "p",
-            "q",
-            "r",
-            "s",
-            "t",
-            "u",
-            "v",
-            "w",
-            "x",
-            "y",
-            "z",
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9"
-          ];
-
-          function bindData() {
-            if (!scope.data) {
-              return;
-            }
-
-            scope.grouppedData = _.groupBy(scope.data, function (item) {
-              return item.title && item.title.toLowerCase().substr(0, 1);
-            });
-
-            // var columnsCount = 3;
-            // var rowsCount = 300;
-            // var colorsCount = 4;
-            //
-            // var nTitle = '';
-            //
-            // var columns = [];
-            // scope.columns = columns;
-            //
-            // for (var i = 0; i < columnsCount; i++) {
-            //   var column = {rows: []};
-            //   columns.push(column);
-            //
-            //   for (var j = 0; j < rowsCount; j++) {
-            //     var dataIndex = i * rowsCount + j;
-            //     var dataItem = scope.data.length <= dataIndex ? {data: []} : scope.data[dataIndex];
-            //
-            //     var row = {
-            //       title: '',
-            //       colors: []
-            //     };
-            //
-            //     column.rows.push(row);
-            //
-            //     var firstLetter = dataItem.title.substr(0, 1);
-            //     var isTitle = nTitle !== firstLetter;
-            //     if (isTitle) {
-            //       row.isTitle = true;
-            //       row.title = firstLetter;
-            //       nTitle = firstLetter;
-            //       j += 2;
-            //       row = {};
-            //       column.rows.push(row);
-            //     }
-            //
-            //     row.title = dataItem.title; // names[0][Math.round(Math.random() * names[0].length - .5)] + ' ' + names[1][Math.round(Math.random() * names[1].length - .5)];
-            //     row.colors = dataItem.data;
-            //   }
-            // }
-            //
-            // $timeout(function () {
-            //   _.each(element.find('[color]'), function (el, i) {
-            //     $timeout(function () {
-            //       $(el).toggleClass('show', true);
-            //     }, 5 * i);
-            //   });
-            // });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/top4-grid.html'
-        };
-
-        return directive;
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChart',
-    [
-      'common', 'config',
-      function (common, config) {
-        function link(scope, element, attributes) {
-          $(element).toggleClass('hue-chart', true);
-//                scope.value = '';
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          scope: {},
-          templateUrl: 'app/directives/custom-infographics-directives/chart-by-city-period.html'
-        };
-
-        return directive;
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartUniqueWithGroups',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            scope.season = scope.data.season;
-            scope.year = scope.data.year;
-
-            var containerGroups = element.find('[chart-type="groups"]').html('');
-            var containerCommon = element.find('[chart-type="common"]').html('');
-            var containerUnique = element.find('[chart-type="unique"]').html('');
-
-            var groups = _.map(scope.data.groups, function (c) {
-              return {
-                value: c.value,
-                valueTitle: Math.round(c.percentage * 100) + '%',
-                value2: c.value,//Math.round(c.value * 1000),
-                valueTitle2: Math.round(c.percentage * 100),
-                title: c.title,
-                color: c.color
-              }
-            });
-
-            var colors = _.map(scope.data.common, function (c) {
-              return {
-                value: c.value,
-                valueTitle: Math.round(c.percentage * 100) + '%',
-                value2: c.value,//Math.round(c.value * 1000),
-                valueTitle2: Math.round(c.percentage * 100),
-                title: c.color,
-                color: c.color
-              }
-            });
-
-            var ch = new chartSpheric({
-              data: scope.data.unique,
-              container: containerUnique[0],
-              options: {}
-            });
-
-            ch = new chartDotsHorizontal({
-              data: colors,
-              container: containerCommon[0],
-              options: {}
-            });
-
-            ch = new chartBoxLinearHorizontal({
-              data: groups,
-              container: containerGroups[0],
-              options: {
-                layout: {
-                  bars: {
-                    separator: {
-                      radius: 6
-                    }
-                  }
-                }
-              }
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-unique-with-groups.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartTrends',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            var container = element/*.find('[chart-type]')*/.html('');
-
-            var bars = [];
-            var data = {
-              periods: _.map(scope.data, function (d) {
-                return {title: d.title};
-              }),
-              data: bars
-            };
-
-            _.each(scope.data, function (period) {
-              _.each(_.sortBy(period.data, 'value').reverse(), function (d, i) {
-                var bar = _.find(bars, {name: d.name});
-                if (!bar) {
-                  bar = {
-                    name: d.name,
-                    title: i + 1,
-                    points: [],
-                    color: d.color
-                  };
-                  if (d.color === '#ffffff') {
-                    bar.color = '#efefef';
-                  }
-                  bars.push(bar);
-                }
-
-                bar.points.push({value: i});
-              });
-            });
-
-            var ch = new chartGraphLinearHorizontal({
-              data: data,
-              container: container[0],
-              options: {}
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-trends.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartNails',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-            var totalAchr = 0;
-            var totalChr = 0;
-            scope.data.forEach(function (t) {
-              if (t.group === 'achr') {
-                totalAchr += t.value;
-              }
-              if (t.group === 'chr') {
-                totalChr += t.value;
-              }
-            });
-            totalAchr = Math.round(totalAchr / (totalAchr + totalChr) * 100);
-            totalChr = 100 - totalAchr;
-            var data = {
-              groups: [{title: totalChr + '% ACHROMATIC COLORS', name: 'chr'},
-                {title: totalAchr + '% CHROMATIC COLORS', name: 'achr'}]
-            };
-
-            data.data = scope.data;
-
-            var container = element.find('[chart-type]').html('');
-
-            var ch = new chartNailsLinearVerticalSimple({
-              data: data,
-              container: container[0],
-              options: {}
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-nails.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartGridNails',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-            var totalAchr = 0;
-            var totalChr = 0;
-            scope.data[0].data.forEach(function (t) {
-              if (t.group === 'achr' && t.value) {
-                totalAchr += t.value;
-              }
-              if (t.group === 'chr' && t.value) {
-                totalChr += t.value;
-              }
-            });
-            totalAchr = Math.round((totalAchr / (totalAchr + totalChr)) * 100) || 0;
-            totalChr = totalAchr ? 100 - totalAchr : 0;
-            var data = {
-              groups: [{title: totalChr + '% ACHROMATIC COLORS', name: 'chr'},
-                {title: totalAchr + '% CHROMATIC COLORS', name: 'achr'}]
-            };
-
-            data.periods = _.map(scope.data, function (d) {
-              return {title: d.title};
-            });
-
-            data.data = _.map(scope.data[0].data, function (d0, i) {
-              var dResult = [];
-              for (var j = 0; j < scope.data.length; j++) {
-                var d = scope.data[j];
-                var perc = d.data[i].percentage || 0;
-                dResult.push({
-                  title: (Math.round(perc * 1000) / 10) + '%',
-                  value: perc
-                });
-              }
-
-              return {
-                title: d0.title,
-                color: d0.color,
-                group: d0.group,
-                value: d0.value,
-                data: dResult,
-                colors: d0.colors
-              };
-            });
-
-            var container = element.find('[chart-type]').html('');
-
-            var ch = new chartNailsLinearVertical({
-              data: data,
-              container: container[0],
-              options: {
-                layout: {
-                  mode: scope.mode && scope.mode.extraView ? 'colors' : 'default'
-                }
-              }
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '=',
-            mode: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-grid-nails.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartCommonWithGroups',
-    [
-      'common', 'config', 'chartsHelper', 'colorSortService',
-      function (common, config, chartsHelper, colorSortService) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            if (scope.data['palettes']) {
-              scope.palettes = colorSortService(scope.data['palettes'], 25);
-            }
-            scope.palettes = _.chunk(scope.palettes, 5);
-
-            var containerBagel = element.find('[chart-type="bagel"]').html('');
-            var containerBrief = element.find('[chart-type="brief"]').html('');
-            var containerGroups = element.find('[chart-type="groups"]').html('');
-
-            var groups = _.map(scope.data.groups, function (c) {
-              return {
-                value: c.value,
-                valueTitle: Math.round(c.percentage * 100) + '%',
-                value2: c.value,//Math.round(c.value * 1000),
-                valueTitle2: Math.round(c.percentage * 100),
-                title: c.title,
-                color: c.color
-              }
-            });
-
-            var colors = _.map(scope.data.common, function (c) {
-              return {
-                value: c.value,
-                valueTitle: Math.round(c.percentage * 100) + '%',
-                value2: c.value,//Math.round(c.value * 1000),
-                valueTitle2: Math.round(c.percentage * 100),
-                title: c.color,
-                color: c.color
-              }
-            });
-
-            var bagelOptions = {
-              bars: {
-                radius: 130,
-                radiusOuter: 1,
-                radiusInner: 105,
-                legend: {
-                  radius: 50,
-                  radiusInner: 40,
-                  position: 'none'
-                }
-              }
-            };
-
-            if (!scope.mode || !scope.mode.extraView) {
-              var ch = new chartBoxBagel({
-                data: colors,
-                container: containerBagel[0],
-                options: bagelOptions
-              });
-
-              ch = new chartDotsHorizontal({
-                data: colors,
-                container: containerBrief[0],
-                options: {
-                  layout: {
-                    bars: {
-                      separator: {
-                        radius: 7
-                      }
-                    }
-                  }
-                }
-              });
-
-            }
-            ch = new chartBoxLinearHorizontal({
-              data: groups,
-              container: containerGroups[0],
-              options: {
-                layout: {
-                  bars: {
-                    separator: {
-                      radius: 6
-                    }
-                  }
-                }
-              }
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '=',
-            mode: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-common-with-groups.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartColorsWithGroupsForTwo',
-    [
-      'common', 'config', 'chartsHelper', 'colorSortService',
-      function (common, config, chartsHelper, colorSortService) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            if (scope.data[2]) {
-              scope.data[2].data = colorSortService(scope.data[2].data, 25);
-              scope.data[3].data = colorSortService(scope.data[3].data, 25);
-              scope.palettes1 = _.chunk(scope.data[2].data, 5);
-              scope.palettes2 = _.chunk(scope.data[3].data, 5);
-            }
-            var containers = element.find('[chart-block]');
-
-            _.each(containers, function (c, i) {
-              var container = $(c);
-
-              var containerBagel = container.find('[chart-type="bagel"]').html('');
-              var containerGroups = container.find('[chart-type="groups"]').html('');
-
-              var title = scope.data[i].title;
-              container.find('h3').text(title);
-
-              var data = scope.data[i].data;
-              if (data) {
-
-                var options = {
-                  bars: {
-                    radius: 85,
-                    radiusOuter: 1,
-                    radiusInner: 62,
-                    legend: {},
-                    separator: {radius: 6}
-                  }
-                };
-
-                if (i === 1) {
-                  options.bars = {
-                    radius: 85,
-                    radiusOuter: 1,
-                    radiusInner: 62,
-                    legend: {
-                      position: 'left'
-                    },
-                    separator: {radius: 6}
-                  };
-                }
-
-                var colors = _.map(data.colors,
-                  function (d) {
-                    return {
-                      value: d.percentage,
-                      valueTitle: Math.round(d.percentage) + '%',
-                      value2: Math.round(d.percentage * 100),
-                      valueTitle2: Math.round(d.percentage * 100),
-                      title: d.title,
-                      color: d.color
-                    }
-                  });
-
-                if (containerBagel[0]) {
-                  var ch = new chartBoxBagel({
-                    data: colors,
-                    container: containerBagel[0],
-                    options: options
-                  });
-
-                }
-                // groups
-                if (scope.mode && scope.mode.extraView) {
-                  var rowsAmount = 5, columnsAmount = 5;
-                  var allColors = [];
-                  _.each(data.groups, function (gr) {
-                    _.each(gr.colors, function (c) {
-                      allColors.push({color: c.color});
-                    });
-                  });
-
-                  var rows = scope['rows' + (i + 1)] = [];
-                  scope['year' + (i + 1)] = title;
-                  for (var ii = 0; ii < rowsAmount; ii++) {
-                    var row = {colors: []};
-                    rows.push(row);
-                    for (var j = 0; j < columnsAmount; j++) {
-                      var column = {};
-                      row.colors.push(column);
-
-                      var color = allColors[ii * columnsAmount + j];
-                      if (!color) {
-                        column.isEmpty = true;
-                      } else {
-                        column.color = color.color;
-                      }
-                    }
-                  }
-                }
-
-                // generic groups
-                var groups = _.map(data.groups,
-                  function (d) {
-                    var value = Math.round(d.percentage * 100);
-                    return {
-                      value: d.value,
-                      valueTitle: Math.round(value) + '%',
-                      value2: d.value,
-                      valueTitle2: Math.round(d.percentage * 100),
-                      title: d.title,
-                      color: d.color
-                    }
-                  });
-
-                options = {
-                  layout: {
-                    bars: {
-                      bar: {
-                        height: 130,
-                        width: 25,
-                        margin: {
-                          left: 6,
-                          right: 6
-                        },
-                        background: '#e3e3e3'
-                      },
-                      separator: {
-                        height: 24,
-                        radius: 6
-                      },
-                      value: {
-                        height: 22
-                      },
-                      value2: {
-                        height: 22
-                      }
-                    },
-                    padding: {
-                      left: 10,
-                      right: 10,
-                      top: 0,
-                      bottom: 10
-                    }
-                  }
-                }
-                ch = new chartBoxLinearVertical({
-                  data: groups,
-                  container: containerGroups[0],
-                  options: options
-                });
-              }
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '=',
-            mode: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-with-groups-for-two.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartColorsUniqueWithLevels',
-    [
-      'common', 'config', 'chartsHelper', 'reduceValue',
-      function (common, config, chartsHelper, reduceValue) {
-        var _colors = [
-          {
-            "value": 220,
-            "color": "#f5f5dc",
-            "percentage": 0.11777301927194861,
-            "title": "Beige",
-            "group": "achr"
-          }, {
-            "value": 20,
-            "color": "#000000",
-            "percentage": 0.010706638115631691,
-            "title": "Black",
-            "group": "chr"
-          }, {
-            "value": 158,
-            "color": "#0000ff",
-            "percentage": 0.08458244111349036,
-            "title": "Blue",
-            "group": "achr"
-          }, {
-            "value": 124,
-            "color": "#964b00",
-            "percentage": 0.06638115631691649,
-            "title": "Brown",
-            "group": "achr"
-          }, {
-            "value": 174,
-            "color": "#00ffff",
-            "percentage": 0.09314775160599571,
-            "title": "Cyan",
-            "group": "achr"
-          }, {
-            "value": 306,
-            "color": "#c0c0c0",
-            "percentage": 0.16381156316916487,
-            "title": "Gray",
-            "group": "achr"
-          }, {
-            "value": 62,
-            "color": "#008000",
-            "percentage": 0.033190578158458245,
-            "title": "Green",
-            "group": "achr"
-          }, {
-            "value": 64,
-            "color": "#ff00ff",
-            "percentage": 0.034261241970021415,
-            "title": "Magenta",
-            "group": "achr"
-          }, {
-            "value": 191,
-            "color": "#ff7f00",
-            "percentage": 0.10224839400428265,
-            "title": "Orange",
-            "group": "achr"
-          }, {
-            "value": 158,
-            "color": "#ff0000",
-            "percentage": 0.08458244111349036,
-            "title": "Red",
-            "group": "achr"
-          }, {
-            "value": 146,
-            "color": "#8f00ff",
-            "percentage": 0.07815845824411134,
-            "title": "Violet",
-            "group": "achr"
-          }, {
-            "value": 3,
-            "color": "#ffffff",
-            "percentage": 0.0016059957173447537,
-            "title": "White",
-            "group": "chr"
-          }, {
-            "value": 103,
-            "color": "#ffff00",
-            "percentage": 0.05513918629550321,
-            "title": "Yellow",
-            "group": "achr"
-          }, {
-            "value": 139,
-            "color": "#8db600",
-            "percentage": 0.07441113490364026,
-            "title": "Yellow/Green",
-            "group": "achr"
-          }
-        ];
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            var containerUnique = element.find('[chart-type="unique"]').html('');
-            var containerLevels = element.find('[chart-type="levels"]').html('');
-
-            var options = {};
-            options.layout = {
-              sections: {
-                horizontal: 7,
-                vertical: 2
-              }
-            };
-            options.data = options.data || {};
-            if (!scope.data.grouped) {
-              options.layout = {
-                sections: {
-                  horizontal: 1,
-                  vertical: 1
-                }
-              };
-            }
-            options.data.isOrdered = !!scope.data.ordered;
-            var dataUnique = scope.data.unique;
-            if (!scope.data.ordered) {
-              // randomize additionally
-              dataUnique = _.sortBy(_.map(dataUnique, function (d) {
-                d.__order = Math.random();
-                return d;
-              }), '__order');
-            }
-            var groups = [{}];
-            if (scope.data.grouped) {
-              groups = _colors;
-            }
-
-            var ch = new chartBricks({
-              data: {
-                colors: dataUnique, groups: groups
-              },
-              container: containerUnique[0],
-              options: options
-            });
-
-            var data = _.map(scope.data.groups,
-              function (d) {
-                var value = Math.round(d.percentage * 100);
-                return {
-                  value: value,
-                  valueTitle: Math.round(value) + '%',
-                  value2: Math.round(d.percentage * 100),
-                  valueTitle2: d.value,
-                  title: d.title,
-                  color: d.color
-                }
-              });
-
-            var maxValue = _.max(_.map(data, function (d) {
-              return d.value;
-            }));
-            if (maxValue < 20) {
-              maxValue = 20;
-            }
-
-            ch = new chartLevelsVertical({
-              data: data,
-              container: containerLevels[0],
-              options: {bars: {maxValue: maxValue}}
-            });
-
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-unique-with-levels.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartColorsUniqueWithGroupsPerSeason',
-    [
-      'common', 'config', 'chartsHelper', 'reduceValue',
-      function (common, config, chartsHelper, reduceValue) {
-        var _colors = [
-          {
-            "value": 220,
-            "color": "#f5f5dc",
-            "percentage": 0.11777301927194861,
-            "title": "Beige",
-            "group": "achr"
-          }, {
-            "value": 20,
-            "color": "#000000",
-            "percentage": 0.010706638115631691,
-            "title": "Black",
-            "group": "chr"
-          }, {
-            "value": 158,
-            "color": "#0000ff",
-            "percentage": 0.08458244111349036,
-            "title": "Blue",
-            "group": "achr"
-          }, {
-            "value": 124,
-            "color": "#964b00",
-            "percentage": 0.06638115631691649,
-            "title": "Brown",
-            "group": "achr"
-          }, {
-            "value": 174,
-            "color": "#00ffff",
-            "percentage": 0.09314775160599571,
-            "title": "Cyan",
-            "group": "achr"
-          }, {
-            "value": 306,
-            "color": "#c0c0c0",
-            "percentage": 0.16381156316916487,
-            "title": "Gray",
-            "group": "achr"
-          }, {
-            "value": 62,
-            "color": "#008000",
-            "percentage": 0.033190578158458245,
-            "title": "Green",
-            "group": "achr"
-          }, {
-            "value": 64,
-            "color": "#ff00ff",
-            "percentage": 0.034261241970021415,
-            "title": "Magenta",
-            "group": "achr"
-          }, {
-            "value": 191,
-            "color": "#ff7f00",
-            "percentage": 0.10224839400428265,
-            "title": "Orange",
-            "group": "achr"
-          }, {
-            "value": 158,
-            "color": "#ff0000",
-            "percentage": 0.08458244111349036,
-            "title": "Red",
-            "group": "achr"
-          }, {
-            "value": 146,
-            "color": "#8f00ff",
-            "percentage": 0.07815845824411134,
-            "title": "Violet",
-            "group": "achr"
-          }, {
-            "value": 3,
-            "color": "#ffffff",
-            "percentage": 0.0016059957173447537,
-            "title": "White",
-            "group": "chr"
-          }, {
-            "value": 103,
-            "color": "#ffff00",
-            "percentage": 0.05513918629550321,
-            "title": "Yellow",
-            "group": "achr"
-          }, {
-            "value": 139,
-            "color": "#8db600",
-            "percentage": 0.07441113490364026,
-            "title": "Yellow/Green",
-            "group": "achr"
-          }
-        ];
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            scope.city = scope.data.city;
-
-            var containers = element.find('[chart-block]');
-            _.each(containers, function (c) {
-              var container = $(c);
-
-              var containerUnique = container.find('[chart-type="unique"]').html('');
-              var containerGroups = container.find('[chart-type="groups"]').html('');
-
-              var seasonName = container.attr('chart-block');
-
-              var state = {
-                grouped: false,//seasonName === 'spring' || seasonName === 'fall',
-                ordered: false//seasonName === 'summer' || seasonName === 'fall'
-              };
-
-              var data = _.find(scope.data, {name: seasonName});
-              // bricks
-              var options = {};
-              options.layout = {
-                sections: {
-                  horizontal: 7,
-                  vertical: 2
-                }
-              };
-              options.data = options.data || {};
-              if (!state.grouped) {
-                options.layout = {
-                  sections: {
-                    horizontal: 1,
-                    vertical: 1
-                  }
-                };
-              }
-              options.data.isOrdered = state.ordered;
-
-              var dataUnique = data.unique;
-              if (!state.ordered) {
-                // randomize additionally
-                dataUnique = _.sortBy(_.map(dataUnique, function (d) {
-                  d.__order = Math.random();
-                  return d;
-                }), '__order');
-              }
-              var groups = [{}];
-              if (state.grouped) {
-                groups = _colors;
-              }
-
-              var ch = new chartBricks({
-                data: {
-                  colors: dataUnique, groups: groups
-                },
-                container: containerUnique[0],
-                options: options
-              });
-
-              var colors = _.map(data.groups,
-                function (d) {
-                  var value = Math.round(d.percentage * 100);
-                  return {
-                    value: reduceValue.reduce(d.value),
-                    valueTitle: Math.round(value) + '%',
-                    value2: reduceValue.reduce(d.value),
-                    valueTitle2: Math.round(d.percentage * 100),
-                    title: d.title,
-                    color: d.color
-                  }
-                });
-              ch = new chartDotsHorizontal({
-                data: colors,
-                container: containerGroups[0],
-                options: {}
-              });
-
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-unique-with-groups-per-season.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartColorsPerRegion',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-          // scope.value = '';
-          scope.$watch('data', bindData);
-          // bindData();
-
-          function bindData() {
-            if (!scope.data) {
-              return;
-            }
-
-            var containers = element.find('[chart-block]');
-
-            _.each(containers, function (c) {
-              var container = $(c);
-              var regionName = container.attr('chart-block');
-
-              var containerBar = container.find('[chart-type="bar"]').html('');
-              var containerMap = container.find('[chart-type="map"]').html('');
-
-              var region = _.find(scope.data, {name: regionName});
-              {
-                var sum = _.sumBy(region.data, 'percentage');
-                var data = _.map(region.data, function (d) {
-                  var v = d.percentage / sum;
-                  return {
-                    value: v,
-                    title: Math.round(d.percentage * 100) + '%',
-                    color: d.color
-                  }
-                });
-
-                if (!region || !region.data || !region.data.length) {
-                  containerBar.append($('<p class="no-data">No data is available</p>'));
-                } else {
-                  var ch = new chartBoxLinearBarVertical({
-                    data: data,
-                    container: containerBar[0],
-                    options: {}
-                  });
-                }
-
-                var mapData = {
-                  region: {
-                    name: region.name,
-                    cities: {
-                      settings: {}
-                    }
-                  },
-                  charts: {
-                    settings: {},
-                    data: []
-                  }
-                };
-                ch = new chartComplexRegion({
-                  data: mapData,
-                  container: containerMap[0],
-                  options: {}
-                });
-
-              }
-            });
-
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-per-region.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-  angular.module('app').directive('hueChartCitiesByColorPeriod',
-    ['common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-        function link(scope, element, attributes) {
-//                scope.value = '';
-          scope.$watch('data', bindData);
-//                bindData();
-          function bindData() {
-            var options = {
-//                        bars: {
-//                            maxValue: 1
-//                        }
-            };
-            options.layout = {
-              padding: {
-                left: 10,
-                right: 10,
-                top: 75,
-                bottom: 0
-              }
-            };
-
-            var container = chartsHelper.initContainer(element);
-
-            var ch = new chartBubbledLines({
-              data: scope.data || {},
-              container: container[0],
-              options: options
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-cities-by-color-period.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartBySeasonFiveYears',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-          scope.$watch('data', bindData);
-
-          function bindData() {
-            var containers = element.find('.f-season');
-            if (scope.data) {
-              scope.data.reverse();
-            }
-            _.each(containers, function (c, i) {
-              var data = (scope.data || [])[i];
-              if (!data) {
-                return;
-              }
-              c = $(c);
-
-              c.find('h3').text(getAbbr(data.season) + data.year);
-
-              var containerUnique = c.find('[chart-type="unique"]').html('');
-              var ch = new chartSpheric({
-                data: data.colorsUnique,
-                container: containerUnique[0],
-                options: {}
-              });
-
-              var container = c.find('[chart-type="top4"]').html('');
-              var colors = _.map(data.colors, function (c) {
-                return {
-                  value: c.value,
-                  valueTitle: Math.round(c.percentage * 100) + '%',
-                  value2: c.value,//Math.round(c.value * 1000),
-                  valueTitle2: Math.round(c.percentage * 100),
-                  title: c.color,
-                  color: c.color
-                }
-              });
-
-              ch = new chartDotsHorizontal({
-                data: colors,
-                container: container[0],
-                options: {}
-              });
-
-            });
-            return;
-            var n = Math.round(Math.random() * 4 - .5);
-            var maxR = n !== 1 ? 255 : Math.round(Math.random() * 255 - .5);
-            var maxG = n !== 2 ? 255 : Math.round(Math.random() * 255 - .5);
-            var maxB = n !== 3 ? 255 : Math.round(Math.random() * 255 - .5);
-            var count = Math.random() * 1000 + 100;
-            for (var l = 0; l < count; l++) {
-              var color = String.format('rgb({0},{1},{2})', Math.round(Math.random() * maxR), Math.round(Math.random() * maxG), Math.round(Math.random() * maxB));
-              result.push({
-                color: color,
-                title: color
-              });
-            }
-
-            ch = new chartSpheric({
-              data: dataPrepared,
-              container: container,
-              options: {}
-            });
-
-            result.push({
-              value: value,
-              valueTitle: Math.round(value) + '%',
-              value2: Math.round(Math.random() * 1000),
-              valueTitle2: Math.round(Math.random() * 1000),
-              title: _colors[i].title,
-              color: _colors[i].color
-            });
-
-            ch = new chartDotsHorizontal({
-              data: dataPrepared,
-              container: container,
-              options: {}
-            });
-
-          }
-
-          function getAbbr(value) {
-            if (value === 'Fall') {
-              return 'FW';
-            } else if (value === 'Pre-Fall') {
-              return 'PF';
-            } else if (value === 'Spring') {
-              return 'SS';
-            } else if (value === 'Resort') {
-              return 'RS';
-            } else if (value === 'ALL SEASONS') {
-              return 'ALL';
-            } else {
-              return value;
-            }
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-by-season-five-years.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-
-  angular.module('app').directive('hueChartBySeasonFiveYearsColors',
-    [
-      'common', 'config', 'chartsHelper', 'reduceValue', 'colorSortService',
-      function (common, config, chartsHelper, reduceValue, colorSortService) {
-        function link(scope, element, attributes) {
-          scope.$watch('data', bindData);
-
-          function bindData() {
-
-            if (!scope.data) {
-              return;
-            }
-
-            scope.palettes = scope.data.splice(14, 1)[0];
-            var palettes = {};
-            var keys = [];
-            for (var k in scope.palettes) {
-              keys.push(k);
-            }
-            keys.reverse().forEach(function (key) {
-              palettes[key] = scope.palettes[key];
-            });
-            scope.palettes = palettes;
-
-            scope.palettes[Object.keys(scope.palettes)[0]] = colorSortService(scope.palettes[Object.keys(scope.palettes)[0]], 24);
-            scope.mainSeason = scope.palettes[Object.keys(scope.palettes)[0]];
-            scope.mainTitle = Object.keys(scope.palettes)[0];
-            delete scope.palettes[Object.keys(scope.palettes)[0]];
-
-            _.forEach(scope.palettes, function (value, key) {
-              scope.palettes[key] = colorSortService(value, 21);
-            });
-            scope.mainSeason = _.chunk(scope.mainSeason, 4);
-
-            var container = element.find('[chart-type="groups"]');
-            var colors = _.map(scope.data, function (d) {
-              var value = Math.round(d.percentage * 100);
-              return {
-                value: reduceValue.reduce(d.value, '1'),
-                valueTitle: Math.round(d.percentage * 100) + '%',
-                value2: reduceValue.reduce(d.value, '1'),
-                valueTitle2: Math.round(d.percentage * 100),
-                title: d.title,
-                color: d.color
-              };
-            });
-
-            var ch = new chartDotsHorizontal({
-              data: colors,
-              container: container[0],
-              options: {}
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '=',
-            mode: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-by-season-five-years-colors.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartByRegionPeriod',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-        function link(scope, element, attributes) {
-          // scope.value = '';
-          // bindData();
-          scope.$watch('data', bindData);
-
-          function bindData() {
-            var model = scope.data;
-            if (!model) {
-              return;
-            }
-
-            if (model.region.name === 'europe') {
-              model.region.cities.data = model.region.cities.data.reverse();
-            }
-
-            var container = chartsHelper.initContainer(element, '[chart-type="region"]');
-            var containerLinear = chartsHelper.initContainer(element, '[chart-type="linear-h"]');
-
-            prepareLinearBars();
-            prepareRegionChart();
-
-            function prepareLinearBars() {
-              var groups = _.map(model.charts.data, function (c) {
-                return {
-                  value: c.value,
-                  valueTitle: Math.round(c.percentage * 100) + '%',
-                  value2: c.value, //Math.round(c.value * 1000),
-                  valueTitle2: Math.round(c.percentage * 100),
-                  title: c.title,
-                  color: c.color
-                };
-              });
-
-              var ch = new chartBoxLinearHorizontal({
-                data: groups,
-                container: containerLinear[0],
-                options: {
-                  layout: {
-                    bars: {
-                      separator: {
-                        radius: 6
-                      }
-                    }
-                  }
-                }
-              });
-            }
-
-            function prepareRegionChart() {
-              // vm.meta.regions = common.generic.regions;
-
-              var ch = new chartComplexRegion({
-                data: {region: model.region},
-                container: container[0],
-                options: {}
-              });
-            }
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          scope: {
-            data: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-by-region-period.html'
-        };
-
-        return directive;
-      }
-    ]);
-}());
-
-(function () {
-  'use strict';
-
-  angular.module('app').directive('hueChartByCityPeriod',
-    [
-      'common', 'config', 'chartsHelper',
-      function (common, config, chartsHelper) {
-
-        function link(scope, element, attributes) {
-
-//                scope.value = '';
-          scope.$watch('data', bindData);
-
-//                bindData();
-
-          function bindData() {
-
-            var maxValue = _.max(_.map(scope.data, function (d) {
-              return d.value;
-            }));
-
-            var options = {
-              // bars: {
-              //   maxValue: maxValue
-              // }
-            };
-            options.layout = {
-              mode: scope.mode && scope.mode.extraView ? 'colors' : 'default',
-              padding: {
-                left: 10,
-                right: 10,
-                top: 75,
-                bottom: 0
-              }
-            };
-
-            _.each(scope.data,
-              function (d) {
-                d.color = d.name;
-//                            d.value = d.value / maxValue * 100;
-              });
-
-            var container = chartsHelper.initContainer(element);
-
-            var ch = new chartBubbledLines({
-              data: scope.data || {},
-              container: container[0],
-              options: options
-            });
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '=',
-            mode: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-by-city-period.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-
-  angular.module('app').directive('hueChartByCityPeriodColors',
-    [
-      'common', 'config', 'chartsHelper', 'reduceValue',
-      function (common, config, chartsHelper, reduceValue) {
-
-        function link(scope, element, attributes) {
-          scope.$watch('data', bindData);
-          function bindData() {
-            if (!scope.data) {
-              return;
-            }
-            var colorsAmount = 15;
-            scope.groups = _.map(scope.data, function (d) {
-              if (d.colors.length < 15) {
-                for (var i = d.colors.length - 1; i <= 15; i++) {
-                  d.colors.push({isEmpty: true});
-                }
-              }
-              d.colors.reverse();
-              return {
-                title: d.title,
-                colors: d.colors.map(function (color, i) {
-                  if (!color) {
-                    return {
-                      isEmpty: true
-                    };
-                  }
-                  return {
-                    color: color
-                  };
-                })
-              };
-            });
-
-            var container = $(element.find('[chart-type="bottom"]'));
-            container.html('');
-
-            var colors = _.map(scope.data,
-              function (d) {
-                var value = Math.round(d.percentage * 100);
-                return {
-                  value: reduceValue.reduce(d.value),
-                  valueTitle: Math.round(value) + '%',
-                  value2: reduceValue.reduce(d.value),
-                  valueTitle2: Math.round(d.percentage * 100),
-                  title: d.title,
-                  color: d.color
-                }
-              });
-            var ch = new chartDotsHorizontal({
-              data: colors,
-              container: container[0],
-              options: {}
-            });
-
-          }
-        }
-
-        var directive = {
-          link: link,
-          restrict: 'E',
-          replace: true,
-          scope: {
-            data: '=',
-            mode: '='
-          },
-          templateUrl: 'app/directives/custom-infographics-directives/chart-by-city-period-colors.html'
-        };
-
-        return directive;
-
-      }
-    ]);
-}());
-
-angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    scope.pieData = null;
-    scope.selectedIndex = null;
-    scope.showTitle = true;
-    scope.selectedColorTitle = null;
-    scope.selectedColorNcs = null;
-    scope.allowClicks = false;
-
-    timeout(function () { // make a delay to avoid lags
-      scope.pieData = _.map(scope.data.colors, function (item, index) {
-        return {c: item.color.hex, p: item.percentage, t: item.title};
-      });
-    }, 1000);
-
-    scope.getButtonId = function (btnName) {
-      return 'cfpc-' + scope.$id + '-btn-' + btnName;
-    };
-
-    scope.selectItem = function (index) {
-      if (scope.allowClicks) {
-        scope.allowClicks = false;
-        scope.selectedIndex = scope.selectedIndex == index ? null : index;
-
-        if (scope.selectedIndex != null) {
-          scope.showTitle = false;
-
-          var titles = scope.data.colors[scope.selectedIndex].title.split('/');
-          scope.selectedColorTitle = titles[0];
-          scope.selectedColorNcs = titles[1];
-        } else {
-          scope.showTitle = true;
-        }
-      }
-    };
-    scope.isItemSelected = function (index) {
-      if (index != undefined)
-        return index == scope.selectedIndex;
-      return scope.selectedIndex != null;
-    };
-
-    scope.colorClickHandler = function (index) {
-      if (scope.allowClicks) {
-        scope.selectItem(index);
-        scope.$digest();
-      }
-
-    };
-    scope.collapseClickHandler = function () {
-      if (scope.allowClicks) {
-        scope.selectItem(null);
-        scope.$digest();
-      }
-    };
-    scope.animationCompleteHandler = function () {
-      scope.allowClicks = true;
-    };
-  }
-
-  return {
-    restrict: 'E',
-    transclude: true,
-    templateUrl: 'app/directives/colorFrequencyPieChart/dbColorFrequencyPieChartView.html',
-    link: link,
-    scope: {
-      data: '=',
-      initialized: '='
-    }
-  };
-}]);
-
 angular
   .module('app')
   .component('verticalCoverageComponent', {
@@ -10246,62 +4077,43 @@ angular
 				});
 			});
 
-			$(document).ready(function () {
+      $(document).ready(function(){
 
-				$('#slideshow > div:gt(0)').hide();
+        $("#slideshow > div:gt(0)").hide();
 
-				var interval = setInterval(slide, 3000);
+        var interval = setInterval(slide, 3000);
 
-				function intslide(func) {
-					if (func == 'start') {
-						interval = setInterval(slide, 3000);
-					} else {
-						clearInterval(interval);
-					}
-				}
+        function intslide(func) {
+          if (func == 'start') {
+            interval = setInterval(slide, 3000);
+          } else {
+            clearInterval(interval);
+          }
+        }
 
-				function slide() {
-					sact('next', 0, 2000);
-				}
+          function slide() {
+              sact(2000);
+          }
 
-				function sact(a, ix, it) {
-					var currentSlide = $('.current');
-					var nextSlide = currentSlide.next('.slideitem');
-					var prevSlide = currentSlide.prev('.slideitem');
-					var reqSlide = $('.slideitem').eq(ix);
+          function sact(it) {
+              var currentSlide = $('.current');
+              var nextSlide = currentSlide.next('.slideitem');
+              var prevSlide = currentSlide.prev('.slideitem');
 
-					var currentDot = $('.active-dot');
-					var nextDot = currentDot.next();
-					var prevDot = currentDot.prev();
-					var reqDot = $('.dot').eq(ix);
+              if (nextSlide.length == 0) {
+                  nextSlide = $('.slideitem').first();
+              }
 
-					if (nextSlide.length == 0) {
-						nextDot = $('.dot').first();
-						nextSlide = $('.slideitem').first();
-					}
+              if (prevSlide.length == 0) {
+                  prevSlide = $('.slideitem').last();
+              }
 
-					if (prevSlide.length == 0) {
-						prevDot = $('.dot').last();
-						prevSlide = $('.slideitem').last();
-					}
-
-					if (a == 'next') {
-						var Slide = nextSlide;
-						var Dot = nextDot;
-					}
-					else if (a == 'prev') {
-						var Slide = prevSlide;
-						var Dot = prevDot;
-					}
-					else {
-						var Slide = reqSlide;
-						var Dot = reqDot;
-					}
-					var it_before = it - 1500;
-					currentSlide.fadeOut(it_before).removeClass('current');
-					Slide.fadeIn(it).addClass('current');
-				}
-			});
+              var Slide = nextSlide;
+              var it_before = it - 1500;
+              currentSlide.stop(true , true).fadeOut(it_before).removeClass('current');
+              Slide.stop(true , true).fadeIn(it).addClass('current');
+          }
+      });
 
 //                                                                                                          REPORTS ON LANDING
 			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
@@ -12619,6 +6431,17 @@ angular
   });
 
 angular
+  .module('app')
+  .component('colorIndexComponent', {
+    templateUrl: 'app/components/color-index/color-index.tmpl.html',
+    controller: function ($location, anchorSmoothScroll) {
+      var vm = this;
+
+
+    }
+  });
+
+angular
 	.module('app')
 	.component('colorIndexSearchComponent', {
 		templateUrl: 'app/components/color-index-search/color-index-search.tmpl.html',
@@ -12802,17 +6625,6 @@ angular
 angular.module('ui.bootstrap').controller('AccordionCtrl', function ($scope) {
   $scope.oneAtATime = true;
 });
-
-angular
-  .module('app')
-  .component('colorIndexComponent', {
-    templateUrl: 'app/components/color-index/color-index.tmpl.html',
-    controller: function ($location, anchorSmoothScroll) {
-      var vm = this;
-
-
-    }
-  });
 
 angular
   .module('app')
@@ -13483,6 +7295,6173 @@ angular
       };
     }
   })
+
+angular.module('app').directive('hueTrialExpiredMessage', function () {
+  function link(scope, element, attrs) {
+    scope.tryMoreClick = function () {
+      scope.hideMessage();
+    };
+
+    scope.signUpClick = function () {
+      window.location = "http://www.hue-data.com";
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="trial-expired-message"><div class="message-box"><p>Trial time has expired</p><div class="button-container"><button ng-click="tryMoreClick()" ng-if="!siteLocked">Try for one more hour</button><button ng-click="signUpClick()">Sign Up</button></div></div></div>',
+    link: link,
+    scope: {
+      hideMessage: '&',
+      siteLocked: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueSiteHeader',
+  ['$location', '$interval', 'authService', 'trialService',
+    function (location, interval, authService, trialService) {
+      function link(scope, element, attrs) {
+        // scope.activeControl = route.current.controller == 'homeController' ? 'search' : null;
+        scope.activeControl = 'search';
+        scope.showTrialTime = false;
+        scope.daysLeft = null;
+        scope.expirationTimer = null;
+
+        var expirationTimerFunction = function () {
+          if (trialService.isSiteLocked()) {
+            scope.daysLeft = 0;
+            interval.cancel(scope.expirationTimer);
+            return;
+          }
+
+          var t = trialService.isTrialExpired() ? trialService.getTimeToLock() : trialService.getRemainingTime();
+          scope.daysLeft = Math.ceil(t / 86400000);
+        };
+
+        scope.toggleControl = function (cname) {
+          scope.activeControl = scope.activeControl == cname ? null : cname;
+        };
+        scope.isControlActive = function (cname) {
+          return scope.activeControl == cname;
+        };
+        scope.turnOffControl = function () {
+          scope.activeControl = null;
+        };
+
+        scope.currentUser = null;
+        scope.isUserLoggedIn = function () {
+          if (scope.currentUser)
+            return true;
+          return false;
+        };
+
+        scope.logOff = function () {
+          authService.logOff(function (success) {
+            if (success)
+              location.url('login');
+          });
+        };
+
+        scope.$watch(function () {
+          return authService.currentUser;
+        }, function (newValue, oldValue) {
+          scope.currentUser = newValue;
+
+          if (newValue) {
+            if (scope.expirationTimer)
+              interval.cancel(scope.expirationTimer);
+
+            if (newValue.is_member)
+              scope.showTrialTime = false;
+            else {
+              expirationTimerFunction();
+              scope.expirationTimer = interval(expirationTimerFunction, 5000);
+              scope.showTrialTime = true;
+            }
+          }
+        }, true);
+
+        scope.$on('searchMenuOpenTab', function (event, tabName) {
+          scope.activeControl = 'search';
+        });
+      }
+
+      return {
+        restrict: 'E',
+        templateUrl: 'app/directives/siteHeader/siteHeaderView.html',
+        link: link
+      };
+    }]);
+
+angular.module('app').directive('hueSearchMenuYearSelector', function () {
+  function link(scope, element, attrs) {
+    scope.keyPressHandler = function (event, numberIndex) {
+      var inputs = $('input', element);
+      var yearArr = [$(inputs[0]).val(), $(inputs[1]).val(), $(inputs[2]).val(), $(inputs[3]).val()];
+      if (_.every(yearArr, function (item) {
+          return item != null && item.length == 1;
+        })) {
+        var year = parseInt(yearArr.join(''));
+        var yearItem = _.find(scope.years, function (item) {
+          return item.id == year;
+        });
+
+        if (yearItem)
+          scope.selectedYear = yearItem;
+      }
+    }
+
+    var keyDownHandler = function (event) {
+      var kc = event.keyCode;
+
+      if (kc > 47 && kc < 58) {
+        var e = $(event.target);
+        e.val(String.fromCharCode(event.keyCode));
+        e.next('input').focus();
+      } else if (kc == 37) //left
+        $(event.target).prev('input').focus();
+      else if (kc == 39) //right
+        $(event.target).next('input').focus();
+      else if (kc == 13) //allow Enter
+        return true;
+
+      return false;
+    };
+
+    $('input', element).keydown(keyDownHandler);
+
+    scope.$on('destroy', function () {
+      $('input', element).off("keydown", keyDownHandler);
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<span class="year-selector">Select year between 2000 - Present: <input type="text" ng-keypress="keyPressHandler()"/><input type="text" ng-keypress="keyPressHandler()"/><input type="text" ng-keypress="keyPressHandler()"/><input type="text" ng-keypress="keyPressHandler()"/><span>',
+    link: link,
+    scope: {
+      years: '=',
+      selectedYear: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueSearchMenuTrending', function () {
+  function link(scope, element, attrs) {
+    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var date = new Date();
+    scope.date = months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/siteHeader/searchMenuTrendingView.html',
+    link: link,
+    scope: {}
+  };
+});
+
+angular.module('app').directive('hueSearchMenuSelectList', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    var listElement = $('.selector-list-container ul', element);
+    var elementClick = function (event) {
+      if (!scope.listDisabled)
+        timeout(function () {
+          if ($(event.target).index()) {
+            var newId = scope.listData.items[$(event.target).index() - 1].id;
+            scope.listData.selectedId = newId == scope.listData.selectedId ? null : newId;
+          } else
+            scope.listData.selectedId = -1;
+
+          scope.onItemSelected();
+        }, 0);
+    };
+
+    scope.$watch('listData.selectedId', function (newValue, oldValue) {
+      if (oldValue == -1)
+        listElement.children().first().removeClass('active');
+      else if (oldValue != null)
+        listElement.children().eq(_.findIndex(scope.listData.items, function (item) {
+            return item.id == oldValue;
+          }) + 1).removeClass('active');
+
+      if (newValue == -1)
+        listElement.children().first().addClass('active');
+      else if (newValue != null)
+        listElement.children().eq(_.findIndex(scope.listData.items, function (item) {
+            return item.id == newValue;
+          }) + 1).addClass('active');
+    });
+
+    scope.$watch('listData.items', function (newValue, oldValue) {
+      listElement.empty();
+
+      if (newValue)
+        timeout(function () {
+          var selectAll = $('<li>All</li>');
+          selectAll.click(elementClick);
+          listElement.append(selectAll);
+
+          var count = newValue.length;
+          for (var i = 0; i < count; i++) {
+            var e = $('<li></li>');
+            e.text(newValue[i].title);
+            e.click(elementClick);
+            listElement.append(e);
+          }
+
+          var sid = scope.listData.selectedId;
+          if (sid == -1)
+            listElement.children().first().addClass('active');
+          else if (sid != null)
+            listElement.children().eq(_.findIndex(scope.listData.items, function (item) {
+                return item.id == sid;
+              }) + 1).addClass('active');
+        }, 0);
+    });
+
+    scope.$on('destroy', function () {
+      listElement.find('li').off('click', elementClick);
+    });
+  }
+
+  return {
+    restrict: 'E',
+    // template: '<div class="selector-container" ng-class="{disabled: listDisabled}"><div class="selector-title" ng-bind="listData.title"></div><div class="selector-list-container" hue-mcustomscrollbar><ul></ul></div></div>',
+    template: '<div class="selector-container" ng-class="{disabled: listDisabled}">' +
+    '<div class="selector-title" ng-bind="listData.title"></div>' +
+    '<div class="selector-list-container"><ul></ul></div></div>',
+    link: link,
+    scope: {
+      listData: '=',
+      listDisabled: '=',
+      onItemSelected: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueSearchMenu', ['searchMenuRepository', '$location', 'authService', function (searchMenuRepository, location, authService) {
+  function link(scope, element, attrs) {
+    scope.tabs = [{name: 'season', title: 'Season'}, {name: 'year', title: 'Year'}, {
+      name: 'category',
+      title: 'Category'
+    }, {name: 'region', title: 'Region'}, {name: 'city', title: 'City'}, {
+      name: 'color',
+      title: 'Color'
+    }, {name: 'designer', title: 'Designer'}];
+    scope.letterTabs = ['1-9', 'A-C', 'D-F', 'G-I', 'J-L', 'M-O', 'P-R', 'S-U', 'V-Z'];
+    scope.selectLists = {
+      'season': {title: 'Select a season', items: [], selectedId: null},
+      'year': {title: 'Select a year', items: [], selectedId: null},
+      'category': {title: 'Select a category', items: [], selectedId: null},
+      'city': {title: 'Select a city', items: [], selectedId: null}
+    };
+    scope.secondaryCriteria = [['year', 'category', 'city'], ['season', 'category', 'city'], ['season', 'year', 'city'], ['season', 'year', 'category'], ['season', 'year', 'category'], ['season', 'year', 'category', 'city'], ['season', 'year', 'category', 'city']];
+    scope.selectListsDisabled = false;
+
+    scope.selectedSeason = null;
+    scope.selectedYear = null;
+    scope.selectedCategory = null;
+    scope.selectedRegion = null;
+    scope.selectedCity = null;
+    scope.selectedColor = null;
+    scope.selectedDesigner = null;
+
+    scope.seasonsData = [];
+    scope.yearsData = [];
+    scope.categoriesData = [];
+    scope.regionsData = [];
+    scope.citiesData = [];
+    scope.colorsData = [];
+    scope.designersData = [];
+
+    var resetSelections = function () {
+      scope.selectedSeason = null;
+      scope.selectedYear = null;
+      scope.selectedCategory = null;
+      scope.selectedRegion = null;
+      scope.selectedCity = null;
+      scope.selectedColor = null;
+      scope.selectedDesigner = null;
+
+      _.each(scope.selectLists, function (item) {
+        item.selectedId = null;
+      });
+    };
+
+    var loadListsData = function () {
+      var getParam = function (selectList, selectedObject) {
+        return selectedObject ? selectedObject.id :
+          (selectList ?
+            (scope.selectLists[selectList].selectedId == -1 ?
+              null : scope.selectLists[selectList].selectedId) : null);
+      };
+
+      scope.selectListsDisabled = true;
+      searchMenuRepository.getMain(getParam(null, scope.selectedRegion),
+        getParam(null, scope.selectedDesigner),
+        getParam('category', scope.selectedCategory),
+        getParam('season', scope.selectedSeason),
+        getParam('year', scope.selectedYear),
+        getParam('city', scope.selectedCity), function (data) {
+          var filtersSeason = authService.currentUser.filters.fashion_season_id;
+          var filtersYear = authService.currentUser.filters.fashion_year_id;
+          var filtersCategory = authService.currentUser.filters.fashion_category_id;
+          var filtersCity = authService.currentUser.filters.fashion_city_id;
+
+          // scope.selectLists['season'].items = filtersSeason && filtersSeason.length ? _.filter(data.seasons, function (item) {
+          //   return _.contains(filtersSeason, item.id);
+          // }) : data.seasons;
+          // scope.selectLists['year'].items = filtersYear && filtersYear.length ? _.filter(data.years, function (item) {
+          //   return _.contains(filtersYear, item.id);
+          // }) : data.years;
+          // scope.selectLists['category'].items = filtersCategory && filtersCategory.length ? _.filter(data.categories, function (item) {
+          //   return _.contains(filtersCategory, item.id);
+          // }) : data.categories;
+          // scope.selectLists['city'].items = filtersCity && filtersCity.length ? _.filter(data.cities, function (item) {
+          //   return _.contains(filtersCity, item.id);
+          // }) : data.cities;
+          // scope.selectListsDisabled = false;
+          // scope.selectLists['season'].items = data.seasons;
+          // scope.selectLists['year'].items = data.years;
+          // scope.selectLists['category'].items = data.categories;
+          // scope.selectLists['city'].items = data.cities;
+
+        }).then(function (data) {
+        scope.selectLists['season'].items = data.seasons;
+        scope.selectLists['year'].items = data.years;
+        scope.selectLists['category'].items = data.categories;
+        scope.selectLists['city'].items = data.cities;
+      });
+    };
+
+    scope.secondaryItemSelected = function () {
+      if (_.every(scope.secondaryCriteria[scope.activeTab], function (item) {
+          return scope.selectLists[item].selectedId != null;
+        })) {
+        var params = {};
+        switch (scope.activeTab) {
+          case 0:
+            params.season = scope.selectedSeason.id;
+            break;
+          case 1:
+            params.year = scope.selectedYear.id;
+            break;
+          case 2:
+            params.category = scope.selectedCategory.id;
+            break;
+          case 3:
+            params.region = scope.selectedRegion.id;
+            break;
+          case 4:
+            params.city = scope.selectedCity.id;
+            break;
+          case 5:
+            params.color = scope.selectedColor.id;
+            break;
+          case 6:
+            params.designer = scope.selectedDesigner.id;
+            break;
+        }
+
+        _.each(scope.secondaryCriteria[scope.activeTab], function (item) {
+          if (scope.selectLists[item].selectedId != null && scope.selectLists[item].selectedId != -1)
+            params[item] = scope.selectLists[item].selectedId;
+        });
+
+        scope.doSearch(scope.tabs[scope.activeTab].name, params);
+        resetSelections();
+      } else {
+        loadListsData();
+      }
+    };
+
+    scope.selectSeason = function (item) {
+      scope.selectedSeason = item;
+      scope.setStep(1);
+    };
+
+    scope.selectYear = function (item) {
+      scope.setStep(1);
+    };
+
+    scope.selectCategory = function (item) {
+      scope.selectedCategory = item;
+      scope.setStep(1);
+    };
+
+    scope.selectRegion = function (item) {
+      scope.selectedRegion = item;
+      scope.setStep(1);
+    };
+
+    scope.selectCity = function (item) {
+      scope.selectedCity = item;
+      scope.setStep(1);
+    };
+
+    scope.selectColor = function (item) {
+      scope.selectedColor = item;
+      scope.setStep(1);
+    };
+
+    scope.selectDesigner = function (item) {
+      scope.selectedDesigner = item;
+      scope.setStep(1);
+    };
+
+    var getMainHandler = function (data) {
+      // var data = data.data;
+      var filtersSeason = authService.currentUser.filters.fashion_season_id;
+      var filtersYear = authService.currentUser.filters.fashion_year_id;
+      var filtersCategory = authService.currentUser.filters.fashion_category_id;
+      var filtersRegion = authService.currentUser.filters.fashion_region_id;
+      var filtersCity = authService.currentUser.filters.fashion_city_id;
+      var filtersColor = authService.currentUser.filters.fashion_color_id;
+      var filtersDesigner = authService.currentUser.filters.fashion_designer_id;
+
+      scope.seasonsData = data.seasons;
+      scope.yearsData = data.yearsData;
+      scope.categoriesData = data.categoriesData;
+      scope.regionsData = data.regionsData;
+      scope.citiesData = data.citiesData;
+      scope.colorsData = data.colorsData;
+      scope.designersData = data.designersData;
+      // scope.selectLists['season'].items = filtersSeason && filtersSeason.length ? _.filter(data.seasons, function (item) {
+      //   return _.contains(filtersSeason, item.id);
+      // }) : data.seasons;
+      // scope.yearsData = filtersYear && filtersYear.length ? _.filter(data.years, function (item) {
+      //   return _.contains(filtersYear, item.id);
+      // }) : data.years;
+      // scope.categoriesData = filtersCategory && filtersCategory.length ? _.filter(data.categories, function (item) {
+      //   return _.contains(filtersCategory, item.id);
+      // }) : data.categories;
+      // scope.regionsData = filtersRegion && filtersRegion.length ? _.filter(data.regions, function (item) {
+      //   return _.contains(filtersRegion, item.id);
+      // }) : data.regions;
+      // scope.citiesData = filtersCity && filtersCity.length ? _.filter(data.cities, function (item) {
+      //   return _.contains(filtersCity, item.id);
+      // }) : data.cities;
+      // scope.colorsData = filtersColor && filtersColor.length ? _.filter(data.colors, function (item) {
+      //   return _.contains(filtersColor, item.id);
+      // }) : data.colors;
+      // scope.designersData = filtersDesigner && filtersDesigner.length ? _.filter(data.designers, function (item) {
+      //   return _.contains(filtersDesigner, item.id);
+      // }) : data.designers;
+    };
+
+    //------------------------------------------------------------
+    scope.isTrendingVisible = false;
+    scope.showTrending = function () {
+      scope.isTrendingVisible = true;
+    };
+
+    scope.activeStep = 0;
+    scope.setStep = function (index) {
+      scope.activeStep = index;
+
+      switch (index) {
+        case 0:
+          resetSelections();
+          break;
+        case 1:
+          loadListsData();
+          break;
+      }
+    };
+    scope.isStepActive = function (index) {
+      return scope.activeStep == index;
+    };
+
+    scope.activeTab = null;
+    scope.setTab = function (index) {
+      scope.activeTab = index;
+      scope.isTrendingVisible = true;
+      scope.setStep(0);
+    };
+    scope.isTabActive = function (index) {
+      return scope.activeTab == index;
+    };
+
+    scope.doSearch = function (page, params) {
+      location.url(page).search(params);
+      scope.hide();
+      scope.setTab(scope.activeTab);
+      scope.setStep(0);
+    };
+
+    scope.$on('searchMenuOpenTab', function (event, tabName) {
+      scope.setTab(_.findIndex(scope.tabs, function (item) {
+        return item.name == tabName;
+      }));
+    });
+    scope.$watch(function () {
+      return authService.currentUser;
+    }, function (newValue, oldValue) {
+      if (newValue) {
+        searchMenuRepository.getMain(getMainHandler);
+      }
+    });
+
+    scope.$watch('selectedYear', function (newValue, oldValue) {
+      if (newValue)
+        scope.selectYear(newValue.originalObject);
+    });
+    scope.$watch('selectedColor', function (newValue, oldValue) {
+      if (newValue && newValue.originalObject) //only for autocomplete
+        scope.selectColor(newValue.originalObject);
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/siteHeader/searchMenuView.html',
+    link: link,
+    scope: {
+      show: '=',
+      hide: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueSearchMenuAlphanumericSelector', function (userDataRepository) {
+  function link(scope, element, attrs) {
+    scope.groups = null;
+    scope.activeTab = 0;
+    scope.setTab = function (index) {
+      scope.activeTab = index;
+    };
+    scope.isTabActive = function (index) {
+      return scope.activeTab == index;
+    };
+
+    scope.isItemSelected = function (id) {
+      return scope.multiselectIds.indexOf(id) != -1;
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue) {
+        scope.groups = [];
+        _.each(scope.tabs, function (tab, tabIndex) {
+          var groups = [];
+          var charStart = tab.charCodeAt(0);
+          var charEnd = tab.charCodeAt(2);
+
+          for (var i = charStart; i <= charEnd; i++) { //for letters (subgroups)
+            var items = _.filter(scope.data, function (item) {
+              return item.title.toUpperCase().charCodeAt(0) == i
+            });
+            if (!items.length)
+              continue;
+
+            groups.push({title: String.fromCharCode(i), items: items});
+          }
+
+          scope.groups[tabIndex] = groups;
+        });
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="search-alphanumeric-selector" ng-class="{multiselect: multiselectIds}">'
+    + '<ul class="group-tabs disable-text-selection"><li ng-repeat="item in tabs" ng-class="{active: isTabActive($index)}" ng-click="setTab($index)" ng-bind="item"></li></ul>'
+    + '<div class="items-group" ng-repeat="groupItem in groups" ng-show="isTabActive($index)" ><div class="items-subgroup" ng-repeat="subgroupItem in groupItem"><div class="subgroup-title"><h2 ng-bind="subgroupItem.title"></h2></div>'
+    + '<ul ng-if="multiselectIds"><li ng-class="{active: isItemSelected(item.id)}" ng-repeat="item in subgroupItem.items" ng-click="onItemSelect()(item)" ng-bind="::item.title"></li></ul>'
+    + '<ul ng-if="!multiselectIds"><li ng-repeat="item in subgroupItem.items" ng-click="onItemSelect()(item)" ng-bind="::item.title"></li></ul>'
+    + '</div></div></div>',
+    link: link,
+    scope: {
+      tabs: '=',
+      data: '=',
+      onItemSelect: '&',
+      multiselectIds: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueMainMenu', ['$location', '$timeout', 'authService', 'userDataRepository', 'exportService', function (location, timeout, authService, userDataRepository, exportService) {
+  function link(scope, element, attrs) {
+    scope.activeTab = 0;
+    scope.setTab = function (index) {
+      scope.activeTab = index;
+    };
+    scope.isTabActive = function (index) {
+      return scope.activeTab == index;
+    };
+
+    scope.currentUser = null;
+    scope.isUserDeveloper = function () {
+      if (scope.currentUser && scope.currentUser.profession == 'developer')
+        return true;
+      return false;
+    };
+    scope.goToLogin = function () {
+      scope.hide();
+      location.url('login');
+    };
+
+    scope.projectActionsDisabled = false;
+    scope.projects = [];
+    scope.loadProjects = function () {
+      scope.openTab.expandedProjects = [];
+      scope.saveTab.selectedProjectIndex = null;
+      scope.projectActionsDisabled = true;
+      userDataRepository.project.getItems(scope.currentUser.id, function (data) {
+        scope.projects = data;
+        scope.projectActionsDisabled = false;
+      });
+    };
+    scope.openTab = {
+      images: [],
+      imageActionsDisabled: false,
+      expandedProjects: null,
+      expandProject: function (index) {
+        scope.openTab.expandedProjects[index] = scope.openTab.expandedProjects[index] ? false : true;
+      },
+      isProjectExpanded: function (index) {
+        return scope.openTab.expandedProjects[index] == true;
+      },
+      deleteProject: function (index) {
+        if (!scope.projectActionsDisabled && confirm('Do you want to delete this Project?')) {
+          scope.projectActionsDisabled = true;
+          userDataRepository.project.deleteItem(scope.currentUser.id, scope.projects[index].id, function (data) {
+            scope.loadProjects();
+          });
+        }
+      },
+      goToBoard: function (projectIndex, boardIndex) {
+        scope.hide();
+        location.url(scope.projects[projectIndex].boards[boardIndex].url);
+      },
+      deleteBoard: function (projectIndex, boardIndex) {
+        if (!scope.projectActionsDisabled && confirm('Do you want to delete this Board?')) {
+          scope.projectActionsDisabled = true;
+          userDataRepository.board.deleteItem(scope.currentUser.id, scope.projects[projectIndex].id, scope.projects[projectIndex].boards[boardIndex].id, function (data) {
+            scope.loadProjects();
+          });
+        }
+      },
+      loadImages: function () {
+        userDataRepository.image.getItems(scope.currentUser.id, function (data) {
+          scope.openTab.images = data;
+          scope.openTab.imageActionsDisabled = false;
+        });
+      },
+      openImage: function (index) {
+        //scope.openTab.images[index].id
+      },
+      deleteImage: function (index) {
+        if (!scope.openTab.imageActionsDisabled && confirm('Do you want to delete this Image?')) {
+          scope.openTab.imageActionsDisabled = true;
+          userDataRepository.image.deleteItem(scope.currentUser.id, scope.openTab.images[index].id, function (data) {
+            scope.openTab.loadImages();
+          });
+        }
+      }
+    };
+
+    scope.saveTab = {
+      tabMode: 0, //0 - save board, 1 - create project
+      selectedProjectIndex: null,
+      boardName: null,
+      projectName: null,
+      setTabMode: function (mode) {
+        scope.saveTab.tabMode = mode;
+      },
+      isTabMode: function (mode) {
+        return scope.saveTab.tabMode == mode;
+      },
+      selectProject: function (index) {
+        scope.saveTab.selectedProjectIndex = index;
+      },
+      isProjectSelected: function (index) {
+        return scope.saveTab.selectedProjectIndex == index;
+      },
+      createBoard: function () {
+        if (scope.projectActionsDisabled || !scope.saveTab.boardName || scope.saveTab.selectedProjectIndex == null)
+          return;
+
+        scope.projectActionsDisabled = true;
+        userDataRepository.board.createItem(scope.currentUser.id, scope.projects[scope.saveTab.selectedProjectIndex].id, scope.saveTab.boardName, location.url(), function (data) {
+          scope.saveTab.boardName = null;
+          scope.loadProjects();
+          alert('Board has been saved successfully!');
+        });
+      },
+      createProject: function () {
+        if (scope.projectActionsDisabled || !scope.saveTab.projectName)
+          return;
+
+        scope.projectActionsDisabled = true;
+        userDataRepository.project.createItem(scope.currentUser.id, scope.saveTab.projectName, function (data) {
+          scope.saveTab.projectName = null;
+          scope.loadProjects();
+          alert('Project has been saved successfully!');
+        });
+      }
+    };
+
+    scope.userProfileTab = {
+      mode: 0,
+      actionsDisabled: false,
+      fullName: null,
+      company: null,
+      profession: null,
+      position: null,
+      password: null,
+      passwordConfirmation: null,
+      isMode: function (mode) {
+        return scope.userProfileTab.mode == mode;
+      },
+      setMode: function (mode) {
+        scope.userProfileTab.mode = mode;
+      },
+      loadData: function (user) {
+        scope.userProfileTab.fullName = scope.currentUser.full_name;
+        scope.userProfileTab.company = scope.currentUser.company;
+        scope.userProfileTab.profession = scope.currentUser.profession;
+        scope.userProfileTab.position = scope.currentUser.position;
+      },
+      saveData: function () {
+        if (scope.userProfileTab.actionsDisabled)
+          return;
+
+        if (scope.userProfileTab.mode == 0) {
+          scope.userProfileTab.actionsDisabled = true;
+          authService.currentUser.full_name = scope.userProfileTab.fullName;
+          authService.currentUser.company = scope.userProfileTab.company;
+          authService.currentUser.profession = scope.userProfileTab.profession;
+          authService.currentUser.position = scope.userProfileTab.position;
+          authService.updateUser(function (data) {
+            scope.userProfileTab.loadData();
+            alert("User profile has been updated.");
+            scope.userProfileTab.actionsDisabled = false;
+          });
+        } else {
+          if (scope.userProfileTab.password == null || scope.userProfileTab.password.length == 0) {
+            alert("Password can not be empty.");
+            return;
+          }
+          if (scope.userProfileTab.password.length < 6) {
+            alert("Password must be 6 symbols or longer.");
+            return;
+          }
+          if (scope.userProfileTab.password != scope.userProfileTab.passwordConfirmation) {
+            alert("Passwords do not match.");
+            return;
+          }
+
+          scope.userProfileTab.actionsDisabled = true;
+          authService.updatePassword(scope.userProfileTab.password, function (data) {
+            scope.userProfileTab.loadData();
+            alert("User password has been changed.");
+            scope.userProfileTab.password = null;
+            scope.userProfileTab.passwordConfirmation = null;
+            scope.userProfileTab.actionsDisabled = false;
+          });
+        }
+      }
+    };
+
+    scope.saveAsJpg = function () {
+      scope.hide();
+      timeout(function () {
+        exportService.exportJpg();
+      }, 250);
+    };
+    scope.saveAsPdf = function () {
+      scope.hide();
+      timeout(function () {
+        exportService.exportPdf();
+      }, 250);
+    };
+
+    scope.$watch(function () {
+      return authService.currentUser;
+    }, function (newValue, oldValue) {
+      scope.currentUser = newValue;
+      if (newValue) {
+        scope.loadProjects();
+        scope.openTab.loadImages();
+        scope.userProfileTab.loadData();
+      }
+    }, true);
+
+    scope.$on('mainMenuReloadSavedImages', function (event) {
+      scope.openTab.loadImages();
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/siteHeader/mainMenuView.html',
+    link: link,
+    scope: {
+      show: '=',
+      hide: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueProductsMenu', function (authService, mainMenuRepository) {
+  function link(scope, element, attrs) {
+    scope.data = [];
+    scope.logoClick = function (item) {
+      window.location = authService.token ? (item.url + '#/?token=' + authService.token) : item.url;
+    };
+
+    // mainMenuRepository.getHueProducts(function (data) {
+    //   scope.data = data;
+    // });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="hue-products-menu"><div class="menu-title">Select the HUE you would like to search</div><div ng-repeat="itemGroup in data"><ul class="menu-products"><li ng-repeat="item in itemGroup"><img ng-src="{{item.icon}}" ng-click="logoClick(item)" /></li></ul><div class="product-spacer" ng-if="!$last">The following HUEs are in development, click on an individual HUEs to learn more.</div></div></div>',
+    link: link,
+    scope: {}
+  };
+});
+
+angular.module('app').directive('hueFiltersConfigurationMenu',
+  function ($timeout, authService, searchMenuRepository) {
+    function link(scope, element, attrs) {
+      scope.letterTabs = ['1-9', 'A-C', 'D-F', 'G-I', 'J-L', 'M-O', 'P-R', 'S-U', 'V-Z'];
+      scope.entities = [
+        {title: 'Season', mainKey: 'seasons', filterKey: 'fashion_season_id'},
+        {title: 'Year', mainKey: 'years', filterKey: 'fashion_year_id'},
+        {title: 'Category', mainKey: 'categories', filterKey: 'fashion_category_id'},
+        {title: 'City', mainKey: 'cities', filterKey: 'fashion_city_id'},
+        {title: 'Color', mainKey: 'colors', filterKey: 'fashion_color_id'},
+        {title: 'Designer', mainKey: 'designers', filterKey: 'fashion_designer_id', aplhanumericSelector: true}
+      ];
+      scope.mainData = null;
+      scope.currentUser = null;
+      scope.selectedEntity = null;
+      scope.selectedEntityIndex = null;
+      scope.selectedEntityIds = null;
+      scope.selectedOption = null;
+      scope.options = [];
+      scope.filters = {};
+
+      scope.selectEntity = function (entity) {
+        if (entity == null) {
+          scope.selectedEntity = null;
+          scope.selectedEntityIndex = null;
+          scope.selectedEntityIds = null;
+          scope.selectedOption = null;
+          return;
+        }
+
+        var ent = scope.entities[entity];
+
+        scope.selectedEntity = ent;
+        scope.selectedEntityIndex = entity;
+        scope.selectedOption = null;
+
+        if (!scope.filters[ent.filterKey])
+          scope.filters[ent.filterKey] = [];
+        scope.selectedEntityIds = scope.filters[ent.filterKey];
+
+        scope.options = scope.mainData[scope.entities[entity].mainKey];
+      };
+      scope.isEntitySelected = function (entity) {
+        return scope.selectedEntityIndex == entity;
+      };
+
+      scope.toggleId = function (id) {
+        var i = scope.selectedEntityIds.indexOf(id);
+        if (i != -1)
+          scope.selectedEntityIds.splice(i, 1);
+        else
+          scope.selectedEntityIds.push(id);
+      };
+      scope.toggleItem = function (item) {
+        scope.toggleId(item.id);
+      };
+      scope.isIdSelected = function (id) {
+        return scope.selectedEntityIds.indexOf(id) != -1;
+      };
+
+      scope.resetConfig = function () {
+        if (confirm('Are you sure you want to reset all filters?')) {
+          _.each(scope.entities, function (item) {
+            scope.filters[item.filterKey] = [];
+          });
+          scope.selectEntity(scope.selectedEntityIndex);
+          scope.saveConfig();
+        }
+      };
+      scope.saveConfig = function () {
+        authService.currentUser.filters = scope.filters;
+        authService.updateUser(function (data) {
+          alert("Filters have been updated.");
+        });
+      };
+
+      searchMenuRepository.getMain(function (data) {
+        scope.mainData = data;
+      });
+
+      scope.$watch('selectedOption', function (newValue, oldValue) {
+        if (newValue) {
+          scope.toggleItem(newValue.originalObject);
+          $timeout(function () {
+            scope.selectedOption = null;
+          }, 0);
+        }
+      });
+
+      scope.$watch(function () {
+        return authService.currentUser;
+      }, function (newValue, oldValue) {
+        scope.currentUser = newValue;
+        if (newValue) {
+          var f = {};
+          _.each(newValue.filters, function (value, key) {
+            f[key] = _.clone(value);
+          });
+
+          scope.filters = f;
+
+          if (scope.selectedEntity)
+            scope.selectEntity(scope.selectedEntityIndex);
+        }
+      }, true);
+    }
+
+    return {
+      restrict: 'E',
+      templateUrl: 'app/directives/siteHeader/filtersConfigurationMenuView.html',
+      link: link,
+      scope: {}
+    };
+  });
+
+angular.module('app').directive('hueDeactivateAccountDialog', ['userDataRepository', function (userDataRepository) {
+  function link(scope, element, attrs) {
+    scope.reasons = ['Was not relevant to me', 'Love but will not use', 'The subscription fee was too high'];
+    scope.step = 0;
+    scope.isStep = function (step) {
+      return step == scope.step;
+    };
+    scope.setStep = function (step) {
+      scope.step = step;
+    };
+
+    scope.customReason = null;
+
+    scope.selectedReason = function (reasonId) {
+      userDataRepository.deactivateAccount(reasonId);
+      scope.setStep(2);
+    };
+    scope.selectedCustomReason = function () {
+      if (!scope.customReason) {
+        alert('Please tell us why you are closing your account');
+        return;
+      }
+
+      userDataRepository.deactivateAccount(scope.customReason);
+      scope.setStep(2);
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="deactivate-account-dialog"><div class="close-account" ng-click="setStep(1)" ng-show="isStep(0)">Close my account</div><div ng-show="isStep(1)"><p>Please tell us why you are closing your account</p><ul><li class="reason-option" ng-repeat="item in reasons" ng-bind="item" ng-click="selectedReason($index)"></li><li>Other <input type="text" ng-model="customReason"/> <button ng-click="selectedCustomReason()">Ok</button></li></ul></div><div ng-show="isStep(2)">Thank you</div></div>',
+    link: link,
+    scope: {}
+  };
+}]);
+
+angular.module('app').directive('hueFooter', function () {
+  function link(scope, element, attrs) {
+    scope.browserIsNotChrome = window.chrome == null || window.chrome == undefined || window.navigator.vendor != "Google Inc." || (window.navigator.userAgent.indexOf("OPR") > -1);
+    scope.infoUrl = null;
+
+    scope.showInfoWindow = function (type) {
+      scope.infoUrl = 'app/directives/' + type + 'Partial.html';
+    };
+    scope.hideInfoWindow = function () {
+      scope.infoUrl = null;
+    };
+    scope.isInfoWindowVisible = function () {
+      return scope.infoUrl != null;
+    };
+  }
+
+  return {
+    restrict: 'A',
+    template: '<ul><li><a ng-click="showInfoWindow(\'about\')">About</a></li><li><a href="mailto:investors@hue-data.com">Investors</a></li><li><a ng-click="showInfoWindow(\'terms\')">Terms Of Use</a></li><li><a ng-click="showInfoWindow(\'privacy\')">Privacy</a></li><li><a href="mailto:hello@hue-group.com">Contact</a></li><li class="not-chrome-message" ng-show="browserIsNotChrome"><a href="https://www.google.com/chrome/">For best results please use Google Chrome. If you do not have Google Chrome, you can download using this link.</a></li></ul><div class="info-window" ng-if="isInfoWindowVisible()"><div class="button-close" ng-click="hideInfoWindow()"></div><div class="window-content-container"><div class="window-content" ng-include="infoUrl"></div></div></div>',
+    link: link,
+    scope: {}
+  };
+});
+
+angular.module('app').directive('hueDbTopProductsCopyrightsView', function ($timeout) {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'hover',
+      position: 'top'
+    };
+
+    scope.percentageData = null;
+    scope.axisData = null;
+    scope.colorUsa = null;
+    scope.colorInt = null;
+
+    var lightenDarkenColor = function (col, amt) {
+      var usePound = false;
+
+      if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
+      }
+
+      var num = parseInt(col, 16);
+
+      var r = (num >> 16) + amt;
+
+      if (r > 255) r = 255;
+      else if (r < 0) r = 0;
+
+      var b = ((num >> 8) & 0x00FF) + amt;
+
+      if (b > 255) b = 255;
+      else if (b < 0) b = 0;
+
+      var g = (num & 0x0000FF) + amt;
+
+      if (g > 255) g = 255;
+      else if (g < 0) g = 0;
+
+      return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
+    };
+
+    var setColors = function (color) {
+
+    };
+
+    var parseData = function (data) {
+      var max = data.length === 0 ? 0 : _.max(_.map(data, function (item) {
+        return _.max([item.total_copyrights, item.us_copyrights, item.int_copyrights]);
+      }));
+      max = Math.round(max * 1.05 / 10) * 10 || 1;
+
+      scope.axisData = _.map(_.range(5), function (n) {
+        n++;
+        return max > 10 ? Math.round(max / 6 * n) : (Math.round(max / 6 * n * 10) / 10);
+      });
+
+      scope.percentageData = _.map(data, function (item) {
+        return {total: '0%', us: '0%', int: '0%'};
+      });
+
+      $timeout(function () {
+        scope.percentageData = _.map(scope.data, function (item) {
+          return {
+            total: (item.total_copyrights / max * 100) + '%',
+            us: (item.us_copyrights / max * 100) + '%',
+            int: (item.int_copyrights / max * 100) + '%'
+          };
+        });
+      }, 10);
+    }
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue) {
+        parseData(newValue);
+      }
+    });
+
+    scope.$watch('chartColor', function (newValue, oldValue) {
+      if (newValue) {
+        scope.colorUsa = newValue;
+        scope.colorInt = lightenDarkenColor(newValue, 128);
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopProductsCopyrights/dbTopProductsCopyrightsView.html',
+    link: link,
+    scope: {
+      data: '=',
+      chartColor: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDonutChart',
+  ['$timeout', '$location',
+    function (timeout, location) {
+      function link(scope, element, attrs) {
+        var config = scope.config;
+
+        var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+        var diameter = scope.config.diameter;
+        var outerRadius = diameter / 2;
+        var innerSectionRadius = outerRadius - donutWidth;
+        var innerStrokeRadius = outerRadius - 2;
+        var animationDuration = 400;
+        var animationStep = 1 / (animationDuration / 20);
+        var strokePercentage = 100 - scope.percentage;
+
+        var draw = SVG(element[0]).size(diameter, diameter);
+
+        var getSectionPathData = function (angle1, angle2, innerRadius) {
+          var sinStart = Math.sin(angle1);
+          var cosStart = Math.cos(angle1);
+          var sinEnd = Math.sin(angle2);
+          var cosEnd = Math.cos(angle2);
+
+          var xO1 = outerRadius + (sinStart * outerRadius); //outer
+          var yO1 = outerRadius - (cosStart * outerRadius);
+          var xO2 = outerRadius + (sinEnd * outerRadius);
+          var yO2 = outerRadius - (cosEnd * outerRadius);
+
+          var xI1 = outerRadius + (sinStart * innerRadius); //inner
+          var yI1 = outerRadius - (cosStart * innerRadius);
+          var xI2 = outerRadius + (sinEnd * innerRadius);
+          var yI2 = outerRadius - (cosEnd * innerRadius);
+
+          var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+          return new SVG.PathArray([
+            ['M', xO1, yO1],
+            ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+            ['L', xI2, yI2],
+            ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+            ['Z']
+          ]).toString();
+        };
+
+        // Initialization
+        draw.path('').attr('fill', scope.color); //section
+        draw.path('').attr('fill', scope.color); //stroke
+
+        // Opening animation
+        var easeOutFunction = BezierEasing.css['ease-out'];
+        var animationProgress = 0;
+        var drawChildren = draw.children();
+        var processAnimation = function () {
+          animationProgress += animationStep;
+          if (animationProgress > 1) {
+            animationProgress = 1;
+          }
+          var coeff = easeOutFunction(animationProgress) * 0.999; // multiply by 0.999 to prevent arcs from closing and disappearing
+
+          var angleStart = 0;
+          var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
+          drawChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
+
+          angleStart = angleEnd;
+          angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
+          drawChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
+
+          if (animationProgress != 1) {
+            timeout(processAnimation, 20);
+          }
+        };
+
+        processAnimation();
+
+        scope.$watch('color', function (newValue, oldValue) {
+          if (newValue) {
+            draw.first().attr('fill', newValue); //section
+            draw.last().attr('fill', newValue); //stroke
+          }
+        });
+      }
+
+      return {
+        restrict: 'A',
+        link: link,
+        scope: {
+          config: '=hueDonutChart',
+          percentage: '=',
+          color: '='
+        }
+      };
+    }]);
+
+angular.module('app').directive('hueDbTopItemsDonuts', function () {
+  function link(scope, element, attrs) {
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopItemsDonuts/dbTopItemsDonutsView.html',
+    link: link,
+    scope: {
+      data: '=',
+      donutColor: '=',
+      itemClick: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueTopIndustriesChart', ['$timeout', '$location', function (timeout, location) {
+	function link(scope, element, attrs) {
+		var config = scope.config;
+
+		var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+		var diameter = scope.config.diameter;
+		var outerRadius = diameter / 2;
+		var innerSectionRadius = outerRadius - donutWidth;
+		var innerStrokeRadius = outerRadius - 2;
+		var animationDuration = 400;
+		var animationStep = 1 / (animationDuration / 20);
+		var strokePercentage = 100 - scope.percentage;
+
+		var draw = SVG(element[0]).size(diameter, diameter);
+		var group = draw.group();
+
+		var getSectionPathData = function (angle1, angle2, innerRadius) {
+			var sinStart = Math.sin(angle1);
+			var cosStart = Math.cos(angle1);
+			var sinEnd = Math.sin(angle2);
+			var cosEnd = Math.cos(angle2);
+
+			var xO1 = outerRadius + (sinStart * outerRadius); //outer
+			var yO1 = outerRadius - (cosStart * outerRadius);
+			var xO2 = outerRadius + (sinEnd * outerRadius);
+			var yO2 = outerRadius - (cosEnd * outerRadius);
+
+			var xI1 = outerRadius + (sinStart * innerRadius); //inner
+			var yI1 = outerRadius - (cosStart * innerRadius);
+			var xI2 = outerRadius + (sinEnd * innerRadius);
+			var yI2 = outerRadius - (cosEnd * innerRadius);
+
+			var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+			return new SVG.PathArray([
+					['M', xO1, yO1],
+					['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+					['L', xI2, yI2],
+					['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+					['Z']
+			]).toString();
+		};
+
+
+		//Initialization
+		group.path('').attr('fill', scope.color); //section
+		group.path('').attr('fill', scope.color); //stroke
+
+		//Opening animation
+		var easeOutFunction = BezierEasing.css['ease-out'];
+		var animationProgress = 0;
+		var groupChildren = group.children();
+		var processAnimation = function () {
+			animationProgress += animationStep;
+			if (animationProgress > 1)
+				animationProgress = 1;
+
+			var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
+
+			var angleStart = 0;
+			var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
+			groupChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
+
+			angleStart = angleEnd;
+			angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
+			groupChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
+
+			if (animationProgress != 1)
+				timeout(processAnimation, 20);
+		};
+
+		processAnimation();
+
+		scope.$watch('color', function (newValue, oldValue) {
+			if (newValue) {
+				group.first().attr('fill', newValue); //section
+				group.last().attr('fill', newValue); //stroke
+			}
+		});
+	}
+
+	return {
+		restrict: 'A',
+		link: link,
+		scope: {
+			config: '=hueTopIndustriesChart',
+			percentage: '=',
+			color: '='
+		}
+	};
+}]);
+angular.module('app').directive('hueDbTopIndustries', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.industryClick = function (id) {
+      location.url('industry').search({industry: id});
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopIndustries/dbTopIndustriesView.html',
+    link: link,
+    scope: {
+      data: '=',
+      chartColor: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueTopFinishesChart',
+  ['$timeout', '$location', function (timeout, location) {
+    function link(scope, element, attrs) {
+      var config = scope.config;
+
+      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+      var diameter = scope.config.diameter;
+      var outerRadius = diameter / 2;
+      var innerSectionRadius = outerRadius - donutWidth;
+      var innerStrokeRadius = outerRadius - 2;
+      var animationDuration = 400;
+      var animationStep = 1 / (animationDuration / 20);
+      var strokePercentage = 100 - scope.percentage;
+
+      var draw = SVG(element[0]).size(diameter, diameter);
+
+      var getSectionPathData = function (angle1, angle2, innerRadius) {
+        var sinStart = Math.sin(angle1);
+        var cosStart = Math.cos(angle1);
+        var sinEnd = Math.sin(angle2);
+        var cosEnd = Math.cos(angle2);
+
+        var xO1 = outerRadius + (sinStart * outerRadius); // outer
+        var yO1 = outerRadius - (cosStart * outerRadius);
+        var xO2 = outerRadius + (sinEnd * outerRadius);
+        var yO2 = outerRadius - (cosEnd * outerRadius);
+
+        var xI1 = outerRadius + (sinStart * innerRadius); // inner
+        var yI1 = outerRadius - (cosStart * innerRadius);
+        var xI2 = outerRadius + (sinEnd * innerRadius);
+        var yI2 = outerRadius - (cosEnd * innerRadius);
+
+        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+        return new SVG.PathArray([
+          ['M', xO1, yO1],
+          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+          ['L', xI2, yI2],
+          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+          ['Z']
+        ]).toString();
+      };
+
+      // Initialization
+      draw.path('').attr('fill', scope.color); // section
+      draw.path('').attr('fill', scope.color); // stroke
+
+      // Opening animation
+      var easeOutFunction = BezierEasing.css['ease-out'];
+      var animationProgress = 0;
+      var drawChildren = draw.children();
+      var processAnimation = function () {
+        animationProgress += animationStep;
+        if (animationProgress > 1) {
+          animationProgress = 1;
+        }
+        var coeff = easeOutFunction(animationProgress) * 0.999; // multiply by 0.999 to prevent arcs from closing and disappearing
+
+        var angleStart = 0;
+        var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
+        drawChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
+
+        angleStart = angleEnd;
+        angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
+        drawChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
+
+        if (animationProgress != 1) {
+          timeout(processAnimation, 20);
+        }
+      };
+
+      processAnimation();
+
+      scope.$watch('color', function (newValue, oldValue) {
+        if (newValue) {
+          draw.first().attr('fill', newValue); // section
+          draw.last().attr('fill', newValue); // stroke
+        }
+      });
+    }
+
+    return {
+      restrict: 'A',
+      link: link,
+      scope: {
+        config: '=hueTopFinishesChart',
+        percentage: '=',
+        color: '='
+      }
+    };
+  }]);
+
+angular.module('app').directive('hueDbTopFinishes', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    //scope.industryClick = function (id) {
+    //	location.url('finish').search({ finish: id });
+    //}
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopFinishes/dbTopFinishesView.html',
+    link: link,
+    scope: {
+      data: '=',
+      chartColor: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbTopColorsByYear', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    scope.activeBars = [];
+    scope.tooltipsterOddConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'top'
+    };
+
+    scope.dataRendered = false;
+    scope.onDataRendered = function () {
+      scope.dataRendered = true;
+    };
+
+    scope.getButtonId = function (btnName) {
+      return 'db-tcby-' + scope.$id + '-btn-' + btnName;
+    };
+    scope.carouselVisibleFunction = function (items) {
+      return items - 1;
+    };
+
+    var activeElement;
+    scope.selectBar = function (event, groupIndex, barIndex) {
+      if (activeElement)
+        activeElement.tooltipster('hide');
+
+      activeElement = angular.element(event.currentTarget);
+
+      scope.activeBars[groupIndex] = scope.activeBars[groupIndex] == barIndex ? null : barIndex;
+
+      if (scope.activeBars[groupIndex] != null)
+        timeout(function () {
+          activeElement.tooltipster('show');
+        }, 250);
+    };
+    scope.isBarSelected = function (groupIndex, barIndex) {
+      return scope.activeBars[groupIndex] == barIndex;
+    }
+
+    scope.$watch('data', function (newValue, oldValue) {
+      scope.activeBars = [];
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopColorsByYear/dbTopColorsByYearView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbTopColorsExpanded', function () {
+  function link(scope, element, attrs) {
+
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopColors/dbTopColorsExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbTopColors', function () {
+  function link(scope, element, attrs) {
+    scope.selectedColor = null;
+    scope.toggleColor = function (index) {
+      scope.selectedColor = scope.selectedColor == index ? null : index;
+    };
+    scope.isColorSelected = function (index) {
+      if (index != null)
+        return scope.selectedColor == index;
+      return scope.selectedColor != null;
+    };
+    scope.getBarHeight = function (index) {
+      if (scope.selectedColor == null)
+        return scope.data[index].percentage + '%';
+      return scope.selectedColor == index ? '100%' : '0%';
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopColors/dbTopColorsView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbSingleLineChart', function ($timeout, $interval) {
+  function link(scope, element, attrs) {
+    var defaultLineColor = '#96FF0D';
+    var chartOffsetTop = 10;
+    var chartOffsetBottom = 40;
+    var chartOffsetLeft = 50;
+    var chartOffsetRight = 20;
+    var chartYAxisStep = 1;
+    var fontX = {family: 'Gotham Cond SSm A","Gotham Cond SSm B', size: 15, weight: 600};
+    var fontY = {family: 'Open Sans', size: 14};
+    var tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'hover',
+      position: 'top',
+      offsetX: 6
+    };
+
+    scope.chartData = null;
+    scope.chartMinValue = 0;
+    scope.chartMaxValue = 10;
+
+    var draw = SVG(angular.element('.graph', element)[0]);
+    var drawChart = function () {
+      draw.clear();
+
+      if (scope.chartData == null) {
+        return;
+      }
+
+      var lineColor = scope.lineColor ? scope.lineColor : defaultLineColor;
+      var graphContainer = angular.element('.graph', element);
+      var width = graphContainer.width() - chartOffsetLeft - chartOffsetRight;
+      var height = graphContainer.height() - chartOffsetTop - chartOffsetBottom;
+      var chartXMax = graphContainer.width() - chartOffsetRight;
+      var chartYMax = graphContainer.height() - chartOffsetBottom;
+
+      var itemCountRange = scope.chartMaxValue - scope.chartMinValue;
+      for (var i = 0; i <= itemCountRange; i += chartYAxisStep) {
+        var y = chartOffsetTop + Math.round(height * (i / itemCountRange));
+        draw.line(chartOffsetLeft, y, chartXMax, y).stroke({width: 1, color: '#ccc'});
+
+        var label = draw.text((scope.chartMaxValue - i).toString()).fill('#ccc').font(fontY).cy(y);
+        label.x(chartOffsetLeft - label.bbox().width - 12);
+      }
+
+      var cdx = scope.chartData.x;
+      var cdy = scope.chartData.y;
+      var cdt = scope.chartData.titles;
+      var cdv = scope.chartData.values;
+      var count = cdx.length;
+      var items = [];
+
+      var pl = draw.polyline([]).fill('none').stroke({color: lineColor, width: 4});
+
+      for (var i = 0; i < count; i++) {
+        var x = Math.round(width * cdx[i] + chartOffsetLeft);
+        var y = chartOffsetTop + Math.round(height * cdy[i]);
+
+        var circle = draw.circle(12).fill('#FFF').stroke({
+          color: lineColor,
+          width: 4
+        }).cx(x).cy(y).attr('title', cdv[i].toString());
+        draw.text(cdt[i]).fill('#000').font(fontX).cx(x).cy(chartYMax + (i % 2 ? 32 : 16));
+        items.push([x, y]);
+
+        angular.element(circle.node).tooltipster(tooltipsterConfig);
+      }
+
+      pl.plot(items);
+    };
+
+    var parseData = function (data) {
+      var count = data.length;
+      var minItemsCount = null;
+      var maxItemsCount = 0;
+
+      for (var i = 0; i < count; i++) {
+        if (minItemsCount == null || minItemsCount > data[i][1]) {
+          minItemsCount = data[i][1];
+        }
+        if (maxItemsCount < data[i][1]) {
+          maxItemsCount = data[i][1];
+        }
+      }
+
+      chartYAxisStep = (maxItemsCount - minItemsCount + 1) <= 5 ? 1 : Math.round((maxItemsCount - minItemsCount + 1) / 5);
+
+      maxItemsCount = minItemsCount + (Math.ceil((maxItemsCount - minItemsCount + 1) / chartYAxisStep) * chartYAxisStep);
+      scope.chartMinValue = minItemsCount;
+      scope.chartMaxValue = maxItemsCount;
+
+      var xCoeff = count > 1 ? (1 / (count - 1)) : 0;
+      var graphYLength = maxItemsCount - minItemsCount;
+      var result = {titles: [], values: [], x: [], y: []};
+
+      for (var i = 0; i < count; i++) {
+        result.x.push(i * xCoeff);
+        result.y.push(1 - ((data[i][1] - minItemsCount) / graphYLength));
+        result.titles.push(data[i][0]);
+        result.values.push(data[i][1]);
+      }
+
+      scope.chartData = result;
+
+      drawChart();
+      $timeout(drawChart, 500);
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length) {
+        parseData(newValue.slice(0, 10));
+      }
+    });
+
+    var container = element.find('.db-single-line-chart');
+    var containerWidth = container.width();
+    var updateInterval = $interval(function () {
+      if (container.width() != containerWidth) {
+        if (scope.data && scope.data.length) {
+          parseData(scope.data.slice(0, 10));
+        }
+        containerWidth = container.width();
+      }
+    }, 250);
+
+    scope.$on('$destroy', function () {
+      if (updateInterval) {
+        $interval.cancel(updateInterval);
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="db-single-line-chart"><div class="graph"></div></div>',
+    link: link,
+    scope: {
+      data: '=',
+      lineColor: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbLogos', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.page = 1;
+    scope.maxElementsPerGroup = 0;
+    scope.data = [];
+    scope.dataExpanded = [];
+    scope.groupNames = [];
+    scope.showLogoDetails = false;
+    scope.logoDetailsId = null;
+
+    var calculateMaxElementsPerGroup = function () {
+      return Math.floor(element.children().first().width() / 170) * 2;
+    };
+    var updateData = function () {
+      scope.data = _.map(scope.originalData, function (item, index) {
+        if (!scope.dataExpanded[index])
+          return item[1].slice(0, scope.maxElementsPerGroup);
+        else
+          return item[1];
+      });
+    };
+
+    scope.showGroupNames = function () {
+      return scope.colorDashboard != true;
+    };
+
+    scope.isShowMoreVisible = function (groupIndex) {
+      return !scope.dataExpanded[groupIndex] && scope.originalData[groupIndex][1].length > scope.maxElementsPerGroup;
+    };
+    scope.isShowLessVisible = function (groupIndex) {
+      return scope.dataExpanded[groupIndex];
+    };
+
+    scope.showMoreClick = function (groupIndex) {
+      scope.dataExpanded[groupIndex] = true;
+      updateData();
+    };
+
+    scope.showLessClick = function (groupIndex) {
+      scope.dataExpanded[groupIndex] = false;
+      updateData();
+    };
+
+    scope.toggleLogoDetails = function () {
+      scope.showLogoDetails = scope.showLogoDetails ? false : true;
+    };
+
+    scope.logoClick = function (parentIndex, index) {
+      scope.logoDetailsId = scope.data[parentIndex][index].id;
+      scope.toggleLogoDetails();
+    };
+
+    scope.$watch('originalData', function (newValue, oldValue) {
+      if (newValue && (scope.colorDashboard != true || (scope.colorDashboard && newValue.length))) { // IF not color dashboard OR is color dashboard and not empty array
+        scope.groupNames = _.map(scope.originalData, function (item, key) {
+          return item[0];
+        });
+
+        scope.maxElementsPerGroup = calculateMaxElementsPerGroup();
+        updateData();
+        scope.dataExpanded = [];
+      } else {
+        scope.data = [];
+        scope.dataExpanded = [];
+      }
+    });
+
+    var lazyDigest = _.debounce(function () {
+      scope.$digest();
+    }, 300);
+    $(window).resize(function () {
+      var maxElems = calculateMaxElementsPerGroup();
+      if (scope.maxElementsPerGroup != maxElems) {
+        scope.maxElementsPerGroup = maxElems;
+        updateData();
+        lazyDigest();
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbLogos/dbLogosView.html',
+    link: link,
+    scope: {
+      originalData: '=data',
+      colorDashboard: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbLogoDetails', ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
+  function link(scope, element, attrs) {
+    scope.url = null;
+    scope.title = null;
+    scope.industry = null;
+    scope.country = null;
+    scope.symbol = null;
+    scope.attributes = [];
+    scope.colors = [];
+
+    scope.saveInputVisible = false;
+    scope.imageName = null;
+
+    scope.showMoreVisible = false;
+    scope.showLessVisible = false;
+    scope.showAttributes = true;
+    scope.maxColors = 4;
+    scope.showMoreClick = function () {
+      scope.maxColors = scope.colors.length;
+      scope.showMoreVisible = false;
+      scope.showLessVisible = true;
+      scope.showAttributes = false;
+    };
+    scope.showLessClick = function () {
+      scope.maxColors = 4;
+      scope.showMoreVisible = true;
+      scope.showLessVisible = false;
+      scope.showAttributes = true;
+    };
+
+    http.jsonp(appConfig.webServiceUrl + 'bio.jsonp', {
+      params: {
+        id: scope.logoId,
+        token: authService.token,
+        callback: 'JSON_CALLBACK'
+      }
+    }).success(function (data) {
+      scope.url = data.url;
+      scope.title = data.bio.company_title;
+      scope.industry = data.bio.industry_title;
+      scope.country = data.bio.country;
+      scope.symbol = data.bio.symbol;
+      scope.attributes = data.bio.attributes;
+      scope.colors = data.bio.colors;
+
+      if (scope.colors.length > 4)
+        scope.showMoreVisible = true;
+    });
+
+    scope.closeClickHandler = function () {
+      scope.onClose();
+    };
+
+    scope.showSaveInput = function () {
+      scope.saveInputVisible = true;
+    };
+
+    scope.saveImage = function () {
+      scope.imageName = null;
+      scope.saveInputVisible = false;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbLogos/dbLogoDetailsView.html',
+    link: link,
+    scope: {
+      logoId: '=',
+      onClose: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbMapExpanded', ['$timeout', 'searchMenuRepository', function (timeout, searchMenuRepository) {
+  function link(scope, element, attrs) {
+    scope.maps = null;
+
+    var mainIsLoaded = false;
+    var mapsToRender = null;
+    var countries = null;
+    var countriesInRegions = [];
+    var selectedRegions = [];
+    var americasRegion = [];
+
+    var highlightGroup = function (group, color) {
+      var c = group.children();
+      var cc = c.length;
+
+      if (color)
+        for (var i = 0; i < cc; i++) {
+          var e = c[i];
+          e.style('fill', color);
+          e.style('stroke', '#ccc');
+          e.style('stroke-width', '2px');
+        }
+      else
+        for (var i = 0; i < cc; i++) {
+          var e = c[i];
+          e.style('fill', null);
+          e.style('stroke', null);
+          e.style('stroke-width', null);
+        }
+    };
+
+    if (!scope.hideMap)
+      searchMenuRepository.getControlsDataBranding().then(function (data) {
+        countries = data.countries;
+
+        var regGroups = _.groupBy(data.countries, function (item) {
+          return item.region_id;
+        });
+        _.each(regGroups, function (item, key) {
+          var parsedKey = parseInt(key);
+          if (!isNaN(parsedKey))
+            countriesInRegions.push({
+              id: parsedKey,
+              name: _.find(data.countries, function (ritem) {
+                return ritem.region_id == parsedKey;
+              }).region_name,
+              countries: _.map(item, function (citem) {
+                return {id: citem.id, code: citem.code};
+              })
+            });
+        });
+
+        mainIsLoaded = true;
+        if (mapsToRender != null)
+          _.each(mapsToRender, function (item) {
+            scope.mapLoaded(item);
+          });
+      });
+
+    scope.mapLoaded = function (mapIndex) {
+      if (scope.hideMap)
+        return;
+
+      if (!mainIsLoaded) {
+        if (mapsToRender == null)
+          mapsToRender = [];
+
+        mapsToRender.push(mapIndex);
+        return;
+      }
+
+      var mapContainer = angular.element('.map-container', element).eq(mapIndex);
+      var mapImage = angular.element('.map-image', mapContainer);
+      var draw = SVG(mapContainer[0]);
+      draw.svg(mapImage.html());
+      draw.viewbox(0, 0, 1008, 651);
+      draw.addClass('map-image');
+      mapImage.remove();
+      angular.element(draw.node).prependTo(mapContainer);
+
+      var mapTilesGroup = _.find(draw.children(), function (item) {
+        return item.children().length > 100;
+      });
+
+      var color = scope.maps[mapIndex].color;
+      var companies = scope.maps[mapIndex].companies;
+      var regions = _.filter(countriesInRegions, function (item) {
+        return _.some(item.countries, function (countryItem) {
+          return _.some(companies, function (company) {
+            return company.country.id == countryItem.id;
+          });
+        });
+      });
+
+      _.each(regions, function (item, index) {
+        var rGroup = draw.group();
+        _.each(item.countries, function (countryItem) {
+          var elemId = 'map_region_' + countryItem.code;
+          var elem = _.find(mapTilesGroup.children(), function (item) {
+            return item.node.id == elemId;
+          });
+
+          if (!elem)
+            return;
+
+          rGroup.add(elem);
+        });
+
+        if (item.id == 4) { //Americas
+          americasRegion[mapIndex] = rGroup;
+          highlightGroup(rGroup, color);
+        } else {
+          rGroup.on('mouseover', function (event) {
+            if (selectedRegions[mapIndex] != rGroup)
+              highlightGroup(rGroup, color);
+          });
+
+          rGroup.on('mouseout', function (event) {
+            if (selectedRegions[mapIndex] != rGroup)
+              highlightGroup(rGroup, null);
+          });
+        }
+
+        var brandCount = _.reduce(
+          _.filter(companies, function (companyItem) {
+            return _.some(item.countries, function (countryItem) {
+              return companyItem.country.id == countryItem.id;
+            });
+          }),
+          function (memo, companyItem) {
+            return memo + companyItem.brands_count;
+          }, 0);
+        var rGroupBbox = rGroup.node.getBoundingClientRect();
+        rGroup.attr('title', item.name + ' (' + brandCount + ' brands)');
+        angular.element(rGroup.node).tooltipster({
+          animation: 'fade',
+          theme: 'tooltipster-default',
+          trigger: 'custom',
+          position: 'top',
+          offsetX: item.id == 4 ? Math.round(rGroupBbox.width / 2) - 25 : Math.round(rGroupBbox.width / 2),
+          offsetY: -Math.round(rGroupBbox.height / 2)
+        });
+        rGroup.click(function (event) {
+          var sr = selectedRegions[mapIndex];
+
+          if (sr) {
+            if (sr != americasRegion[mapIndex])
+              highlightGroup(sr, null);
+
+            angular.element(sr.node).tooltipster('hide');
+          }
+
+          if (sr == rGroup)
+            selectedRegions[mapIndex] = null;
+          else {
+            selectedRegions[mapIndex] = rGroup;
+            angular.element(rGroup.node).tooltipster('show');
+          }
+        });
+      });
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length)
+        scope.maps = _.map(newValue, function (item) {
+          return {
+            companies: item.companies,
+            color: item.color.color.hex,
+            title: item.color.title,
+            attributes: item.attributes
+          };
+        });
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbMap/dbMapExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&',
+      hideMap: '=',
+      evTitle: '@'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbMap',
+  ['$timeout', 'searchMenuRepository',
+    function (timeout, searchMenuRepository) {
+      function link(scope, element, attrs) {
+        scope.maps = null;
+
+        var mainIsLoaded = false;
+        var mapsToRender = null;
+        var countries = null;
+        var countriesInRegions = [];
+        var selectedRegions = [];
+        var regionsBrandsCount = [];
+
+        if (!scope.hideMap)
+          searchMenuRepository.getControlsDataBranding().then(function (data) {
+            countries = data.countries;
+
+            var regGroups = _.groupBy(data.countries, function (item) {
+              return item.region_id;
+            });
+            _.each(regGroups, function (item, key) {
+              var parsedKey = parseInt(key);
+              if (!isNaN(parsedKey))
+                countriesInRegions.push({
+                  id: parsedKey,
+                  name: _.find(data.countries, function (ritem) {
+                    return ritem.region_id == parsedKey;
+                  }).region_name,
+                  countries: _.map(item, function (citem) {
+                    return {id: citem.id, code: citem.code};
+                  })
+                });
+            });
+
+            mainIsLoaded = true;
+            if (mapsToRender != null)
+              _.each(mapsToRender, function (item) {
+                scope.mapLoaded(item);
+              });
+          });
+
+        scope.mapLoaded = function (mapIndex) {
+          if (scope.hideMap)
+            return;
+
+          if (!mainIsLoaded) {
+            if (mapsToRender == null)
+              mapsToRender = [];
+
+            mapsToRender.push(mapIndex);
+            return;
+          }
+
+          var mapImage = angular.element('.map-image', element).eq(mapIndex);
+          var color = scope.maps[mapIndex].color;
+          var companies = scope.maps[mapIndex].companies;
+          var regions = _.filter(countriesInRegions, function (item) {
+            return _.some(item.countries, function (countryItem) {
+              return _.some(companies, function (company) {
+                return company.country.id == countryItem.id;
+              });
+            });
+          });
+
+          regionsBrandsCount[mapIndex] = [];
+          _.each(regions, function (item, index) {
+            regionsBrandsCount[mapIndex][index] = _.reduce(
+              _.filter(companies, function (companyItem) {
+                return _.some(item.countries, function (countryItem) {
+                  return companyItem.country.id == countryItem.id;
+                });
+              }),
+              function (memo, companyItem) {
+                return memo + companyItem.brands_count;
+              }, 0);
+
+            var regionCountryElems = [];
+            _.each(item.countries, function (countryItem) {
+              var elem = angular.element('#map_region_' + countryItem.code, mapImage);
+
+              if (!elem.length)
+                return;
+
+              regionCountryElems.push(elem);
+
+              elem.css('fill', color);
+              elem.css('stroke', '#ccc');
+              elem.css('stroke-width', '2px');
+            });
+          });
+
+          mapImage.click(function (event) {
+            if (event.target.id && event.target.id.indexOf('map_region_') != -1) {
+              var ccode = event.target.id.slice(-2);
+              var region = _.find(regions, function (item) {
+                return _.some(item.countries, function (citem) {
+                  return citem.code == ccode;
+                });
+              })
+
+              if (region) {
+                if (typeof selectedRegions[mapIndex] == 'number')
+                  mapImage.tooltipster('destroy');
+
+                if (selectedRegions[mapIndex] != region.id) {
+                  selectedRegions[mapIndex] = region.id;
+                  mapImage.attr('title', region.name + ' (' + regionsBrandsCount[mapIndex][regions.indexOf(region)] + ' brands)');
+                  mapImage.tooltipster({
+                    animation: 'fade',
+                    theme: 'tooltipster-default',
+                    trigger: 'custom',
+                    position: 'top-left',
+                    offsetX: event.offsetX - 15,
+                    offsetY: -event.offsetY
+                  });
+                  mapImage.tooltipster('show');
+                } else
+                  selectedRegions[mapIndex] = null;
+              }
+            }
+          });
+        };
+
+        scope.$watch('data', function (newValue, oldValue) {
+          if (newValue && newValue.length)
+            scope.maps = _.map(newValue, function (item) {
+              return {
+                companies: item.companies,
+                color: item.color.color.hex,
+                title: item.color.title,
+                attributes: item.attributes
+              };
+            });
+        });
+      }
+
+      return {
+        restrict: 'E',
+        templateUrl: 'app/directives/dbMap/dbMapView.html',
+        link: link,
+        scope: {
+          data: '=',
+          hideMap: '='
+        }
+      };
+    }]);
+
+angular.module('app').directive('hueDbImageGallery', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.page = 1;
+    scope.maxElementsPerGroup = 0;
+    scope.data = [];
+    scope.dataExpanded = [];
+    scope.groupNames = [];
+
+    var calculateMaxElementsPerGroup = function () {
+      return Math.floor(element.children().first().width() / 170) * 2;
+    };
+    var updateData = function () {
+      scope.data = _.map(scope.originalData, function (item, index) {
+        if (!scope.dataExpanded[index])
+          return item[1].slice(0, scope.maxElementsPerGroup);
+        else
+          return item[1];
+      });
+    };
+
+    scope.showGroupNames = function () {
+      return scope.colorDashboard != true;
+    };
+
+    scope.isShowMoreVisible = function (groupIndex) {
+      return !scope.dataExpanded[groupIndex] && scope.originalData[groupIndex][1].length > scope.maxElementsPerGroup;
+    };
+    scope.isShowLessVisible = function (groupIndex) {
+      return scope.dataExpanded[groupIndex];
+    };
+
+    scope.showMoreClick = function (groupIndex) {
+      scope.dataExpanded[groupIndex] = true;
+      updateData();
+    };
+
+    scope.showLessClick = function (groupIndex) {
+      scope.dataExpanded[groupIndex] = false;
+      updateData();
+    };
+
+    scope.$watch('originalData', function (newValue, oldValue) {
+      if (newValue && (scope.colorDashboard != true || (scope.colorDashboard && newValue.length))) { //IF not color dashboard OR is color dashboard and not empty array
+        scope.groupNames = _.map(scope.originalData, function (item, key) {
+          return item[0];
+        });
+
+        scope.maxElementsPerGroup = calculateMaxElementsPerGroup();
+        updateData();
+        scope.dataExpanded = [];
+      } else {
+        scope.data = [];
+        scope.dataExpanded = [];
+      }
+    });
+
+    var lazyDigest = _.debounce(function () {
+      scope.$digest();
+    }, 300);
+    $(window).resize(function () {
+      var maxElems = calculateMaxElementsPerGroup();
+      if (scope.maxElementsPerGroup != maxElems) {
+        scope.maxElementsPerGroup = maxElems;
+        updateData();
+        lazyDigest();
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbImageGallery/dbImageGalleryView.html',
+    link: link,
+    scope: {
+      originalData: '=data',
+      colorDashboard: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbHeader', ['$compile', '$timeout', 'searchMenuService', function (compile, timeout, searchMenuService) {
+  function link(scope, element, attrs) {
+    scope.headerHeight = null; //only for description expanding
+    scope.getHeaderHeight = function () {
+      return scope.headerHeight ? scope.headerHeight + 'px' : null;
+    };
+
+    scope.isIconClickable = function () {
+      return typeof attrs.iconClick != 'undefined';
+    };
+
+    var pageInfoContainer = element.find('.header-page-info');
+    var pageInfoScopes = null;
+
+    var generateCellTag = function (cell) {
+      var classes = cell.classes;
+
+      if (!classes)
+        switch (cell.type) {
+          case 'countTo':
+            classes = cell.data.menuTab ? 'cell-clickable' : null;
+            break;
+          case 'desc':
+            classes = 'cell-description';
+            break;
+        }
+
+      var result = '<div class="info-cell cell-' + cell.width + (classes ? ' ' + classes + '"' : '"');
+
+      if (cell.tooltip)
+        result += ' hue-db-info-tooltip="' + cell.tooltip + '"';
+      if (cell.attrs)
+        result += ' ' + cell.attrs;
+
+      if (cell.type == 'countTo' && cell.data.menuTab)
+        result += ' ng-click="openSearchMenuTab(\'' + cell.data.menuTab + '\')"';
+
+      if ((cell.type == 'title' || cell.type == 'custom') && cell.onClick)
+        result += ' ng-click="onClick()"';
+
+      result += '>';
+
+      return result;
+    };
+
+    scope.$watch('pageInfo', function (newValue, oldValue) {
+      if (pageInfoScopes)
+        _.each(pageInfoScopes, function (item) {
+          item.$destroy();
+        });
+      descriptionScope = null;
+      pageInfoContainer.empty();
+
+      if (newValue) {
+        pageInfoScopes = [];
+        _.each(newValue, function (item) {
+          var childScope = scope.$new();
+          var compiledDirective;
+
+          switch (item.type) {
+            case 'title':
+              compiledDirective = compile(generateCellTag(item) + '<div class="cell-subcontainer"><div class="cell-content"><span class="cell-title" ng-bind="data.title"></span><br /><span class="cell-subtitle" ng-bind="data.subtitle"></span></div></div></div>');
+              break;
+            case 'countTo':
+              compiledDirective = compile(generateCellTag(item) + '<div class="cell-subcontainer"><div class="cell-content"><span class="cell-title" count-to="{{data.count}}" duration="1"></span><br /><span class="cell-subtitle" ng-bind="data.subtitle"></span></div></div></div>');
+              childScope.openSearchMenuTab = function (tabName) {
+                searchMenuService.openTab(tabName);
+              };
+              break;
+            case 'desc':
+              compiledDirective = compile(generateCellTag(item) + '<hue-db-header-description text="data.text" header-height="$parent.headerHeight"></hue-db-header-description></div>');
+              break;
+            case 'custom':
+              compiledDirective = compile(generateCellTag(item) + item.content + '</div>');
+              break;
+          }
+
+          if (item.onClick)
+            childScope.onClick = item.onClick;
+          childScope.data = item.data;
+          pageInfoContainer.append(compiledDirective(childScope));
+          pageInfoScopes.push(childScope);
+        });
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbHeader/dbHeaderView.html',
+    link: link,
+    scope: {
+      title: '=headerTitle',
+      subtitle: '=headerSubtitle',
+      icon: '=headerIcon',
+      iconType: '@',
+      iconClick: '&',
+      pageInfo: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbHeaderDescription', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    scope.textOverflow = false;
+
+    var getDescriptionLineHeight = function () {
+      var t = element.find('.description-text');
+      var lh = t.css('line-height');
+
+      if (lh.indexOf('.'))
+        return lh.substring(0, lh.indexOf('.'));
+      return lh.substring(0, lh.indexOf('p'));
+    };
+    var descriptionTextElem = element.find('.description-text');
+    var isExpanded = false;
+
+    var checkOverflow = function () {
+      scope.textOverflow = descriptionTextElem.height() > 75; //if more than 4 lines
+    };
+    var windowResizeHandler = _.debounce(function () {
+      timeout(checkOverflow, 10);
+    }, 200);
+
+    scope.isShowMoreVisible = function () {
+      return scope.textOverflow && !isExpanded;
+    };
+    scope.isShowLessVisible = function () {
+      return scope.textOverflow && isExpanded;
+    };
+    scope.showMoreClick = function () {
+      isExpanded = true;
+      scope.headerHeight = 100 + descriptionTextElem.height() - 55; //55 - three lines which are visible always
+    };
+    scope.showLessClick = function () {
+      isExpanded = false;
+      scope.headerHeight = null;
+    };
+
+    $(window).resize(windowResizeHandler);
+
+    scope.$watch('text', function (newValue, oldValue) {
+      if (newValue)
+        timeout(checkOverflow, 10);
+    });
+
+    scope.$on('$destroy', function () {
+      $(window).off('resize', windowResizeHandler);
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="description-container" ng-class="{\'three-lines\': textOverflow}"><div class="description-text" ng-bind="text"></div></div><div class="show-button" ng-show="isShowMoreVisible()" ng-click="showMoreClick()">Show More</div><div class="show-button" ng-show="isShowLessVisible()" ng-click="showLessClick()">Show Less</div>',
+    link: link,
+    scope: {
+      text: '=',
+      headerHeight: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbFlagColors', function () {
+  function link(scope, element, attrs) {
+    scope.itemWidth = '0%';
+    scope.flagIndex = 0;
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue) {
+        scope.itemWidth = 100 / (newValue.length - 1) + '%';
+        scope.flagIndex = newValue.length - 1;
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbFlagColors/dbFlagColorsView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbDistributionByCategory', function () {
+  function link(scope, element, attrs) {
+    scope.chartColor = 'assets/img/noise_texture.png';
+    scope.chartStrokeColor = '#000';
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbDistributionByCategory/dbDistributionByCategoryView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbDesignerImages',
+  ['$timeout', 'dashboardRepository', function (timeout, dashboardRepository) {
+    function link(scope, element, attrs) {
+      scope.data = [];
+      scope.collectionData = [];
+      scope.showCollection = false;
+      scope.showImageDetails = false;
+      scope.collectionLoading = false;
+      scope.imageDetailsData = null;
+      window.scr = scope
+
+      scope.openFullCollection = function (index) {
+        // if (scope.collectionLoading)
+        //   return;
+        scope.collectionData = [];
+        dashboardRepository.designer.getDesignerImages(scope.data[index].id, scope.menus)
+          .then(function (data) {
+            scope.collectionLoading = false;
+            scope.collectionData = data;
+            timeout(function () {
+              scope.showCollection = true;
+            }, 300);
+          });
+        scope.collectionLoading = true;
+      };
+
+      scope.closeFullCollection = function () {
+        scope.showCollection = false;
+        adjustPreviewData();
+      };
+
+      scope.toggleImageDetails = function () {
+        scope.showImageDetails = scope.showImageDetails ? false : true;
+      };
+
+      scope.imageClickHandler = function (index) {
+        scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
+        scope.toggleImageDetails();
+      };
+
+      var imagesContainer = $('.db-designer-images', element);
+      var adjustPreviewData = function () {
+        var elemCount = Math.floor(imagesContainer.width() / 190);
+        scope.data = scope.originalData.slice(0, elemCount);
+      };
+
+      $(window).resize(function (event) {
+        if (!scope.isExpanded) {
+          adjustPreviewData();
+          scope.$digest();
+        }
+      });
+
+      scope.$watch('originalData', function (newValue, oldValue) {
+        adjustPreviewData();
+      });
+
+      scope.$watch('isExpanded', function (newValue, oldValue) {
+        scope.showCollection = false;
+
+        if (newValue)
+          scope.data = scope.originalData;
+        else
+          adjustPreviewData();
+      });
+    }
+
+    return {
+      restrict: 'E',
+      templateUrl: 'app/directives/dbDesignerImages/dbDesignerImagesView.html',
+      link: link,
+      scope: {
+        originalData: '=data',
+        isExpanded: '=',
+        singleDesigner: '=',
+        yearId: '=',
+        seasonId: '=',
+        categoryId: '=',
+        cityId: '=',
+        regionId: '=',
+        colorId: '=',
+        menus: '='
+      }
+    };
+  }]);
+
+angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService) {
+  function link(scope, element, attrs) {
+    scope.designer = null;
+    scope.season = null;
+    scope.year = null;
+    scope.category = null;
+    scope.city = null;
+    scope.region = null;
+    scope.source = null;
+    scope.colorActual = null;
+    scope.colorNcs = null;
+    scope.colorNcsTitle = null;
+
+    scope.footerMode = 0;
+    scope.imageName = null;
+
+    scope.currentUser = null;
+
+    if (scope.data.bio.color) {
+      scope.colorNcs = scope.data.bio.color.color.hex;
+      scope.colorNcsTitle = scope.data.bio.color.title;
+    }
+
+    scope.closeClickHandler = function () {
+      scope.onClose();
+    };
+
+    scope.isFooterMode = function (index) {
+      return scope.footerMode == index;
+    };
+
+    scope.showSaveInput = function () { //on SAVE button click
+      scope.footerMode = 1;
+    };
+
+    scope.exportImageCard = function () {
+      $timeout(function () {
+        html2canvas($('.image-details-dialog', element)[0], {
+          background: '#000',
+          //useCORS: true,
+          proxy: '/proxy',
+          onrendered: function (canvas) {
+            var img = canvas.toDataURL("image/jpeg");
+            var name = scope.designer;
+
+            if (scope.season)
+              name += '_' + scope.season;
+            if (scope.year)
+              name += '_' + scope.year;
+
+            download(img, name.replace(/[|&;$%@"<>()+,]/g, "-") + '.jpg', "image/jpeg");
+          }
+        });
+      }, 50);
+    };
+
+    scope.saveImage = function () {
+      userDataRepository.image.createItem(scope.currentUser.id, scope.data.id, scope.imageName, function (data) {
+        mainMenuService.reloadSavedImages();
+      });
+      scope.imageName = null;
+      scope.footerMode = 2;
+    };
+
+    searchMenuRepository.getMain(function (data) {
+      var desId = scope.data.bio.fashion_designer_id;
+      scope.designer = _.find(data.designers, function (item) {
+        return item.id == desId
+      }).title;
+      scope.season = _.find(data.seasons, function (item) {
+        return item.id == scope.data.bio.fashion_season_id
+      }).title;
+      scope.year = scope.data.bio.fashion_year_id;
+      scope.category = _.find(data.categories, function (item) {
+        return item.id == scope.data.bio.fashion_category_id
+      }).title;
+      scope.city = scope.data.bio.city;
+      scope.region = _.find(data.regions, function (item) {
+        return item.id == scope.data.bio.fashion_region_id
+      }).title;
+      scope.source = scope.data.bio.source;
+      scope.colorActual = 'rgb(' + scope.data.bio.rgb + ')';
+    });
+
+    scope.$watch(function () {
+      return authService.currentUser;
+    }, function (newValue, oldValue) {
+      scope.currentUser = newValue;
+    }, true);
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbDesignerImages/dbDesignerImageDetailsView.html',
+    link: link,
+    scope: {
+      data: '=',
+      onClose: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCopyrightsOverTimeRangeSelector', ['$location', function (location) {
+	function link(scope, element, attrs) {
+		scope.data = [{ title: '5', value: 5 }, { title: '10', value: 10 }, { title: '20', value: 20 }];
+		scope.selectedValue = scope.data[0].value;
+
+		scope.isYear = function (bucket) {
+			return bucket == scope.selectedValue;
+		};
+		scope.setYear = function (bucket) {
+			scope.selectedValue = bucket;
+		};
+	}
+
+	return {
+		restrict: 'E',
+		template: '<ul class="db-copyrights-over-time-range-selector"><li ng-class="{active: isYear(item.value)}" ng-click="setYear(item.value)" ng-bind="item.title" ng-repeat="item in data"></li></ul>',
+		link: link,
+		scope: {
+			selectedValue: '='
+		}
+	};
+}]);
+angular.module('app').directive('hueDbCopyrightsOverTime', function ($interval) {
+  function link(scope, element, attrs) {
+    var chartYOffset = 30;
+    var chartXOffset = 15;
+    var chartYAxisStep = 5;
+    var fontX = {family: 'Gotham Cond SSm A","Gotham Cond SSm B', size: 15, weight: 600};
+
+    scope.colorBarItemHeight = '0%';
+    scope.chartData = null;
+    scope.chartMinValue = 0;
+    scope.chartMaxValue = 10;
+
+    var draw = SVG(angular.element('.graph', element)[0]);
+    var drawChart = function () {
+      draw.clear();
+
+      if (scope.chartData == null) {
+        return;
+      }
+      var graphContainer = angular.element('.graph', element);
+      var width = graphContainer.width() - chartXOffset - chartXOffset;
+      var height = graphContainer.height() - 6 - chartYOffset;
+      var chartXMax = graphContainer.width() - chartXOffset;
+      var chartYMax = graphContainer.height() - chartYOffset;
+
+      draw.line(chartXOffset, chartYMax, chartXMax, chartYMax).stroke({width: 1, color: '#ccc'});
+
+      var yearStart = new Date().getFullYear() - scope.yearRange;
+      for (var i = 0; i <= scope.yearRange; i++) {
+        var x = Math.round(width * (i / scope.yearRange) + chartXOffset);
+        if (i % 2) {
+          draw.line(x, chartYMax, x, chartYMax + 14).stroke({width: 1, color: '#ccc'});
+          draw.text((yearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 24);
+        } else {
+          draw.line(x, chartYMax, x, chartYMax + 4).stroke({width: 1, color: '#ccc'});
+          draw.text((yearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 12);
+        }
+      }
+
+      _.each(scope.chartData, function (line, index) {
+        var x = line.x;
+        var y = line.y;
+        var count = x.length;
+        var items = [];
+
+        for (var i = 0; i < count; i++) {
+          items.push([Math.round(width * x[i] + chartXOffset), Math.round(height * y[i] + 3)]);
+        }
+        draw.polyline(items).fill('none').stroke({color: line.color, width: 2});
+      });
+    };
+
+    var parseData = function (data) {
+      var minItemsCount = null;
+      var maxItemsCount = 0;
+      var count = data.length;
+
+      for (var i = 0; i < count; i++) {
+        if (minItemsCount == null || minItemsCount > data[i].us_copyrights || minItemsCount > data[i].int_copyrights) {
+          minItemsCount = data[i].us_copyrights > data[i].int_copyrights ? data[i].int_copyrights : data[i].us_copyrights;
+        }
+        if (maxItemsCount < data[i].us_copyrights || maxItemsCount < data[i].int_copyrights) {
+          maxItemsCount = data[i].us_copyrights < data[i].int_copyrights ? data[i].int_copyrights : data[i].us_copyrights;
+        }
+      }
+
+      minItemsCount = Math.floor(minItemsCount / chartYAxisStep) * chartYAxisStep;
+      maxItemsCount = Math.ceil(maxItemsCount / chartYAxisStep) * chartYAxisStep;
+
+      var graphYLength = maxItemsCount - minItemsCount;
+      var yearStart = new Date().getFullYear() - scope.yearRange;
+
+      scope.chartData = [{color: '#F00', x: [], y: []}, {color: '#000', x: [], y: []}]; //USA, INT
+
+      var i = 0;
+      while (data[i] && data[i].year >= yearStart) {
+        var x = (data[i].year - yearStart) / scope.yearRange;
+        scope.chartData[0].x.push(x);
+        scope.chartData[0].y.push(1 - ((data[i].us_copyrights - minItemsCount) / graphYLength));
+
+        scope.chartData[1].x.push(x);
+        scope.chartData[1].y.push(1 - ((data[i].int_copyrights - minItemsCount) / graphYLength));
+        i++;
+      }
+
+      drawChart();
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length) {
+        parseData(newValue);
+      }
+    });
+
+    scope.$watch('yearRange', function (newValue, oldValue) {
+      if (scope.data && scope.data.length) {
+        parseData(scope.data);
+      }
+    });
+
+    var container = element.find('.db-copyrights-over-time');
+    var containerWidth = container.width();
+    var updateInterval = $interval(function () {
+      if (container.width() != containerWidth) {
+        if (scope.data && scope.data.length) {
+          parseData(scope.data);
+        }
+        containerWidth = container.width();
+      }
+    }, 250);
+
+    scope.$on('$destroy', function () {
+      if (updateInterval) {
+        $interval.cancel(updateInterval);
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="db-copyrights-over-time"><div class="graph-legend"><div class="legend-item">USA<div class="color-box item-usa"></div></div><div class="legend-item">Int<div class="color-box item-int"></div></div></div><div class="graph"></div></div>',
+    link: link,
+    scope: {
+      data: '=',
+      yearRange: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCopyrightListPagination', function ($timeout) {
+  function link(scope, element, attrs) {
+    scope.currentPageDisplayed = scope.currentPage;
+    window.sc = scope;
+
+    var setPageDebounced = _.debounce(function () {
+      $timeout(function () {
+        scope.currentPage = scope.currentPageDisplayed;
+      });
+    }, 1000);
+
+    scope.switchPage = function (delta) {
+      var newPage = scope.currentPageDisplayed + delta;
+      if (newPage > 0 && newPage <= scope.totalPages) {
+        scope.currentPageDisplayed = newPage;
+        setPageDebounced();
+      }
+    };
+
+    scope.$watch('currentPage', function (newValue, oldValue) {
+      scope.currentPageDisplayed = newValue;
+    });
+
+    scope.setPage = function (delta) {
+      var newPage = scope.currentPageDisplayed + delta;
+      if (newPage > 0 && newPage <= scope.totalPages) {
+        scope.currentPageDisplayed = newPage;
+        setPageDebounced();
+        scope.changePage()(newPage);
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="db-copyright-list-pagination">' +
+    '<div class="pagination-button disable-text-selection" ng-click="setPage(-1)">' +
+    '<i class="fa fa-caret-left"></i></div>' +
+    '<div class="pagination-current">' +
+    '<input type="number" min="1" max="{{totalPages}}" ng-model="currentPageDisplayed" ng-change="setPage(0)"/> / <span ng-bind="totalPages"></span></div>' +
+    '<div class="pagination-button disable-text-selection" ng-click="setPage(1)">' +
+    '<i class="fa fa-caret-right"></i>' +
+    '</div></div>',
+    link: link,
+    scope: {
+      currentPage: '=',
+      totalPages: '=',
+      changePage: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCopyrightListExpanded', function ($location) {
+  function link(scope, element, attrs) {
+    scope.details = scope.itemData;
+    scope.otherColorCopyrights = [];
+    scope.otherColorsPages = [];
+    scope.activePage = 0;
+
+    var updateData = function () {
+      var currentColorId = scope.itemData.color.id;
+      var otherColors = _.sortBy(_.filter(scope.data, function (d) {
+        return d.color.id == currentColorId;
+      }), function (d) {
+        return new Date(d.filedAt);
+      });
+
+      var pagesCount = otherColors.length > 10 ? 10 : otherColors.length;
+      scope.otherColorsPages = [];
+      for (var i = 0; i < pagesCount; i++)
+        scope.otherColorsPages.push(otherColors[i]);
+
+      var data = scope.data;
+      var dataCount = scope.data.length;
+      scope.otherColorCopyrights = [];
+      for (var i = 0; i < dataCount; i++) {
+        var colorId = data[i].color.id;
+        if (colorId != currentColorId && !_.find(scope.otherColorCopyrights, function (c) {
+            return c.id == colorId
+          }))
+          scope.otherColorCopyrights.push(data[i].color);
+      }
+    }
+
+    updateData();
+
+    scope.colorClick = function (id) {
+      $location.url('color').search({color: id});
+    };
+
+    scope.selectOtherColor = function (color) {
+      scope.colorClick(color.id);
+    };
+
+    scope.selectPage = function (index) {
+      scope.details = scope.otherColorsPages[index];
+      scope.activePage = index;
+    };
+
+    scope.isPageActive = function (index) {
+      return scope.activePage == index;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbCopyrightList/dbCopyrightListExpandedView.html',
+    link: link,
+    scope: {
+      itemData: '=',
+      data: '=',
+      hideView: '&',
+      pageTitle: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCopyrightList', function ($location) {
+  function link(scope, element, attrs) {
+    scope.selectedItem = null;
+
+    scope.colorClick = function (item) {
+      // console.log('item🎅🎅🎅🎅🎅', '', item.color_code);
+      // scope.setColor()(item.color_code);
+    };
+
+    scope.selectItem = function (item) {
+      scope.selectedItem = item;
+    };
+    scope.hideExpandedView = function () {
+      scope.selectedItem = null;
+    };
+    scope.isExpandedViewVisible = function () {
+      return scope.selectedItem != null;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbCopyrightList/dbCopyrightListView.html',
+    link: link,
+    scope: {
+      data: '=',
+      pageTitle: '=',
+      setColor: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorsByFamilyRangeSelector', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.data = [{title: '5', value: 5}, {title: '10', value: 10}, {title: '20', value: 20}];
+    scope.selectedValue = scope.data[0].value;
+
+    scope.isYear = function (bucket) {
+      return bucket == scope.selectedValue;
+    };
+    scope.setYear = function (bucket) {
+      scope.selectedValue = bucket;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<ul class="db-colors-by-family-range-selector"><li ng-class="{active: isYear(item.value)}" ng-click="setYear(item.value)" ng-bind="item.title" ng-repeat="item in data"></li></ul>',
+    link: link,
+    scope: {
+      selectedValue: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorsByFamily', function ($timeout) {
+  function link(scope, element, attrs) {
+    var chartYOffset = 30;
+    var chartXOffset = 30;
+    var chartYAxisStep = 5;
+    var fontX = {family: 'Gotham Cond SSm A","Gotham Cond SSm B', size: 15, weight: 600};
+
+    scope.colorBarItemHeight = '0%';
+    scope.chartData = null;
+    scope.chartMinValue = 0;
+    scope.chartMaxValue = 10;
+    scope.visibleColors = [];
+
+    scope.showAllLines = function () {
+      var count = scope.data.length;
+      for (var i = 0; i < count; i++)
+        scope.visibleColors[i] = true;
+      drawChart();
+    };
+
+    scope.toggleLine = function (index) {
+      scope.visibleColors[index] = scope.visibleColors[index] ? false : true;
+      drawChart();
+    };
+
+    var draw = SVG($('.graph', element)[0]);
+    var drawChart = function () {
+      draw.clear();
+
+      if (scope.chartData == null)
+        return;
+
+      var graphContainer = $('.graph', element);
+      var width = graphContainer.width() - chartXOffset - chartXOffset;
+      var height = graphContainer.height() - 6 - chartYOffset;
+      var chartXMax = graphContainer.width() - chartXOffset;
+      var chartYMax = graphContainer.height() - chartYOffset;
+
+      var graphYearStart = new Date().getFullYear() - scope.yearRange;
+      for (var i = 0; i <= scope.yearRange; i++) {
+        var x = Math.round(width * (i / scope.yearRange) + chartXOffset);
+        if (i % 2) {
+          draw.line(x, 3, x, chartYMax + 10).stroke({width: 1, color: '#ccc'});
+          draw.text((graphYearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 18);
+        } else {
+          draw.line(x, 3, x, chartYMax).stroke({width: 1, color: '#ccc'});
+          draw.text((graphYearStart + i).toString()).fill('#000').font(fontX).cx(x).cy(chartYMax + 10);
+        }
+      }
+
+      var itemCountRange = scope.chartMaxValue - scope.chartMinValue;
+      for (var i = 0; i <= itemCountRange; i += chartYAxisStep) {
+        var y = Math.round(height * (i / itemCountRange) + 3);
+        draw.line(chartXOffset, y, chartXMax, y).stroke({width: 1, color: '#ccc'});
+
+        if (i == 0)
+          draw.text((scope.chartMaxValue - i).toString()).fill('#000').font(fontX).cx(chartXOffset - 15).cy(y + 5);
+        else if (i == itemCountRange)
+          draw.text((scope.chartMaxValue - i).toString()).fill('#000').font(fontX).cx(chartXOffset - 15).cy(y - 5);
+        else
+          draw.text((scope.chartMaxValue - i).toString()).fill('#000').font(fontX).cx(chartXOffset - 15).cy(y);
+      }
+
+      _.each(scope.chartData, function (line, index) {
+        if (!scope.visibleColors[index])
+          return;
+
+        var x = line.x;
+        var y = line.y;
+        var count = x.length;
+        var items = [];
+
+        for (var i = 0; i < count; i++)
+          items.push([Math.round(width * x[i] + chartXOffset), Math.round(height * y[i] + 3)]);
+
+        draw.polyline(items).fill('none').stroke({color: line.color, width: 2});
+      });
+    };
+
+    var parseData = function (data) {
+      var minItemsCount = null;
+      var maxItemsCount = 0;
+      _.each(data, function (line) {
+        var items = line.items;
+        var ic = items.length;
+        for (var i = 0; i < ic; i++) {
+          if (minItemsCount == null || minItemsCount > items[i][1])
+            minItemsCount = items[i][1];
+          if (maxItemsCount < items[i][1])
+            maxItemsCount = items[i][1];
+        }
+      });
+      chartYAxisStep = ((maxItemsCount - minItemsCount) + 1) <= 5 ? 1 : Math.round(((maxItemsCount - minItemsCount) + 1) / 5);
+
+      minItemsCount = Math.floor(minItemsCount / chartYAxisStep) * chartYAxisStep;
+      maxItemsCount = Math.ceil(maxItemsCount / chartYAxisStep) * chartYAxisStep;
+      scope.chartMinValue = minItemsCount;
+      scope.chartMaxValue = maxItemsCount;
+
+      var currentDate = new Date();
+      var graphXStart = currentDate.getFullYear() - scope.yearRange;
+      var graphXEnd = currentDate.getFullYear();
+      var graphXLength = scope.yearRange;
+      var graphYLength = maxItemsCount - minItemsCount;
+
+      scope.chartData = _.map(data, function (line) {
+        var items = line.items;
+        var result = {color: line.color.color.hex, title: line.color.title, x: [], y: []};
+        var x = result.x;
+        var y = result.y;
+        var count = items.length;
+
+        if (!_.some(items, function (i) {
+            return i[0] == graphXStart;
+          }) && _.some(items, function (i) {
+            return i[0] > graphXStart;
+          })) { // if there is no zero point and there are visible points
+          var itemsBeforeXMin = _.filter(items, function (i) {
+            return i[0] < graphXStart;
+          });
+          if (itemsBeforeXMin.length && _.some(items, function (i) {
+              return i[0] > graphXStart;
+            })) { // find Y at zero point
+            var p1 = _.max(itemsBeforeXMin, function (i) {
+              return i[0];
+            }); // find closest points to zero X
+            var p2 = _.find(items, function (i) {
+              return i[0] > graphXStart;
+            });
+            var slope = (p2[1] - p1[1]) / (p2[0] - p1[0]);
+            var b = -(slope * p1[0] - p1[1]);
+
+            x.push(0);
+            y.push(1 - (((slope * graphXStart + b) - minItemsCount) / graphYLength));
+          }
+        }
+
+        for (var i = 0; i < count; i++) {
+          var year = items[i][0];
+          if (year < graphXStart || year > graphXEnd)
+            continue;
+          x.push((year - graphXStart) / graphXLength);
+          y.push(1 - ((items[i][1] - minItemsCount) / graphYLength));
+        }
+
+        return result;
+      });
+
+      scope.colorBarItemHeight = (100 / data.length) + '%';
+      drawChart();
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length) {
+        scope.visibleColors = [];
+
+        var count = newValue.length;
+        if (scope.defaultColorId != null && scope.defaultColorId != undefined) {
+          var id = _.isNumber(scope.defaultColorId) ? scope.defaultColorId : parseInt(scope.defaultColorId);
+          for (var i = 0; i < count; i++)
+            scope.visibleColors[i] = newValue[i].color.id === id;
+        }
+        else
+          for (var i = 0; i < count; i++)
+            scope.visibleColors[i] = true;
+
+        $timeout(function () {
+          parseData(newValue);
+        }, 300);
+      }
+    });
+
+    scope.$watch('yearRange', function (newValue, oldValue) {
+      if (scope.data && scope.data.length)
+        $timeout(function () {
+          parseData(scope.data);
+        }, 0);
+    });
+
+    var windowResizeHandler = _.debounce(drawChart, 200);
+    scope.$on('$destroy', function () {
+      $(window).off('resize', windowResizeHandler);
+    });
+    $(window).resize(windowResizeHandler);
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorsByFamily/dbColorsByFamilyView.html',
+    link: link,
+    scope: {
+      data: '=',
+      yearRange: '=',
+      defaultColorId: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorPicker', function () {
+	function link($scope, element, attrs) {
+		var vm = this;
+		var color_picker = document.getElementById('color_picker'),
+			color_id = document.getElementById('color_id');
+		$scope.colorPickerGray = 100;
+		$scope.colorPickerOpacity = 1;
+		document.getElementById('value_span').innerHTML = '100%';
+
+		vm.numOfpaintColorNames = 0;
+		vm.numOfcolorAssociationNames = 0;
+		vm.colorAssociationNameWord = '';
+
+		$scope.changeColor = function () {
+			$scope.colorPickerGray = 100;
+			color_picker.onmousedown = select_color;
+		};
+
+		color_picker_add();
+
+		$scope.colorPickerSliderGray = function () {
+			var value = document.getElementById('rg').value,
+				inputRGB = [$scope.colorRGB_R, $scope.colorRGB_G, $scope.colorRGB_B],
+				hsl = rgb2hsl(inputRGB);
+
+			color_id.style.background = 'hsl(' + hsl[0] + ',' + value + '%,' + hsl[2] + '%';
+			var rgbArr = color_id.style.background.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+
+			$scope.colorRGB_R = rgbArr[1];
+			$scope.colorRGB_G = rgbArr[2];
+			$scope.colorRGB_B = rgbArr[3];
+		};
+
+		$scope.colorPickerSliderOpacity = function () {
+			var value = document.getElementById('range_opacity').value;
+			document.getElementById('value_span').innerHTML = value * 100 + '%';
+			color_id.style.opacity = value;
+		};
+
+		$scope.colorPickerRGB = function () {
+			var colorInputR = document.getElementById('colorInputR').value,
+				colorInputG = document.getElementById('colorInputG').value,
+				colorInputB = document.getElementById('colorInputB').value;
+
+			$scope.colorRGB_R = colorInputR;
+			$scope.colorRGB_G = colorInputG;
+			$scope.colorRGB_B = colorInputB;
+
+			var inputRGB = 'rgb(' + $scope.colorRGB_R + ', ' + $scope.colorRGB_G + ', ' + $scope.colorRGB_B + ')';
+			color_id.style.backgroundColor = inputRGB;
+		};
+
+		function color_picker_add() {
+			color_picker_ = color_picker.getContext('2d'),
+				center_x = (color_picker.width) / 2,
+				center_y = (color_picker.height) / 2,
+				sx = center_x,
+				sy = center_y;
+
+			$scope.colorRGB_R = 0;
+			$scope.colorRGB_G = 0;
+			$scope.colorRGB_B = 0;
+			palette = new color_picker_element(center_x, center_y, sx, sy);
+			palette.draw();
+		}
+
+		var color_picker_y = 0;
+		var color_picker_x = 0;
+
+		function select_color(e) {
+			color_picker_y = $('#color_picker').offset().top;
+			color_picker_x = $('#color_picker').offset().left;
+			var x = e.pageX - color_picker_x,
+				y = e.pageY - color_picker_y,
+				pixel = color_picker.getContext('2d').getImageData(x, y, 2, 2).data,
+				// pixel1 = color_picker.getContext("2d").getImageData(x, y, 2, 2),
+				pixelColor = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
+
+			color_id.style.backgroundColor = pixelColor;
+			$scope.pixel = pixel;
+			$scope.colorRGB_R = pixel[0];
+			$scope.colorRGB_G = pixel[1];
+			$scope.colorRGB_B = pixel[2];
+		}
+
+		function color_picker_element(center_x, center_y, sx, sy) {
+			this.center_x = center_x;
+			this.center_y = center_y;
+			this.sx = sx;
+			this.sy = sy;
+			this.draw = function () {
+				for (var i = 0; i < 360; i += 0.1) {
+					var rad = (i - 45) * (Math.PI) / 180;
+					color_picker_.strokeStyle = 'hsla(' + i + ', 100%, 50%, 1.0)';
+					color_picker_.beginPath();
+					color_picker_.moveTo(center_x, center_y);
+					color_picker_.lineTo(center_x + sx * Math.cos(-rad), center_y + sy * Math.sin(-rad));
+					color_picker_.stroke();
+				}
+			};
+		}
+
+		// RGB to HSL																																																		RGB_TO_HSL
+		function rgb2hsl(rgbArr) {
+			var r1 = rgbArr[0] / 255;
+			var g1 = rgbArr[1] / 255;
+			var b1 = rgbArr[2] / 255;
+
+			var maxColor = Math.max(r1, g1, b1);
+			var minColor = Math.min(r1, g1, b1);
+			// Calculate L:
+			var L = (maxColor + minColor) / 2;
+			var S = 0;
+			var H = 0;
+			if (maxColor != minColor) {
+				// Calculate S:
+				if (L < 0.5) {
+					S = (maxColor - minColor) / (maxColor + minColor);
+				} else {
+					S = (maxColor - minColor) / (2.0 - maxColor - minColor);
+				}
+				// Calculate H:
+				if (r1 == maxColor) {
+					H = (g1 - b1) / (maxColor - minColor);
+				} else if (g1 == maxColor) {
+					H = 2.0 + (b1 - r1) / (maxColor - minColor);
+				} else {
+					H = 4.0 + (r1 - g1) / (maxColor - minColor);
+				}
+			}
+
+			L *= 100;
+			S *= 100;
+			H *= 60;
+			if (H < 0) {
+				H += 360;
+			}
+			var result = [H, S, L];
+			return result;
+		}
+	}
+
+	return {
+		restrict: 'E',
+		templateUrl: 'app/directives/dbColorPicker/dbColorPickerView.html',
+		link: link,
+		scope: false
+	};
+});
+
+angular.module('app').directive('hueDbColorPalette', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.expandedViewTables = [];
+
+    scope.goToColor = function (index) {
+      scope.setColor()(scope.data[index].color);
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue) {
+        var tableCount = Math.ceil(newValue.length / 24);
+        scope.expandedViewTables = [];
+        for (var i = 0; i < tableCount; i++)
+          scope.expandedViewTables.push(i);
+      } else
+        scope.expandedViewTables = [];
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorPalette/dbColorPaletteView.html',
+    link: link,
+    scope: {
+      data: '=',
+      isExpanded: '=',
+      setColor: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorPaletteBucketSelector', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.data = [
+      {title: '38', value: 38},
+      {title: '250', value: 250},
+      {title: '1025', value: 1025},
+      {title: 'NCS', value: 1950}
+    ];
+    scope.selectedValue = scope.data[0].value;
+
+    scope.isColorPaletteBucket = function (bucket) {
+      return bucket == scope.selectedValue;
+    };
+    scope.setColorPaletteBucket = function (bucket) {
+      scope.onChange()(bucket);
+      scope.selectedValue = bucket;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<ul class="color-palette-bucket-selector">' +
+    '<li ng-class="{active: isColorPaletteBucket(item.value)}"' +
+    'ng-click="setColorPaletteBucket(item.value)" ' +
+    'ng-bind="item.title" ' +
+    'ng-repeat="item in data"></li>' +
+    '</ul>',
+    link: link,
+    scope: {
+      selectedValue: '=',
+      onChange: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorFrequencyBySeasonExpanded', function () {
+  function link(scope, element, attrs) {
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequencyBySeason/dbColorFrequencyBySeasonExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFrequencyBySeasonExpandedChart', function () {
+  function link(scope, element, attrs) {
+    //config
+    var linesColor = '#BBB';
+    var margin = 30;
+    var marginTop = 10;
+    var yLabelsWidth = 40;
+    var xLabelsHeight = 60;
+    var xLabelsSpacing = 10;
+    var yAxisStep = 5;
+    var barSpaceCoeff = 0.25;
+    var fontY = {family: 'Open Sans', size: 14};
+    var fontX = {family: 'Open Sans', size: 12};
+
+    //variables
+    var colorData = scope.data;
+    var barCount = colorData.length;
+    var maxValue = _.max(scope.data, function (item) {
+      return item.percentage;
+    }).percentage;
+    var graphMaxValue = Math.ceil(maxValue / yAxisStep) * yAxisStep;
+    var lineCount = graphMaxValue / yAxisStep;
+    var draw = SVG(element[0]);
+    var labelsGroup = draw.group();
+    var barsGroup = draw.group();
+
+    //create
+    var linePercentage = graphMaxValue;
+    for (var i = 0; i <= lineCount; i++) {
+      labelsGroup.line(0, 0, 0, 0).stroke({width: 1, color: linesColor});
+      labelsGroup.text(linePercentage + '%').fill(linesColor).font(fontY);
+      linePercentage -= yAxisStep;
+    }
+
+    for (var i = 0; i < barCount; i++) {
+      barsGroup.rect(0, 0).attr('fill', colorData[i].color.hex);
+      labelsGroup.text(colorData[i].color.ncs).fill(linesColor).font(fontX);
+    }
+
+    var resizeChart = function () {
+      var elementWidth = element.width();
+      var elementHeight = element.height();
+      var graphWidth = elementWidth - yLabelsWidth - margin - margin;
+      var graphHeight = elementHeight - xLabelsHeight - marginTop;
+      var labelsGroupChildren = labelsGroup.children();
+      var barsGroupChildren = barsGroup.children();
+
+      draw.size(elementWidth, elementHeight);
+      barsGroup.x(yLabelsWidth + margin);
+
+      //lines
+      var linePos = marginTop + 1;
+      var linePosStep = graphHeight / lineCount;
+      var yLabelsXPos = yLabelsWidth / 2;
+
+      for (var i = 0; i <= lineCount; i++) {
+        var rpos = Math.round(linePos);
+        labelsGroupChildren[i * 2].plot(yLabelsWidth, rpos, elementWidth, rpos);
+        labelsGroupChildren[(i * 2) + 1].cx(yLabelsXPos).cy(rpos);
+        linePos += linePosStep;
+      }
+
+      //bars
+      var barWidth = graphWidth / (barCount + ((barCount - 1) * barSpaceCoeff));
+      var barHeightCoeff = graphHeight / graphMaxValue;
+      var spaceWidth = barWidth * barSpaceCoeff;
+      var xLabelsYPos = elementHeight - (xLabelsHeight / 2) - xLabelsSpacing;
+      var xLabelsYPosOdd = elementHeight - (xLabelsHeight / 2) + xLabelsSpacing;
+      var xLabelsXPosOffset = yLabelsWidth + margin + Math.round(barWidth / 2) + 8;
+
+      barWidth = Math.floor(barWidth);
+      spaceWidth = Math.floor(spaceWidth);
+
+      var barPos = 0;
+      var barPosStep = barWidth + spaceWidth;
+      var linesGroupIndexOffset = (lineCount * 2) + 2;
+      for (var i = 0; i < barCount; i++) {
+        var item = colorData[i];
+        var barHeight = Math.round(barHeightCoeff * item.percentage);
+        barsGroupChildren[i].size(barWidth, barHeight).x(barPos).y(marginTop + graphHeight - barHeight);
+        if (i % 2)
+          labelsGroupChildren[linesGroupIndexOffset + i].cx(barPos + xLabelsXPosOffset).cy(xLabelsYPosOdd);
+        else
+          labelsGroupChildren[linesGroupIndexOffset + i].cx(barPos + xLabelsXPosOffset).cy(xLabelsYPos);
+        barPos += barPosStep;
+      }
+    };
+
+    resizeChart();
+    $(window).resize(_.debounce(resizeChart, 500));
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      data: '=hueDbColorFrequencyBySeasonExpandedChart'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFrequencyBySeason', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.dataRendered = false;
+    scope.dataRenderedPie = false;
+    scope.onDataRendered = function () {
+      scope.dataRendered = true;
+      scope.dataRenderedPie = true;
+    };
+
+    scope.getButtonId = function (btnName) {
+      return 'db-cfbs-' + scope.$id + '-btn-' + btnName;
+    };
+
+    scope.goToSeason = function (index) {
+      // location.url('season').search({
+      //   season: scope.data[index].season_id,
+      //   year: routeParams.year,
+      //   category: routeParams.category
+      // });
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequencyBySeason/dbColorFrequencyBySeasonView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorFrequencyByRegionExpanded', function () {
+  function link(scope, element, attrs) {
+    scope.activeTab = 0;
+    scope.setTab = function (index) {
+      scope.activeTab = index;
+    };
+    scope.isTabActive = function (index) {
+      return scope.activeTab == index;
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue)
+        scope.activeTab = _.findIndex(newValue, function (item) {
+          return item.colors.length > 0;
+        });
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequencyByRegion/dbColorFrequencyByRegionExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFrequencyByRegion', function () {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.selectedBar = null;
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.currentTarget) {
+        angular.element(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          angular.element(scope.selectedBar).tooltipster('hide');
+
+        angular.element(event.currentTarget).tooltipster('show');
+        scope.selectedBar = event.currentTarget;
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequencyByRegion/dbColorFrequencyByRegionView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFrequencyByCityExpanded', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    scope.columns = [];
+    scope.data = [];
+    scope.activeRegionIndex = null;
+    scope.activeCityIndex = null;
+    scope.activeColorIndex = null;
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+
+    var activeElement;
+    scope.toggleActiveBar = function (event, regionIndex, cityIndex, colorIndex) {
+      if (scope.activeRegionIndex == regionIndex && scope.activeCityIndex == cityIndex && scope.activeColorIndex == colorIndex) {
+        scope.activeRegionIndex = null;
+        scope.activeCityIndex = null;
+        scope.activeColorIndex = null;
+      } else {
+        scope.activeRegionIndex = regionIndex;
+        scope.activeCityIndex = cityIndex;
+        scope.activeColorIndex = colorIndex;
+      }
+
+      if (activeElement)
+        activeElement.tooltipster('hide');
+
+      activeElement = $(event.currentTarget);
+
+      if (scope.activeRegionIndex != null)
+        timeout(function () {
+          activeElement.tooltipster('show');
+        }, 250);
+    };
+    scope.isBarActive = function (regionIndex, cityIndex, colorIndex) {
+      return scope.activeRegionIndex == regionIndex && scope.activeCityIndex == cityIndex && scope.activeColorIndex == colorIndex;
+    };
+
+    scope.$watch('originalData', function (newValue, oldValue) {
+      if (newValue && newValue.length) {
+        scope.columns = new Array(_.max(newValue, function (item) {
+          return item.colors.length;
+        }).colors.length);
+        scope.data = _.groupBy(newValue, 'regionId');
+      }
+      else {
+        scope.columns = [];
+        scope.data = [];
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequencyByCity/dbColorFrequencyByCityExpandedView.html',
+    link: link,
+    scope: {
+      originalData: '=data',
+      toggleView: '&'
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorFrequencyByCity', [
+  '$location', '$timeout', function (location, $timeout) {
+    function link(scope, element, attrs) {
+      scope.cityNames = [];
+
+      scope.dataRendered = false;
+      scope.dataRenderedPie = false;
+      scope.onDataRendered = function () {
+        scope.dataRendered = true;
+        scope.dataRenderedPie = true;
+      };
+
+      scope.getButtonId = function (btnName) {
+        return 'db-cfbc-' + scope.$id + '-btn-' + btnName;
+      };
+
+      scope.goToCity = function (index) {
+        location.url('city').search({
+          city: scope.data[index].cityId,
+          year: 2017,
+          season: 42,
+          category: 1
+        });
+      };
+
+      scope.$watchCollection('data', function (newValue) {
+        // scope.dataRenderedPie = false;
+        if (newValue) {
+          var newCityNames = [];
+          _.each(newValue, function (item, index) {
+            if (item.cityId == 12) { // rio 12
+              newCityNames[index] = 'Rio';
+            } else {
+              newCityNames[index] = item.city;
+            }
+          });
+          scope.cityNames = newCityNames;
+        }
+      });
+    }
+
+    return {
+      restrict: 'E',
+      templateUrl: 'app/directives/dbColorFrequencyByCity/dbColorFrequencyByCityView.html',
+      link: link,
+      scope: {
+        data: '='
+      }
+    };
+  }]);
+
+angular.module('app').directive('hueDbColorFrequencyByCategory', function () {
+  function link(scope, element, attrs) {
+
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequencyByCategory/dbColorFrequencyByCategoryView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueColorFrequencyByCategoryChart', ['$timeout', '$location', function (timeout, location) {
+  function link(scope, element, attrs) {
+    var config = scope.config;
+
+    var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+    var strokeWidth = scope.config.strokeWidth ? scope.config.strokeWidth : 2;
+    var diameter = scope.config.diameter;
+
+    var outerStrokeRadius = diameter / 2;
+    var innerStrokeRadius = outerStrokeRadius - strokeWidth;
+    var innerSectionRadius = outerStrokeRadius - donutWidth;
+    var animationDuration = 400;
+    var animationStep = 1 / (animationDuration / 20);
+    var strokePercentage = 100 - scope.percentage;
+
+    var draw = SVG(element[0]).size(diameter, diameter);
+    var donutGroup = draw.group();
+
+    var getSectionPathData = function (angle1, angle2, xpos, ypos, outerRadius, innerRadius) {
+      var sinStart = Math.sin(angle1);
+      var cosStart = Math.cos(angle1);
+      var sinEnd = Math.sin(angle2);
+      var cosEnd = Math.cos(angle2);
+
+      var xO1 = xpos + (sinStart * outerRadius); //outer
+      var yO1 = ypos - (cosStart * outerRadius);
+      var xO2 = xpos + (sinEnd * outerRadius);
+      var yO2 = ypos - (cosEnd * outerRadius);
+
+      var xI1 = xpos + (sinStart * innerRadius); //inner
+      var yI1 = ypos - (cosStart * innerRadius);
+      var xI2 = xpos + (sinEnd * innerRadius);
+      var yI2 = ypos - (cosEnd * innerRadius);
+
+      var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+      return new SVG.PathArray([
+        ['M', xO1, yO1],
+        ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+        ['L', xI2, yI2],
+        ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+        ['Z']
+      ]).toString();
+    };
+
+    //Initialization
+    donutGroup.path('').attr('fill', scope.color); //section
+    donutGroup.path('').attr('fill', scope.strokeColor ? scope.strokeColor : scope.color); //stroke
+
+    //Opening animation
+    var easeOutFunction = BezierEasing.css['ease-out'];
+    var animationProgress = 0;
+    var donutChildren = donutGroup.children();
+    var processAnimation = function () {
+      animationProgress += animationStep;
+      if (animationProgress > 1)
+        animationProgress = 1;
+
+      var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
+
+      var angleStart = 0;
+      var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
+      donutChildren[0].plot(getSectionPathData(angleStart, angleEnd, outerStrokeRadius, outerStrokeRadius, innerStrokeRadius, innerSectionRadius));
+
+      //angleStart = angleEnd;
+      angleEnd = angleStart + (coeff * Math.PI * 2);
+      donutChildren[1].plot(getSectionPathData(angleStart, angleEnd, outerStrokeRadius, outerStrokeRadius, outerStrokeRadius, innerStrokeRadius));
+
+      if (animationProgress != 1)
+        timeout(processAnimation, 20);
+    };
+
+    processAnimation();
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=hueColorFrequencyByCategoryChart',
+      percentage: '=',
+      color: '=',
+      strokeColor: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorFrequencyExpanded', function () {
+  function link(scope, element, attrs) {
+    scope.data = [];
+    scope.barWidths = [];
+    scope.colorPickerData = [];
+    scope.activeColor = 0;
+    scope.showColorPicker = false;
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'hover',
+      position: 'bottom'
+    };
+
+    var updateData = function (newData) {
+      var data = newData.mostPopular.concat(newData.moderate).concat(newData.infrequent).concat(newData.not_used);
+      scope.data = _.filter(data, function (item) {
+        return item.percentage_abs > 0;
+      });
+      scope.barWidths = [];
+
+      var count = scope.data.length - 1;
+      var sum = 0;
+      for (var i = 0; i < count; i++) {
+        sum += scope.data[i].percentage_abs;
+        scope.barWidths.push(scope.data[i].percentage_abs + '%');
+      }
+      sum += scope.data[count].percentage_abs;
+      if (sum > 100)
+        scope.barWidths.push((scope.data[count].percentage_abs - (sum - 100)) + '%'); //trim last element if sum is more than 100
+      else
+        scope.barWidths.push(scope.data[count].percentage_abs + '%');
+    };
+
+    scope.$watch('originalData', function (newValue, oldValue) {
+      if (newValue) {
+        if (newValue instanceof Array) {
+          scope.showColorPicker = newValue.length > 1;
+          scope.colorPickerData = newValue;
+          updateData(newValue[scope.activeColor]);
+        }
+        else {
+          scope.showColorPicker = false;
+          scope.colorPickerData = [];
+          updateData(newValue);
+        }
+      } else
+        scope.data = [];
+    });
+
+    scope.$watch('activeColor', function (newValue, oldValue) {
+      if (scope.originalData instanceof Array && newValue != null)
+        updateData(scope.originalData[newValue]);
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequency/dbColorFrequencyExpandedView.html',
+    link: link,
+    scope: {
+      originalData: '=data',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFrequency', function () {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+
+    scope.activeIndex = 0;
+    scope.data = null;
+    scope.selectedBar = null;
+
+    scope.expandedGroupClass = null;
+    scope.setExpandedGroupClass = function (groupClass) {
+      scope.expandedGroupClass = groupClass;
+    };
+    scope.showSearchedColor = function () {
+      return scope.searchedColor != null;
+    };
+    scope.getClass = function () {
+      var result = [];
+      if (scope.expandedGroupClass)
+        result.push(scope.expandedGroupClass);
+      if (scope.showSearchedColor())
+        result.push('with-searched-color');
+
+      return result.join(' ');
+    };
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.target) {
+        angular.element(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          angular.element(scope.selectedBar).tooltipster('hide');
+
+        angular.element(event.target).tooltipster('show');
+        scope.selectedBar = event.target;
+      }
+    };
+
+    scope.$watch('originalData', function (newValue, oldValue) {
+      if (newValue instanceof Array)
+        scope.data = newValue[scope.activeColor];
+      else
+        scope.data = newValue;
+    });
+
+    scope.$watch('activeColor', function (newValue, oldValue) {
+      if (scope.originalData instanceof Array && newValue != null)
+        scope.data = scope.originalData[newValue];
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFrequency/dbColorFrequencyView.html',
+    link: link,
+    scope: {
+      originalData: '=data',
+      searchedColor: '=',
+      activeColor: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFrequencyColorPicker', function () {
+  function link(scope, element, attrs) {
+    scope.setActiveColor = function (index) {
+      scope.activeColor = index;
+    };
+    scope.isColorActive = function (index) {
+      return scope.activeColor == index;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<ul class="db-color-frequency-color-picker"><li ng-style="{\'border-top-color\': item.hex}" ng-class="{active: isColorActive($index)}" ng-bind="item.color" ng-click="setActiveColor($index)" ng-repeat="item in data"></li></ul>',
+    link: link,
+    scope: {
+      data: '=',
+      activeColor: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFamiliesByBrandExpanded', function () {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.selectedBar = null;
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.currentTarget) {
+        $(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          $(scope.selectedBar).tooltipster('hide');
+
+        $(event.currentTarget).tooltipster('show');
+        scope.selectedBar = event.currentTarget;
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFamiliesByBrand', function () {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.selectedBar = null;
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.currentTarget) {
+        $(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          $(scope.selectedBar).tooltipster('hide');
+
+        $(event.currentTarget).tooltipster('show');
+        scope.selectedBar = event.currentTarget;
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorCountByModel', ['$location', function (location) {
+	function link(scope, element, attrs) {
+		scope.maxItems = 100;
+
+		scope.$watch('isExpanded', function (newValue, oldValue) {
+			if (newValue === true)
+				scope.maxItems = 100;
+			else if (newValue === false)
+				scope.maxItems = 6;
+		});
+	}
+
+	return {
+		restrict: 'E',
+		template: '<div class="db-color-count-by-model"><div class="color-count-row" ng-repeat="item in data | limitTo: maxItems"><div class="color-count" ng-bind="::item[0]"></div><div class="color-percentage">{{::item[1]}}</div></div></div>',
+		link: link,
+		scope: {
+			data: '=',
+			isExpanded: '='
+		}
+	};
+}]);
+angular.module('app').directive('hueDbColorCount', ['$location', function (location) {
+  function link(scope, element, attrs) {
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="db-color-count"><div class="color-count-row"><div class="color-count">1</div><div class="color-percentage">{{data[0]}} <span class="unit">%</span></div></div>' +
+    '<div class="color-count-row"><div class="color-count">2</div><div class="color-percentage">{{data[1]}} <span class="unit">%</span></div></div>' +
+    '<div class="color-count-row"><div class="color-count">3+</div><div class="color-percentage">{{data[2]}} <span class="unit">%</span></div></div></div>',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueDbColorCopyrightsByColorFamily', function ($location) {
+  function link(scope, element, attrs) {
+    scope.Math = Math;
+    scope.itemClick = function (item) {
+      $location.url('color').search({id: item.id});
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorCopyrightsByColorFamily/dbColorCopyrightsByColorFamilyView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCarousel', function ($timeout, $interval) {
+  function link(scope, element, attrs) {
+    var animationDelay = 200;
+
+    var carouselContainer = angular.element('.carousel-container', element);
+    var containerSize = carouselContainer.width();
+
+    var maxVisibleElementsCount = parseInt(scope.visibleElements);
+    var visibleElementsCount;
+
+    var linkedList;
+    var firstElement;
+    var lastElement;
+
+    var animTimeout;
+    var updateInterval;
+
+    var setupCarousel = function () {
+      var elements = _.map(carouselContainer.children(), function (item) {
+        return angular.element(item);
+      });
+
+      if (elements.length == 0) {
+        return;
+      }
+      visibleElementsCount = elements.length > maxVisibleElementsCount ? maxVisibleElementsCount : elements.length;
+      linkedList = [];
+
+      var count = elements.length;
+      for (var i = 0; i < count; i++) {
+        var e = elements[i];
+        e.addClass('carousel-element');
+        e.css('display', 'none');
+
+        linkedList.push({e: e, p: linkedList[i - 1]});
+      }
+
+      for (var i = 0; i < count; i++) {
+        linkedList[i].n = linkedList[i + 1];
+      }
+      linkedList[0].p = linkedList[count - 1];
+      linkedList[count - 1].n = linkedList[0];
+
+      firstElement = linkedList[0];
+    };
+
+    scope.rotateCarousel = function (delta) {
+      if (!linkedList || linkedList.length == 0 || linkedList.length <= maxVisibleElementsCount || animTimeout)
+        return;
+
+      var elementWidth = firstElement.e.width();
+      var elementSpacing = parseInt(scope.elementSpacing);
+      var visibleAreaWidth = visibleElementsCount * elementWidth + (visibleElementsCount - 1) * elementSpacing;
+      var elemOffset = Math.round((containerSize - visibleAreaWidth) / 2);
+
+      var setElemPos = function (e, index) {
+        e.css('left', (elemOffset + index * elementSpacing + index * elementWidth));
+      };
+
+      if (delta == 1) {
+        // setup
+        var listElem = firstElement;
+        for (var i = 0; i < visibleElementsCount; i++) {
+          var e = listElem.e;
+          e.addClass('element-animated');
+          listElem = listElem.n;
+        }
+        setElemPos(lastElement.n.e, visibleElementsCount);
+        lastElement.n.e.css('opacity', 0);
+        lastElement.n.e.css('display', '');
+        lastElement.n.e.addClass('element-animated');
+
+        //animate
+        $timeout(function () {
+          listElem = firstElement;
+          for (var i = 0; i < visibleElementsCount; i++) {
+            var e = listElem.e;
+            setElemPos(e, i - 1);
+            listElem = listElem.n;
+          }
+          firstElement.e.css('opacity', 0);
+
+          lastElement.n.e.css('opacity', 1);
+          setElemPos(lastElement.n.e, visibleElementsCount - 1);
+
+          firstElement = firstElement.n;
+          lastElement = lastElement.n;
+
+          // cleanup
+          animTimeout = $timeout(function () {
+            carouselContainer.children().removeClass('element-animated');
+            firstElement.p.e.css('display', 'none');
+
+            animTimeout = null;
+          }, animationDelay);
+        }, 0);
+      } else if (delta == -1) {
+        // setup
+        var listElem = firstElement;
+        for (var i = 0; i < visibleElementsCount; i++) {
+          var e = listElem.e;
+          e.addClass('element-animated');
+          listElem = listElem.n;
+        }
+        setElemPos(firstElement.p.e, -1);
+        firstElement.p.e.css('opacity', 0);
+        firstElement.p.e.css('display', '');
+        firstElement.p.e.addClass('element-animated');
+
+        //animate
+        $timeout(function () {
+          listElem = firstElement;
+          for (var i = 0; i < visibleElementsCount; i++) {
+            var e = listElem.e;
+            setElemPos(e, i + 1);
+            listElem = listElem.n;
+          }
+          lastElement.e.css('opacity', 0);
+
+          firstElement.p.e.css('opacity', 1);
+          setElemPos(firstElement.p.e, 0);
+
+          firstElement = firstElement.p;
+          lastElement = lastElement.p;
+
+          //cleanup
+          animTimeout = $timeout(function () {
+            carouselContainer.children().removeClass('element-animated');
+            firstElement.p.e.css('display', 'none');
+
+            animTimeout = null;
+          }, animationDelay);
+        }, 0);
+      } else {
+        var listElem = firstElement;
+        for (var i = 0; i < visibleElementsCount; i++) {
+          var e = listElem.e;
+          setElemPos(e, i);
+          e.css('display', '');
+          listElem = listElem.n;
+        }
+        lastElement = listElem.p;
+      }
+    };
+
+    var childrenChanged = function () {
+      var children = carouselContainer.children();
+      if (!linkedList || linkedList.length != children.length) {
+        return true;
+      }
+      var children = carouselContainer.children();
+      var count = children.length;
+      for (var i = 0; i < count; i++)
+        if (children[i] !== linkedList[i].e[0]) {
+          return true;
+        }
+      return false;
+    };
+
+    scope.showButtons = function (delta) {
+      if (!linkedList)
+        return false;
+      return linkedList.length > maxVisibleElementsCount;
+    };
+
+    setupCarousel();
+    scope.rotateCarousel();
+
+    updateInterval = $interval(function () {
+      if (childrenChanged()) {
+        setupCarousel();
+        scope.rotateCarousel();
+      }
+
+      if (carouselContainer.width() != containerSize) {
+        containerSize = carouselContainer.width();
+        scope.rotateCarousel();
+      }
+    }, 250);
+
+    scope.$on('$destroy', function () {
+      if (animTimeout) {
+        $timeout.cancel(animTimeout);
+      }
+      if (updateInterval) {
+        $interval.cancel(updateInterval);
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    transclude: true,
+    template: '<div class="db-carousel"><div class="carousel-container" ng-transclude></div><div class="carousel-button button-prev" ng-show="showButtons()" ng-click="rotateCarousel(-1)"></div><div class="carousel-button button-next" ng-show="showButtons()" ng-click="rotateCarousel(1)"></div></div>',
+    link: link,
+    scope: {
+      visibleElements: '@',
+      elementSpacing: '@'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorComparison', function () {
+  function link(scope, element, attrs) {
+    scope.Math = Math;
+
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.selectedBar = null;
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.currentTarget) {
+        $(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          $(scope.selectedBar).tooltipster('hide');
+
+        $(event.currentTarget).tooltipster('show');
+        scope.selectedBar = event.currentTarget;
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorComparison/dbColorComparisonView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCategoriesWithHighestActivity', function ($timeout) {
+  function link(scope, element, attrs) {
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbCategoriesWithHighestActivity/dbCategoriesWithHighestActivityView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDashboardOverlay', ['dashboardOverlayService', function (dashboardOverlayService) {
+  function link(scope, element, attrs) {
+    scope.showErrorMessage = false;
+
+    scope.$watch(function () {
+      return dashboardOverlayService.showErrorMessage;
+    }, function (newValue, oldValue) {
+      scope.showErrorMessage = newValue;
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    template: '<div class="overlay-message message-loading" ng-show="!showErrorMessage"></div><div class="overlay-message message-error" ng-show="showErrorMessage"></div>',
+    scope: true
+  };
+}]);
+
+(function () {
+  'use strict';
+  angular.module('app')
+    .directive('hueTop4Grid', ['common', 'config', 'chartsHelper', '$timeout',
+      function (common, config, chartsHelper, $timeout) {
+        function link(scope, element, attributes) {
+          scope.$watch('data', bindData);
+          scope.alphabet = [
+            "a",
+            "à",
+            "b",
+            "c",
+            "d",
+            "e",
+            "é",
+            "f",
+            "g",
+            "h",
+            "i",
+            "j",
+            "k",
+            "l",
+            "m",
+            "n",
+            "o",
+            "ö",
+            "p",
+            "q",
+            "r",
+            "s",
+            "t",
+            "u",
+            "v",
+            "w",
+            "x",
+            "y",
+            "z",
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ];
+
+          function bindData() {
+            if (!scope.data) {
+              return;
+            }
+
+            scope.grouppedData = _.groupBy(scope.data, function (item) {
+              return item.title && item.title.toLowerCase().substr(0, 1);
+            });
+
+            // var columnsCount = 3;
+            // var rowsCount = 300;
+            // var colorsCount = 4;
+            //
+            // var nTitle = '';
+            //
+            // var columns = [];
+            // scope.columns = columns;
+            //
+            // for (var i = 0; i < columnsCount; i++) {
+            //   var column = {rows: []};
+            //   columns.push(column);
+            //
+            //   for (var j = 0; j < rowsCount; j++) {
+            //     var dataIndex = i * rowsCount + j;
+            //     var dataItem = scope.data.length <= dataIndex ? {data: []} : scope.data[dataIndex];
+            //
+            //     var row = {
+            //       title: '',
+            //       colors: []
+            //     };
+            //
+            //     column.rows.push(row);
+            //
+            //     var firstLetter = dataItem.title.substr(0, 1);
+            //     var isTitle = nTitle !== firstLetter;
+            //     if (isTitle) {
+            //       row.isTitle = true;
+            //       row.title = firstLetter;
+            //       nTitle = firstLetter;
+            //       j += 2;
+            //       row = {};
+            //       column.rows.push(row);
+            //     }
+            //
+            //     row.title = dataItem.title; // names[0][Math.round(Math.random() * names[0].length - .5)] + ' ' + names[1][Math.round(Math.random() * names[1].length - .5)];
+            //     row.colors = dataItem.data;
+            //   }
+            // }
+            //
+            // $timeout(function () {
+            //   _.each(element.find('[color]'), function (el, i) {
+            //     $timeout(function () {
+            //       $(el).toggleClass('show', true);
+            //     }, 5 * i);
+            //   });
+            // });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/top4-grid.html'
+        };
+
+        return directive;
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChart',
+    [
+      'common', 'config',
+      function (common, config) {
+        function link(scope, element, attributes) {
+          $(element).toggleClass('hue-chart', true);
+//                scope.value = '';
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          scope: {},
+          templateUrl: 'app/directives/custom-infographics-directives/chart-by-city-period.html'
+        };
+
+        return directive;
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartUniqueWithGroups',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            scope.season = scope.data.season;
+            scope.year = scope.data.year;
+
+            var containerGroups = element.find('[chart-type="groups"]').html('');
+            var containerCommon = element.find('[chart-type="common"]').html('');
+            var containerUnique = element.find('[chart-type="unique"]').html('');
+
+            var groups = _.map(scope.data.groups, function (c) {
+              return {
+                value: c.value,
+                valueTitle: Math.round(c.percentage * 100) + '%',
+                value2: c.value,//Math.round(c.value * 1000),
+                valueTitle2: Math.round(c.percentage * 100),
+                title: c.title,
+                color: c.color
+              }
+            });
+
+            var colors = _.map(scope.data.common, function (c) {
+              return {
+                value: c.value,
+                valueTitle: Math.round(c.percentage * 100) + '%',
+                value2: c.value,//Math.round(c.value * 1000),
+                valueTitle2: Math.round(c.percentage * 100),
+                title: c.color,
+                color: c.color
+              }
+            });
+
+            var ch = new chartSpheric({
+              data: scope.data.unique,
+              container: containerUnique[0],
+              options: {}
+            });
+
+            ch = new chartDotsHorizontal({
+              data: colors,
+              container: containerCommon[0],
+              options: {}
+            });
+
+            ch = new chartBoxLinearHorizontal({
+              data: groups,
+              container: containerGroups[0],
+              options: {
+                layout: {
+                  bars: {
+                    separator: {
+                      radius: 6
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-unique-with-groups.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartTrends',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            var container = element/*.find('[chart-type]')*/.html('');
+
+            var bars = [];
+            var data = {
+              periods: _.map(scope.data, function (d) {
+                return {title: d.title};
+              }),
+              data: bars
+            };
+
+            _.each(scope.data, function (period) {
+              _.each(_.sortBy(period.data, 'value').reverse(), function (d, i) {
+                var bar = _.find(bars, {name: d.name});
+                if (!bar) {
+                  bar = {
+                    name: d.name,
+                    title: i + 1,
+                    points: [],
+                    color: d.color
+                  };
+                  if (d.color === '#ffffff') {
+                    bar.color = '#efefef';
+                  }
+                  bars.push(bar);
+                }
+
+                bar.points.push({value: i});
+              });
+            });
+
+            var ch = new chartGraphLinearHorizontal({
+              data: data,
+              container: container[0],
+              options: {}
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-trends.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartNails',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+            var totalAchr = 0;
+            var totalChr = 0;
+            scope.data.forEach(function (t) {
+              if (t.group === 'achr') {
+                totalAchr += t.value;
+              }
+              if (t.group === 'chr') {
+                totalChr += t.value;
+              }
+            });
+            totalAchr = Math.round(totalAchr / (totalAchr + totalChr) * 100);
+            totalChr = 100 - totalAchr;
+            var data = {
+              groups: [{title: totalChr + '% ACHROMATIC COLORS', name: 'chr'},
+                {title: totalAchr + '% CHROMATIC COLORS', name: 'achr'}]
+            };
+
+            data.data = scope.data;
+
+            var container = element.find('[chart-type]').html('');
+
+            var ch = new chartNailsLinearVerticalSimple({
+              data: data,
+              container: container[0],
+              options: {}
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-nails.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartGridNails',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+            var totalAchr = 0;
+            var totalChr = 0;
+            scope.data[0].data.forEach(function (t) {
+              if (t.group === 'achr' && t.value) {
+                totalAchr += t.value;
+              }
+              if (t.group === 'chr' && t.value) {
+                totalChr += t.value;
+              }
+            });
+            totalAchr = Math.round((totalAchr / (totalAchr + totalChr)) * 100) || 0;
+            totalChr = totalAchr ? 100 - totalAchr : 0;
+            var data = {
+              groups: [{title: totalChr + '% ACHROMATIC COLORS', name: 'chr'},
+                {title: totalAchr + '% CHROMATIC COLORS', name: 'achr'}]
+            };
+
+            data.periods = _.map(scope.data, function (d) {
+              return {title: d.title};
+            });
+
+            data.data = _.map(scope.data[0].data, function (d0, i) {
+              var dResult = [];
+              for (var j = 0; j < scope.data.length; j++) {
+                var d = scope.data[j];
+                var perc = d.data[i].percentage || 0;
+                dResult.push({
+                  title: (Math.round(perc * 1000) / 10) + '%',
+                  value: perc
+                });
+              }
+
+              return {
+                title: d0.title,
+                color: d0.color,
+                group: d0.group,
+                value: d0.value,
+                data: dResult,
+                colors: d0.colors
+              };
+            });
+
+            var container = element.find('[chart-type]').html('');
+
+            var ch = new chartNailsLinearVertical({
+              data: data,
+              container: container[0],
+              options: {
+                layout: {
+                  mode: scope.mode && scope.mode.extraView ? 'colors' : 'default'
+                }
+              }
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '=',
+            mode: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-grid-nails.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartCommonWithGroups',
+    [
+      'common', 'config', 'chartsHelper', 'colorSortService',
+      function (common, config, chartsHelper, colorSortService) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            if (scope.data['palettes']) {
+              scope.palettes = colorSortService(scope.data['palettes'], 25);
+            }
+            scope.palettes = _.chunk(scope.palettes, 5);
+
+            var containerBagel = element.find('[chart-type="bagel"]').html('');
+            var containerBrief = element.find('[chart-type="brief"]').html('');
+            var containerGroups = element.find('[chart-type="groups"]').html('');
+
+            var groups = _.map(scope.data.groups, function (c) {
+              return {
+                value: c.value,
+                valueTitle: Math.round(c.percentage * 100) + '%',
+                value2: c.value,//Math.round(c.value * 1000),
+                valueTitle2: Math.round(c.percentage * 100),
+                title: c.title,
+                color: c.color
+              }
+            });
+
+            var colors = _.map(scope.data.common, function (c) {
+              return {
+                value: c.value,
+                valueTitle: Math.round(c.percentage * 100) + '%',
+                value2: c.value,//Math.round(c.value * 1000),
+                valueTitle2: Math.round(c.percentage * 100),
+                title: c.color,
+                color: c.color
+              }
+            });
+
+            var bagelOptions = {
+              bars: {
+                radius: 130,
+                radiusOuter: 1,
+                radiusInner: 105,
+                legend: {
+                  radius: 50,
+                  radiusInner: 40,
+                  position: 'none'
+                }
+              }
+            };
+
+            if (!scope.mode || !scope.mode.extraView) {
+              var ch = new chartBoxBagel({
+                data: colors,
+                container: containerBagel[0],
+                options: bagelOptions
+              });
+
+              ch = new chartDotsHorizontal({
+                data: colors,
+                container: containerBrief[0],
+                options: {
+                  layout: {
+                    bars: {
+                      separator: {
+                        radius: 7
+                      }
+                    }
+                  }
+                }
+              });
+
+            }
+            ch = new chartBoxLinearHorizontal({
+              data: groups,
+              container: containerGroups[0],
+              options: {
+                layout: {
+                  bars: {
+                    separator: {
+                      radius: 6
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '=',
+            mode: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-common-with-groups.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartColorsWithGroupsForTwo',
+    [
+      'common', 'config', 'chartsHelper', 'colorSortService',
+      function (common, config, chartsHelper, colorSortService) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            if (scope.data[2]) {
+              scope.data[2].data = colorSortService(scope.data[2].data, 25);
+              scope.data[3].data = colorSortService(scope.data[3].data, 25);
+              scope.palettes1 = _.chunk(scope.data[2].data, 5);
+              scope.palettes2 = _.chunk(scope.data[3].data, 5);
+            }
+            var containers = element.find('[chart-block]');
+
+            _.each(containers, function (c, i) {
+              var container = $(c);
+
+              var containerBagel = container.find('[chart-type="bagel"]').html('');
+              var containerGroups = container.find('[chart-type="groups"]').html('');
+
+              var title = scope.data[i].title;
+              container.find('h3').text(title);
+
+              var data = scope.data[i].data;
+              if (data) {
+
+                var options = {
+                  bars: {
+                    radius: 85,
+                    radiusOuter: 1,
+                    radiusInner: 62,
+                    legend: {},
+                    separator: {radius: 6}
+                  }
+                };
+
+                if (i === 1) {
+                  options.bars = {
+                    radius: 85,
+                    radiusOuter: 1,
+                    radiusInner: 62,
+                    legend: {
+                      position: 'left'
+                    },
+                    separator: {radius: 6}
+                  };
+                }
+
+                var colors = _.map(data.colors,
+                  function (d) {
+                    return {
+                      value: d.percentage,
+                      valueTitle: Math.round(d.percentage) + '%',
+                      value2: Math.round(d.percentage * 100),
+                      valueTitle2: Math.round(d.percentage * 100),
+                      title: d.title,
+                      color: d.color
+                    }
+                  });
+
+                if (containerBagel[0]) {
+                  var ch = new chartBoxBagel({
+                    data: colors,
+                    container: containerBagel[0],
+                    options: options
+                  });
+
+                }
+                // groups
+                if (scope.mode && scope.mode.extraView) {
+                  var rowsAmount = 5, columnsAmount = 5;
+                  var allColors = [];
+                  _.each(data.groups, function (gr) {
+                    _.each(gr.colors, function (c) {
+                      allColors.push({color: c.color});
+                    });
+                  });
+
+                  var rows = scope['rows' + (i + 1)] = [];
+                  scope['year' + (i + 1)] = title;
+                  for (var ii = 0; ii < rowsAmount; ii++) {
+                    var row = {colors: []};
+                    rows.push(row);
+                    for (var j = 0; j < columnsAmount; j++) {
+                      var column = {};
+                      row.colors.push(column);
+
+                      var color = allColors[ii * columnsAmount + j];
+                      if (!color) {
+                        column.isEmpty = true;
+                      } else {
+                        column.color = color.color;
+                      }
+                    }
+                  }
+                }
+
+                // generic groups
+                var groups = _.map(data.groups,
+                  function (d) {
+                    var value = Math.round(d.percentage * 100);
+                    return {
+                      value: d.value,
+                      valueTitle: Math.round(value) + '%',
+                      value2: d.value,
+                      valueTitle2: Math.round(d.percentage * 100),
+                      title: d.title,
+                      color: d.color
+                    }
+                  });
+
+                options = {
+                  layout: {
+                    bars: {
+                      bar: {
+                        height: 130,
+                        width: 25,
+                        margin: {
+                          left: 6,
+                          right: 6
+                        },
+                        background: '#e3e3e3'
+                      },
+                      separator: {
+                        height: 24,
+                        radius: 6
+                      },
+                      value: {
+                        height: 22
+                      },
+                      value2: {
+                        height: 22
+                      }
+                    },
+                    padding: {
+                      left: 10,
+                      right: 10,
+                      top: 0,
+                      bottom: 10
+                    }
+                  }
+                }
+                ch = new chartBoxLinearVertical({
+                  data: groups,
+                  container: containerGroups[0],
+                  options: options
+                });
+              }
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '=',
+            mode: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-with-groups-for-two.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartColorsUniqueWithLevels',
+    [
+      'common', 'config', 'chartsHelper', 'reduceValue',
+      function (common, config, chartsHelper, reduceValue) {
+        var _colors = [
+          {
+            "value": 220,
+            "color": "#f5f5dc",
+            "percentage": 0.11777301927194861,
+            "title": "Beige",
+            "group": "achr"
+          }, {
+            "value": 20,
+            "color": "#000000",
+            "percentage": 0.010706638115631691,
+            "title": "Black",
+            "group": "chr"
+          }, {
+            "value": 158,
+            "color": "#0000ff",
+            "percentage": 0.08458244111349036,
+            "title": "Blue",
+            "group": "achr"
+          }, {
+            "value": 124,
+            "color": "#964b00",
+            "percentage": 0.06638115631691649,
+            "title": "Brown",
+            "group": "achr"
+          }, {
+            "value": 174,
+            "color": "#00ffff",
+            "percentage": 0.09314775160599571,
+            "title": "Cyan",
+            "group": "achr"
+          }, {
+            "value": 306,
+            "color": "#c0c0c0",
+            "percentage": 0.16381156316916487,
+            "title": "Gray",
+            "group": "achr"
+          }, {
+            "value": 62,
+            "color": "#008000",
+            "percentage": 0.033190578158458245,
+            "title": "Green",
+            "group": "achr"
+          }, {
+            "value": 64,
+            "color": "#ff00ff",
+            "percentage": 0.034261241970021415,
+            "title": "Magenta",
+            "group": "achr"
+          }, {
+            "value": 191,
+            "color": "#ff7f00",
+            "percentage": 0.10224839400428265,
+            "title": "Orange",
+            "group": "achr"
+          }, {
+            "value": 158,
+            "color": "#ff0000",
+            "percentage": 0.08458244111349036,
+            "title": "Red",
+            "group": "achr"
+          }, {
+            "value": 146,
+            "color": "#8f00ff",
+            "percentage": 0.07815845824411134,
+            "title": "Violet",
+            "group": "achr"
+          }, {
+            "value": 3,
+            "color": "#ffffff",
+            "percentage": 0.0016059957173447537,
+            "title": "White",
+            "group": "chr"
+          }, {
+            "value": 103,
+            "color": "#ffff00",
+            "percentage": 0.05513918629550321,
+            "title": "Yellow",
+            "group": "achr"
+          }, {
+            "value": 139,
+            "color": "#8db600",
+            "percentage": 0.07441113490364026,
+            "title": "Yellow/Green",
+            "group": "achr"
+          }
+        ];
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            var containerUnique = element.find('[chart-type="unique"]').html('');
+            var containerLevels = element.find('[chart-type="levels"]').html('');
+
+            var options = {};
+            options.layout = {
+              sections: {
+                horizontal: 7,
+                vertical: 2
+              }
+            };
+            options.data = options.data || {};
+            if (!scope.data.grouped) {
+              options.layout = {
+                sections: {
+                  horizontal: 1,
+                  vertical: 1
+                }
+              };
+            }
+            options.data.isOrdered = !!scope.data.ordered;
+            var dataUnique = scope.data.unique;
+            if (!scope.data.ordered) {
+              // randomize additionally
+              dataUnique = _.sortBy(_.map(dataUnique, function (d) {
+                d.__order = Math.random();
+                return d;
+              }), '__order');
+            }
+            var groups = [{}];
+            if (scope.data.grouped) {
+              groups = _colors;
+            }
+
+            var ch = new chartBricks({
+              data: {
+                colors: dataUnique, groups: groups
+              },
+              container: containerUnique[0],
+              options: options
+            });
+
+            var data = _.map(scope.data.groups,
+              function (d) {
+                var value = Math.round(d.percentage * 100);
+                return {
+                  value: value,
+                  valueTitle: Math.round(value) + '%',
+                  value2: Math.round(d.percentage * 100),
+                  valueTitle2: d.value,
+                  title: d.title,
+                  color: d.color
+                }
+              });
+
+            var maxValue = _.max(_.map(data, function (d) {
+              return d.value;
+            }));
+            if (maxValue < 20) {
+              maxValue = 20;
+            }
+
+            ch = new chartLevelsVertical({
+              data: data,
+              container: containerLevels[0],
+              options: {bars: {maxValue: maxValue}}
+            });
+
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-unique-with-levels.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartColorsUniqueWithGroupsPerSeason',
+    [
+      'common', 'config', 'chartsHelper', 'reduceValue',
+      function (common, config, chartsHelper, reduceValue) {
+        var _colors = [
+          {
+            "value": 220,
+            "color": "#f5f5dc",
+            "percentage": 0.11777301927194861,
+            "title": "Beige",
+            "group": "achr"
+          }, {
+            "value": 20,
+            "color": "#000000",
+            "percentage": 0.010706638115631691,
+            "title": "Black",
+            "group": "chr"
+          }, {
+            "value": 158,
+            "color": "#0000ff",
+            "percentage": 0.08458244111349036,
+            "title": "Blue",
+            "group": "achr"
+          }, {
+            "value": 124,
+            "color": "#964b00",
+            "percentage": 0.06638115631691649,
+            "title": "Brown",
+            "group": "achr"
+          }, {
+            "value": 174,
+            "color": "#00ffff",
+            "percentage": 0.09314775160599571,
+            "title": "Cyan",
+            "group": "achr"
+          }, {
+            "value": 306,
+            "color": "#c0c0c0",
+            "percentage": 0.16381156316916487,
+            "title": "Gray",
+            "group": "achr"
+          }, {
+            "value": 62,
+            "color": "#008000",
+            "percentage": 0.033190578158458245,
+            "title": "Green",
+            "group": "achr"
+          }, {
+            "value": 64,
+            "color": "#ff00ff",
+            "percentage": 0.034261241970021415,
+            "title": "Magenta",
+            "group": "achr"
+          }, {
+            "value": 191,
+            "color": "#ff7f00",
+            "percentage": 0.10224839400428265,
+            "title": "Orange",
+            "group": "achr"
+          }, {
+            "value": 158,
+            "color": "#ff0000",
+            "percentage": 0.08458244111349036,
+            "title": "Red",
+            "group": "achr"
+          }, {
+            "value": 146,
+            "color": "#8f00ff",
+            "percentage": 0.07815845824411134,
+            "title": "Violet",
+            "group": "achr"
+          }, {
+            "value": 3,
+            "color": "#ffffff",
+            "percentage": 0.0016059957173447537,
+            "title": "White",
+            "group": "chr"
+          }, {
+            "value": 103,
+            "color": "#ffff00",
+            "percentage": 0.05513918629550321,
+            "title": "Yellow",
+            "group": "achr"
+          }, {
+            "value": 139,
+            "color": "#8db600",
+            "percentage": 0.07441113490364026,
+            "title": "Yellow/Green",
+            "group": "achr"
+          }
+        ];
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            scope.city = scope.data.city;
+
+            var containers = element.find('[chart-block]');
+            _.each(containers, function (c) {
+              var container = $(c);
+
+              var containerUnique = container.find('[chart-type="unique"]').html('');
+              var containerGroups = container.find('[chart-type="groups"]').html('');
+
+              var seasonName = container.attr('chart-block');
+
+              var state = {
+                grouped: false,//seasonName === 'spring' || seasonName === 'fall',
+                ordered: false//seasonName === 'summer' || seasonName === 'fall'
+              };
+
+              var data = _.find(scope.data, {name: seasonName});
+              // bricks
+              var options = {};
+              options.layout = {
+                sections: {
+                  horizontal: 7,
+                  vertical: 2
+                }
+              };
+              options.data = options.data || {};
+              if (!state.grouped) {
+                options.layout = {
+                  sections: {
+                    horizontal: 1,
+                    vertical: 1
+                  }
+                };
+              }
+              options.data.isOrdered = state.ordered;
+
+              var dataUnique = data.unique;
+              if (!state.ordered) {
+                // randomize additionally
+                dataUnique = _.sortBy(_.map(dataUnique, function (d) {
+                  d.__order = Math.random();
+                  return d;
+                }), '__order');
+              }
+              var groups = [{}];
+              if (state.grouped) {
+                groups = _colors;
+              }
+
+              var ch = new chartBricks({
+                data: {
+                  colors: dataUnique, groups: groups
+                },
+                container: containerUnique[0],
+                options: options
+              });
+
+              var colors = _.map(data.groups,
+                function (d) {
+                  var value = Math.round(d.percentage * 100);
+                  return {
+                    value: reduceValue.reduce(d.value),
+                    valueTitle: Math.round(value) + '%',
+                    value2: reduceValue.reduce(d.value),
+                    valueTitle2: Math.round(d.percentage * 100),
+                    title: d.title,
+                    color: d.color
+                  }
+                });
+              ch = new chartDotsHorizontal({
+                data: colors,
+                container: containerGroups[0],
+                options: {}
+              });
+
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-unique-with-groups-per-season.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartColorsPerRegion',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+          // scope.value = '';
+          scope.$watch('data', bindData);
+          // bindData();
+
+          function bindData() {
+            if (!scope.data) {
+              return;
+            }
+
+            var containers = element.find('[chart-block]');
+
+            _.each(containers, function (c) {
+              var container = $(c);
+              var regionName = container.attr('chart-block');
+
+              var containerBar = container.find('[chart-type="bar"]').html('');
+              var containerMap = container.find('[chart-type="map"]').html('');
+
+              var region = _.find(scope.data, {name: regionName});
+              {
+                var sum = _.sumBy(region.data, 'percentage');
+                var data = _.map(region.data, function (d) {
+                  var v = d.percentage / sum;
+                  return {
+                    value: v,
+                    title: Math.round(d.percentage * 100) + '%',
+                    color: d.color
+                  }
+                });
+
+                if (!region || !region.data || !region.data.length) {
+                  containerBar.append($('<p class="no-data">No data is available</p>'));
+                } else {
+                  var ch = new chartBoxLinearBarVertical({
+                    data: data,
+                    container: containerBar[0],
+                    options: {}
+                  });
+                }
+
+                var mapData = {
+                  region: {
+                    name: region.name,
+                    cities: {
+                      settings: {}
+                    }
+                  },
+                  charts: {
+                    settings: {},
+                    data: []
+                  }
+                };
+                ch = new chartComplexRegion({
+                  data: mapData,
+                  container: containerMap[0],
+                  options: {}
+                });
+
+              }
+            });
+
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-colors-per-region.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+  angular.module('app').directive('hueChartCitiesByColorPeriod',
+    ['common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+        function link(scope, element, attributes) {
+//                scope.value = '';
+          scope.$watch('data', bindData);
+//                bindData();
+          function bindData() {
+            var options = {
+//                        bars: {
+//                            maxValue: 1
+//                        }
+            };
+            options.layout = {
+              padding: {
+                left: 10,
+                right: 10,
+                top: 75,
+                bottom: 0
+              }
+            };
+
+            var container = chartsHelper.initContainer(element);
+
+            var ch = new chartBubbledLines({
+              data: scope.data || {},
+              container: container[0],
+              options: options
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-cities-by-color-period.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartBySeasonFiveYears',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+          scope.$watch('data', bindData);
+
+          function bindData() {
+            var containers = element.find('.f-season');
+            if (scope.data) {
+              scope.data.reverse();
+            }
+            _.each(containers, function (c, i) {
+              var data = (scope.data || [])[i];
+              if (!data) {
+                return;
+              }
+              c = $(c);
+
+              c.find('h3').text(getAbbr(data.season) + data.year);
+
+              var containerUnique = c.find('[chart-type="unique"]').html('');
+              var ch = new chartSpheric({
+                data: data.colorsUnique,
+                container: containerUnique[0],
+                options: {}
+              });
+
+              var container = c.find('[chart-type="top4"]').html('');
+              var colors = _.map(data.colors, function (c) {
+                return {
+                  value: c.value,
+                  valueTitle: Math.round(c.percentage * 100) + '%',
+                  value2: c.value,//Math.round(c.value * 1000),
+                  valueTitle2: Math.round(c.percentage * 100),
+                  title: c.color,
+                  color: c.color
+                }
+              });
+
+              ch = new chartDotsHorizontal({
+                data: colors,
+                container: container[0],
+                options: {}
+              });
+
+            });
+            return;
+            var n = Math.round(Math.random() * 4 - .5);
+            var maxR = n !== 1 ? 255 : Math.round(Math.random() * 255 - .5);
+            var maxG = n !== 2 ? 255 : Math.round(Math.random() * 255 - .5);
+            var maxB = n !== 3 ? 255 : Math.round(Math.random() * 255 - .5);
+            var count = Math.random() * 1000 + 100;
+            for (var l = 0; l < count; l++) {
+              var color = String.format('rgb({0},{1},{2})', Math.round(Math.random() * maxR), Math.round(Math.random() * maxG), Math.round(Math.random() * maxB));
+              result.push({
+                color: color,
+                title: color
+              });
+            }
+
+            ch = new chartSpheric({
+              data: dataPrepared,
+              container: container,
+              options: {}
+            });
+
+            result.push({
+              value: value,
+              valueTitle: Math.round(value) + '%',
+              value2: Math.round(Math.random() * 1000),
+              valueTitle2: Math.round(Math.random() * 1000),
+              title: _colors[i].title,
+              color: _colors[i].color
+            });
+
+            ch = new chartDotsHorizontal({
+              data: dataPrepared,
+              container: container,
+              options: {}
+            });
+
+          }
+
+          function getAbbr(value) {
+            if (value === 'Fall') {
+              return 'FW';
+            } else if (value === 'Pre-Fall') {
+              return 'PF';
+            } else if (value === 'Spring') {
+              return 'SS';
+            } else if (value === 'Resort') {
+              return 'RS';
+            } else if (value === 'ALL SEASONS') {
+              return 'ALL';
+            } else {
+              return value;
+            }
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-by-season-five-years.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+
+  angular.module('app').directive('hueChartBySeasonFiveYearsColors',
+    [
+      'common', 'config', 'chartsHelper', 'reduceValue', 'colorSortService',
+      function (common, config, chartsHelper, reduceValue, colorSortService) {
+        function link(scope, element, attributes) {
+          scope.$watch('data', bindData);
+
+          function bindData() {
+
+            if (!scope.data) {
+              return;
+            }
+
+            scope.palettes = scope.data.splice(14, 1)[0];
+            var palettes = {};
+            var keys = [];
+            for (var k in scope.palettes) {
+              keys.push(k);
+            }
+            keys.reverse().forEach(function (key) {
+              palettes[key] = scope.palettes[key];
+            });
+            scope.palettes = palettes;
+
+            scope.palettes[Object.keys(scope.palettes)[0]] = colorSortService(scope.palettes[Object.keys(scope.palettes)[0]], 24);
+            scope.mainSeason = scope.palettes[Object.keys(scope.palettes)[0]];
+            scope.mainTitle = Object.keys(scope.palettes)[0];
+            delete scope.palettes[Object.keys(scope.palettes)[0]];
+
+            _.forEach(scope.palettes, function (value, key) {
+              scope.palettes[key] = colorSortService(value, 21);
+            });
+            scope.mainSeason = _.chunk(scope.mainSeason, 4);
+
+            var container = element.find('[chart-type="groups"]');
+            var colors = _.map(scope.data, function (d) {
+              var value = Math.round(d.percentage * 100);
+              return {
+                value: reduceValue.reduce(d.value, '1'),
+                valueTitle: Math.round(d.percentage * 100) + '%',
+                value2: reduceValue.reduce(d.value, '1'),
+                valueTitle2: Math.round(d.percentage * 100),
+                title: d.title,
+                color: d.color
+              };
+            });
+
+            var ch = new chartDotsHorizontal({
+              data: colors,
+              container: container[0],
+              options: {}
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '=',
+            mode: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-by-season-five-years-colors.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartByRegionPeriod',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+        function link(scope, element, attributes) {
+          // scope.value = '';
+          // bindData();
+          scope.$watch('data', bindData);
+
+          function bindData() {
+            var model = scope.data;
+            if (!model) {
+              return;
+            }
+
+            if (model.region.name === 'europe') {
+              model.region.cities.data = model.region.cities.data.reverse();
+            }
+
+            var container = chartsHelper.initContainer(element, '[chart-type="region"]');
+            var containerLinear = chartsHelper.initContainer(element, '[chart-type="linear-h"]');
+
+            prepareLinearBars();
+            prepareRegionChart();
+
+            function prepareLinearBars() {
+              var groups = _.map(model.charts.data, function (c) {
+                return {
+                  value: c.value,
+                  valueTitle: Math.round(c.percentage * 100) + '%',
+                  value2: c.value, //Math.round(c.value * 1000),
+                  valueTitle2: Math.round(c.percentage * 100),
+                  title: c.title,
+                  color: c.color
+                };
+              });
+
+              var ch = new chartBoxLinearHorizontal({
+                data: groups,
+                container: containerLinear[0],
+                options: {
+                  layout: {
+                    bars: {
+                      separator: {
+                        radius: 6
+                      }
+                    }
+                  }
+                }
+              });
+            }
+
+            function prepareRegionChart() {
+              // vm.meta.regions = common.generic.regions;
+
+              var ch = new chartComplexRegion({
+                data: {region: model.region},
+                container: container[0],
+                options: {}
+              });
+            }
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          scope: {
+            data: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-by-region-period.html'
+        };
+
+        return directive;
+      }
+    ]);
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('app').directive('hueChartByCityPeriod',
+    [
+      'common', 'config', 'chartsHelper',
+      function (common, config, chartsHelper) {
+
+        function link(scope, element, attributes) {
+
+//                scope.value = '';
+          scope.$watch('data', bindData);
+
+//                bindData();
+
+          function bindData() {
+
+            var maxValue = _.max(_.map(scope.data, function (d) {
+              return d.value;
+            }));
+
+            var options = {
+              // bars: {
+              //   maxValue: maxValue
+              // }
+            };
+            options.layout = {
+              mode: scope.mode && scope.mode.extraView ? 'colors' : 'default',
+              padding: {
+                left: 10,
+                right: 10,
+                top: 75,
+                bottom: 0
+              }
+            };
+
+            _.each(scope.data,
+              function (d) {
+                d.color = d.name;
+//                            d.value = d.value / maxValue * 100;
+              });
+
+            var container = chartsHelper.initContainer(element);
+
+            var ch = new chartBubbledLines({
+              data: scope.data || {},
+              container: container[0],
+              options: options
+            });
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '=',
+            mode: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-by-city-period.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+
+  angular.module('app').directive('hueChartByCityPeriodColors',
+    [
+      'common', 'config', 'chartsHelper', 'reduceValue',
+      function (common, config, chartsHelper, reduceValue) {
+
+        function link(scope, element, attributes) {
+          scope.$watch('data', bindData);
+          function bindData() {
+            if (!scope.data) {
+              return;
+            }
+            var colorsAmount = 15;
+            scope.groups = _.map(scope.data, function (d) {
+              if (d.colors.length < 15) {
+                for (var i = d.colors.length - 1; i <= 15; i++) {
+                  d.colors.push({isEmpty: true});
+                }
+              }
+              d.colors.reverse();
+              return {
+                title: d.title,
+                colors: d.colors.map(function (color, i) {
+                  if (!color) {
+                    return {
+                      isEmpty: true
+                    };
+                  }
+                  return {
+                    color: color
+                  };
+                })
+              };
+            });
+
+            var container = $(element.find('[chart-type="bottom"]'));
+            container.html('');
+
+            var colors = _.map(scope.data,
+              function (d) {
+                var value = Math.round(d.percentage * 100);
+                return {
+                  value: reduceValue.reduce(d.value),
+                  valueTitle: Math.round(value) + '%',
+                  value2: reduceValue.reduce(d.value),
+                  valueTitle2: Math.round(d.percentage * 100),
+                  title: d.title,
+                  color: d.color
+                }
+              });
+            var ch = new chartDotsHorizontal({
+              data: colors,
+              container: container[0],
+              options: {}
+            });
+
+          }
+        }
+
+        var directive = {
+          link: link,
+          restrict: 'E',
+          replace: true,
+          scope: {
+            data: '=',
+            mode: '='
+          },
+          templateUrl: 'app/directives/custom-infographics-directives/chart-by-city-period-colors.html'
+        };
+
+        return directive;
+
+      }
+    ]);
+}());
+
+angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    scope.pieData = null;
+    scope.selectedIndex = null;
+    scope.showTitle = true;
+    scope.selectedColorTitle = null;
+    scope.selectedColorNcs = null;
+    scope.allowClicks = false;
+
+    timeout(function () { // make a delay to avoid lags
+      scope.pieData = _.map(scope.data.colors, function (item, index) {
+        return {c: item.color.hex, p: item.percentage, t: item.title};
+      });
+    }, 1000);
+
+    scope.getButtonId = function (btnName) {
+      return 'cfpc-' + scope.$id + '-btn-' + btnName;
+    };
+
+    scope.selectItem = function (index) {
+      if (scope.allowClicks) {
+        scope.allowClicks = false;
+        scope.selectedIndex = scope.selectedIndex == index ? null : index;
+
+        if (scope.selectedIndex != null) {
+          scope.showTitle = false;
+
+          var titles = scope.data.colors[scope.selectedIndex].title.split('/');
+          scope.selectedColorTitle = titles[0];
+          scope.selectedColorNcs = titles[1];
+        } else {
+          scope.showTitle = true;
+        }
+      }
+    };
+    scope.isItemSelected = function (index) {
+      if (index != undefined)
+        return index == scope.selectedIndex;
+      return scope.selectedIndex != null;
+    };
+
+    scope.colorClickHandler = function (index) {
+      if (scope.allowClicks) {
+        scope.selectItem(index);
+        scope.$digest();
+      }
+
+    };
+    scope.collapseClickHandler = function () {
+      if (scope.allowClicks) {
+        scope.selectItem(null);
+        scope.$digest();
+      }
+    };
+    scope.animationCompleteHandler = function () {
+      scope.allowClicks = true;
+    };
+  }
+
+  return {
+    restrict: 'E',
+    transclude: true,
+    templateUrl: 'app/directives/colorFrequencyPieChart/dbColorFrequencyPieChartView.html',
+    link: link,
+    scope: {
+      data: '=',
+      initialized: '='
+    }
+  };
+}]);
 
 angular.module('app').service('userDataRepository',
   ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
@@ -51456,10 +51435,14 @@ $templateCache.put('app/directives/siteHeader/mainMenuView.html','<div class="to
 $templateCache.put('app/directives/siteHeader/searchMenuTrendingView.html','<!--<div class="search-menu-trending">-->\r\n<!--<div class="trending-title">-->\r\n<!--<div class="title-line"></div>-->\r\n<!--<div class="title-text">What\'s trending</div>-->\r\n<!--<div class="title-line"></div>-->\r\n<!--</div>-->\r\n<!--<div class="trending-container">-->\r\n<!--<div class="trending-cell"><hue-svg source="assets/img/icons/categories/1.svg"></hue-svg></div>-->\r\n<!--<div class="trending-cell">Chanel</div>-->\r\n<!--<div class="trending-cell"><hue-svg source="assets/img/icons/cities/1.svg"></hue-svg></div>-->\r\n<!--<div class="trending-cell">Resort</div>-->\r\n<!--<div class="trending-cell" ng-style="{\'background-color\': \'#F00\'}"></div>-->\r\n<!--<div class="trending-cell">2014</div>-->\r\n<!--</div>-->\r\n<!--</div>-->\r\n');
 $templateCache.put('app/directives/siteHeader/searchMenuView.html','<div class="top-menu menu-search" ng-show="show">\r\n  <ul class="menu-tabs disable-text-selection">\r\n    <li ng-repeat="item in tabs" ng-class="{active: isTabActive($index)}" ng-click="setTab($index)" ng-bind="item.title"></li>\r\n  </ul>\r\n\r\n  <!--<div class="search-tab search-message" ng-show="isTabActive(null)">-->\r\n  <!--<p>-->\r\n  <!--Each and every one of the 16.8 million colors out there is unique in its own right!<br />-->\r\n  <!--HUEFASHION is designed to database new color introductions from runways of<br />-->\r\n  <!--across all major fashion shows around the world, to demonstrate how color is being used in this industry-->\r\n  <!--</p>-->\r\n  <!--<p>-->\r\n  <!--QUESTIONS WE CAN ANSWER<br />-->\r\n  <!--What were the major colors for Paris SS 2015?<br />-->\r\n  <!--What is the global color palette for FW 2015-16?<br />-->\r\n  <!--What are the colors Gucci (or any design house) used in their latest collection?<br />-->\r\n  <!--...and many more...-->\r\n  <!--</p>-->\r\n  <!--<p class="label-start" ng-click="showTrending()">-->\r\n  <!--Start your search by selecting from one of the categories above or check what is trending <i class="fa fa-caret-right"></i>-->\r\n  <!--</p>-->\r\n  <!--</div>-->\r\n\r\n  <div class="search-tab search-seasons" ng-show="isTabActive(0)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="season-item-container">\r\n        <div class="season-item" ng-repeat="item in seasonsData" ng-click="selectSeason(item)">\r\n          <hue-svg source="assets/img/icons/seasons/{{item.id}}.svg"></hue-svg>\r\n          <div class="season-title" ng-bind="item.menu"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected season: {{selectedSeason.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        {{selectLists[item]}}\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[0]">\r\n\r\n        </hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-years" ng-show="isTabActive(1)">\r\n    <div ng-show="isStepActive(0)">\r\n      <hue-search-menu-year-selector years="yearsData" selected-year="selectedYear"></hue-search-menu-year-selector>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected year: {{selectedYear.title}}</div>\r\n      {{selectedYear.title}}\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[1]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-categories" ng-show="isTabActive(2)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="category-item-container">\r\n        <div class="category-item" ng-repeat="item in categoriesData" ng-click="selectCategory(item)">\r\n          <hue-svg source="assets/img/icons/categories/menu/{{item.id}}.svg"></hue-svg>\r\n          <div class="category-title" ng-bind="item.title"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected category: {{selectedCategory.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[2]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-regions" ng-show="isTabActive(3)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="region-item-container">\r\n        <div class="region-item" ng-repeat="item in regionsData" ng-click="selectRegion(item)">\r\n          <img ng-src="assets/img/icons/regions/{{item.id}}.svg">\r\n          <div class="region-title"><span ng-bind="item.title"></span></div>\r\n          <ul class="region-cities">\r\n            <li ng-repeat="city in item.cities" ng-bind="city"></li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected region: {{selectedRegion.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[3]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-cities" ng-show="isTabActive(4)">\r\n    <div ng-show="isStepActive(0)">\r\n      <div class="city-item-container">\r\n        <div class="city-item" ng-repeat="item in citiesData" ng-click="selectCity(item)">\r\n          <hue-svg ng-source="assets/img/icons/cities/menu/{{item.id}}.svg"></hue-svg>\r\n          <div class="city-title" ng-bind="item.title"></div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected city: {{selectedCity.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[4]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-colors" ng-show="isTabActive(5)">\r\n    <div ng-show="isStepActive(0)">\r\n      <table class="color-list">\r\n        <tbody>\r\n        <tr>\r\n          <td ng-repeat="item in colorsData" ng-style="{background: item.hex}" ng-attr-title="{{item.title}}" ng-click="selectColor(item)"></td>\r\n        </tr>\r\n        </tbody>\r\n      </table>\r\n      <div class="search-by-notation">Search by NCS notation: <span><angucomplete localdata="data.colors" searchfields="ncs" titlefield="ncs" minlength="2" selectedobject="selectedColor"></angucomplete></span>\r\n      </div>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected color: {{selectedColor.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[5]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class="search-tab search-alphanumeric" ng-show="isTabActive(6)">\r\n    <div ng-show="isStepActive(0)">\r\n      <hue-search-menu-alphanumeric-selector tabs="letterTabs" data="designersData" on-item-select="selectDesigner"></hue-search-menu-alphanumeric-selector>\r\n    </div>\r\n\r\n    <div ng-show="isStepActive(1)">\r\n      <div class="search-select-title">Selected designer: {{selectedDesigner.title}}</div>\r\n      <div class="search-menu-select-lists">\r\n        <hue-search-menu-select-list list-data="selectLists[item]" list-disabled="selectListsDisabled" on-item-selected="secondaryItemSelected()" ng-repeat="item in secondaryCriteria[6]"></hue-search-menu-select-list>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <hue-search-menu-trending ng-show="isTrendingVisible"></hue-search-menu-trending>\r\n</div>\r\n');
 $templateCache.put('app/directives/siteHeader/siteHeaderView.html','<div class="site-header">\r\n  <div class="pull-right right-container">\r\n    <div class="header-control user" ng-if="isUserLoggedIn()">Welcome {{currentUser.full_name}} <span ng-if="showTrialTime">{{daysLeft}} days left </span><i class="fa fa-times" ng-click="logOff()"></i></div>\r\n    <div class="header-control search disable-text-selection" ng-class="{active: isControlActive(\'search\')}" ng-click="toggleControl(\'search\')"><i class="fa fa-search"></i></div>\r\n    <div class="header-control menu disable-text-selection" ng-class="{active: isControlActive(\'menu\')}" ng-click="toggleControl(\'menu\')"><i class="fa fa-bars"></i></div>\r\n  </div>\r\n</div>\r\n\r\n<hue-search-menu show="isControlActive(\'search\')" hide="turnOffControl(\'search\')"></hue-search-menu>\r\n<hue-main-menu show="isControlActive(\'menu\')" hide="turnOffControl(\'menu\')"></hue-main-menu>\r\n');
+$templateCache.put('app/components/dashboards/auto/auto.tmpl.html','<update-title title="Auto Color Trends"></update-title>\r\n<update-meta name="description" content="HUEDATA color in car trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color trends in Auto, Color trends in cars, new car colors, colors for vehicles,\r\ncar color trends for 2018, car color trends for 2019, car color trends for 2020"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="autoController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Auto Color Trends</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default dashboard-auto">\r\n        <div class="dashboard-controls">\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.brand" theme="selectize" ng-disabled="disabledControls[\'brand\'] || isLoadingControls" title="Choose a brand" on-select="handleChangeControl(\'brand\')">\r\n              <ui-select-match placeholder="BRAND">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="brand.id as brand in controlsData.manufacturers | filter: {title: $select.search}">\r\n                <span ng-bind-html="brand.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="brand"-->\r\n            <!--ng-disabled="disabledControls[\'brand\'] || isLoadingControls"-->\r\n            <!--ng-model="brand"-->\r\n            <!--ng-change="handleChangeControl(\'brand\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="BRAND" value="">BRAND</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.manufacturers" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.model" theme="selectize" ng-disabled="disabledControls[\'model\'] || isLoadingControls" title="Choose a model" on-select="handleChangeControl(\'model\')">\r\n              <ui-select-match placeholder="MODEL">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="model.id as model in controlsData.models | filter: {title: $select.search}">\r\n                <span ng-bind-html="model.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="model"-->\r\n            <!--ng-disabled="disabledControls[\'model\'] || isLoadingControls"-->\r\n            <!--ng-model="model"-->\r\n            <!--ng-change="handleChangeControl(\'model\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="MODEL" value="">MODEL</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.models" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.year" theme="selectize" ng-disabled="disabledControls[\'year\'] || isLoadingControls" title="Choose a year" on-select="handleChangeControl(\'year\')">\r\n              <ui-select-match placeholder="YEAR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="year.id as year in controlsData.years | filter: {title: $select.search}">\r\n                <span ng-bind-html="year.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="year"-->\r\n            <!--ng-disabled="disabledControls[\'year\'] || isLoadingControls"-->\r\n            <!--ng-model="year"-->\r\n            <!--ng-change="handleChangeControl(\'year\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="YEAR">YEAR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.years" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="color"-->\r\n            <!--ng-disabled="disabledControls[\'color\'] || isLoadingControls"-->\r\n            <!--ng-model="color"-->\r\n            <!--ng-change="handleChangeControl(\'color\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/dashboards/branding/branding.tmpl.html','<update-title title="Brand Color Insights"></update-title>\r\n<update-meta name="description" content="HUEDATA color in logo trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color of Logos, Logo Colors, Color insights of logos, Color of companies logo,\r\nCompany logo colors, logo colors meaning, logo colors combination, new logo colors, logo design color trends,\r\nlogo color palette, logo color trends 2018"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="brandingController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Brand Color Insights</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button ui-sref="productInquiry" class="btn white-btn">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default dashboard-branding">\r\n\r\n        <div class="dashboard-controls">\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.brand" theme="selectize" ng-disabled="disabledControls[\'brand\'] || isLoadingControls" title="Choose a brand" on-select="handleChangeControl(\'brand\')">\r\n\r\n              <ui-select-match placeholder="BRAND">{{$select.selected.title}}</ui-select-match>\r\n\r\n              <ui-select-choices repeat="brand.id as brand in controlsData.companies | filter: {title: $select.search}">\r\n                <span ng-bind-html="brand.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="brand"-->\r\n            <!--ng-disabled="disabledControls[\'brand\'] || isLoadingControls"-->\r\n            <!--ng-model="brand"-->\r\n            <!--ng-change="handleChangeControl(\'brand\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="BRAND" value="">BRAND</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.companies" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.industry" theme="selectize" ng-disabled="disabledControls[\'industry\'] || isLoadingControls" title="Choose a industry" on-select="handleChangeControl(\'industry\')">\r\n              <ui-select-match placeholder="INDUSTRY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="industry.id as industry in controlsData.industries | filter: {title: $select.search}">\r\n                <span ng-bind-html="industry.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="industry"-->\r\n            <!--ng-disabled="disabledControls[\'industry\'] || isLoadingControls"-->\r\n            <!--ng-model="industry"-->\r\n            <!--ng-change="handleChangeControl(\'industry\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="INDUSTRY" value="">INDUSTRY</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.industries" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="color"-->\r\n            <!--ng-disabled="disabledControls[\'color\'] || isLoadingControls"-->\r\n            <!--ng-model="color"-->\r\n            <!--ng-change="handleChangeControl(\'color\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.attribute" theme="selectize" ng-disabled="disabledControls[\'attribute\'] || isLoadingControls" title="Choose a attribute" on-select="handleChangeControl(\'attribute\')">\r\n              <ui-select-match placeholder="ATTRIBUTE">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="attribute.id as attribute in controlsData.attributes | filter: {title: $select.search}">\r\n                <span ng-bind-html="attribute.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="attribute"-->\r\n            <!--ng-disabled="disabledControls[\'attribute\'] || isLoadingControls"-->\r\n            <!--ng-model="attribute"-->\r\n            <!--ng-change="handleChangeControl(\'attribute\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="ATTRIBUTE">ATTRIBUTE</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.attributes" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.country" theme="selectize" ng-disabled="disabledControls[\'country\'] || isLoadingControls" title="Choose a country" on-select="handleChangeControl(\'country\')">\r\n              <ui-select-match placeholder="COUNTRY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="country.id as country in controlsData.countries | filter: {title: $select.search}">\r\n                <span ng-bind-html="country.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="country"-->\r\n            <!--ng-disabled="disabledControls[\'country\'] || isLoadingControls"-->\r\n            <!--ng-model="country"-->\r\n            <!--ng-change="handleChangeControl(\'country\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COUNTRY">COUNTRY</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.countries" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/dashboards/fashion/fashion.tmpl.html','<update-title title="Fashion Color Trends"></update-title>\r\n<update-meta name="description" content="HUEDATA color in fashion trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color trends in fashion, current color trends fashion, fashion trend colors, fashion color trends"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT // CURRENTLY OPEN FOR USER TESTING</h4>\r\n\r\n<section ng-controller="fashionController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Fashion Color Trends</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default">\r\n\r\n        <div class="dashboard-controls">\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.season" theme="selectize" ng-disabled="disabledControls[\'season\'] || isLoadingControls" title="Choose a season" on-select="handleChangeControl(\'season\')">\r\n              <ui-select-match placeholder="SEASON">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="season.id as season in controlsData.seasons | filter: {title: $select.search}">\r\n                <span ng-bind-html="season.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.year" theme="selectize" ng-disabled="disabledControls[\'year\'] || isLoadingControls" title="Choose a year" on-select="handleChangeControl(\'year\')">\r\n              <ui-select-match placeholder="YEAR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="year.id as year in controlsData.years | filter: {title: $select.search}">\r\n                <span ng-bind-html="year.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.category" theme="selectize" ng-disabled="disabledControls[\'category\'] || isLoadingControls" title="Choose a region" on-select="handleChangeControl(\'category\')">\r\n              <ui-select-match placeholder="CATEGORY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="category.id as category in controlsData.categories | filter: {title: $select.search}">\r\n                <span ng-bind-html="category.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.region" theme="selectize" ng-disabled="disabledControls[\'region\'] || isLoadingControls" title="Choose a region" on-select="handleChangeControl(\'region\')">\r\n              <ui-select-match placeholder="REGION">{{$select.selected.title}}</ui-select-match>\r\n\r\n              <ui-select-choices repeat="region.id as region in controlsData.regions | filter: {title: $select.search}">\r\n                <span ng-bind-html="region.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.city" theme="selectize" ng-disabled="disabledControls[\'city\'] || isLoadingControls" title="Choose a city" on-select="handleChangeControl(\'city\')">\r\n              <ui-select-match placeholder="CITY">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="city.id as city in controlsData.cities | filter: {title: $select.search}">\r\n                <span ng-bind-html="city.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n          <div class="select-style custom-select">\r\n\r\n            <ui-select ng-model="menus.designer" theme="selectize" ng-disabled="disabledControls[\'designer\'] || isLoadingControls" title="Choose a designer" on-select="handleChangeControl(\'designer\')">\r\n              <ui-select-match placeholder="DESIGNER">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="designer.id as designer in controlsData.designers | filter: {title: $select.search}">\r\n                <span ng-bind-html="designer.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n          </div>\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/dashboards/legal/legal.tmpl.html','<update-title title="Legal Color Insights"></update-title>\r\n<update-meta name="description" content="HUEDATA color legal rights dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color laws, Color regulations, Color and legal, Color and patents, Color violation"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="legalController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Legal Color Insights</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button ui-sref="productInquiry" class="btn white-btn">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default dashboard-legal">\r\n\r\n        <div class="dashboard-controls">\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.owner" theme="selectize" ng-disabled="disabledControls[\'owner\'] || isLoadingControls" title="Choose a owner" on-select="handleChangeControl(\'owner\')">\r\n              <ui-select-match placeholder="OWNER">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="owner.id as owner in controlsData.owners | filter: {title: $select.search}">\r\n                <span ng-bind-html="owner.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="owner"-->\r\n            <!--ng-disabled="disabledControls[\'owner\'] || isLoadingControls"-->\r\n            <!--ng-model="owner"-->\r\n            <!--ng-change="handleChangeControl(\'owner\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="OWNER" value="">OWNER</option>-->\r\n            <!--<option class="select-option" ng-repeat="(key, item) in controlsData.owners" value="{{item.id}}">-->\r\n            <!--{{cropText(item.title)}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.year" theme="selectize" ng-disabled="disabledControls[\'year\'] || isLoadingControls" title="Choose a year" on-select="handleChangeControl(\'year\')">\r\n              <ui-select-match placeholder="YEAR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="year.id as year in controlsData.years | filter: {title: $select.search}">\r\n                <span ng-bind-html="year.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="year"-->\r\n            <!--ng-disabled="disabledControls[\'year\'] || isLoadingControls"-->\r\n            <!--ng-model="year"-->\r\n            <!--ng-change="handleChangeControl(\'year\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="YEAR">YEAR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.years" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="color"-->\r\n            <!--ng-disabled="disabledControls[\'color\'] || isLoadingControls"-->\r\n            <!--ng-model="color"-->\r\n            <!--ng-change="handleChangeControl(\'color\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.product" theme="selectize" ng-disabled="disabledControls[\'product\'] || isLoadingControls" title="Choose a product" on-select="handleChangeControl(\'product\')">\r\n              <ui-select-match placeholder="PRODUCT">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="product.id as product in controlsData.products | filter: {title: $select.search}">\r\n                <span ng-bind-html="product.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="model"-->\r\n            <!--ng-disabled="disabledControls[\'product\'] || isLoadingControls"-->\r\n            <!--ng-model="product"-->\r\n            <!--ng-change="handleChangeControl(\'product\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="PRODUCT" value="">PRODUCT</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.products" value="{{item.id}}">-->\r\n            <!--{{cropText(item.title)}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
-$templateCache.put('app/components/dashboards/auto/auto.tmpl.html','<update-title title="Auto Color Trends"></update-title>\r\n<update-meta name="description" content="HUEDATA color in car trends dashboard"></update-meta>\r\n<update-meta name="keywords" content="Color trends in Auto, Color trends in cars, new car colors, colors for vehicles,\r\ncar color trends for 2018, car color trends for 2019, car color trends for 2020"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section ng-controller="autoController">\r\n  <div class="container-fluid text-center title">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-12 col-lg-offset-4">\r\n        <h3>Auto Color Trends</h3>\r\n        <div class="line"></div>\r\n      </div>\r\n      <div class="col-lg-4 col-md-12 text-right buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="gotoElement(\'prefooter\')">JOIN</button>\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n\r\n  <div>\r\n    <div class="body-container">\r\n      <div class="dashboard dashboard-default dashboard-auto">\r\n        <div class="dashboard-controls">\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.brand" theme="selectize" ng-disabled="disabledControls[\'brand\'] || isLoadingControls" title="Choose a brand" on-select="handleChangeControl(\'brand\')">\r\n              <ui-select-match placeholder="BRAND">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="brand.id as brand in controlsData.manufacturers | filter: {title: $select.search}">\r\n                <span ng-bind-html="brand.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="brand"-->\r\n            <!--ng-disabled="disabledControls[\'brand\'] || isLoadingControls"-->\r\n            <!--ng-model="brand"-->\r\n            <!--ng-change="handleChangeControl(\'brand\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="BRAND" value="">BRAND</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.manufacturers" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.model" theme="selectize" ng-disabled="disabledControls[\'model\'] || isLoadingControls" title="Choose a model" on-select="handleChangeControl(\'model\')">\r\n              <ui-select-match placeholder="MODEL">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="model.id as model in controlsData.models | filter: {title: $select.search}">\r\n                <span ng-bind-html="model.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="model"-->\r\n            <!--ng-disabled="disabledControls[\'model\'] || isLoadingControls"-->\r\n            <!--ng-model="model"-->\r\n            <!--ng-change="handleChangeControl(\'model\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" label="MODEL" value="">MODEL</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.models" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.year" theme="selectize" ng-disabled="disabledControls[\'year\'] || isLoadingControls" title="Choose a year" on-select="handleChangeControl(\'year\')">\r\n              <ui-select-match placeholder="YEAR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="year.id as year in controlsData.years | filter: {title: $select.search}">\r\n                <span ng-bind-html="year.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="year"-->\r\n            <!--ng-disabled="disabledControls[\'year\'] || isLoadingControls"-->\r\n            <!--ng-model="year"-->\r\n            <!--ng-change="handleChangeControl(\'year\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="YEAR">YEAR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.years" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <div class="select-style custom-select">\r\n            <ui-select ng-model="menus.color" theme="selectize" ng-disabled="disabledControls[\'color\'] || isLoadingControls" title="Choose a color" on-select="handleChangeControl(\'color\')">\r\n              <ui-select-match placeholder="COLOR">{{$select.selected.title}}</ui-select-match>\r\n              <ui-select-choices repeat="color.id as color in controlsData.colors | filter: {title: $select.search}">\r\n                <span ng-bind-html="color.title | highlight: $select.search"></span>\r\n              </ui-select-choices>\r\n            </ui-select>\r\n\r\n            <!--<select-->\r\n            <!--name="color"-->\r\n            <!--ng-disabled="disabledControls[\'color\'] || isLoadingControls"-->\r\n            <!--ng-model="color"-->\r\n            <!--ng-change="handleChangeControl(\'color\')"-->\r\n            <!--&gt;-->\r\n            <!--<option ng-selected="true" value="" label="COLOR">COLOR</option>-->\r\n            <!--<option ng-repeat="(key, item) in controlsData.colors" value="{{item.id}}">-->\r\n            <!--{{item.title}}-->\r\n            <!--</option>-->\r\n            <!--</select>-->\r\n          </div>\r\n\r\n          <button class="btn dashboard-controls-btn" style="margin-top: 0" ng-click="loadGraphics()">LOAD</button>\r\n        </div>\r\n\r\n        <h2 class="dashboard-no-data" ng-if="!showDashboard">Please select options to start</h2>\r\n\r\n        <div class="dashboard-content" ui-view>\r\n          <!--VIEW FOR DASHBOARDS-->\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-overlay" hue-dashboard-overlay ng-if="showDashboardOverlay"></div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
+$templateCache.put('app/components/dashboards/auto/brand/brand.tmpl.html','<div ng-controller="brandAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-icon="iconUrl" icon-type="img" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-brand-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Number Of Colors By Model For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorsCountExpandedMode()">\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-count-by-model data="colorsCountData" is-expanded="colorsCountExpanded"></hue-db-color-count-by-model>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-color-frequency">\r\n          <div class="module-title">\r\n            Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n        <div class="cell-color-palette">\r\n          <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n            <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n            <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n            </hue-db-color-palette-bucket-selector>\r\n          </div>\r\n          <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Number Of Colors By Color Family For {{title}} Over Time\r\n          <hue-db-colors-by-family-range-selector selected-value="colorsByFamilyRange"></hue-db-colors-by-family-range-selector>\r\n        </div>\r\n        <hue-db-colors-by-family data="shadesData" year-range="colorsByFamilyRange"></hue-db-colors-by-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
+$templateCache.put('app/components/dashboards/auto/color/color.tmpl.html','<div ng-controller="colorAutoController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="colorHex" icon-type="color" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Shades For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-color-palette-row">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Brands Using {{title}}</div>\r\n        <hue-db-color-count-by-model data="topBrandsData"></hue-db-color-count-by-model>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Top Shades Of {{title}}</div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Color Shades By Region For {{title}}</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Number Of Colors By Color Family For {{title}} Over Time\r\n          <hue-db-colors-by-family-range-selector selected-value="colorsByFamilyRange"></hue-db-colors-by-family-range-selector>\r\n        </div>\r\n        <hue-db-colors-by-family data="shadesData" year-range="colorsByFamilyRange" default-color-id="colorId"></hue-db-colors-by-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
+$templateCache.put('app/components/dashboards/auto/model/model.tmpl.html','<div ng-controller="modelAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="iconUrl" icon-type="img" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-model-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">\r\n          Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n          <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">{{title}} To {{manufacturer}} Comparison By Color Family</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Number Of Colors By Color Family For {{title}} Over Time\r\n          <hue-db-colors-by-family-range-selector selected-value="colorsByFamilyRange"></hue-db-colors-by-family-range-selector>\r\n        </div>\r\n        <hue-db-colors-by-family data="shadesData" year-range="colorsByFamilyRange"></hue-db-colors-by-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
+$templateCache.put('app/components/dashboards/auto/year/year.tmpl.html','<div ng-controller="yearAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-brand-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Color Families By Brand For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopFamiliesExpandedMode()">\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-families-by-brand data="topFamiliesData"></hue-db-color-families-by-brand>\r\n        <hue-db-color-families-by-brand-expanded data="topFamiliesData" toggle-view="toggleTopFamiliesExpandedMode()" ng-if="topFamiliesExpanded"></hue-db-color-families-by-brand-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-color-frequency">\r\n          <div class="module-title">\r\n            Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n        <div class="cell-color-palette">\r\n          <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n            <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n            <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n            </hue-db-color-palette-bucket-selector>\r\n          </div>\r\n          <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors By Region For {{title}}</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
 $templateCache.put('app/components/dashboards/branding/attribute/attribute.tmpl.html','<div ng-controller="attributeBrandingController">\r\n\r\n  <div class="dashboard-container dashboard-branding-attribute" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-attribute">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Attribute Top 4 Colors <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-top-industries">\r\n          <div class="module-title">Top 3 Industry For {{title}}\r\n            <hue-db-info-icon text-key="top_industries"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-industries data="topIndustriesData" chart-color="topIndustriesColor"></hue-db-top-industries>\r\n        </div>\r\n        <div class="cell-popular-combinations">\r\n          <div class="module-title">\r\n            Color Combination Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color-Attribute Association Globally <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()"></div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Color-Attribute Association Globally" ng-if="mapExpanded"></hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row color-palette-row">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Number Of Colors In Logos\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-count data="colorCountData"></hue-db-color-count>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Attribute Color Palette <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Brand Colors\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/branding/brand/brand.tmpl.html','<div ng-controller="brandBrandingController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-icon="iconUrl" icon-type="img" icon-click="toggleLogoDetails()" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Brand Logo Colors\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For Brand\'s Industry\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n        </hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Brand Logo Colors &amp; Associated Attributes\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()">\r\n        </div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Brand Logo Colors &amp; Associated Attributes" ng-if="mapExpanded">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Brand Colors\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n\r\n    <hue-db-logo-details ng-if="showLogoDetails" on-close="toggleLogoDetails()" logo-id="logoId"></hue-db-logo-details>\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/branding/color/color.tmpl.html','<div ng-controller="colorBrandingController">\r\n\r\n  <div class="dashboard-container dashboard-branding-color" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-icon="colorHex" icon-type="color" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-color">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Shades\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded">\r\n\r\n        </hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-top-industries">\r\n          <div class="module-title">Top 3 Industries For {{title}}\r\n            <hue-db-info-icon text-key="top_industries"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-industries data="topIndustriesData" chart-color="colorHex"></hue-db-top-industries>\r\n        </div>\r\n        <div class="cell-popular-combinations">\r\n          <div class="module-title">Color Combination Frequency For {{title}}\r\n            <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" searched-color="colorHex"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n          </hue-db-color-frequency-expanded>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Attributes Associated With {{title}} Globally\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()">\r\n        </div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Attributes Associated With {{title}} Globally" ng-if="mapExpanded">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Logos For {{title}}\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData" color-dashboard="true"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n');
@@ -51475,11 +51458,7 @@ $templateCache.put('app/components/dashboards/fashion/year/year.tmpl.html','<div
 $templateCache.put('app/components/dashboards/legal/color/color.tmpl.html','<div ng-controller="colorLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo" header-icon="colorHex" icon-type="color">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-color-row-first">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="dashboard-cell top-products-with-copyrights">\r\n          <div class="module-title">Top 3 Products Categories With Copyrights For {{title}}</div>\r\n          <hue-db-top-items-donuts donut-color="colorHex" data="topProductsData"></hue-db-top-items-donuts>\r\n        </div>\r\n        <div class="dashboard-cell copyrights-over-time">\r\n          <div class="module-title">Copyrights For {{title}} Over Time\r\n            <hue-db-copyrights-over-time-range-selectorz selected-value="copyrightsOverTimeRange"></hue-db-copyrights-over-time-range-selectorz>\r\n          </div>\r\n          <hue-db-copyrights-over-time data="copyrightsOverTimeData" year-range="copyrightsOverTimeRange"></hue-db-copyrights-over-time>\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Copyright Count For Top 10 Products For {{title}}</div>\r\n        <hue-db-top-products-copyrights-view data="topProductsCopyrightsData" chart-color="colorHex"></hue-db-top-products-copyrights-view>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Copyright Owners For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" line-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/legal/owner/owner.tmpl.html','<div ng-controller="ownerLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo" header-icon="iconUrl" icon-type="img"></hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/legal/product/product.tmpl.html','<div ng-controller="productLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Owners Of Color Copyrights For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" chart-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
-$templateCache.put('app/components/dashboards/legal/year/year.tmpl.html','<div ng-controller="yearLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 3 Products Categories With Highest Copyrights Activity For {{title}}</div>\r\n        <hue-db-categories-with-highest-activity data="copyrightsActivityData"></hue-db-categories-with-highest-activity>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Owners Of Color Copyrights For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" chart-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
-$templateCache.put('app/components/dashboards/auto/brand/brand.tmpl.html','<div ng-controller="brandAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-icon="iconUrl" icon-type="img" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-brand-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Number Of Colors By Model For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorsCountExpandedMode()">\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-count-by-model data="colorsCountData" is-expanded="colorsCountExpanded"></hue-db-color-count-by-model>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-color-frequency">\r\n          <div class="module-title">\r\n            Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n        <div class="cell-color-palette">\r\n          <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n            <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n            <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n            </hue-db-color-palette-bucket-selector>\r\n          </div>\r\n          <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Number Of Colors By Color Family For {{title}} Over Time\r\n          <hue-db-colors-by-family-range-selector selected-value="colorsByFamilyRange"></hue-db-colors-by-family-range-selector>\r\n        </div>\r\n        <hue-db-colors-by-family data="shadesData" year-range="colorsByFamilyRange"></hue-db-colors-by-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
-$templateCache.put('app/components/dashboards/auto/color/color.tmpl.html','<div ng-controller="colorAutoController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="colorHex" icon-type="color" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Shades For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-color-palette-row">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Brands Using {{title}}</div>\r\n        <hue-db-color-count-by-model data="topBrandsData"></hue-db-color-count-by-model>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Top Shades Of {{title}}</div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Color Shades By Region For {{title}}</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Number Of Colors By Color Family For {{title}} Over Time\r\n          <hue-db-colors-by-family-range-selector selected-value="colorsByFamilyRange"></hue-db-colors-by-family-range-selector>\r\n        </div>\r\n        <hue-db-colors-by-family data="shadesData" year-range="colorsByFamilyRange" default-color-id="colorId"></hue-db-colors-by-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
-$templateCache.put('app/components/dashboards/auto/model/model.tmpl.html','<div ng-controller="modelAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="iconUrl" icon-type="img" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-model-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">\r\n          Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n          <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">{{title}} To {{manufacturer}} Comparison By Color Family</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Number Of Colors By Color Family For {{title}} Over Time\r\n          <hue-db-colors-by-family-range-selector selected-value="colorsByFamilyRange"></hue-db-colors-by-family-range-selector>\r\n        </div>\r\n        <hue-db-colors-by-family data="shadesData" year-range="colorsByFamilyRange"></hue-db-colors-by-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
-$templateCache.put('app/components/dashboards/auto/year/year.tmpl.html','<div ng-controller="yearAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-brand-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Color Families By Brand For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopFamiliesExpandedMode()">\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-families-by-brand data="topFamiliesData"></hue-db-color-families-by-brand>\r\n        <hue-db-color-families-by-brand-expanded data="topFamiliesData" toggle-view="toggleTopFamiliesExpandedMode()" ng-if="topFamiliesExpanded"></hue-db-color-families-by-brand-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-color-frequency">\r\n          <div class="module-title">\r\n            Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n        <div class="cell-color-palette">\r\n          <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n            <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n            <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n            </hue-db-color-palette-bucket-selector>\r\n          </div>\r\n          <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors By Region For {{title}}</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');}]);
+$templateCache.put('app/components/dashboards/legal/year/year.tmpl.html','<div ng-controller="yearLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 3 Products Categories With Highest Copyrights Activity For {{title}}</div>\r\n        <hue-db-categories-with-highest-activity data="copyrightsActivityData"></hue-db-categories-with-highest-activity>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Owners Of Color Copyrights For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" chart-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');}]);
 angular
   .module('app')
   .config(routesConfig);
@@ -52001,4 +51980,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-5f281bd61b.js.map
+//# sourceMappingURL=../maps/scripts/app-e9dc0e8a77.js.map
