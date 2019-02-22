@@ -26,45 +26,26 @@ angular
         }
 
           function slide() {
-              sact('next', 0, 2000);
+              sact(2000);
           }
 
-          function sact(a, ix, it) {
+          function sact(it) {
               var currentSlide = $('.current');
               var nextSlide = currentSlide.next('.slideitem');
               var prevSlide = currentSlide.prev('.slideitem');
-              var reqSlide = $('.slideitem').eq(ix);
-
-              var currentDot = $('.active-dot');
-              var nextDot = currentDot.next();
-              var prevDot = currentDot.prev();
-              var reqDot = $('.dot').eq(ix);
 
               if (nextSlide.length == 0) {
-                  nextDot = $('.dot').first();
                   nextSlide = $('.slideitem').first();
               }
 
               if (prevSlide.length == 0) {
-                  prevDot = $('.dot').last();
                   prevSlide = $('.slideitem').last();
               }
 
-              if (a == 'next') {
-                  var Slide = nextSlide;
-                  var Dot = nextDot;
-              }
-              else if (a == 'prev') {
-                  var Slide = prevSlide;
-                  var Dot = prevDot;
-              }
-              else {
-                  var Slide = reqSlide;
-                  var Dot = reqDot;
-              }
+              var Slide = nextSlide;
               var it_before = it - 1500;
-              currentSlide.fadeOut(it_before).removeClass('current');
-              Slide.fadeIn(it).addClass('current');
+              currentSlide.stop(true , true).fadeOut(it_before).removeClass('current');
+              Slide.stop(true , true).fadeIn(it).addClass('current');
           }
       });
 
