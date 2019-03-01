@@ -373,7 +373,7 @@ section {
   width: 80%;
 }
 #stay-connected input {
-  width: 460px;
+  width: 80%;
 }
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select {
   border-radius: 0;
