@@ -4310,18 +4310,20 @@ form .ui-select-container.selectize-control {
   #slideshow {
     margin: 0 auto;
     position: relative;
-    width: 100%;
+    width: 650px;
     min-height: 500px;
 
   }
 
   #slideshow > .slideitem {
-    position: absolute;
-    top: 0px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-
+    margin: 0 auto;
+    //position: absolute;
+    //top: 0px;
+    //left: 10px;
+    //right: 10px;
+    //bottom: 10px;
+    width: 650px;
+    height: 450px;
   }
 
   #slideshow > div > img {
@@ -5169,6 +5171,7 @@ footer {
   height: 200px;
   &:hover {
     cursor: crosshair;
+    //cursor: url('../assets/img/circle_cursor.png'), auto;
   }
 }
 #color_picker:hover {
@@ -5278,6 +5281,53 @@ footer {
   .modal-color-naming {
     font-size: 10px;
   }
+}
+
+.slider-wrap {
+  width: 100%;
+  height:600px;
+  position: relative;
+}
+.single-slide {
+  width: 650px;
+  height: 450px;
+  position: absolute;
+  opacity: 0;
+  animation: slider-animation;
+  animation-duration: 25s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  //background-size: cover;
+}
+
+#slide-1 { background-image: url(../assets/img/landing/numbers-H.png);}
+#slide-2 {background-color: #fff; animation-delay: 3s; background-image: url(../assets/img/landing/lipstick-H.png);}
+#slide-3 {background-color: #fff; animation-delay: 6s; background-image: url(../assets/img/landing/pills-H.png);}
+#slide-4 {background-color: #fff; animation-delay: 9s; background-image: url(../assets/img/landing/colors-H.png);}
+#slide-5 {background-color: #fff; animation-delay: 12s; background-image: url(../assets/img/landing/perfume-H.png);}
+#slide-6 {background-color: #fff; animation-delay: 15s; background-image: url(../assets/img/landing/furniture-H.png);}
+
+@keyframes slider-animation {
+  0% {opacity: 0;}
+  6% {opacity: 1;}
+  24% {opacity: 0.8;}
+  30% {opacity: 0;}
+  100% {opacity: 0;}
+  //60% {opacity: 0;}
+  //70% {opacity: 0;}
+  //100% {opacity: 0;}
+  //0% {opacity: 0;}
+  //10% {opacity: 0.1;}
+  //20% {opacity: 0.2;}
+  //30% {opacity: 1;}
+  //40% {opacity: 1;}
+  //50% {opacity: 1;}
+  //60% {opacity: 0.0;}
+  //70% {opacity: 0.0;}
+  //80% {opacity: 0.0;}
+  //90% {opacity: 0;}
+  //100% {opacity: 0;}
+
 }
 //---------------------------------------
 //color-picker

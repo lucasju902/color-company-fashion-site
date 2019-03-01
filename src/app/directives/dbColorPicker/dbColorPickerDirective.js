@@ -26,9 +26,9 @@ angular.module('app').directive('hueDbColorPicker', function () {
 			color_id.style.background = 'hsl(' + hsl[0] + ',' + value + '%,' + hsl[2] + '%';
 			var rgbArr = color_id.style.background.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 
-			$scope.colorRGB_R = rgbArr[1];
-			$scope.colorRGB_G = rgbArr[2];
-			$scope.colorRGB_B = rgbArr[3];
+			$scope.colorRGB_R = parseInt(rgbArr[1]);
+			$scope.colorRGB_G = parseInt(rgbArr[2]);
+			$scope.colorRGB_B = parseInt(rgbArr[3]);
 		};
 
 		$scope.colorPickerSliderOpacity = function () {
@@ -42,9 +42,9 @@ angular.module('app').directive('hueDbColorPicker', function () {
 				colorInputG = document.getElementById('colorInputG').value,
 				colorInputB = document.getElementById('colorInputB').value;
 
-			$scope.colorRGB_R = colorInputR;
-			$scope.colorRGB_G = colorInputG;
-			$scope.colorRGB_B = colorInputB;
+			$scope.colorRGB_R = parseInt(colorInputR);
+			$scope.colorRGB_G = parseInt(colorInputG);
+			$scope.colorRGB_B = parseInt(colorInputB);
 
 			var inputRGB = 'rgb(' + $scope.colorRGB_R + ', ' + $scope.colorRGB_G + ', ' + $scope.colorRGB_B + ')';
 			color_id.style.backgroundColor = inputRGB;

@@ -6,33 +6,40 @@ Color validation, Color information, Color dataset, Color database, Color design
 <section class="landing">
 
   <div id="landing-header-slider-block" class="container-fluid  text-center">
-    <div id="slideshow">
+    <!--<div class="slider-wrap">-->
+      <!--<div class="single-slide" id="slide-1"></div>-->
+      <!--<div class="single-slide" id="slide-2"></div>-->
+      <!--<div class="single-slide" id="slide-3"></div>-->
+      <!--<div class="single-slide" id="slide-4"></div>-->
+      <!--<div class="single-slide" id="slide-5"></div>-->
+    <!--</div>-->
+    <div id="slideshow" class="slider-wrap">
       <!--<div class="slideitem current">-->
         <!--<img src="../../../assets/img/landing/auto-H.png">-->
       <!--</div>-->
-      <div class="slideitem ">
-        <img src="../../../assets/img/landing/numbers-H.png">
+      <div class="single-slide" id="slide-1" >
+        <!--<img src="../../../assets/img/landing/numbers-H.png">-->
       </div>
-      <div class="slideitem ">
-        <img src="../../../assets/img/landing/lipstick-H.png">
+      <div class="single-slide" id="slide-2">
+        <!--<img src="../../../assets/img/landing/lipstick-H.png">-->
       </div>
       <!--<div class="slideitem ">-->
         <!--<img src="../../../assets/img/landing/hue-H.png">-->
       <!--</div>-->
-      <div class="slideitem ">
-        <img src="../../../assets/img/landing/pills-H.png">
+      <div class="single-slide" id="slide-3">
+        <!--<img src="../../../assets/img/landing/pills-H.png">-->
       </div>
-      <div class="slideitem ">
-        <img src="../../../assets/img/landing/colors-H.png">
+      <div class="single-slide" id="slide-4">
+        <!--<img src="../../../assets/img/landing/colors-H.png">-->
       </div>
-      <div class="slideitem ">
-        <img src="../../../assets/img/landing/perfume-H.png">
+      <div class="single-slide" id="slide-5">
+        <!--<img src="../../../assets/img/landing/perfume-H.png">-->
       </div>
       <!--<div class="slideitem ">-->
         <!--<img src="../../../assets/img/landing/fashion-H.png">-->
       <!--</div>-->
-      <div class="slideitem ">
-        <img src="../../../assets/img/landing/furniture-H.png">
+      <div class="single-slide" id="slide-6">
+        <!--<img src="../../../assets/img/landing/furniture-H.png">-->
       </div>
     </div>
     <h1 id="statement" style="margin-top: -45px;">Our Color Intelligence Enhances Your Color Decision</h1>
@@ -131,7 +138,7 @@ Color validation, Color information, Color dataset, Color database, Color design
       <div class="col-md-2 col-lg-2 landing-color-picker-title">
         <p>HOW IS THIS&nbsp;COLOR CALLED</p>
         <div class="button landing-color-picker-button">
-          <a class="btn join-btn" ng-click="$ctrl.colorWordSearchLanding()" >FIND OUT</a>
+          <a class="btn join-btn" ng-click="$ctrl.searchByRGB()" >FIND OUT</a>
         </div>
       </div>
     </div>

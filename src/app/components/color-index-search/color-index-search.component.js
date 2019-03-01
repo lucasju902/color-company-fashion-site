@@ -9,10 +9,10 @@ angular
 
 			this.colorSearch = function () {
 				if (this.data.color != ' ') {
-					colorRequest.getShortNames(vm.data.color.toLowerCase())
+					colorRequest.getShortNames(vm.data.color)
 						.then(function(data){
 							vm.colorValidDataShort = data.short_name;
-						
+
 							if (data && data.short_name.length > 0) {
 								vm.paintColorNamesData = data.short_name;
 								vm.colorAssociationNames = data.short_namecontains;
