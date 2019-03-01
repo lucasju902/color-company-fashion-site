@@ -8,9 +8,9 @@ angular.module('app').factory('colorRequest', function($http, appConfig) {
                 return res.data;
             });
         },
-        getRgb: function(rgb) {
-            return $http.get(url + 'search_rgb', { params: rgb }
-        ).then(function(res) {
+        getRgb: function(shortName) {
+            return $http.get(url + 'search_rgb', { params: {short_name: shortName}
+						}).then(function(res) {
                 return res.data;
             });
         }

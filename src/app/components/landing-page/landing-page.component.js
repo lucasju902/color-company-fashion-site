@@ -99,10 +99,9 @@ angular
 				var colorNTC = ntc.name(hexColor);
 
 				if (colorNTC[1].slice(0,13) !== "Invalid Color") {
-					colorRequest.getShortNames(colorNTC[1])
+					colorRequest.getRgb(colorNTC[1])
 						.then(function(data) {
 							console.log('data', data);
-							// console.log('hexToRgb(colorNTC[0])', hexToRgb(colorNTC[0]));
 							vm.paintColorNamesData = [{colorName: colorNTC[1] , RGB: RGB.red + ',' + RGB.green + ',' + RGB.blue}];
 							vm.colorAssociationNames = data.short_namecontains;
 							searchColor.set(vm.paintColorNamesData, vm.colorAssociationNames);
