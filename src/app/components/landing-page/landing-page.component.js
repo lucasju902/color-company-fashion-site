@@ -66,7 +66,6 @@ angular
 			// 		Slide.fadeIn(it).addClass('current');
 			// 	}
 			// });
-
 //                                                                                                          REPORTS ON LANDING
 			$http.get(appConfig.dashboardServiceUrl + 'reports/on_landing.json').then(function (res) {
 				vm.reports_on_landing = res.data.reports;
