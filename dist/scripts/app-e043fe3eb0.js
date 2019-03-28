@@ -4148,115 +4148,6 @@ angular.module('app').directive('hueDbTopItemsDonuts', function () {
   };
 });
 
-angular.module('app').directive('hueTopIndustriesChart', ['$timeout', '$location', function (timeout, location) {
-	function link(scope, element, attrs) {
-		var config = scope.config;
-
-		var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-		var diameter = scope.config.diameter;
-		var outerRadius = diameter / 2;
-		var innerSectionRadius = outerRadius - donutWidth;
-		var innerStrokeRadius = outerRadius - 2;
-		var animationDuration = 400;
-		var animationStep = 1 / (animationDuration / 20);
-		var strokePercentage = 100 - scope.percentage;
-
-		var draw = SVG(element[0]).size(diameter, diameter);
-		var group = draw.group();
-
-		var getSectionPathData = function (angle1, angle2, innerRadius) {
-			var sinStart = Math.sin(angle1);
-			var cosStart = Math.cos(angle1);
-			var sinEnd = Math.sin(angle2);
-			var cosEnd = Math.cos(angle2);
-
-			var xO1 = outerRadius + (sinStart * outerRadius); //outer
-			var yO1 = outerRadius - (cosStart * outerRadius);
-			var xO2 = outerRadius + (sinEnd * outerRadius);
-			var yO2 = outerRadius - (cosEnd * outerRadius);
-
-			var xI1 = outerRadius + (sinStart * innerRadius); //inner
-			var yI1 = outerRadius - (cosStart * innerRadius);
-			var xI2 = outerRadius + (sinEnd * innerRadius);
-			var yI2 = outerRadius - (cosEnd * innerRadius);
-
-			var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-			return new SVG.PathArray([
-					['M', xO1, yO1],
-					['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-					['L', xI2, yI2],
-					['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-					['Z']
-			]).toString();
-		};
-
-
-		//Initialization
-		group.path('').attr('fill', scope.color); //section
-		group.path('').attr('fill', scope.color); //stroke
-
-		//Opening animation
-		var easeOutFunction = BezierEasing.css['ease-out'];
-		var animationProgress = 0;
-		var groupChildren = group.children();
-		var processAnimation = function () {
-			animationProgress += animationStep;
-			if (animationProgress > 1)
-				animationProgress = 1;
-
-			var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
-
-			var angleStart = 0;
-			var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
-			groupChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
-
-			angleStart = angleEnd;
-			angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
-			groupChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
-
-			if (animationProgress != 1)
-				timeout(processAnimation, 20);
-		};
-
-		processAnimation();
-
-		scope.$watch('color', function (newValue, oldValue) {
-			if (newValue) {
-				group.first().attr('fill', newValue); //section
-				group.last().attr('fill', newValue); //stroke
-			}
-		});
-	}
-
-	return {
-		restrict: 'A',
-		link: link,
-		scope: {
-			config: '=hueTopIndustriesChart',
-			percentage: '=',
-			color: '='
-		}
-	};
-}]);
-angular.module('app').directive('hueDbTopIndustries', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.industryClick = function (id) {
-      location.url('industry').search({industry: id});
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopIndustries/dbTopIndustriesView.html',
-    link: link,
-    scope: {
-      data: '=',
-      chartColor: '='
-    }
-  };
-}]);
-
 angular.module('app').directive('hueTopFinishesChart',
   ['$timeout', '$location', function (timeout, location) {
     function link(scope, element, attrs) {
@@ -4359,6 +4250,115 @@ angular.module('app').directive('hueDbTopFinishes', ['$location', function (loca
   return {
     restrict: 'E',
     templateUrl: 'app/directives/dbTopFinishes/dbTopFinishesView.html',
+    link: link,
+    scope: {
+      data: '=',
+      chartColor: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueTopIndustriesChart', ['$timeout', '$location', function (timeout, location) {
+	function link(scope, element, attrs) {
+		var config = scope.config;
+
+		var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+		var diameter = scope.config.diameter;
+		var outerRadius = diameter / 2;
+		var innerSectionRadius = outerRadius - donutWidth;
+		var innerStrokeRadius = outerRadius - 2;
+		var animationDuration = 400;
+		var animationStep = 1 / (animationDuration / 20);
+		var strokePercentage = 100 - scope.percentage;
+
+		var draw = SVG(element[0]).size(diameter, diameter);
+		var group = draw.group();
+
+		var getSectionPathData = function (angle1, angle2, innerRadius) {
+			var sinStart = Math.sin(angle1);
+			var cosStart = Math.cos(angle1);
+			var sinEnd = Math.sin(angle2);
+			var cosEnd = Math.cos(angle2);
+
+			var xO1 = outerRadius + (sinStart * outerRadius); //outer
+			var yO1 = outerRadius - (cosStart * outerRadius);
+			var xO2 = outerRadius + (sinEnd * outerRadius);
+			var yO2 = outerRadius - (cosEnd * outerRadius);
+
+			var xI1 = outerRadius + (sinStart * innerRadius); //inner
+			var yI1 = outerRadius - (cosStart * innerRadius);
+			var xI2 = outerRadius + (sinEnd * innerRadius);
+			var yI2 = outerRadius - (cosEnd * innerRadius);
+
+			var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+			return new SVG.PathArray([
+					['M', xO1, yO1],
+					['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+					['L', xI2, yI2],
+					['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+					['Z']
+			]).toString();
+		};
+
+
+		//Initialization
+		group.path('').attr('fill', scope.color); //section
+		group.path('').attr('fill', scope.color); //stroke
+
+		//Opening animation
+		var easeOutFunction = BezierEasing.css['ease-out'];
+		var animationProgress = 0;
+		var groupChildren = group.children();
+		var processAnimation = function () {
+			animationProgress += animationStep;
+			if (animationProgress > 1)
+				animationProgress = 1;
+
+			var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
+
+			var angleStart = 0;
+			var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
+			groupChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
+
+			angleStart = angleEnd;
+			angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
+			groupChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
+
+			if (animationProgress != 1)
+				timeout(processAnimation, 20);
+		};
+
+		processAnimation();
+
+		scope.$watch('color', function (newValue, oldValue) {
+			if (newValue) {
+				group.first().attr('fill', newValue); //section
+				group.last().attr('fill', newValue); //stroke
+			}
+		});
+	}
+
+	return {
+		restrict: 'A',
+		link: link,
+		scope: {
+			config: '=hueTopIndustriesChart',
+			percentage: '=',
+			color: '='
+		}
+	};
+}]);
+angular.module('app').directive('hueDbTopIndustries', ['$location', function (location) {
+  function link(scope, element, attrs) {
+    scope.industryClick = function (id) {
+      location.url('industry').search({industry: id});
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopIndustries/dbTopIndustriesView.html',
     link: link,
     scope: {
       data: '=',
@@ -6751,6 +6751,75 @@ angular.module('app').directive('hueColorFrequencyByCategoryChart', ['$timeout',
   };
 }]);
 
+angular.module('app').directive('hueDbColorFamiliesByBrandExpanded', function () {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.selectedBar = null;
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.currentTarget) {
+        $(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          $(scope.selectedBar).tooltipster('hide');
+
+        $(event.currentTarget).tooltipster('show');
+        scope.selectedBar = event.currentTarget;
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbColorFamiliesByBrand', function () {
+  function link(scope, element, attrs) {
+    scope.tooltipsterConfig = {
+      animation: 'fade',
+      theme: 'tooltipster-default',
+      trigger: 'custom',
+      position: 'bottom'
+    };
+    scope.selectedBar = null;
+
+    scope.selectBar = function (event) {
+      if (scope.selectedBar == event.currentTarget) {
+        $(scope.selectedBar).tooltipster('hide');
+        scope.selectedBar = null;
+      } else {
+        if (scope.selectedBar)
+          $(scope.selectedBar).tooltipster('hide');
+
+        $(event.currentTarget).tooltipster('show');
+        scope.selectedBar = event.currentTarget;
+      }
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
 angular.module('app').directive('hueDbColorFrequencyExpanded', function () {
   function link(scope, element, attrs) {
     scope.data = [];
@@ -6903,75 +6972,6 @@ angular.module('app').directive('hueDbColorFrequencyColorPicker', function () {
     scope: {
       data: '=',
       activeColor: '='
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFamiliesByBrandExpanded', function () {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.selectedBar = null;
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.currentTarget) {
-        $(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          $(scope.selectedBar).tooltipster('hide');
-
-        $(event.currentTarget).tooltipster('show');
-        scope.selectedBar = event.currentTarget;
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbColorFamiliesByBrand', function () {
-  function link(scope, element, attrs) {
-    scope.tooltipsterConfig = {
-      animation: 'fade',
-      theme: 'tooltipster-default',
-      trigger: 'custom',
-      position: 'bottom'
-    };
-    scope.selectedBar = null;
-
-    scope.selectBar = function (event) {
-      if (scope.selectedBar == event.currentTarget) {
-        $(scope.selectedBar).tooltipster('hide');
-        scope.selectedBar = null;
-      } else {
-        if (scope.selectedBar)
-          $(scope.selectedBar).tooltipster('hide');
-
-        $(event.currentTarget).tooltipster('show');
-        scope.selectedBar = event.currentTarget;
-      }
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbColorFamiliesByBrand/dbColorFamiliesByBrandView.html',
-    link: link,
-    scope: {
-      data: '='
     }
   };
 });
@@ -13439,6 +13439,7 @@ angular
       });
     }
   });
+
 angular
   .module('app')
   .component('aboutPage', {
@@ -53057,7 +53058,7 @@ $templateCache.put('app/components/modal/color-search.tmpl.html','<div class="mo
 $templateCache.put('app/components/modal/dailyModal.tmpl.html','<div class="modal-header">\n  <button class="close" ng-click="cancel()" style="outline: none;">\n    <span aria-hidden="true">&times;</span>\n  </button>\n</div>\n<section>\n  <div class="container-fluid text-left">\n    <div class="row">\n      <div class="col-lg-12">\n        <h1 class="h1-modal-daily"><strong style="color:black;">DAILY </strong>{{item.header}}\n        </h1>\n      </div>\n\n    </div>\n    <div class="dailyinsights"></div>\n\n    <div class="row" style="margin-bottom:50px;">\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">\n        <h4 style="padding-top:0px; margin-top:0px">{{item.date}}</h4>\n      </div>\n      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 social-icons">\n        <a href="https://www.linkedin.com/company/huedata/" target="_blank"><i class="fa fa-linkedin fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.facebook.com/pg/Huedata-1287083448095980/" target="_blank"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>\n        <a href="https://twitter.com/huedata1" target="_blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.instagram.com/huedata/" target="_blank"><i class="fa fa-instagram fa-2x" aria-hidden="true"></i></a>\n        <a href="https://www.pinterest.com/huedatainc" target="_blank"><i class="fa fa-pinterest fa-2x" aria-hidden="true"></i></a>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class="container-fluid" style="padding-bottom: 50px">\n    <div class="row">\n      <div class="col-lg-5 col-md-5" ng-bind-html="item.description">\n      </div>\n      <div class="col-lg-7 col-md-7">\n        <img ng-src="{{item.image_url || \'../assets/images/infographic2.jpg\'}}" class="img-responsive shadow" style="width:100%" alt="Image">\n      </div>\n    </div>\n  </div>\n</section>');
 $templateCache.put('app/components/modal/graphic-modal.tmpl.html','<div class="modal-header">\n  <button class="close" ng-click="cancel()" style="outline: none;">\n    <span aria-hidden="true">&times;</span>\n  </button>\n</div>\n\n<div class="image-container" style="background: url({{img}}) no-repeat center; background-size: contain; margin-bottom: 38px">\n</div>\n');
 $templateCache.put('app/components/modal/membersOnlyModal.tmpl.html','<div class="container-fluid">\r\n  <button class="close" ng-click="cancel()" style="outline: none;">\r\n    <span aria-hidden="true">&times;</span>\r\n  </button>\r\n</div>\r\n<div class="row">\r\n  <div class="col-lg-6 col-md-6 col-sm-12">\r\n    <h3 class="memberOnlyTitle">Members Only Feature</h3>\r\n  </div>\r\n</div>\r\n<div class="row">\r\n  <div>\r\n    <div class="col-lg-6 col-md-6 col-sm-12">\r\n      <p class="">HUEDATA member? Log-in to use this feature</p>\r\n      <button class="btn" ui-sref="login" ng-click="cancel()">MEMBER LOGIN</button>\r\n    </div>\r\n  </div>\r\n  <div>\r\n    <div class="white col-lg-6 col-md-6 col-sm-12">\r\n      <p>Not a HUEDATA member? Learn more about HUEDATA Membership</p>\r\n      <button class="btn white-btn" ui-sref="membership({scrollTo: true})" ng-click="cancel()">Learn more</button>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
-$templateCache.put('app/components/modal/modal.tmpl.html','<div class="modal-err">\r\n  <h4>www.hue-data.com says:</h4>\r\n  <p ng-show="flag != true && flag !== false">Please correct the following problem(s):</p>\r\n  <ul ng-show="flag != true && flag !== false">\r\n    <li ng-repeat="str in item">{{str}}</li>\r\n  </ul>\r\n  <p ng-show="flag === false">Error! This email is already in Use.</p>\r\n  <p ng-show="flag === false" style="min-height: 150px">{{item[0]}}</p>\r\n\r\n  <p ng-show="flag == true" style="text-align: center; min-height: 150px">\r\n    {{item[0]}}\r\n  </p>\r\n</div>\r\n<div class="div-but">\r\n  <button class="btn" style="outline: none;" ng-click="cancel()">OK</button>\r\n</div>');
+$templateCache.put('app/components/modal/modal.tmpl.html','<div class="modal-err">\r\n  <h4>www.hue-data.com says:</h4>\r\n  <p ng-show="flag != true && flag !== false">Please correct the following problem(s):</p>\r\n  <ul ng-show="flag != true && flag !== false">\r\n    <li ng-repeat="str in item">{{str}}</li>\r\n  </ul>\r\n  <p ng-show="flag === false">Error! This email is already in Use.</p>\r\n  <p ng-show="flag === false" style="min-height: 150px">{{item[0]}}</p>\r\n\r\n  <p ng-show="flag == true" style="text-align: center; min-height: 150px">\r\n    {{item[0]}}\r\n  </p>\r\n</div>\r\n<div class="div-but">\r\n  <button class="btn" style="outline: none;" ng-click="cancel()">OK</button>\r\n</div>\r\n');
 $templateCache.put('app/components/my-purchases/my-purchases.tmpl.html','<update-title title="My Purchases"></update-title>\n<update-meta name="description" content="My purchases"></update-meta>\n<update-meta name="keywords" content="My purchases, purchases, bought items, HUEDATA purchases"></update-meta>\n\n<div class="my-purchase">\n  <section class="my-purchase-header">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-4 col-md-12 col-lg-offset-4 my-purchase-title">\n          <!--<i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>-->\n          <h3 style="display: inline-block">MY PURCHASES</h3>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section class="my-purchase-items">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div style="{{item.style}}" class="col-lg-3 col-md-4 col-sm-6 col-xs-12 item text-dn" ng-repeat="item in $ctrl.data">\n          <a style="text-decoration: none" ng-href="#!/{{item.type}}/{{item.item.id}}">\n            <div class="category {{item.item.hue}} text-center"><p>{{item.item.hue}}</p></div>\n            <div class="img-responsive background-image" style="background: {{\'url(\' + item.images[0].image_url +\') top center\'}};\n                    background-repeat: no-repeat;\n                    background-size: cover;\n                    background-color: #e1e1e126;\n                    padding-bottom: 56%;">\n            </div>\n          </a>\n          <div class="purchase-name">\n            <h5>{{item.item.header}}</h5>\n          </div>\n          <div class="price">\n            <p><span>Price:</span> {{item.item.price === 0 ? \'Free\' : \'$\' + item.item.price}}</p>\n          </div>\n          <div class="date-purchase">\n            <p>Date of purchase: {{item.purchaseDate}}</p>\n          </div>\n          <div class="download-btn">\n            <a href="{{item.files[0].image_url}}" download><button class="btn">DOWNLOAD</button></a>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
 $templateCache.put('app/components/order-email/order-email.tmpl.html','<update-title title="Thank You for Your Purchase"></update-title>\n<update-meta name="description" content="Thanks page after purchase"></update-meta>\n<update-meta name="keywords" content="Thank you page, download"></update-meta>\n\n\n<section ng-init="$ctrl.init()" style="min-height: 500px; padding-top: 60px;">\n  <div ng-show="$ctrl.success === true">\n    <div class="cart-thank-page cart-thank">\n      <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>\n      <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId || \'UNKNOWN\'}}</span></h4>\n      <div class="thank-text">\n        <span>CLICK HERE TO DOWNLOAD</span>\n      </div>\n    </div>\n    <div class="download-page">\n      <div class="container-fluid text-center">\n        <div class="row download-row">\n          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">\n            <div>\n              <img class="download-img" ng-src="{{item.image}}">\n            </div>\n            <div ng-show="item.file">\n              <a href="{{item.file}}" download>\n                <button class="btn">DOWNLOAD</button>\n              </a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  </div>\n  <div ng-show="$ctrl.success === false">\n    <div class="cart-thank-page cart-thank">\n      <h4 class="thank-title"><strong>YOUR LINK IS BROKEN, PLEASE CHECK AGAIN AND CONTACT US, IF LINK STILL NOT\n        WORKING</strong></h4>\n    </div>\n  </div>\n</section>');
 $templateCache.put('app/components/password-recover/password-recover.tmpl.html','<update-title title="Password Recover"></update-title>\n<update-meta name="description" content="Recover password for HUEDATA account"></update-meta>\n<update-meta name="keywords" content="Password recover, password, HUEDATA recover password"></update-meta>\n\n\n<div class="login-page">\n  <section>\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-12">\n          <h3 ng-if="$ctrl.type === \'s\'">Set the Password on Your HUEDATA Account</h3>\n          <h3 ng-if="$ctrl.type !== \'s\'">Recover the Password on Your HUEDATA Account</h3>\n          <div class="line"></div>\n        </div>\n      </div>\n    </div>\n  </section>\n\n  <section>\n    <div class="container-fluid">\n      <div class="row">\n        <div class="success afade text-center" ng-show="$ctrl.successRequest">\n          <div class="col-lg-12">\n            <b class="black-text" ng-if="$ctrl.type === \'set\'">Password on Your HUEDATA Account has been successfully\n              changed</b>\n            <b class="black-text" ng-if="$ctrl.type !== \'set\'">Password on Your HUEDATA Account has been successfully\n              set</b>\n          </div>\n        </div>\n\n        <div class="login-container text-center">\n          <div ng-hide="$ctrl.successRequest">\n            <div ng-show="$ctrl.error" class="error-message afade text-left">\n              <span>ERROR: </span>{{$ctrl.error}}\n            </div>\n            <input type="password" ng-model="$ctrl.password" name="password" placeholder="ENTER YOUR PASSWORD">\n            <input type="password" ng-focus="$ctrl.error = false" ng-model="$ctrl.passwordConfirm" name="passwordConfirm" placeholder="CONFIRM YOUR PASSWORD">\n          </div>\n          <div class="login-btn" style="padding: 30px 0 40px; text-align: center">\n            <button ng-click="$ctrl.onSendLoginClick()" class="btn" style="padding: 15px 50px;">\n              {{$ctrl.successRequest ? \'LOGIN\' : \'SEND\'}}\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
@@ -53683,4 +53684,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-0f54bd71cb.js.map
+//# sourceMappingURL=../maps/scripts/app-e043fe3eb0.js.map
