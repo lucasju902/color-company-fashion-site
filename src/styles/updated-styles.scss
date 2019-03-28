@@ -5310,24 +5310,8 @@ footer {
 @keyframes slider-animation {
   0% {opacity: 0;}
   6% {opacity: 1;}
-  24% {opacity: 0.8;}
   30% {opacity: 0;}
   100% {opacity: 0;}
-  //60% {opacity: 0;}
-  //70% {opacity: 0;}
-  //100% {opacity: 0;}
-  //0% {opacity: 0;}
-  //10% {opacity: 0.1;}
-  //20% {opacity: 0.2;}
-  //30% {opacity: 1;}
-  //40% {opacity: 1;}
-  //50% {opacity: 1;}
-  //60% {opacity: 0.0;}
-  //70% {opacity: 0.0;}
-  //80% {opacity: 0.0;}
-  //90% {opacity: 0;}
-  //100% {opacity: 0;}
-
 }
 //---------------------------------------
 //color-picker
@@ -5903,7 +5887,7 @@ input#search-bar{
 
 }
 .landing-color-picker-button {
-  margin-top: 148px;
+  margin: 148px 0 0 7px;
 }
 .landing-color-picker-button > .btn {
   font-size: 13px;
