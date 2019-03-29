@@ -4247,13 +4247,13 @@ form .ui-select-container.selectize-control {
     margin-top: 30px;
     margin-bottom: 30px;
     font-size: 14.5pt;
-    font-weight: 700;
+    font-weight: 100;
     color: black;
   }
 
   p {
     color: black;
-    font-size: 11pt;
+    font-size: 14pt;
     font-weight: 400;
     line-height: 18pt;
     margin: 0;
@@ -5332,7 +5332,7 @@ footer {
   float: left;
 }
 .color-picker-title-img {
-  margin: 65px 0 0 0;
+  margin: 87px 0 0 0;
   display: flex;
   justify-content: center;
   @media (max-width: 1200px) {
@@ -5340,7 +5340,7 @@ footer {
   }
   .color-picker-img {
     width: 70px;
-    height: 70px;
+    height: 48px;
   }
 }
 .color-piker-item_canvas {
@@ -5825,6 +5825,7 @@ input#search-bar{
   p {
     font-size: 40px;
     line-height: 1;
+    font-family: Baskvill;
   }
   img {
     margin-top: 20px;
