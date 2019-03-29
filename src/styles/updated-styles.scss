@@ -4228,7 +4228,7 @@ form .ui-select-container.selectize-control {
 
   h3 {
     font-size: 25pt;
-    font-weight: 700;
+    font-weight: 100;
     color: black;
     letter-spacing: -1.5pt;
     padding-bottom: 0;
@@ -5777,6 +5777,8 @@ input#search-bar{
 }
 .landing-analytics_title {
   font-weight: 100;
+  font-family: Baskvill;
+  font-size: 44px;
 }
 .landing-reports {
   display: flex;
@@ -5823,7 +5825,7 @@ input#search-bar{
 .landing-color-index-title {
   margin-top: 15px;
   p {
-    font-size: 40px;
+    font-size: 44px;
     line-height: 1;
     font-family: Baskvill;
   }
@@ -5833,7 +5835,8 @@ input#search-bar{
 }
 .landing-reports-section {
   padding-top: 30px;
-  min-height: 1076px;
+  min-height: 625px;
+  max-height: 1074px;
   padding: 0;
 }
 .landing-color-picker-block {
