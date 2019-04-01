@@ -63,6 +63,26 @@ angular.module('app').constant('appConfig', {
   }
 });
 
+angular.module('app').controller('yearLegalController',
+  ['$scope', function (scope) {
+
+  }]);
+
+angular.module('app').controller('productLegalController',
+  ['$scope', function (scope) {
+
+  }]);
+
+angular.module('app').controller('ownerLegalController',
+  ['$scope', function (scope) {
+
+  }]);
+
+angular.module('app').controller('colorLegalController',
+  ['$scope', function (scope) {
+
+  }]);
+
 angular.module('app').controller('yearFashionController',
   ['$scope', function (scope) {
     // Behaviour
@@ -147,6 +167,45 @@ angular.module('app').controller('regionFashionController',
     scope.colorFrequencyExpanded = false;
     scope.toggleColorFrequencyExpandedMode = function () {
       scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorFrequencyBySeasonExpanded = false;
+    scope.toggleColorFrequencyBySeasonExpandedMode = function () {
+      scope.colorFrequencyBySeasonExpanded = !scope.colorFrequencyBySeasonExpanded;
+    };
+
+    scope.colorFrequencyByCityExpanded = false;
+    scope.toggleColorFrequencyByCityExpandedMode = function () {
+      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+
+    scope.designerImagesExpanded = false;
+    scope.toggleDesignerImagesExpandedMode = function () {
+      scope.designerImagesExpanded = !scope.designerImagesExpanded;
+    };
+  }]);
+
+angular.module('app').controller('categoryFashionController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorFrequencyByRegionExpanded = false;
+    scope.toggleColorFrequencyByRegionExpandedMode = function () {
+      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
     };
 
     scope.colorFrequencyBySeasonExpanded = false;
@@ -272,141 +331,6 @@ angular.module('app').controller('cityFashionController',
     };
   }]);
 
-angular.module('app').controller('categoryFashionController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.colorFrequencyByRegionExpanded = false;
-    scope.toggleColorFrequencyByRegionExpandedMode = function () {
-      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
-    };
-
-    scope.colorFrequencyBySeasonExpanded = false;
-    scope.toggleColorFrequencyBySeasonExpandedMode = function () {
-      scope.colorFrequencyBySeasonExpanded = !scope.colorFrequencyBySeasonExpanded;
-    };
-
-    scope.colorFrequencyByCityExpanded = false;
-    scope.toggleColorFrequencyByCityExpandedMode = function () {
-      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-
-    scope.designerImagesExpanded = false;
-    scope.toggleDesignerImagesExpandedMode = function () {
-      scope.designerImagesExpanded = !scope.designerImagesExpanded;
-    };
-  }]);
-
-angular.module('app').controller('yearLegalController',
-  ['$scope', function (scope) {
-
-  }]);
-
-angular.module('app').controller('productLegalController',
-  ['$scope', function (scope) {
-
-  }]);
-
-angular.module('app').controller('ownerLegalController',
-  ['$scope', function (scope) {
-
-  }]);
-
-angular.module('app').controller('colorLegalController',
-  ['$scope', function (scope) {
-
-  }]);
-
-angular.module('app').controller('yearAutoController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.topFamiliesExpanded = false;
-    scope.toggleTopFamiliesExpandedMode = function () {
-      scope.topFamiliesExpanded = !scope.topFamiliesExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-  }]);
-
-angular.module('app').controller('modelAutoController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-  }]);
-
-angular.module('app').controller('colorAutoController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-  }]);
-
-angular.module('app').controller('brandAutoController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.colorsCountExpanded = false;
-    scope.toggleColorsCountExpandedMode = function () {
-      scope.colorsCountExpanded = !scope.colorsCountExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-  }]);
-
 angular.module('app').controller('industryBrandingController',
   ['$scope', function (scope) {
     // Behaviour
@@ -493,6 +417,39 @@ angular.module('app').controller('brandBrandingController',
     };
   }]);
 
+angular.module('app').controller('brandAutoController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorsCountExpanded = false;
+    scope.toggleColorsCountExpandedMode = function () {
+      scope.colorsCountExpanded = !scope.colorsCountExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+  }]);
+
+angular.module('app').controller('colorAutoController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+  }]);
+
 angular.module('app').controller('attributeBrandingController',
   ['$scope', function (scope) {
     // Behaviour
@@ -509,6 +466,49 @@ angular.module('app').controller('attributeBrandingController',
     scope.mapExpanded = false;
     scope.toggleMapExpandedMode = function () {
       scope.mapExpanded = !scope.mapExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+  }]);
+
+angular.module('app').controller('yearAutoController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.topFamiliesExpanded = false;
+    scope.toggleTopFamiliesExpandedMode = function () {
+      scope.topFamiliesExpanded = !scope.topFamiliesExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+  }]);
+
+angular.module('app').controller('modelAutoController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
     };
 
     scope.colorPaletteExpanded = false;
@@ -936,6 +936,358 @@ angular.module('app').controller('attributeBrandingController',
         return service;
       }]);
 }());
+
+angular.module('app').controller('legalController',
+  [
+    '$scope',
+    'legalDashboardRepository',
+    'dashboardOverlayService',
+    'searchMenuRepository',
+    '$state',
+    'anchorSmoothScroll',
+    '$location',
+    function (scope,
+              legalDashboardRepository,
+              dashboardOverlayService,
+              searchMenuRepository,
+              $state, anchorSmoothScroll, $location) {
+
+      // scope.owner = '';
+      // scope.year = '';
+      // scope.color = '';
+      // scope.product = '';
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      scope.menus = {
+        owner: '',
+        year: '',
+        color: '',
+        product: ''
+      };
+
+      scope.disabledControls = {
+        owner: false,
+        year: false,
+        color: false,
+        product: false
+      };
+
+      scope.mainParam = null;
+      scope.mainParamId = null;
+
+      scope.showDashboard = false;
+      scope.title = null;
+      scope.subtitle = null;
+      scope.copyrightsCountData = null;
+      scope.copyrightsListData = null;
+      scope.copyrightsListPage = 1;
+      scope.copyrightsListTotalPages = 1;
+
+      scope.isLoadingControls = true;
+
+      // Pages info
+      scope.ownerPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+      scope.yearPageInfo = [
+        {width: 1, type: 'countTo', tooltip: '#owners', data: {subtitle: 'Owners', count: 0, menuTab: 'owner'}},
+        {width: 1, type: 'countTo', tooltip: '#products', data: {subtitle: 'Products', count: 0, menuTab: 'product'}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+      scope.colorPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+      scope.productPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+
+      scope.compareData = [];
+      scope.colorsCountData = [];
+      scope.colorsCountData = [];
+      scope.shadesData = [];
+      scope.topFamiliesData = [];
+      scope.topBrandsData = [];
+      scope.topColorsData = [];
+      scope.colorFrequencyData = [];
+      scope.topFinishesData = [];
+      scope.carColorsData = [];
+      scope.colorPaletteData = [];
+
+      if (!scope.mainParam) {
+        $state.go('legal');
+      }
+
+      scope.cropText = function (text) {
+        var sliced = text.trim().slice(0, 37);
+        sliced = sliced.trim();
+        if (sliced.length < text.length) {
+          sliced += '...';
+        }
+        return sliced;
+      };
+
+      searchMenuRepository.getControlsDataLegal().then(function (data) {
+        scope.controlsData = data;
+        scope.isLoadingControls = false;
+      });
+      scope.setColorAsMain = function (color) {
+        scope.iconUrl = null;
+        scope.secondaryParams = {};
+        scope.mainParam = null;
+        scope.tempColor = color;
+        scope.menus = {
+          owner: '',
+          year: '',
+          color: '',
+          product: ''
+        };
+        scope.menus.color = color.id;
+        if (!scope.controlsData.colors.find(function (item) {
+            return item.id === scope.tempColor.id
+          })) {
+          scope.controlsData.colors.unshift(scope.tempColor);
+        }
+        scope.tempColor = null;
+        scope.handleChangeControl('color');
+        scope.loadGraphics();
+      };
+
+      scope.switchPage = function (value) {
+        if (value !== scope.copyrightsListPage) {
+          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, value)
+            .then(function (data) {
+              scope.copyrightsListData = data;
+            });
+        }
+        scope.copyrightsListPage = value;
+      };
+
+      scope.loadGraphics = function () {
+        if (scope.mainParam) {
+          scope.showDashboard = true;
+          dashboardOverlayService.loadingStart(4000);
+
+          legalDashboardRepository[scope.mainParam].getPageData(scope.mainParamId).then(function (data) {
+            scope.title = data.title;
+            scope.iconUrl = data.logo_url;
+
+            scope.copyrightsListTotalPages = Math.ceil((data.us_copyrights + data.int_copyrights) / 25);
+
+            if (scope.mainParam === 'owner') {
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.us_copyrights;
+              scope.pageInfo[2].data.count = data.int_copyrights;
+            } else if (scope.mainParam === 'year') {
+              scope.pageInfo[0].data.count = data.owners_count;
+              scope.pageInfo[1].data.count = data.products_count;
+              scope.pageInfo[2].data.count = data.us_copyrights;
+              scope.pageInfo[3].data.count = data.int_copyrights;
+            } else if (scope.mainParam === 'color') {
+              scope.colorHex = data.color.hex;
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.us_copyrights;
+              scope.pageInfo[2].data.count = data.int_copyrights;
+            } else if (scope.mainParam === 'product') {
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.us_copyrights;
+              scope.pageInfo[2].data.count = data.int_copyrights;
+            }
+          });
+
+          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, scope.copyrightsListPage)
+            .then(function (data) {
+              scope.copyrightsListData = data;
+            });
+
+          if (scope.mainParam !== 'color') {
+            legalDashboardRepository[scope.mainParam].getCopyrightsCount(scope.mainParamId)
+              .then(function (data) {
+                scope.copyrightsCountData = data;
+              });
+          }
+
+          if (scope.mainParam !== 'owner') {
+            legalDashboardRepository[scope.mainParam].getTopOwners(scope.mainParamId)
+              .then(function (data) {
+                scope.topOwnersData = data;
+              });
+          }
+
+          if (scope.mainParam === 'color') {
+            legalDashboardRepository[scope.mainParam].getTopProducts(scope.mainParamId)
+              .then(function (data) {
+                scope.topProductsData = data;
+              });
+
+            legalDashboardRepository[scope.mainParam].getTopProductsCopyrights(scope.mainParamId)
+              .then(function (data) {
+                scope.topProductsCopyrightsData = data;
+              });
+
+            legalDashboardRepository[scope.mainParam].getCopyrightsOverTime(scope.mainParamId, 20)
+              .then(function (data) {
+                scope.copyrightsOverTimeData = data;
+              });
+          }
+
+          if (scope.mainParam === 'year') {
+            legalDashboardRepository[scope.mainParam].getCopyrightsActivity(scope.mainParamId)
+              .then(function (data) {
+                scope.copyrightsActivityData = data;
+              });
+          }
+        }
+      };
+
+      scope.handleChangeControl = function (control) {
+        scope.copyrightsListPage = 1;
+
+        if (!scope.mainParam) {
+          scope.mainParam = control;
+          scope.mainParamId = scope.menus[control];
+          $state.go(control + 'Legal');
+        }
+
+        if (scope.mainParam && scope.menus[scope.mainParam] === '') {
+          scope.mainParam = null;
+          scope.menus = {
+            brand: '',
+            year: '',
+            model: '',
+            color: ''
+          };
+        }
+
+        switch (scope.mainParam) {
+          case 'owner':
+            scope.pageInfo = scope.ownerPageInfo;
+            scope.mainParamId = scope.menus.owner;
+            scope.showSeason = false;
+
+            scope.disabledControls = {
+              owner: false,
+              year: true,
+              color: true,
+              product: true
+            };
+            break;
+
+          case 'year':
+            scope.pageInfo = scope.yearPageInfo;
+            scope.mainParamId = scope.menus.year;
+            scope.disabledControls = {
+              owner: true,
+              year: false,
+              color: true,
+              product: true
+            };
+            break;
+
+          case 'color':
+            scope.pageInfo = scope.colorPageInfo;
+            scope.mainParamId = scope.menus.color;
+            scope.disabledControls = {
+              owner: true,
+              year: true,
+              color: false,
+              product: true
+            };
+            break;
+
+          case 'product':
+            scope.pageInfo = scope.productPageInfo;
+            scope.mainParamId = scope.menus.product;
+            scope.disabledControls = {
+              owner: true,
+              year: true,
+              color: true,
+              product: false
+            };
+            break;
+
+          default:
+            $state.go('legal');
+            scope.disabledControls = {
+              owner: false,
+              year: false,
+              color: false,
+              product: false
+            };
+
+            // scope.owner = '';
+            // scope.year = '';
+            // scope.color = '';
+            // scope.product = '';
+
+            scope.menus = {
+              owner: '',
+              year: '',
+              color: '',
+              product: ''
+            };
+
+            scope.mainParam = null;
+            scope.iconUrl = null;
+            scope.showDashboard = false;
+            scope.copyrightsListPage = 1;
+
+            scope.compareData = [];
+            scope.colorsCountData = [];
+            scope.colorsCountData = [];
+            scope.shadesData = [];
+            scope.topFamiliesData = [];
+            scope.topBrandsData = [];
+            scope.topColorsData = [];
+            scope.colorFrequencyData = [];
+            scope.topFinishesData = [];
+            scope.carColorsData = [];
+            scope.colorPaletteData = [];
+            break;
+        }
+      };
+
+      // scope.$watch('copyrightsListPage', function (newValue, oldValue) {
+      //   if (newValue) {
+      //     legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.owner, newValue, function (data) {
+      //       scope.copyrightsListData = data;
+      //     });
+      //   }
+      // });
+
+      scope.$watch(function () {
+        return dashboardOverlayService.showOverlay;
+      }, function (newValue) {
+        scope.showDashboardOverlay = newValue;
+      });
+    }]);
 
 angular.module('app').controller('fashionController',
   [
@@ -1516,688 +1868,6 @@ angular
     templateUrl: 'app/components/dashboards/fashion/fashion.tmpl.html'
   });
 
-angular.module('app').controller('legalController',
-  [
-    '$scope',
-    'legalDashboardRepository',
-    'dashboardOverlayService',
-    'searchMenuRepository',
-    '$state',
-    'anchorSmoothScroll',
-    '$location',
-    function (scope,
-              legalDashboardRepository,
-              dashboardOverlayService,
-              searchMenuRepository,
-              $state, anchorSmoothScroll, $location) {
-
-      // scope.owner = '';
-      // scope.year = '';
-      // scope.color = '';
-      // scope.product = '';
-
-      scope.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      scope.menus = {
-        owner: '',
-        year: '',
-        color: '',
-        product: ''
-      };
-
-      scope.disabledControls = {
-        owner: false,
-        year: false,
-        color: false,
-        product: false
-      };
-
-      scope.mainParam = null;
-      scope.mainParamId = null;
-
-      scope.showDashboard = false;
-      scope.title = null;
-      scope.subtitle = null;
-      scope.copyrightsCountData = null;
-      scope.copyrightsListData = null;
-      scope.copyrightsListPage = 1;
-      scope.copyrightsListTotalPages = 1;
-
-      scope.isLoadingControls = true;
-
-      // Pages info
-      scope.ownerPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-      scope.yearPageInfo = [
-        {width: 1, type: 'countTo', tooltip: '#owners', data: {subtitle: 'Owners', count: 0, menuTab: 'owner'}},
-        {width: 1, type: 'countTo', tooltip: '#products', data: {subtitle: 'Products', count: 0, menuTab: 'product'}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-      scope.colorPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-      scope.productPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-
-      scope.compareData = [];
-      scope.colorsCountData = [];
-      scope.colorsCountData = [];
-      scope.shadesData = [];
-      scope.topFamiliesData = [];
-      scope.topBrandsData = [];
-      scope.topColorsData = [];
-      scope.colorFrequencyData = [];
-      scope.topFinishesData = [];
-      scope.carColorsData = [];
-      scope.colorPaletteData = [];
-
-      if (!scope.mainParam) {
-        $state.go('legal');
-      }
-
-      scope.cropText = function (text) {
-        var sliced = text.trim().slice(0, 37);
-        sliced = sliced.trim();
-        if (sliced.length < text.length) {
-          sliced += '...';
-        }
-        return sliced;
-      };
-
-      searchMenuRepository.getControlsDataLegal().then(function (data) {
-        scope.controlsData = data;
-        scope.isLoadingControls = false;
-      });
-      scope.setColorAsMain = function (color) {
-        scope.iconUrl = null;
-        scope.secondaryParams = {};
-        scope.mainParam = null;
-        scope.tempColor = color;
-        scope.menus = {
-          owner: '',
-          year: '',
-          color: '',
-          product: ''
-        };
-        scope.menus.color = color.id;
-        if (!scope.controlsData.colors.find(function (item) {
-            return item.id === scope.tempColor.id
-          })) {
-          scope.controlsData.colors.unshift(scope.tempColor);
-        }
-        scope.tempColor = null;
-        scope.handleChangeControl('color');
-        scope.loadGraphics();
-      };
-
-      scope.switchPage = function (value) {
-        if (value !== scope.copyrightsListPage) {
-          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, value)
-            .then(function (data) {
-              scope.copyrightsListData = data;
-            });
-        }
-        scope.copyrightsListPage = value;
-      };
-
-      scope.loadGraphics = function () {
-        if (scope.mainParam) {
-          scope.showDashboard = true;
-          dashboardOverlayService.loadingStart(4000);
-
-          legalDashboardRepository[scope.mainParam].getPageData(scope.mainParamId).then(function (data) {
-            scope.title = data.title;
-            scope.iconUrl = data.logo_url;
-
-            scope.copyrightsListTotalPages = Math.ceil((data.us_copyrights + data.int_copyrights) / 25);
-
-            if (scope.mainParam === 'owner') {
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.us_copyrights;
-              scope.pageInfo[2].data.count = data.int_copyrights;
-            } else if (scope.mainParam === 'year') {
-              scope.pageInfo[0].data.count = data.owners_count;
-              scope.pageInfo[1].data.count = data.products_count;
-              scope.pageInfo[2].data.count = data.us_copyrights;
-              scope.pageInfo[3].data.count = data.int_copyrights;
-            } else if (scope.mainParam === 'color') {
-              scope.colorHex = data.color.hex;
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.us_copyrights;
-              scope.pageInfo[2].data.count = data.int_copyrights;
-            } else if (scope.mainParam === 'product') {
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.us_copyrights;
-              scope.pageInfo[2].data.count = data.int_copyrights;
-            }
-          });
-
-          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, scope.copyrightsListPage)
-            .then(function (data) {
-              scope.copyrightsListData = data;
-            });
-
-          if (scope.mainParam !== 'color') {
-            legalDashboardRepository[scope.mainParam].getCopyrightsCount(scope.mainParamId)
-              .then(function (data) {
-                scope.copyrightsCountData = data;
-              });
-          }
-
-          if (scope.mainParam !== 'owner') {
-            legalDashboardRepository[scope.mainParam].getTopOwners(scope.mainParamId)
-              .then(function (data) {
-                scope.topOwnersData = data;
-              });
-          }
-
-          if (scope.mainParam === 'color') {
-            legalDashboardRepository[scope.mainParam].getTopProducts(scope.mainParamId)
-              .then(function (data) {
-                scope.topProductsData = data;
-              });
-
-            legalDashboardRepository[scope.mainParam].getTopProductsCopyrights(scope.mainParamId)
-              .then(function (data) {
-                scope.topProductsCopyrightsData = data;
-              });
-
-            legalDashboardRepository[scope.mainParam].getCopyrightsOverTime(scope.mainParamId, 20)
-              .then(function (data) {
-                scope.copyrightsOverTimeData = data;
-              });
-          }
-
-          if (scope.mainParam === 'year') {
-            legalDashboardRepository[scope.mainParam].getCopyrightsActivity(scope.mainParamId)
-              .then(function (data) {
-                scope.copyrightsActivityData = data;
-              });
-          }
-        }
-      };
-
-      scope.handleChangeControl = function (control) {
-        scope.copyrightsListPage = 1;
-
-        if (!scope.mainParam) {
-          scope.mainParam = control;
-          scope.mainParamId = scope.menus[control];
-          $state.go(control + 'Legal');
-        }
-
-        if (scope.mainParam && scope.menus[scope.mainParam] === '') {
-          scope.mainParam = null;
-          scope.menus = {
-            brand: '',
-            year: '',
-            model: '',
-            color: ''
-          };
-        }
-
-        switch (scope.mainParam) {
-          case 'owner':
-            scope.pageInfo = scope.ownerPageInfo;
-            scope.mainParamId = scope.menus.owner;
-            scope.showSeason = false;
-
-            scope.disabledControls = {
-              owner: false,
-              year: true,
-              color: true,
-              product: true
-            };
-            break;
-
-          case 'year':
-            scope.pageInfo = scope.yearPageInfo;
-            scope.mainParamId = scope.menus.year;
-            scope.disabledControls = {
-              owner: true,
-              year: false,
-              color: true,
-              product: true
-            };
-            break;
-
-          case 'color':
-            scope.pageInfo = scope.colorPageInfo;
-            scope.mainParamId = scope.menus.color;
-            scope.disabledControls = {
-              owner: true,
-              year: true,
-              color: false,
-              product: true
-            };
-            break;
-
-          case 'product':
-            scope.pageInfo = scope.productPageInfo;
-            scope.mainParamId = scope.menus.product;
-            scope.disabledControls = {
-              owner: true,
-              year: true,
-              color: true,
-              product: false
-            };
-            break;
-
-          default:
-            $state.go('legal');
-            scope.disabledControls = {
-              owner: false,
-              year: false,
-              color: false,
-              product: false
-            };
-
-            // scope.owner = '';
-            // scope.year = '';
-            // scope.color = '';
-            // scope.product = '';
-
-            scope.menus = {
-              owner: '',
-              year: '',
-              color: '',
-              product: ''
-            };
-
-            scope.mainParam = null;
-            scope.iconUrl = null;
-            scope.showDashboard = false;
-            scope.copyrightsListPage = 1;
-
-            scope.compareData = [];
-            scope.colorsCountData = [];
-            scope.colorsCountData = [];
-            scope.shadesData = [];
-            scope.topFamiliesData = [];
-            scope.topBrandsData = [];
-            scope.topColorsData = [];
-            scope.colorFrequencyData = [];
-            scope.topFinishesData = [];
-            scope.carColorsData = [];
-            scope.colorPaletteData = [];
-            break;
-        }
-      };
-
-      // scope.$watch('copyrightsListPage', function (newValue, oldValue) {
-      //   if (newValue) {
-      //     legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.owner, newValue, function (data) {
-      //       scope.copyrightsListData = data;
-      //     });
-      //   }
-      // });
-
-      scope.$watch(function () {
-        return dashboardOverlayService.showOverlay;
-      }, function (newValue) {
-        scope.showDashboardOverlay = newValue;
-      });
-    }]);
-
-angular.module('app').controller('autoController',
-  [
-    '$scope',
-    'autoDashboardRepository',
-    'dashboardOverlayService',
-    'searchMenuRepository',
-    '$state',
-    'anchorSmoothScroll',
-    '$location',
-    function (scope,
-              autoDashboardRepository,
-              dashboardOverlayService,
-              searchMenuRepository,
-              $state, anchorSmoothScroll, $location) {
-      // scope.brand = '';
-      // scope.year = '';
-      // scope.model = '';
-      // scope.color = '';
-
-      scope.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      scope.menus = {
-        brand: '',
-        year: '',
-        model: '',
-        color: ''
-      };
-
-      scope.disabledControls = {
-        brand: false,
-        year: false,
-        model: false,
-        color: false
-      };
-
-      scope.mainParam = null;
-      scope.mainParamId = null;
-      scope.secondaryParams = {};
-
-      scope.showDashboard = false;
-      scope.title = scope.year;
-      scope.subtitle = null;
-
-      scope.isLoadingControls = true;
-
-      // Pages info
-      scope.brandPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#models', data: {subtitle: 'Models', count: 0, menuTab: 'model'}},
-        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Colors', count: 0, menuTab: 'color'}}];
-      scope.modelPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#finishes', data: {subtitle: 'Finishes', count: 0, menuTab: 'finish'}},
-        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Colors', count: 0, menuTab: 'color'}}];
-      scope.yearPageInfo = [
-        {width: 1, type: 'countTo', tooltip: '#finishes', data: {subtitle: 'Finishes', count: 0, menuTab: 'finish'}},
-        {width: 1, type: 'countTo', tooltip: '#models', data: {subtitle: 'Models', count: 0, menuTab: 'model'}},
-        {width: 1, type: 'countTo', tooltip: '#brands', data: {subtitle: 'Brands', count: 0, menuTab: 'brand'}},
-        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Colors', count: 0, menuTab: 'color'}}];
-      scope.colorPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#brands', data: {subtitle: 'Brands', count: 0, menuTab: 'brand'}},
-        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Shades', count: 0, menuTab: 'color'}}];
-
-      scope.compareData = [];
-      scope.colorsCountData = [];
-      scope.colorsCountData = [];
-      scope.shadesData = [];
-      scope.topFamiliesData = [];
-      scope.topBrandsData = [];
-      scope.topColorsData = [];
-      scope.colorFrequencyData = [];
-      scope.topFinishesData = [];
-      scope.carColorsData = [];
-      scope.colorPaletteData = [];
-
-      scope.colorPaletteBucket = 38;
-
-      if (!scope.mainParam) {
-        $state.go('auto');
-      }
-
-      searchMenuRepository.getControlsDataAuto().then(function (data) {
-        scope.controlsData = data;
-        scope.isLoadingControls = false;
-      });
-
-      scope.changeColorPaletteBucket = function (value) {
-        if (value !== scope.colorPaletteBucket) {
-          autoDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, value)
-            .then(function (data) {
-              scope.colorPaletteData = data;
-            });
-        }
-        scope.colorPaletteBucket = value;
-      };
-
-      scope.setColorAsMain = function (color) {
-        scope.iconUrl = null;
-        scope.secondaryParams = {};
-        scope.mainParam = null;
-        scope.tempColor = color;
-        scope.menus = {
-          brand: '',
-          year: '',
-          model: '',
-          color: ''
-        };
-        scope.menus.color = color.id;
-        if (!scope.controlsData.colors.find(function (item) {
-            return item.id === scope.tempColor.id
-          })) {
-          scope.controlsData.colors.unshift(scope.tempColor);
-        }
-        scope.tempColor = null;
-        scope.handleChangeControl('color');
-        scope.loadGraphics();
-      };
-
-      scope.loadGraphics = function () {
-        if (scope.mainParam) {
-          scope.showDashboard = true;
-          dashboardOverlayService.loadingStart(4000);
-
-          autoDashboardRepository[scope.mainParam].getPageData(scope.mainParamId).then(function (data) {
-            scope.title = data.title;
-            scope.iconUrl = data.logo_url;
-
-            if (scope.mainParam === 'brand') {
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.models_count;
-              scope.pageInfo[2].data.count = data.colors_count;
-            } else if (scope.mainParam === 'model') {
-              scope.subtitle = data.manufacturer;
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.finishes_count;
-              scope.pageInfo[2].data.count = data.colors_count;
-            } else if (scope.mainParam === 'year') {
-              scope.manufacturer = data.manufacturer;
-              scope.pageInfo[0].data.count = data.finishes_count;
-              scope.pageInfo[1].data.count = data.models_count;
-              scope.pageInfo[2].data.count = data.brands_count;
-              scope.pageInfo[3].data.count = data.colors_count;
-            } else if (scope.mainParam === 'color') {
-              scope.colorHex = data.color.hex;
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.brands_count;
-              scope.pageInfo[2].data.count = data.shades_count;
-            }
-          });
-
-          if (scope.mainParam !== 'brand') {
-            autoDashboardRepository[scope.mainParam].getCompare(scope.mainParamId)
-              .then(function (data) {
-                scope.compareData = data;
-              });
-          }
-
-          if (scope.mainParam === 'brand') {
-            autoDashboardRepository[scope.mainParam].getColorsCount(scope.mainParamId)
-              .then(function (data) {
-                scope.colorsCountData = data;
-              });
-          }
-
-          if (scope.mainParam !== 'year') {
-            autoDashboardRepository[scope.mainParam].getShades(scope.mainParamId)
-              .then(function (data) {
-                scope.shadesData = data;
-              });
-          }
-
-          if (scope.mainParam === 'year') {
-            autoDashboardRepository[scope.mainParam].getTopFamilies(scope.mainParamId)
-              .then(function (data) {
-                scope.topFamiliesData = data;
-              });
-          }
-
-          if (scope.mainParam === 'color') {
-            autoDashboardRepository[scope.mainParam].getTopBrands(scope.mainParamId)
-              .then(function (data) {
-                scope.topBrandsData = data;
-              });
-          }
-
-          // -------------------------------------------
-
-          autoDashboardRepository[scope.mainParam].getTopColors(scope.mainParamId)
-            .then(function (data) {
-              scope.topColorsData = data;
-            });
-
-          autoDashboardRepository[scope.mainParam].getColorFrequency(scope.mainParamId)
-            .then(function (data) {
-              scope.colorFrequencyData = data;
-            });
-
-          autoDashboardRepository[scope.mainParam].getTopFinishes(scope.mainParamId)
-            .then(function (data) {
-              scope.topFinishesData = data;
-            });
-
-          autoDashboardRepository[scope.mainParam].getCarColors(scope.mainParamId)
-            .then(function (data) {
-              scope.carColorsData = data;
-            });
-
-          autoDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket)
-            .then(function (data) {
-              scope.colorPaletteData = data;
-            });
-        }
-      };
-
-      scope.handleChangeControl = function (control) {
-        if (!scope.mainParam) {
-          scope.mainParam = control;
-          scope.mainParamId = scope.menus[control];
-          $state.go(control + 'Auto');
-        }
-
-        if (scope.mainParam && scope.menus[scope.mainParam] === '') {
-          scope.mainParam = null;
-          scope.menus = {
-            brand: '',
-            year: '',
-            model: '',
-            color: ''
-          };
-        }
-
-        switch (scope.mainParam) {
-          case 'brand':
-            scope.pageInfo = scope.brandPageInfo;
-            scope.mainParamId = scope.menus.brand;
-            scope.showSeason = false;
-
-            scope.disabledControls = {
-              brand: false,
-              year: true,
-              model: true,
-              color: true
-            };
-            break;
-
-          case 'model':
-            scope.pageInfo = scope.modelPageInfo;
-            scope.mainParamId = scope.menus.model;
-            scope.disabledControls = {
-              brand: true,
-              model: false,
-              year: true,
-              color: true
-            };
-            break;
-
-          case 'year':
-            scope.pageInfo = scope.yearPageInfo;
-            scope.mainParamId = scope.menus.year;
-            scope.disabledControls = {
-              brand: true,
-              model: true,
-              year: false,
-              color: true
-            };
-            break;
-
-          case 'color':
-            scope.pageInfo = scope.colorPageInfo;
-            scope.mainParamId = scope.menus.color;
-            scope.disabledControls = {
-              brand: true,
-              model: true,
-              year: true,
-              color: false
-            };
-            break;
-
-          default:
-            $state.go('auto');
-            scope.disabledControls = {
-              brand: false,
-              model: false,
-              year: false,
-              color: false
-            };
-
-            // scope.brand = '';
-            // scope.year = '';
-            // scope.model = '';
-            // scope.color = '';
-
-            scope.menus = {
-              brand: '',
-              year: '',
-              model: '',
-              color: ''
-            };
-
-            scope.mainParam = null;
-            scope.iconUrl = null;
-            scope.showDashboard = false;
-
-            scope.compareData = [];
-            scope.colorsCountData = [];
-            scope.colorsCountData = [];
-            scope.shadesData = [];
-            scope.topFamiliesData = [];
-            scope.topBrandsData = [];
-            scope.topColorsData = [];
-            scope.colorFrequencyData = [];
-            scope.topFinishesData = [];
-            scope.carColorsData = [];
-            scope.colorPaletteData = [];
-            break;
-        }
-      };
-
-      scope.$watch(function () {
-        return dashboardOverlayService.showOverlay;
-      }, function (newValue) {
-        scope.showDashboardOverlay = newValue;
-      });
-    }]);
-
 angular.module('app').controller('brandingController',
   [
     '$scope',
@@ -2573,6 +2243,336 @@ angular.module('app').controller('brandingController',
             // scope.color = '';
             // scope.attribute = '';
             // scope.country = '';
+
+            scope.mainParam = null;
+            scope.iconUrl = null;
+            scope.showDashboard = false;
+
+            scope.compareData = [];
+            scope.colorsCountData = [];
+            scope.colorsCountData = [];
+            scope.shadesData = [];
+            scope.topFamiliesData = [];
+            scope.topBrandsData = [];
+            scope.topColorsData = [];
+            scope.colorFrequencyData = [];
+            scope.topFinishesData = [];
+            scope.carColorsData = [];
+            scope.colorPaletteData = [];
+            break;
+        }
+      };
+
+      scope.$watch(function () {
+        return dashboardOverlayService.showOverlay;
+      }, function (newValue) {
+        scope.showDashboardOverlay = newValue;
+      });
+    }]);
+
+angular.module('app').controller('autoController',
+  [
+    '$scope',
+    'autoDashboardRepository',
+    'dashboardOverlayService',
+    'searchMenuRepository',
+    '$state',
+    'anchorSmoothScroll',
+    '$location',
+    function (scope,
+              autoDashboardRepository,
+              dashboardOverlayService,
+              searchMenuRepository,
+              $state, anchorSmoothScroll, $location) {
+      // scope.brand = '';
+      // scope.year = '';
+      // scope.model = '';
+      // scope.color = '';
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      scope.menus = {
+        brand: '',
+        year: '',
+        model: '',
+        color: ''
+      };
+
+      scope.disabledControls = {
+        brand: false,
+        year: false,
+        model: false,
+        color: false
+      };
+
+      scope.mainParam = null;
+      scope.mainParamId = null;
+      scope.secondaryParams = {};
+
+      scope.showDashboard = false;
+      scope.title = scope.year;
+      scope.subtitle = null;
+
+      scope.isLoadingControls = true;
+
+      // Pages info
+      scope.brandPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#models', data: {subtitle: 'Models', count: 0, menuTab: 'model'}},
+        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Colors', count: 0, menuTab: 'color'}}];
+      scope.modelPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#finishes', data: {subtitle: 'Finishes', count: 0, menuTab: 'finish'}},
+        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Colors', count: 0, menuTab: 'color'}}];
+      scope.yearPageInfo = [
+        {width: 1, type: 'countTo', tooltip: '#finishes', data: {subtitle: 'Finishes', count: 0, menuTab: 'finish'}},
+        {width: 1, type: 'countTo', tooltip: '#models', data: {subtitle: 'Models', count: 0, menuTab: 'model'}},
+        {width: 1, type: 'countTo', tooltip: '#brands', data: {subtitle: 'Brands', count: 0, menuTab: 'brand'}},
+        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Colors', count: 0, menuTab: 'color'}}];
+      scope.colorPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#brands', data: {subtitle: 'Brands', count: 0, menuTab: 'brand'}},
+        {width: 1, type: 'countTo', tooltip: '#colors', data: {subtitle: 'Shades', count: 0, menuTab: 'color'}}];
+
+      scope.compareData = [];
+      scope.colorsCountData = [];
+      scope.colorsCountData = [];
+      scope.shadesData = [];
+      scope.topFamiliesData = [];
+      scope.topBrandsData = [];
+      scope.topColorsData = [];
+      scope.colorFrequencyData = [];
+      scope.topFinishesData = [];
+      scope.carColorsData = [];
+      scope.colorPaletteData = [];
+
+      scope.colorPaletteBucket = 38;
+
+      if (!scope.mainParam) {
+        $state.go('auto');
+      }
+
+      searchMenuRepository.getControlsDataAuto().then(function (data) {
+        scope.controlsData = data;
+        scope.isLoadingControls = false;
+      });
+
+      scope.changeColorPaletteBucket = function (value) {
+        if (value !== scope.colorPaletteBucket) {
+          autoDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, value)
+            .then(function (data) {
+              scope.colorPaletteData = data;
+            });
+        }
+        scope.colorPaletteBucket = value;
+      };
+
+      scope.setColorAsMain = function (color) {
+        scope.iconUrl = null;
+        scope.secondaryParams = {};
+        scope.mainParam = null;
+        scope.tempColor = color;
+        scope.menus = {
+          brand: '',
+          year: '',
+          model: '',
+          color: ''
+        };
+        scope.menus.color = color.id;
+        if (!scope.controlsData.colors.find(function (item) {
+            return item.id === scope.tempColor.id
+          })) {
+          scope.controlsData.colors.unshift(scope.tempColor);
+        }
+        scope.tempColor = null;
+        scope.handleChangeControl('color');
+        scope.loadGraphics();
+      };
+
+      scope.loadGraphics = function () {
+        if (scope.mainParam) {
+          scope.showDashboard = true;
+          dashboardOverlayService.loadingStart(4000);
+
+          autoDashboardRepository[scope.mainParam].getPageData(scope.mainParamId).then(function (data) {
+            scope.title = data.title;
+            scope.iconUrl = data.logo_url;
+
+            if (scope.mainParam === 'brand') {
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.models_count;
+              scope.pageInfo[2].data.count = data.colors_count;
+            } else if (scope.mainParam === 'model') {
+              scope.subtitle = data.manufacturer;
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.finishes_count;
+              scope.pageInfo[2].data.count = data.colors_count;
+            } else if (scope.mainParam === 'year') {
+              scope.manufacturer = data.manufacturer;
+              scope.pageInfo[0].data.count = data.finishes_count;
+              scope.pageInfo[1].data.count = data.models_count;
+              scope.pageInfo[2].data.count = data.brands_count;
+              scope.pageInfo[3].data.count = data.colors_count;
+            } else if (scope.mainParam === 'color') {
+              scope.colorHex = data.color.hex;
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.brands_count;
+              scope.pageInfo[2].data.count = data.shades_count;
+            }
+          });
+
+          if (scope.mainParam !== 'brand') {
+            autoDashboardRepository[scope.mainParam].getCompare(scope.mainParamId)
+              .then(function (data) {
+                scope.compareData = data;
+              });
+          }
+
+          if (scope.mainParam === 'brand') {
+            autoDashboardRepository[scope.mainParam].getColorsCount(scope.mainParamId)
+              .then(function (data) {
+                scope.colorsCountData = data;
+              });
+          }
+
+          if (scope.mainParam !== 'year') {
+            autoDashboardRepository[scope.mainParam].getShades(scope.mainParamId)
+              .then(function (data) {
+                scope.shadesData = data;
+              });
+          }
+
+          if (scope.mainParam === 'year') {
+            autoDashboardRepository[scope.mainParam].getTopFamilies(scope.mainParamId)
+              .then(function (data) {
+                scope.topFamiliesData = data;
+              });
+          }
+
+          if (scope.mainParam === 'color') {
+            autoDashboardRepository[scope.mainParam].getTopBrands(scope.mainParamId)
+              .then(function (data) {
+                scope.topBrandsData = data;
+              });
+          }
+
+          // -------------------------------------------
+
+          autoDashboardRepository[scope.mainParam].getTopColors(scope.mainParamId)
+            .then(function (data) {
+              scope.topColorsData = data;
+            });
+
+          autoDashboardRepository[scope.mainParam].getColorFrequency(scope.mainParamId)
+            .then(function (data) {
+              scope.colorFrequencyData = data;
+            });
+
+          autoDashboardRepository[scope.mainParam].getTopFinishes(scope.mainParamId)
+            .then(function (data) {
+              scope.topFinishesData = data;
+            });
+
+          autoDashboardRepository[scope.mainParam].getCarColors(scope.mainParamId)
+            .then(function (data) {
+              scope.carColorsData = data;
+            });
+
+          autoDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket)
+            .then(function (data) {
+              scope.colorPaletteData = data;
+            });
+        }
+      };
+
+      scope.handleChangeControl = function (control) {
+        if (!scope.mainParam) {
+          scope.mainParam = control;
+          scope.mainParamId = scope.menus[control];
+          $state.go(control + 'Auto');
+        }
+
+        if (scope.mainParam && scope.menus[scope.mainParam] === '') {
+          scope.mainParam = null;
+          scope.menus = {
+            brand: '',
+            year: '',
+            model: '',
+            color: ''
+          };
+        }
+
+        switch (scope.mainParam) {
+          case 'brand':
+            scope.pageInfo = scope.brandPageInfo;
+            scope.mainParamId = scope.menus.brand;
+            scope.showSeason = false;
+
+            scope.disabledControls = {
+              brand: false,
+              year: true,
+              model: true,
+              color: true
+            };
+            break;
+
+          case 'model':
+            scope.pageInfo = scope.modelPageInfo;
+            scope.mainParamId = scope.menus.model;
+            scope.disabledControls = {
+              brand: true,
+              model: false,
+              year: true,
+              color: true
+            };
+            break;
+
+          case 'year':
+            scope.pageInfo = scope.yearPageInfo;
+            scope.mainParamId = scope.menus.year;
+            scope.disabledControls = {
+              brand: true,
+              model: true,
+              year: false,
+              color: true
+            };
+            break;
+
+          case 'color':
+            scope.pageInfo = scope.colorPageInfo;
+            scope.mainParamId = scope.menus.color;
+            scope.disabledControls = {
+              brand: true,
+              model: true,
+              year: true,
+              color: false
+            };
+            break;
+
+          default:
+            $state.go('auto');
+            scope.disabledControls = {
+              brand: false,
+              model: false,
+              year: false,
+              color: false
+            };
+
+            // scope.brand = '';
+            // scope.year = '';
+            // scope.model = '';
+            // scope.color = '';
+
+            scope.menus = {
+              brand: '',
+              year: '',
+              model: '',
+              color: ''
+            };
 
             scope.mainParam = null;
             scope.iconUrl = null;
@@ -7284,25 +7284,6 @@ angular.module('app').directive('hueDbCarousel', function ($timeout, $interval) 
   };
 });
 
-angular.module('app').directive('hueDashboardOverlay', ['dashboardOverlayService', function (dashboardOverlayService) {
-  function link(scope, element, attrs) {
-    scope.showErrorMessage = false;
-
-    scope.$watch(function () {
-      return dashboardOverlayService.showErrorMessage;
-    }, function (newValue, oldValue) {
-      scope.showErrorMessage = newValue;
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    template: '<div class="overlay-message message-loading" ng-show="!showErrorMessage"></div><div class="overlay-message message-error" ng-show="showErrorMessage"></div>',
-    scope: true
-  };
-}]);
-
 (function () {
   'use strict';
   angular.module('app')
@@ -9032,6 +9013,25 @@ angular.module('app').directive('hueDashboardOverlay', ['dashboardOverlayService
       }
     ]);
 }());
+
+angular.module('app').directive('hueDashboardOverlay', ['dashboardOverlayService', function (dashboardOverlayService) {
+  function link(scope, element, attrs) {
+    scope.showErrorMessage = false;
+
+    scope.$watch(function () {
+      return dashboardOverlayService.showErrorMessage;
+    }, function (newValue, oldValue) {
+      scope.showErrorMessage = newValue;
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    template: '<div class="overlay-message message-loading" ng-show="!showErrorMessage"></div><div class="overlay-message message-error" ng-show="showErrorMessage"></div>',
+    scope: true
+  };
+}]);
 
 angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', function (timeout) {
   function link(scope, element, attrs) {
@@ -53109,8 +53109,8 @@ $templateCache.put('app/directives/dbColorFrequencyByRegion/dbColorFrequencyByRe
 $templateCache.put('app/directives/dbColorFrequencyByRegion/dbColorFrequencyByRegionView.html','<div class="db-color-frequency-by-region">\r\n  <div class="bar-group" ng-repeat="regionItem in data" ng-if="regionItem.colors.length > 0">\r\n    <div class="bar-title">{{regionItem.region}}</div>\r\n    <div class="bar-container">\r\n      <div class="bar-section" ng-repeat="item in regionItem.colors" ng-style="{width: item.percentage + \'%\', \'background-color\': item.color.hex}" ng-attr-title="{{item.percentage.toFixed(2) + \'% \' + item.title}}" ng-click="selectBar($event)" hue-tooltipster="tooltipsterConfig">\r\n        <div class="bottom-line"></div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
 $templateCache.put('app/directives/dbColorFrequencyBySeason/dbColorFrequencyBySeasonExpandedView.html','<div class="db-expanded-view db-color-freqeuncy-by-season-expanded">\r\n  <div class="button-close" ng-click="toggleView()"></div>\r\n  <div class="view-title">Color Frequency By Season and Category</div>\r\n  <div class="chart-container">\r\n    <div class="chart-cell" ng-repeat="item in data">\r\n      <div class="chart-title" ng-bind="item.season"></div>\r\n      <div class="chart" hue-db-color-frequency-by-season-expanded-chart="item.colors"></div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
 $templateCache.put('app/directives/dbColorFrequencyBySeason/dbColorFrequencyBySeasonView.html','<div class="db-color-frequency-by-season">\r\n  <div hue-carousel="{responsive: true, width: \'90%\', items: {width: \'265px\', visible: 3, start: 1}, scroll: {items: 1, play: false}, buttonNextId: getButtonId(\'n\'), buttonPrevId: getButtonId(\'p\')}" initialized="dataRendered">\r\n    <div class="color-frequency-pie-chart-container" ng-repeat="item in data" on-repeat-last-element="onDataRendered">\r\n      <hue-color-frequency-pie-chart data="item" initialized="dataRenderedPie">\r\n        <div class="season-title" ng-click="goToSeason($index)">\r\n          <span ng-bind="item.season_short"></span><br><span>{{item.year ? item.year : \'All Years\'}}</span>\r\n        </div>\r\n      </hue-color-frequency-pie-chart>\r\n    </div>\r\n  </div>\r\n  <div class="carousel-button-left disable-text-selection" id="{{getButtonId(\'p\')}}"></div>\r\n  <div class="carousel-button-right disable-text-selection" id="{{getButtonId(\'n\')}}"></div>\r\n</div>\r\n');
-$templateCache.put('app/directives/dbColorPicker/dbColorPickerView.html','<div id="s_color_picker_id">\n    <div class="wrapper-color-picker">\n        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\n    </div>\n    <div class="slidecontainer">\n        <input class="slider" type="range" id="rg" min="1" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\n        <span class="slider-title-opacity">OPACITY</span>\n        <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\n        <label id="value_span"></label>\n    </div>\n    <div class="rgb-display">\n        <div class="rgb-display_item">\n            <span class="rgb-display-title">R</span>\n            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n        </div>\n        <div class="rgb-display_item">\n            <span class="rgb-display-title">G</span>\n            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n        </div>\n        <div class="rgb-display_item">\n            <span class="rgb-display-title">B</span>\n            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n        </div>\n    </div>\n</div>\n');
 $templateCache.put('app/directives/dbColorPalette/dbColorPaletteView.html','<div class="db-color-palette">\r\n  <div class="palette-bar-container" ng-show="!isExpanded">\r\n    <div class="palette-bar" ng-repeat="item in data | limitTo:24" ng-attr-title="{{item.percentage.toFixed(2) + \'% \' + item.color.title + \'/\' + item.color.color.ncs}}" ng-style="{\'background-color\': item.color.color.hex}" ng-click="goToColor($index)"></div>\r\n  </div>\r\n  <div class="palette-tables" ng-show="isExpanded">\r\n    <div class="table-container" ng-repeat="tableIndex in expandedViewTables">\r\n      <table>\r\n        <thead>\r\n        <tr>\r\n          <th class="header-index">#</th>\r\n          <th class="header-color">Color</th>\r\n          <th class="header-percentage">%</th>\r\n          <th>Color Name</th>\r\n        </tr>\r\n        </thead>\r\n        <tbody>\r\n        <tr ng-repeat="item in data | limitTo:24:(tableIndex*24)">\r\n          <td>{{tableIndex * 24 + $index + 1}}</td>\r\n          <td ng-style="{\'background-color\': item.color.color.hex}"></td>\r\n          <td>{{item.percentage.toFixed(2)}}</td>\r\n          <td>{{item.color.title}}</td>\r\n        </tr>\r\n        </tbody>\r\n      </table>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
+$templateCache.put('app/directives/dbColorPicker/dbColorPickerView.html','<div id="s_color_picker_id">\n    <div class="wrapper-color-picker">\n        <canvas id="color_picker" width="200" height="200" ng-click="changeColor()"></canvas>\n    </div>\n    <div class="slidecontainer">\n        <input class="slider" type="range" id="rg" min="1" max="100" step="1" ng-change="colorPickerSliderGray()" ng-model="colorPickerGray">\n        <span class="slider-title-opacity">OPACITY</span>\n        <input class="slider slider-opacity-color" type="range" id="range_opacity" min="0" max="1" step="0.1" ng-change="colorPickerSliderOpacity()" ng-model="colorPickerOpacity">\n        <label id="value_span"></label>\n    </div>\n    <div class="rgb-display">\n        <div class="rgb-display_item">\n            <span class="rgb-display-title">R</span>\n            <input id="colorInputR" ng-model="colorPicker_R" ng-value="colorRGB_R" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n        </div>\n        <div class="rgb-display_item">\n            <span class="rgb-display-title">G</span>\n            <input id="colorInputG" ng-model="colorPicker_G" ng-value="colorRGB_G" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n        </div>\n        <div class="rgb-display_item">\n            <span class="rgb-display-title">B</span>\n            <input id="colorInputB" ng-model="colorPicker_B" ng-value="colorRGB_B" type="text" ng-change="colorPickerRGB()" class="rgb-display-input" style="width: 45px">\n        </div>\n    </div>\n</div>\n');
 $templateCache.put('app/directives/dbColorsByFamily/dbColorsByFamilyView.html','<div class="db-colors-by-family">\r\n\t<div class="button-all" ng-click="showAllLines()" ng-style="{height: colorBarItemHeight}">All</div>\r\n\t<ul class="color-bar"><li ng-click="toggleLine($index)" ng-attr-title="::item.title" ng-class="{hidden: !visibleColors[$index]}" ng-style="{\'background-color\': item.color, height: colorBarItemHeight}" ng-repeat="item in chartData"></li></ul>\r\n\t<div class="graph"></div>\r\n</div>');
 $templateCache.put('app/directives/dbCopyrightList/dbCopyrightListExpandedView.html','<div class="db-expanded-view db-copyright-list-expanded">\r\n  <div class="button-close" ng-click="hideView()"></div>\r\n  <div class="view-title">Full color copyright details for {{pageTitle}}</div>\r\n\r\n  <div class="cols">\r\n    <div>\r\n      <ul>\r\n        <li>\r\n          <label>Color code</label>\r\n          <div>\r\n            <span>{{details.color.color.ncs}}</span>\r\n            <span ng-click="colorClick(details.color.id)" class="color" ng-style="{\'background-color\': details.color.color.hex}"></span>\r\n          </div>\r\n        </li>\r\n        <li><label>Serial #</label><span>{{details.serial_number}}</span></li>\r\n        <li><label>Entery #</label><span>{{details.registration_number}}</span></li>\r\n        <li><label>Transaction date</label><span>{{details.transaction_date}}</span></li>\r\n        <li><label>Three letter status code</label><span>{{details.status_code}}</span></li>\r\n        <li><label>Identification of trademark</label><span>{{details.owner}}</span></li>\r\n        <li><label>Filing date</label><span>{{details.filed_at}}</span></li>\r\n        <li><label>Registration date of TM</label><span>{{details.registered_at}}</span></li>\r\n        <li><label>US classification code</label><span>{{details.us_code}}</span></li>\r\n        <li><label>Int\'s classification code</label><span>{{details.int_code}}</span></li>\r\n        <li ng-if="otherColorsPages.length > 1">\r\n          <label></label>\r\n          <div class="pager">\r\n            <label ng-click="selectPage($index)" ng-class="{\'active\':isPageActive($index)}" ng-repeat="p in otherColorsPages">{{$index + 1}}</label>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n      <div ng-if="otherColorCopyrights.length">\r\n        <div class="view-title">Other color copyrights for {{pageTitle}}</div>\r\n        <ul>\r\n          <li>\r\n            <label></label>\r\n            <div class="colors-copyrights">\r\n              <label ng-click="selectOtherColor(c)" ng-repeat="c in otherColorCopyrights" ng-style="{ \'background-color\' : c.color.hex }"></label>\r\n            </div>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <ul>\r\n        <li>\r\n          <label>Drawing</label>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
 $templateCache.put('app/directives/dbCopyrightList/dbCopyrightListView.html','<div class="db-copyright-list">\r\n\t<table>\r\n\t\t<thead>\r\n\t\t\t<tr>\r\n\t\t\t\t<th>Color</th>\r\n\t\t\t\t<th>Serial number</th>\r\n\t\t\t\t<th>Color name</th>\r\n\t\t\t\t<th>Product name</th>\r\n\t\t\t\t<th>US/Int\'l</th>\r\n\t\t\t\t<th>Date granted</th>\r\n\t\t\t\t<th>Status</th>\r\n\t\t\t\t<th></th>\r\n\t\t\t</tr>\r\n\t\t</thead>\r\n\t\t<tbody>\r\n\t\t\t<tr ng-repeat="item in data">\r\n\t\t\t\t<td><div ng-click="colorClick(item)" ng-style="::{\'background-color\': item.color.color.hex}"></div></td>\r\n\t\t\t\t<td ng-bind="::item.serial_number"></td>\r\n\t\t\t\t<td ng-bind="::item.color.title"></td>\r\n\t\t\t\t<td ng-bind="::item.product"></td>\r\n\t\t\t\t<td>{{::item.us_code}}/{{::item.int_code}}</td>\r\n\t\t\t\t<td ng-bind="::item.issued_at"></td>\r\n\t\t\t\t<td>{{::item.us_status}}/{{::item.int_status}}</td>\r\n\t\t\t\t<td><a ng-click="selectItem(item)">see details</a></td>\r\n\t\t\t</tr>\r\n\t\t</tbody>\r\n\t</table>\r\n</div>\r\n<hue-db-copyright-list-expanded data="data" item-data="selectedItem" hide-view="hideExpandedView()" page-title="pageTitle" ng-if="isExpandedViewVisible()"></hue-db-copyright-list-expanded>');
@@ -53684,4 +53684,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-79fe3138a3.js.map
+//# sourceMappingURL=../maps/scripts/app-98ca92b1c8.js.map
