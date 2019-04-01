@@ -5788,10 +5788,20 @@ input#search-bar{
 .landing-report-item {
   width: 350px;
   height: 400px;
-  border-bottom: 7px solid #b91378;
   margin: 20px;
   box-shadow: 0 0 20px -9px #4c4c4c;
   position: relative;
+
+  &::after {
+    position: absolute;
+    content: '';
+    width: 370px;
+    height: 7px;
+    background-color: #b91378;
+    bottom: 0;
+    left: -10px;
+  }
+
   img {
     height: 230px;
     width: 100%;
