@@ -40,7 +40,7 @@ angular.module('app').directive('hueDbDesignerImages',
 
       var imagesContainer = $('.db-designer-images', element);
       var adjustPreviewData = function () {
-        var elemCount = Math.floor(imagesContainer.width() / 190);
+        var elemCount = Math.floor(imagesContainer.width() / 285) * 2;
         scope.data = scope.originalData.slice(0, elemCount);
       };
 

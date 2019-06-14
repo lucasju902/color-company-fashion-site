@@ -14,18 +14,62 @@ angular.module('app').service('dashboardRepository',
         }
       }
 
-      return http.get(appConfig.webServiceUrl + name + '/' + module + '/' + id, {params: validatedParams})
+      return http.get(appConfig.webServiceUrl + name + '/' + module + '/' + id, { params: validatedParams })
         .then(function (data) {
           return data && data.data ? data.data : data;
         });
     };
 
     var callAutoDashboardService = function (name, module, id, params) {
-      return http.get(appConfig.autoServiceUrl + name + '/' + module + '/' + id, {params: params})
+      return http.get(appConfig.autoServiceUrl + name + '/' + module + '/' + id, { params: params })
         .then(function (data) {
           return data && data.data ? data.data : data;
         });
     };
+    // this.test = {
+    //   dashboardName: 'test',
+    //   getPageData: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'page_data', seasonId, callback, params);
+    //   },
+
+    //   getTopColors: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'top_colors', seasonId, callback, params);
+    //   },
+
+    //   getColorFrequency: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq', seasonId, callback, params);
+    //   },
+
+    //   getDistributionByCategory: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'distribution_category', seasonId, callback, params);
+    //   },
+
+    //   getColorFrequencyByCity: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq_city', seasonId, callback, params);
+    //   },
+
+    //   getColorFrequencyByRegion: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq_region', seasonId, callback, params);
+    //   },
+
+    //   getTopColorsByYear: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'top_colors_year', seasonId, callback, params);
+    //   },
+
+    //   getDesignerImages: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'designer_images', seasonId, callback, params);
+    //   },
+
+    //   getColorPalette: function (seasonId, params, bucket, callback) {
+    //     var newParams = Object.assign({}, params);
+    //     newParams.bucket = bucket;
+    //     return callDashboardService(this.dashboardName, 'palette', seasonId, callback, newParams);
+    //   },
+
+    //   getColorFrequencyBySeason: function (colorId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq_season', colorId, callback, params);
+    //   }
+    // };
 
     this.season = {
       dashboardName: 'season',
@@ -65,6 +109,10 @@ angular.module('app').service('dashboardRepository',
         var newParams = Object.assign({}, params);
         newParams.bucket = bucket;
         return callDashboardService(this.dashboardName, 'palette', seasonId, callback, newParams);
+      },
+
+      getColorFrequencyBySeason: function (colorId, params, callback) {
+        return callDashboardService(this.dashboardName, 'color_freq_season', colorId, callback, params);
       }
     };
 
