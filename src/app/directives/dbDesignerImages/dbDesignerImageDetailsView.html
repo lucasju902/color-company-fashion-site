@@ -1,7 +1,11 @@
 <div class="db-designer-images-details">
   <div class="image-details-dialog">
+        
+    <i class="glyphicon glyphicon-chevron-left" ng-click="LeftButtonHandler()"></i>
+    <i class="glyphicon glyphicon-chevron-right" ng-click="RightButtonHandler()"></i>
+    
     <div class="image-container">
-      <a ng-href="{{data.image_src}}" title="Open full size image"><img ng-src="{{data.image_src}}"/></a>
+      <a ng-href="{{data.image_src}}" title="Open full size image"><img ng-src="{{data.image_src}}" /></a>
     </div>
     <div class="image-details">
       <div class="button-close" ng-click="closeClickHandler()"></div>
@@ -9,31 +13,34 @@
       <div>{{season + ' ' + year}}</div>
       <div ng-bind="category"></div>
       <div>{{(city ? city + ', ' : '') + region}}</div>
-      <div class="image-source">Image Source: {{source}}</div>
 
-      <div class="dominant-color">
-        <div class="details-title">Dominant color</div>
-        <div class="details-color">
-          <div class="color-bar" ng-style="{'background-color': colorActual}"></div>
-          <div class="color-title">Actual</div>
+      <button type="button" class="btn btn-outline-secondary">
+        <i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;
+        ADD TO MOODBOARD
+      </button>
+      
+      <div class="row">
+        <span class="fs-4 font-weight-medium">SHARE</span>
+        <i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>
+        <i class="fab fa-twitter" ng-click="shareTwitter(data.image_src)"></i>
+        <i class="fa fa-pinterest" ng-click="sharePinterest(data.image_src)"></i>
+        <i class="fab fa-google-plus-g" ng-click="shareGooglePlus(data.image_src)"></i>
+      </div>
+      
+      <div class="dialog-footer">
+        <!-- <div class="footer-container" ng-show="isFooterMode(0)">
+          <button ng-click="exportImageCard()">Save</button>
         </div>
-        <div class="details-color">
-          <div class="color-bar" ng-style="{'background-color': colorNcs}"></div>
-          <div class="color-title">NCS {{colorNcsTitle}}</div>
+        <div class="footer-container" ng-show="isFooterMode(1)">
+          <input type="text" ng-model="imageName" />
+          <button ng-click="saveImage()">OK</button>
         </div>
+        <div class="footer-container" ng-show="isFooterMode(2)">
+          <span>Image saved</span>
+        </div> -->
       </div>
+
     </div>
-    <div class="dialog-footer">
-      <div class="footer-container" ng-show="isFooterMode(0)">
-        <button ng-click="exportImageCard()">Save</button>
-      </div>
-      <div class="footer-container" ng-show="isFooterMode(1)">
-        <input type="text" ng-model="imageName"/>
-        <button ng-click="saveImage()">OK</button>
-      </div>
-      <div class="footer-container" ng-show="isFooterMode(2)">
-        <span>Image saved</span>
-      </div>
-    </div>
+
   </div>
 </div>

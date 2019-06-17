@@ -34,7 +34,17 @@ angular.module('app').directive('hueDbDesignerImages',
       };
 
       scope.imageClickHandler = function (index) {
-        scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
+        // scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
+        let data = {
+          index: index,
+          data: []
+        };
+        if (scope.singleDesigner) {
+          data.data = scope.data;
+        } else {
+          data.data = scope.collectionData;
+        }
+        scope.imageDetailsData = data;
         scope.toggleImageDetails();
       };
 

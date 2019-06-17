@@ -1,12 +1,15 @@
 angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService) {
   function link(scope, element, attrs) {
-    scope.designer = null;
+    scope.allData = scope.data;
+    scope.data = scope.allData.data[scope.allData.index];
+
+    scope.designer = "";
     scope.season = null;
     scope.year = null;
-    scope.category = null;
-    scope.city = null;
-    scope.region = null;
-    scope.source = null;
+    scope.category = "";
+    scope.city = "";
+    scope.region = "";
+    scope.source = "";
     scope.colorActual = null;
     scope.colorNcs = null;
     scope.colorNcsTitle = null;
@@ -25,6 +28,41 @@ angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout,
       scope.onClose();
     };
 
+    scope.shareFacebook = function (url) {
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + url);
+    }
+
+    scope.shareTwitter = function (url) {
+      window.open('https://twitter.com/home?status=' + url);
+    }
+
+    scope.sharePinterest = function (url) {
+      window.open('https://pinterest.com/pin/create/button/?url=' + url);
+    }
+
+    scope.shareGooglePlus = function (url) {
+      window.open('https://plus.google.com/share?url=' + url);
+    }
+
+    scope.LeftButtonHandler = function () {
+      let index = scope.allData.index;
+      if (index > 0) {
+        index--;
+      }
+      scope.allData.index = index;
+      scope.data = scope.allData.data[index];
+    };
+
+    scope.RightButtonHandler = function () {
+      try {
+        let index = scope.allData.index;
+        if (index < scope.allData.data.length - 1) {
+          index++;
+        }
+        scope.allData.index = index;
+        scope.data = scope.allData.data[index];
+      } catch (e) {}
+    }
     scope.isFooterMode = function (index) {
       return scope.footerMode == index;
     };
