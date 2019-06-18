@@ -7,6 +7,12 @@ section {
 .dashboard-container {
     background-color: #f7f7f7;
 
+    .border {
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+    }
+
     label {
         width: 100%;
         background-color: #fff;
