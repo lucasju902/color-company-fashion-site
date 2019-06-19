@@ -13,10 +13,15 @@
 		</div>
 	</div>
 	<div ng-if="showCollection || singleDesigner">
-		<div class="image-container" ng-repeat="item in (singleDesigner ? data : collectionData)"
-			ng-click="imageClickHandler($index)">
-			<img ng-src="{{item.image_src}}" />
-			<div class="image-title">{{item.title}}</div>
+		<div class="row">
+			<div class="col cols-2 col-sm col-md-1"
+				ng-repeat="item in (singleDesigner ? data : collectionData)"
+				ng-click="imageClickHandler($index)">
+				<div class="image-container">
+					<img ng-src="{{item.image_src}}" />
+				</div>
+				<div class="image-title">{{item.title}}</div>
+			</div>
 		</div>
 	</div>
 	<div class="button-close" ng-show="showCollection" ng-click="closeFullCollection()"></div>
