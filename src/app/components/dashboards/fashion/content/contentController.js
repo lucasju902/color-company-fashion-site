@@ -271,16 +271,6 @@ angular.module('app').controller('contentFashionController', [
 
       angular.copy(vm.meta.cities, cache.cities);
 
-      // vm.filter.color = vm.meta.colorGroups[0];
-      // // vm.filter.year = _.find(vm.meta.years, {id: 2017}) || vm.meta.years[vm.meta.years.length - 1];
-      // vm.filter.year = vm.meta.years[0];
-      // vm.filter.season = vm.meta.seasons[0];
-      // vm.filter.category = vm.meta.categories[0];
-      // vm.filter.city = vm.meta.cities[0];
-      // vm.filter.region = vm.meta.regions[0];
-
-      // loading.metaLoaded.resolve();
-
       vm.charts.forEach(function(currentChart, i) {
         vm.models[i] = null;
         vm.titles[i] = '';

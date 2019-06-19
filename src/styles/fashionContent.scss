@@ -244,7 +244,6 @@ section {
     }
 }
   
-
 @media (max-width: 1300px) and (min-width: 1200px) {
     .chart {
         width: 100%;
@@ -261,6 +260,27 @@ section {
     .chart.c-bubbled-lines > div,
     .chart.c-colors-of-year > div,
     .chart.c-nails-lines > div {
+        width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+    .col-md-1 {
+        width: 25%;
+    }
+    .col-md-2 {
+        width: 50%;
+    }
+    .col-md-3 {
+        width: 70%;
+    }
+    .col-md-4 {
+        width: 80%;
+    }
+}
+
+@media (max-width: 360px) {
+    .col-sm {
         width: 100%;
     }
 }

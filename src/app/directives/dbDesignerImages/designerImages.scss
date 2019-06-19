@@ -15,19 +15,21 @@
   display: flex;
 
   .image-container {
-    margin-top: 10px;
-    padding: 0 10px;
-    height: 425px;
     position: relative;
     display: inline-block;
     overflow: hidden;
     cursor: pointer;
+    margin-top: 10px;
+    padding: 0 10px;
+    width: 100%;
 
     img {
-      width: 265px;
+      width: 100%;
+      height: auto;
     }
 
     .image-title {
+      position: relative;
       font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
       font-weight: 400;
       font-style: normal;
@@ -36,27 +38,33 @@
       letter-spacing: .02em;
       color: #000;
       background: #fff;
-      width: 265px;
-      height: 46px;
-      padding: 8px 10px 6px;
-      position: absolute;
+      width: 100%;
+      padding: 10px;
       bottom: 0;
       z-index: 10;
       text-align: center;
     }
 
     .image-overlay {
-      display: none;
       position: absolute;
-      top: 0px;
+      top: 0;
       left: 10px;
-      width: 265px;
-      height: 89.5%;
+      width: calc(100% - 20px);
+      height: 100%;
       background-color: rgba(187, 0, 118, 0.75);
       z-index: 20;
       color: #bb0076;
+      display: none;
 
       .overlay-text {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 80%;
+        height: 35%;
+        margin: auto;
         font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
         font-size: 16px;
         font-weight: bold;
@@ -64,9 +72,9 @@
         text-transform: uppercase;
         color: #fff;
         border: 3px solid white;
-        height: 123px;
-        margin: 110px 37px 135px 37px;
-        padding: 40px 53px 42px 53px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
 

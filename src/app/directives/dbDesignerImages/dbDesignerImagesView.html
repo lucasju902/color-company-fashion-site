@@ -1,26 +1,26 @@
 <div class="db-designer-images" id="{{'dbdi-'+$id}}">
-  <div ng-if="!showCollection && !singleDesigner">
-    <div class="image-container" ng-repeat="item in data track by $index">
-      <div class="image-overlay disable-text-selection" ng-click="openFullCollection($index)">
-        <div class="overlay-text">View Full Collection</div>
-      </div>
-      <img ng-src="{{item.image_src}}"/>
-      <div class="image-title">{{item.title}}</div>
-    </div>
-  </div>
-  <div ng-if="showCollection || singleDesigner">
-    <div class="image-container" ng-repeat="item in (singleDesigner ? data : collectionData)"
-         ng-click="imageClickHandler($index)">
-      <img ng-src="{{item.image_src}}"/>
-      <div class="image-title">{{item.title}}</div>
-    </div>
-  </div>
-  <div class="button-close" ng-show="showCollection" ng-click="closeFullCollection()"></div>
+	<div ng-if="!showCollection && !singleDesigner">
+		<div class="row">
+			<div class="col cols-2 col-sm col-md-1" ng-repeat="item in data track by $index">
+				<div class="image-container">
+					<div class="image-overlay disable-text-selection" ng-click="openFullCollection($index)">
+						<div class="overlay-text">View Full Collection</div>
+					</div>
+					<img ng-src="{{item.image_src}}" />
+				</div>
+				<div class="image-title">{{item.title}}</div>
+			</div>
+		</div>
+	</div>
+	<div ng-if="showCollection || singleDesigner">
+		<div class="image-container" ng-repeat="item in (singleDesigner ? data : collectionData)"
+			ng-click="imageClickHandler($index)">
+			<img ng-src="{{item.image_src}}" />
+			<div class="image-title">{{item.title}}</div>
+		</div>
+	</div>
+	<div class="button-close" ng-show="showCollection" ng-click="closeFullCollection()"></div>
 </div>
 
-<hue-db-designer-image-details
-  ng-if="showImageDetails"
-  on-close="toggleImageDetails()"
-  data="imageDetailsData">
-
+<hue-db-designer-image-details ng-if="showImageDetails" on-close="toggleImageDetails()" data="imageDetailsData">
 </hue-db-designer-image-details>
