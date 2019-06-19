@@ -114,7 +114,10 @@ section {
 
 .graph {
     text-align: center;
-    .clickable, .sub-body {
+    .clickable {
+        height: 320px;
+    }
+    .sub-body {
         height: 250px;
     }
 
@@ -258,7 +261,11 @@ section {
         margin-top: 0;
     }
 }
-  
+
+.border-left {
+    border-left: 1px solid #eee;
+}
+
 @media (max-width: 1300px) and (min-width: 1200px) {
     .chart {
         width: 100%;
