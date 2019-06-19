@@ -4,14 +4,14 @@ section {
     padding-left: 80px;
     padding-right: 80px;
 }
+.border {
+    border-left: 1px solid #ebebeb;
+    border-right: 1px solid #ebebeb;
+    border-bottom: 1px solid #ebebeb;
+}
+
 .dashboard-container {
     background-color: #f7f7f7;
-
-    .border {
-        border-left: 1px solid #ccc;
-        border-right: 1px solid #ccc;
-        border-bottom: 1px solid #ccc;
-    }
 
     label {
         width: 100%;
@@ -54,5 +54,161 @@ section {
         .active {
             padding-left: 0px;
         }
+    }
+
+    .row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-items: center;
+        .col-sm {
+            padding: 10px;
+            text-align: center;
+        }
+    }
+}
+
+.clickable {
+    cursor: pointer;
+}
+.col {
+    float: left;
+}
+
+.cols-1 {
+    width: 0.833%;
+}
+.cols-2 {
+    width: 16.66%;
+}
+.cols-3 {
+    width: 25%;
+}
+.cols-4 {
+    width: 33.33%;
+}
+.cols-5 {
+    width: 41.66%;
+}
+.cols-6 {
+    width: 50%;
+}
+.cols-7 {
+    width: 58.33%;
+}
+.cols-8 {
+    width: 66.66%;
+}
+.cols-9 {
+    width: 75%;
+}
+.cols-10 {
+    width: 83.33%;
+}
+.cols-11 {
+    width: 91.66%;
+}
+.cols-12 {
+    width: 100%;
+}
+
+.content-details {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1500;
+    background-color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+  
+    .content-details-dialog {
+        position: absolute;
+        top: 50px;
+        //   bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        background-color: #fff;
+        font-family: "Open Sans";
+        font-size: 16px;
+        text-align: left;
+        //   width: 800px;
+        //   height: 600px;
+        //   min-width: 600px;
+        //   min-height: 500px;
+        max-width: 1200px;
+        border: 1px solid #efefef;
+        
+        .content-details-dialog-header {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+        }
+        .content-details-dialog-body {
+            width: 100%;
+            padding: 10px;
+        }
+        .content-details-dialog-header {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+        }
+        .sub-body {
+            padding: 0 20px;
+        }
+    }
+}
+
+.sub-body {
+    padding: 0 20px;
+}
+
+.button-close {
+    width: 20px;
+    height: 20px;
+    background: url(../../../assets/img/icons/close-big.svg) no-repeat center;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.btn-no-back {
+    background: none;
+    color: #000;
+    border: 1px solid #000;
+}
+.btn-no-back:hover {
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+}
+.social-icon-groups {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+@media (max-width: 1300px) and (min-width: 1200px) {
+    .chart {
+        width: 100%;
+    }
+
+    .chart.c-chart-by-city-period-colors > div {
+        width: 100%;
+    }
+
+    .chart.c-listed-lines {
+        width: 100%;
+    }
+
+    .chart.c-bubbled-lines > div,
+    .chart.c-colors-of-year > div,
+    .chart.c-nails-lines > div {
+        width: 100%;
     }
 }

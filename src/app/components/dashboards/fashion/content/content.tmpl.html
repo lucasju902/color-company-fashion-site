@@ -1,133 +1,144 @@
 <div ng-controller="contentFashionController">
-  <div class="dashboard-container" ng-if="showDashboard">
-      <label>PTW FALL/WINTER 2019</label>
+	<div class="dashboard-container" ng-if="showDashboard">
+		<label>PTW FALL/WINTER 2019</label>
 
-      <ul class="nav nav-tabs">
-        <li ng-class="{active:isSet(1)}">
-          <a data-toggle="tab" href ng-click="setTab(1)">SEE SHOWS</a>
-        </li>
-        <li ng-class="{active:isSet(2)}">
-          <a data-toggle="tab" href ng-click="setTab(2)"> SEE COLOR DATA</a>
-        </li>
-        <li ng-class="{active:isSet(3)}">
-          <a data-toggle="tab" href ng-click="setTab(3)">SEE MOODBOARDS</a>
-        </li>
-      </ul>
+		<ul class="nav nav-tabs">
+			<li ng-class="{active:isSet(1)}">
+				<a data-toggle="tab" href ng-click="setTab(1)">SEE SHOWS</a>
+			</li>
+			<li ng-class="{active:isSet(2)}">
+				<a data-toggle="tab" href ng-click="setTab(2)"> SEE COLOR DATA</a>
+			</li>
+			<li ng-class="{active:isSet(3)}">
+				<a data-toggle="tab" href ng-click="setTab(3)">SEE MOODBOARDS</a>
+			</li>
+		</ul>
 
-      <div class="tab-content">
-        <!-- SEE SHOWS -->
-        <div class="tab-pane fade in active" ng-show="isSet(1)">
-          <hue-db-designer-images data="designerImagesData"
-            menus="menus"
-            season-id="menus.season"
-            year-id="menus.year"
-            category-id="menus.category"
-            city-id="menus.city"
-            is-expanded="designerImagesExpanded">
-          </hue-db-designer-images>
-        </div>
+		<div class="tab-content border">
+			<!-- SEE SHOWS -->
+			<div class="tab-pane fade in active" ng-show="isSet(1)">
+				<hue-db-designer-images data="designerImagesData" menus="menus" season-id="menus.season"
+					year-id="menus.year" category-id="menus.category" city-id="menus.city"
+					is-expanded="designerImagesExpanded">
+				</hue-db-designer-images>
+			</div>
 
-        <!-- SEE COLOR DATA -->
-        <div class="tab-pane fade in active" ng-show="isSet(2)">
-          <h3>Color</h3>
-          <div class="dashboard-container" ng-if="showDashboard">
-            <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="colorHex" icon-type="color"
-              page-info="pageInfo">
-            </hue-db-header>
+			<!-- SEE COLOR DATA -->
+			<div class="tab-pane fade in active" ng-show="isSet(2)">
+				<div class="dashboard-container" ng-if="showDashboard">
+					<hue-db-header header-title="title" header-subtitle="subtitle" header-icon="colorHex"
+						icon-type="color" page-info="pageInfo">
+					</hue-db-header>
 
-            <div class="dashboard-row row-220">
-              <div class="dashboard-cell cell-left">
-                <div class="module-title">Top 4 Colors For {{title}} Shades <img src="assets/img/icons/expand.svg"
-                    class="icon-expand" ng-click="toggleTopColorsExpandedMode()" />
-                  <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>
-                </div>
-                <hue-db-top-colors data="topColorsData"></hue-db-top-colors>
-                <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()"
-                  ng-if="topColorsExpanded"></hue-db-top-colors-expanded>
-              </div>
-              <div class="dashboard-cell cell-right">
-                <div class="module-title">Frequency By Category For {{title}} Shades <img
-                    src="assets/img/icons/expand.svg" class="icon-expand"
-                    ng-click="toggleColorFrequencyExpandedMode()" />
-                  <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>
-                </div>
-                <hue-db-color-frequency-by-category data="colorFrequencyByCategoryData">
-                </hue-db-color-frequency-by-category>
-              </div>
-            </div>
+					<div class="dashboard-row row-220">
+						<div class="dashboard-cell cell-left">
+							<div class="module-title">Top 4 Colors For {{title}} Shades <img
+									src="assets/img/icons/expand.svg" class="icon-expand"
+									ng-click="toggleTopColorsExpandedMode()" />
+								<hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>
+							</div>
+							<hue-db-top-colors data="topColorsData"></hue-db-top-colors>
+							<hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()"
+								ng-if="topColorsExpanded"></hue-db-top-colors-expanded>
+						</div>
+						<div class="dashboard-cell cell-right">
+							<div class="module-title">Frequency By Category For {{title}} Shades <img
+									src="assets/img/icons/expand.svg" class="icon-expand"
+									ng-click="toggleColorFrequencyExpandedMode()" />
+								<hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>
+							</div>
+							<hue-db-color-frequency-by-category data="colorFrequencyByCategoryData">
+							</hue-db-color-frequency-by-category>
+						</div>
+					</div>
 
-            <div class="dashboard-row">
-              <div class="dashboard-cell">
-                <div class="module-title">Frequency By Region For {{title}} Shades <img
-                    src="assets/img/icons/expand.svg" class="icon-expand"
-                    ng-click="toggleColorFrequencyByRegionExpandedMode()" />
-                  <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>
-                </div>
-                <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>
-                <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData"
-                  toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded">
-                </hue-db-color-frequency-by-region-expanded>
-              </div>
-            </div>
+					<div class="dashboard-row">
+						<div class="dashboard-cell">
+							<div class="module-title">Frequency By Region For {{title}} Shades <img
+									src="assets/img/icons/expand.svg" class="icon-expand"
+									ng-click="toggleColorFrequencyByRegionExpandedMode()" />
+								<hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>
+							</div>
+							<hue-db-color-frequency-by-region data="colorFrequencyByRegionData">
+							</hue-db-color-frequency-by-region>
+							<hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData"
+								toggle-view="toggleColorFrequencyByRegionExpandedMode()"
+								ng-if="colorFrequencyByRegionExpanded">
+							</hue-db-color-frequency-by-region-expanded>
+						</div>
+					</div>
 
-            <div class="dashboard-row">
-              <div class="dashboard-cell">
-                <div class="module-title">Top 10 {{title}} Shades By Season <img src="assets/img/icons/expand.svg"
-                    class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()" />
-                  <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>
-                </div>
-                <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData"></hue-db-color-frequency-by-season>
-                <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData"
-                  toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded">
-                </hue-db-color-frequency-by-season-expanded>
-              </div>
-            </div>
+					<div class="dashboard-row">
+						<div class="row">
+							<div class="col-sm clickable" ng-click="showGraphDialog(0)">
+								<h4 style="margin-bottom: 0;" ng-bind-html="getTitle(0)"></h4>
+								<span ng-bind-html="getDescription(0)"></span>
+								<hue-chart-by-city-period hue-chart data="getModel(0)">
+								</hue-chart-by-city-period>
+							</div>
+							<div class="col-sm clickable">
+								<h4 style="margin-bottom: 0;" ng-bind-html="getTitle(0)"></h4>
+								<span ng-bind-html="getDescription(0)"></span>
+								<hue-chart-by-city-period hue-chart data="getModel(0)">
+								</hue-chart-by-city-period>
+							</div>
+							<div class="col-sm clickable">
+								<h4 style="margin-bottom: 0;" ng-bind-html="getTitle(0)"></h4>
+								<span ng-bind-html="getDescription(0)"></span>
+								<hue-chart-by-city-period hue-chart data="getModel(0)">
+								</hue-chart-by-city-period>
+							</div>
+						</div>
+					</div>
 
-            <div class="dashboard-row">
-              <div class="dashboard-cell">
-                <div class="module-title">Top 10 {{title}} Shades By City <img src="assets/img/icons/expand.svg"
-                    class="icon-expand" ng-click="toggleColorFrequencyByCityExpandedMode()" />
-                  <hue-db-info-icon text-key="top_10_colors_by_city"></hue-db-info-icon>
-                </div>
-                <hue-db-color-frequency-by-city data="colorFrequencyByCityData"></hue-db-color-frequency-by-city>
-                <hue-db-color-frequency-by-city-expanded data="colorFrequencyByCityData"
-                  toggle-view="toggleColorFrequencyByCityExpandedMode()" ng-if="colorFrequencyByCityExpanded">
-                </hue-db-color-frequency-by-city-expanded>
-              </div>
-            </div>
+				</div>
+			</div>
 
-            <div class="dashboard-row">
-              <div class="dashboard-cell">
-                <div class="module-title">Top 4 {{title}} Shades By Year
-                  <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>
-                </div>
-                <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>
-              </div>
-            </div>
+			<!-- SEE MOODBOARDS -->
+			<div class="tab-pane fade in active" ng-show="isSet(3)">
+				<h3>MOODBOARDS</h3>
+			</div>
 
-            <div class="dashboard-row">
-              <div class="dashboard-cell">
-                <div class="module-title">Palette Collection For {{title}} Shades <img src="assets/img/icons/expand.svg"
-                    class="icon-expand" ng-click="toggleColorPaletteExpandedMode()" />
-                  <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>
-                  <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket"
-                    on-change="changeColorPaletteBucket">
-                  </hue-db-color-palette-bucket-selector>
-                </div>
-                <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData"
-                  is-expanded="colorPaletteExpanded">
-                </hue-db-color-palette>
-              </div>
-            </div>
-          </div>
-        </div>
+		</div>
 
-        <!-- SEE MOODBOARDS -->
-        <div class="tab-pane fade in active" ng-show="isSet(3)">
-          <h3>MOODBOARDS</h3>
-        </div>
+	</div>
 
-      </div>
+	<!-- Dialog -->
+	<div class="content-details" ng-if="isShowGraphDialog(0)">
+		<div class="content-details-dialog">
+			<div class="content-details-dialog-body">
+				<div class="col cols-9">
+					<div class="content-details-dialog-header text-center">
+						<h4 style="margin-bottom: 0;">{{getTitle(0)}}</h4>
+						<p>{{getDescription(0)}}</p>
+					</div>
+					<div class="sub-body">
+						<hue-chart-by-city-period hue-chart data="getModel(0)">
+						</hue-chart-by-city-period>
+					</div>
+				</div>
+				<div class="col cols-3">
+					<div class="content-details-dialog-header">
+						<div class="button-close" ng-click="closeGraphDialog()"></div>
+					</div>
+					<div class="sub-body">
+						<button type="button" class="btn btn-outline-secondary btn-no-back" style="width: 100%; font-size: 14px;">
+							<i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;
+							ADD TO MOODBOARD
+						</button>
+						<div class="social-icon-groups">
+							<span class="fs-4 font-weight-medium">SHARE</span>
+							<i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>
+							<i class="fab fa-twitter" ng-click="shareTwitter(data.image_src)"></i>
+							<i class="fa fa-pinterest" ng-click="sharePinterest(data.image_src)"></i>
+							<i class="fab fa-google-plus-g" ng-click="shareGooglePlus(data.image_src)"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="content-details-dialog-footer">
+			</div>
+		</div>
+	</div>
 
-    </div>
 </div>
