@@ -1,46 +1,42 @@
 <div class="db-designer-images-details">
-  <div class="image-details-dialog">
-        
-    <i class="glyphicon glyphicon-chevron-left" ng-click="LeftButtonHandler()"></i>
-    <i class="glyphicon glyphicon-chevron-right" ng-click="RightButtonHandler()"></i>
-    
-    <div class="image-container">
-      <a ng-href="{{data.image_src}}" title="Open full size image"><img ng-src="{{data.image_src}}" /></a>
-    </div>
-    <div class="image-details">
-      <div class="button-close" ng-click="closeClickHandler()"></div>
-      <div class="designer-name" ng-bind="designer"></div>
-      <div>{{season + ' ' + year}}</div>
-      <div ng-bind="category"></div>
-      <div>{{(city ? city + ', ' : '') + region}}</div>
+	<div class="image-details-dialog">
 
-      <button type="button" class="btn btn-outline-secondary">
-        <i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;
-        ADD TO MOODBOARD
-      </button>
-      
-      <div class="row">
-        <span class="fs-4 font-weight-medium">SHARE</span>
-        <i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>
-        <i class="fab fa-twitter" ng-click="shareTwitter(data.image_src)"></i>
-        <i class="fa fa-pinterest" ng-click="sharePinterest(data.image_src)"></i>
-        <i class="fab fa-google-plus-g" ng-click="shareGooglePlus(data.image_src)"></i>
-      </div>
-      
-      <div class="dialog-footer">
-        <!-- <div class="footer-container" ng-show="isFooterMode(0)">
-          <button ng-click="exportImageCard()">Save</button>
-        </div>
-        <div class="footer-container" ng-show="isFooterMode(1)">
-          <input type="text" ng-model="imageName" />
-          <button ng-click="saveImage()">OK</button>
-        </div>
-        <div class="footer-container" ng-show="isFooterMode(2)">
-          <span>Image saved</span>
-        </div> -->
-      </div>
+		<i class="glyphicon glyphicon-chevron-left" ng-click="LeftButtonHandler()"></i>
+		<i class="glyphicon glyphicon-chevron-right" ng-click="RightButtonHandler()"></i>
 
-    </div>
-
-  </div>
+		<div class="row">
+			<div class="col cols-6">
+				<div class="image-container">
+					<a ng-href="{{data.image_src}}" title="Open full size image">
+						<img ng-src="{{data.image_src}}" />
+					</a>
+				</div>
+			</div>
+			<div class="col cols-6">
+				<div class="image-details-header">
+					<div class="button-close" ng-click="closeClickHandler()"></div>
+				</div>
+				<div class="image-details">
+					<div class="designer-name" ng-bind="designer"></div>
+					<div>{{season + ' ' + year}}</div>
+					<div ng-bind="category"></div>
+					<div>{{(city ? city + ', ' : '') + region}}</div>
+		
+					<button type="button" class="btn btn-outline-secondary">
+						<i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;
+						ADD TO MOODBOARD
+					</button>
+		
+					<div class="social-icon-groups">
+						<span class="fs-4 font-weight-medium">SHARE</span>
+						<i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>
+						<i class="fab fa-twitter" ng-click="shareTwitter(data.image_src)"></i>
+						<i class="fa fa-pinterest" ng-click="sharePinterest(data.image_src)"></i>
+						<i class="fab fa-google-plus-g" ng-click="shareGooglePlus(data.image_src)"></i>
+					</div>
+				</div>
+			</div>
+			<div class="dialog-footer"></div>
+		</div>
+	</div>
 </div>

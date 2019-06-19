@@ -112,7 +112,6 @@ hue-db-designer-image-details {
   .image-details-dialog {
     position: absolute;
     top: 50px;
-    bottom: 0;
     left: 0;
     right: 0;
     margin: auto;
@@ -120,12 +119,15 @@ hue-db-designer-image-details {
     font-family: "Open Sans";
     font-size: 16px;
     text-align: left;
-    width: 45%;
-    height: 75%;
+    width: 800px;
     min-width: 600px;
     min-height: 500px;
-    max-width: 1200px;
-    border: 1px solid #efefef;
+		max-width: 1200px;
+		
+		.row {
+			margin-left: 0;
+			margin-right: 0;
+		}
 
     .glyphicon {
       padding: 6px 3px;
@@ -133,18 +135,26 @@ hue-db-designer-image-details {
 
     .glyphicon-chevron-left {
       z-index: 1;
-      position: relative;
-      top: 320px;
-      float: left;
+      position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			height: 28px;
+			width: 20px;
+      margin: auto;
       cursor: pointer;
       background-color: #fff;
     }
 
     .glyphicon-chevron-right {
       z-index: 1;
-      position: relative;
-      top: 320px;
-      float: right;
+      position: absolute;
+			top: 0;
+			bottom: 0;
+			right: 0;
+			margin: auto;
+			height: 28px;
+			width: 20px;
       cursor: pointer;
       background-color: #fff;
     }
@@ -160,120 +170,51 @@ hue-db-designer-image-details {
     }
 
     .image-container {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 495px;
-      // background-color: #000;
-      text-align: center;
-
+      width: 100%;
       a {
         position: relative;
         width: 100%;
         height: 100%;
         display: block;
       }
-
       img {
-        max-width: 100%;
-        max-height: 100%;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        margin: auto;
+        width: 100%;
+        height: auto;
       }
-    }
-
+		}
+		
+    .image-details-header {
+      width: 100%;
+      padding: 10px;
+		}
+		
     .image-details {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 500px;
-      height: 350px;
-      padding: 30px;
-      vertical-align: top;
+			padding: 0 20px;
       font-size: 23px;
       font-family: Oswald;
-
       .btn {
         margin-top: 30px;
-        width: 400px;
+        width: 100%;
         background: none;
         color: #000;
         border: 1px solid #000;
         font-size: 19px;
         font-weight: 10;
-      }
-
-      .row {
-        margin-left: 0;
-        margin-right: 0;
-        margin-top: 30px;
-
-        i, svg {
-          margin-left: 20px;
-          cursor: pointer;
-        }
-        .svg-inline--fa {
-          width: .5625em;
-          height: 1em;
-        }
-      }
-
-      .designer-name {
-        margin: 15px 0;
-        padding-right: 20px;
-        // font-family: Oswald;
-        // font-size: 26px;
-        text-transform: uppercase;
-      }
-
-      .image-source {
-        font-family: 'Gotham XNarrow SSm A', 'Gotham XNarrow SSm B';
-        // font-size: 14px;
-        text-transform: uppercase;
-      }
-
-      .dominant-color {
-        position: absolute;
-        bottom: 15px;
-        left: 15px;
-        right: 15px;
-
-        .details-title {
-          // font-family: Oswald;
-          // font-size: 16px;
-          width: 100%;
-        }
-
-        .details-color {
-          width: 50%;
-          float: left;
-
-          .color-bar {
-            height: 50px;
-            margin: 5px;
-          }
-
-          .color-title {
-            // font-family: Oswald;
-            // font-size: 12px;
-            text-align: center;
-            text-transform: uppercase;
-          }
-        }
-      }
+			}
+			.social-icon-groups {
+				justify-content: flex-start;
+				span {
+					margin-right: 20px;
+				}
+				i {
+					margin-right: 20px;
+				}
+			}
     }
-
     .dialog-footer {
       position: absolute;
-      bottom: 0;
-      left: 315px;
-      right: 0;
-      top: 640px;
+      bottom: 20px;
+      right: 20px;
       height: 40px;
       width: 160px;
       background: url(../../../assets/img/logo.png) center left no-repeat #000;
