@@ -72,23 +72,23 @@
 						<div class="dashboard-cell">
 							<div class="module-title">Color Family Frequency For FALL By Region</div>
 							<div class="row">
-								<div class="col-sm clickable" ng-click="showGraphDialog(0)">
+								<div class="col cols-4 col-lg-3 col-md-2 col-sm clickable" ng-click="showGraphDialog(0)">
 									<h4 ng-bind-html="getTitle(0)"></h4>
-									<span class="graph-description" ng-bind-html="getDescription(0)"></span>
+									<span ng-bind-html="getDescription(0)"></span>
 
 									<hue-chart-colors-unique-with-levels hue-chart data="getModel(0)">
 									</hue-chart-colors-unique-with-levels>
 								</div>
-								<div class="col-sm clickable" ng-click="showGraphDialog(1)">
+								<div class="col cols-4 col-lg-3 col-md-2 col-sm clickable" ng-click="showGraphDialog(1)">
 									<h4 ng-bind-html="getTitle(1)"></h4>
-									<span class="graph-description" ng-bind-html="getDescription(1)"></span>
+									<span ng-bind-html="getDescription(1)"></span>
 									
 									<hue-chart-trends hue-chart data="getModel(1)">
 									</hue-chart-trends>
 								</div>
-								<div class="col-sm clickable" ng-click="showGraphDialog(2)">
+								<div class="col cols-4 col-lg-3 col-md-2 col-sm clickable" ng-click="showGraphDialog(2)">
 									<h4 ng-bind-html="getTitle(2)"></h4>
-									<span class="graph-description" ng-bind-html="getDescription(2)"></span>
+									<span ng-bind-html="getDescription(2)"></span>
 
 									<hue-chart-nails hue-chart data="getModel(2)">
 									</hue-chart-nails>
@@ -121,6 +121,14 @@
 					<div class="sub-body">
 						<hue-chart-colors-unique-with-levels hue-chart data="getModel(0)" ng-if="graphIndex == 0">
 						</hue-chart-colors-unique-with-levels>
+
+						<hue-chart-trends hue-chart data="getModel(1)" ng-if="graphIndex == 1">
+						</hue-chart-trends>
+
+						<hue-chart-nails hue-chart data="getModel(2)" ng-if="graphIndex == 2">
+						</hue-chart-nails>
+
+						<div class="clear"></div>
 					</div>
 				</div>
 				<div class="col cols-3">
