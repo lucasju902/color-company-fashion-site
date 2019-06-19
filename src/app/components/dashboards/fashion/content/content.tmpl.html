@@ -68,25 +68,31 @@
 						</div>
 					</div>
 
-					<div class="dashboard-row">
-						<div class="row">
-							<div class="col-sm clickable" ng-click="showGraphDialog(0)">
-								<h4 style="margin-bottom: 0;" ng-bind-html="getTitle(0)"></h4>
-								<span ng-bind-html="getDescription(0)"></span>
-								<hue-chart-by-city-period hue-chart data="getModel(0)">
-								</hue-chart-by-city-period>
-							</div>
-							<div class="col-sm clickable">
-								<h4 style="margin-bottom: 0;" ng-bind-html="getTitle(0)"></h4>
-								<span ng-bind-html="getDescription(0)"></span>
-								<hue-chart-by-city-period hue-chart data="getModel(0)">
-								</hue-chart-by-city-period>
-							</div>
-							<div class="col-sm clickable">
-								<h4 style="margin-bottom: 0;" ng-bind-html="getTitle(0)"></h4>
-								<span ng-bind-html="getDescription(0)"></span>
-								<hue-chart-by-city-period hue-chart data="getModel(0)">
-								</hue-chart-by-city-period>
+					<div class="dashboard-row graph">
+						<div class="dashboard-cell">
+							<div class="module-title">Color Family Frequency For FALL By Region</div>
+							<div class="row">
+								<div class="col-sm clickable" ng-click="showGraphDialog(0)">
+									<h4 ng-bind-html="getTitle(0)"></h4>
+									<span ng-bind-html="getDescription(0)"></span>
+
+									<hue-chart-colors-unique-with-levels hue-chart data="getModel(0)">
+									</hue-chart-colors-unique-with-levels>
+								</div>
+								<div class="col-sm clickable" ng-click="showGraphDialog(1)">
+									<h4 ng-bind-html="getTitle(1)"></h4>
+									<span ng-bind-html="getDescription(1)"></span>
+									
+									<hue-chart-trends hue-chart data="getModel(1)">
+									</hue-chart-trends>
+								</div>
+								<div class="col-sm clickable" ng-click="showGraphDialog(2)">
+									<h4 ng-bind-html="getTitle(2)"></h4>
+									<span ng-bind-html="getDescription(2)"></span>
+
+									<hue-chart-nails hue-chart data="getModel(2)">
+									</hue-chart-nails>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -104,17 +110,17 @@
 	</div>
 
 	<!-- Dialog -->
-	<div class="content-details" ng-if="isShowGraphDialog(0)">
+	<div class="content-details graph" ng-if="isShowGraphDialog()">
 		<div class="content-details-dialog">
 			<div class="content-details-dialog-body">
 				<div class="col cols-9">
 					<div class="content-details-dialog-header text-center">
-						<h4 style="margin-bottom: 0;">{{getTitle(0)}}</h4>
-						<p>{{getDescription(0)}}</p>
+						<h4>{{getTitle(graphIndex)}}</h4>
+						<p>{{getDescription(graphIndex)}}</p>
 					</div>
 					<div class="sub-body">
-						<hue-chart-by-city-period hue-chart data="getModel(0)">
-						</hue-chart-by-city-period>
+						<hue-chart-colors-unique-with-levels hue-chart data="getModel(0)" ng-if="graphIndex == 0">
+						</hue-chart-colors-unique-with-levels>
 					</div>
 				</div>
 				<div class="col cols-3">
@@ -122,7 +128,7 @@
 						<div class="button-close" ng-click="closeGraphDialog()"></div>
 					</div>
 					<div class="sub-body">
-						<button type="button" class="btn btn-outline-secondary btn-no-back" style="width: 100%; font-size: 14px;">
+						<button type="button" class="btn btn-outline-secondary btn-no-back">
 							<i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;
 							ADD TO MOODBOARD
 						</button>
@@ -135,8 +141,10 @@
 						</div>
 					</div>
 				</div>
+				<div class="clear"></div>
 			</div>
 			<div class="content-details-dialog-footer">
+				<div class="dialog-footer"></div>
 			</div>
 		</div>
 	</div>

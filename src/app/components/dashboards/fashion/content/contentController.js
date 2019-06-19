@@ -26,8 +26,8 @@ angular.module('app').controller('contentFashionController', [
       scope.showGraph = true;
     }
 
-    scope.isShowGraphDialog = function(index) {
-      return scope.graphIndex == index && scope.showGraph;
+    scope.isShowGraphDialog = function() {
+      return scope.showGraph;
     }
 
     scope.closeGraphDialog = function() {
@@ -161,18 +161,15 @@ angular.module('app').controller('contentFashionController', [
     };
 
     vm.charts = [];
-    scope.$watch('menus', function() {
+    scope.$watch('menus', function(data) {
       vm.charts = [{
-        qNumber: 'CO1a',
-        id: 'colorsByCityPeriod',
-        group: 'colorsByCityPeriod',
-        title: 'Color Popularity Overview',
-        chartTitle: 'Color Popularity Overview',
+        qNumber: 'CO2a',
+        id: 'colorsUniqueWithLevels',
+        group: 'colorsUniqueWithLevels',
+        title: 'Color Mosaic View With Popularity',
+        chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
         api: function () {
-          return charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-            .then(function (results) {
-              return results;
-            });
+          return charts.colorsUniqueGroups(vm.prepareRequestParams());
         },
         filters: {
           category: true,
@@ -184,51 +181,66 @@ angular.module('app').controller('contentFashionController', [
         titleGroups: [
           ['category', 'season', 'year'],
           ['region']
-        ],
-        options: {
-          extraView: true
-        }
-      },
-      {
-        qNumber: 'CO1b',
-        id: 'colorsByCityPeriod1',
-        group: 'colorsByCityPeriod1',
-        title: 'Expanded Color Popularity Overview',
-        chartTitle: 'Expanded Color Popularity Overview {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+        ]
+      }, {
+        qNumber: 'CO3a',
+        id: 'trends',
+        group: 'trends',
+        title: 'Five Year Color Comparison',
+        chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
         api: function () {
-          return $q(function (resolve) {
-            charts.colorGroupsByCityPeriod(vm.prepareRequestParams())
-              .then(function (results) {
-                var param = vm.prepareColors();
-                dashboardRepository[param.category].getColorPalette(param.all.id, vm.prepareColorsParams(), 250)
-                  .then(function (data) {
-                    _.each(results, function (colorGroup) {
-                      colorGroup.colors = [];
-                      data.forEach(function (t) {
-                        if (colorGroup.title.toLowerCase() === t.color.family.toLowerCase() && colorGroup.colors.length < 17) {
-                          colorGroup.colors.push(t.color.color.hex);
-                        }
-                      });
-                      resolve(results);
-                    });
-                  });
-              });
+          var yearsRange = _.range(data.year - 4, data.year + 1);
+          var customParams = vm.prepareRequestParams();
+
+          if (data.year == 'all') {
+            yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+          } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+            yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+          }
+
+          return $q.all(_.map(yearsRange, function (year) {
+            customParams.year = year;
+            return charts.colorGroupsByCityPeriod(customParams);
+          })).then(function (results) {
+            return _.map(results, function (result, i) {
+              return {
+                title: yearsRange[i],
+                data: result
+              };
+            });
           });
         },
         filters: {
           category: true,
-          region: true,
-          city: true,
           season: true,
-          year: true
+          year: true,
+          region: true,
+          city: true
         },
         titleGroups: [
           ['category', 'season', 'year'],
           ['region']
-        ],
-        options: {
-          extraView: true
-        }
+        ]
+      }, {
+        qNumber: 'CA1a',
+        id: 'colorsByCategoryPeriod',
+        group: 'colorsByCategoryPeriod',
+        title: 'Color Popularity By Category',
+        chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+        api: function () {
+          return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
+        },
+        filters: {
+          category: true,
+          season: true,
+          year: true,
+          region: true,
+          city: true
+        },
+        titleGroups: [
+          ['category', 'season', 'year'],
+          ['region']
+        ]
       }];
     });
 

@@ -60,7 +60,7 @@ section {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        align-items: center;
+        align-items: flex-start;
         .col-sm {
             padding: 10px;
             text-align: center;
@@ -112,6 +112,12 @@ section {
     width: 100%;
 }
 
+.graph {
+    h4 {
+        margin-bottom: 0;
+    }
+}
+
 .content-details {
     position: fixed;
     top: 50px;
@@ -144,20 +150,35 @@ section {
             width: 100%;
             height: 50px;
             padding: 10px;
+            margin-bottom: 10px;
         }
         .content-details-dialog-body {
             width: 100%;
             padding: 10px;
         }
-        .content-details-dialog-header {
-            width: 100%;
-            height: 50px;
-            padding: 10px;
-        }
         .sub-body {
             padding: 0 20px;
+            .btn-no-back {
+                width: 100%; font-size: 14px;
+            }
         }
     }
+}
+.clear {
+    clear: both;
+}
+
+.dialog-footer {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    height: 40px;
+    width: 160px;
+    background: url(../../../assets/img/logo.png) center left no-repeat #000;
+    background-size: contain;
+    font-family: Open Sans;
+    font-size: 14px;
+    color: #fff;
 }
 
 .sub-body {
@@ -192,6 +213,37 @@ section {
     align-items: center;
     padding: 20px 0;
 }
+
+.chart {
+    position: relative;
+    width: 100%;
+    min-width: 400px;
+    margin: auto;
+
+    div {
+        position: absolute;
+        width: 100%;
+        min-width: 400px;
+        height: 300px;
+        min-height: 100px;
+    }
+}
+
+.c-colors-of-year {
+ 
+    div:first-child {
+        min-height: 100px;
+        height: 200px;
+        margin-bottom: 10px;
+    }
+
+    div:last-child {
+        min-height: 100px;
+        height: 100px;
+        margin-top: 0;
+    }
+}
+  
 
 @media (max-width: 1300px) and (min-width: 1200px) {
     .chart {
