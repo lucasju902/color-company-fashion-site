@@ -278,6 +278,11 @@ section {
     border-left: 1px solid #eee;
 }
 
+.moodboards-container {
+    .board {
+        height: 500px;
+    }
+}
 @media (max-width: 1300px) and (min-width: 1200px) {
     .chart {
         width: 100%;
