@@ -15,12 +15,38 @@
 	<div ng-if="showCollection || singleDesigner">
 		<div class="row">
 			<div class="col cols-2 col-sm col-md-1"
-				ng-repeat="item in (singleDesigner ? data : collectionData)"
+				ng-repeat="item in collectionDataList"
 				ng-click="imageClickHandler($index)">
 				<div class="image-container">
 					<img ng-src="{{item.image_src}}" />
 				</div>
 				<div class="image-title">{{item.title}}</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="pagination">
+				<ul>
+					<li ng-class="{ disabled: page_num == 0 }"><a href="javascript:void(0)" ng-click="setPage(page_num - 1)"><i class="glyphicon glyphicon-arrow-left"></i>BACK</a></li>
+					<li ng-if="page_num > 1 && page_num == page_count - 1">
+						<a href="javascript:void(0)" ng-click="setPage(page_num - 1)">{{page_num - 1}}</a>
+					</li>
+					<li ng-if="page_num > 0">
+						<a href="javascript:void(0)">{{page_num}}</a>
+					</li>
+					<li class="active">
+						<a href="javascript:void(0)" ng-click="setPage(page_num + 1)">{{page_num + 1}}</a>
+					</li>
+					<li ng-if="page_num < page_count - 1">
+						<a href="javascript:void(0)" ng-click="setPage(page_num + 2)">{{page_num + 2}}</a>
+					</li>
+					<li ng-if="page_num ==0 && page_num < page_count - 2">
+						<a href="javascript:void(0)" ng-click="setPage(page_num + 3)">{{page_num + 3}}</a>
+					</li>
+					<!-- <li ng-class="{active: $index == page_num}" ng-repeat="i in getNumber(page_count) track by $index">
+						<a href="javascript:void(0)" ng-click="setPage($index)">{{$index + 1}}</a>
+					</li> -->
+					<li ng-class="{ disabled: page_num == page_count - 1 }"><a href="javascript:void(0)" ng-click="setPage(page_num + 1)">NEXT<i class="glyphicon glyphicon-arrow-right"></i></a></li>
+				</ul>
 			</div>
 		</div>
 	</div>

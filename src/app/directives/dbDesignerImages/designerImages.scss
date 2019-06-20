@@ -13,6 +13,67 @@
     cursor: pointer;
   }
 
+  .pagination {
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #fff;
+    }
+    
+    li {
+      float: left;
+      border: 1px solid #e1e1e1;
+      border-left: none;
+
+      a {
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 10px 16px;
+        text-decoration: none;
+      }
+      a:hover {
+        background-color: #bb0075;
+        color: #fff;
+      }
+    }
+
+    li:first-child {
+      a {
+        padding: 10px 25px;
+      }
+      i {
+        margin-left: -10px;
+        margin-right: 10px;
+      }
+    }
+    li:last-child {
+      border-right: none;
+      a {
+        padding: 10px 25px;
+      }
+      i {
+        margin-left: 10px;
+        margin-right: -10px;
+      }
+    }
+
+    li.active {
+      background: #bb0075;
+      a {
+        color: #fff;
+      }
+    }
+    li.disabled {
+      background: #eee;
+      a {
+        color: #ccc;
+      }
+    }
+  }
+
   display: flex;
 
   .image-container {

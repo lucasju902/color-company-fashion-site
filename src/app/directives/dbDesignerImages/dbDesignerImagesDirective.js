@@ -8,8 +8,24 @@ angular.module('app').directive('hueDbDesignerImages', [
 			scope.collectionLoading = false;
 			scope.imageDetailsData = null;
 			window.scr = scope
+			scope.page_num = 0;
+			scope.page_limit = 18;
+			scope.page_count = 1;
+			scope.collectionDataList = [];
+
+			scope.getNumber = function(num) {
+				return new Array(num);   
+			}
+
+			scope.setPage = function(num) {
+				if (num >= 0 && num < scope.page_count) {
+					scope.page_num = num;
+					adjustPreviewData();
+				}
+			}
 
 			scope.openFullCollection = function (index) {
+				scope.page_num = 0;
 				// if (scope.collectionLoading)
 				//   return;
 				scope.collectionData = [];
@@ -20,6 +36,7 @@ angular.module('app').directive('hueDbDesignerImages', [
 						timeout(function () {
 							scope.showCollection = true;
 						}, 300);
+						adjustPreviewData();
 					});
 				scope.collectionLoading = true;
 			};
@@ -51,13 +68,41 @@ angular.module('app').directive('hueDbDesignerImages', [
 			var adjustPreviewData = function () {
 				var elemCount = 12;
 				var windowWidth = $(window).width();
+				scope.page_limit = 18;
 				if (windowWidth <= 900) {
 					elemCount = 8;
+					scope.page_limit = 12;
 				}
 				if (windowWidth <= 360) {
 					elemCount = 2;
+					scope.page_limit = 3;
 				}
 				scope.data = scope.originalData.slice(0, elemCount);
+
+				// collection data list
+				if (scope.singleDesigner) {
+					scope.page_count = Math.ceil(scope.data.length / scope.page_limit);
+					if (scope.page_num >= scope.page_count) {
+						scope.page_num = scope.page_count - 1;
+					}
+					var from = scope.page_num * scope.page_limit;
+					var to = (scope.page_num + 1) * scope.page_limit;
+					if (scope.data.length < to) {
+						to = scope.data.length;
+					}
+					scope.collectionDataList = scope.data.slice(from, to)
+				} else {
+					scope.page_count = Math.ceil(scope.collectionData.length / scope.page_limit);
+					if (scope.page_num >= scope.page_count) {
+						scope.page_num = scope.page_count - 1;
+					}
+					var from = scope.page_num * scope.page_limit;
+					var to = (scope.page_num + 1) * scope.page_limit;
+					if (scope.collectionData.length < to) {
+						to = scope.collectionData.length;
+					}
+					scope.collectionDataList = scope.collectionData.slice(from, to)
+				}
 			};
 
 			$(window).resize(function (event) {
