@@ -57,19 +57,27 @@ svg .titles-group .title {
 
 .chart {
   position: relative;
-  width: 1150px;
-  height: 525px;
+  /* width: 1150px;
+  height: 525px; */
+  width: 100%;
+  height: 100%;
+  min-width: 500px;
+  min-height: 300px;
   margin: auto;
 }
 
 .chart > div {
   position: absolute;
-  width: 1150px;
-  height: 525px;
+  /* width: 1150px;
+  height: 525px; */
+  width: 100%;
+  height: 100%;
+  min-width: 500px;
+  min-height: 300px;
 }
 
 .chart {
-  margin-bottom: 18px;
+  /* margin-bottom: 18px; */
 }
 
 .c-chart-region > div:first-child {
@@ -748,7 +756,7 @@ svg .value-title {
 
 .c-colors-of-year > div:last-child {
   height: 200px;
-  zmargin-top: 40px;
+  margin-top: 40px;
 }
 
 /**/

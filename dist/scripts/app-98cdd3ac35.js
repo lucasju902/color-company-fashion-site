@@ -63,24 +63,38 @@ angular.module('app').constant('appConfig', {
   }
 });
 
-angular.module('app').controller('yearLegalController',
+angular.module('app').controller('seasonFashionController',
   ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
 
-  }]);
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
 
-angular.module('app').controller('productLegalController',
-  ['$scope', function (scope) {
+    scope.colorFrequencyByRegionExpanded = false;
+    scope.toggleColorFrequencyByRegionExpandedMode = function () {
+      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
+    };
 
-  }]);
+    scope.colorFrequencyByCityExpanded = false;
+    scope.toggleColorFrequencyByCityExpandedMode = function () {
+      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
+    };
 
-angular.module('app').controller('ownerLegalController',
-  ['$scope', function (scope) {
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
 
-  }]);
-
-angular.module('app').controller('colorLegalController',
-  ['$scope', function (scope) {
-
+    scope.designerImagesExpanded = false;
+    scope.toggleDesignerImagesExpandedMode = function () {
+      scope.designerImagesExpanded = !scope.designerImagesExpanded;
+    };
   }]);
 
 angular.module('app').controller('yearFashionController',
@@ -104,40 +118,6 @@ angular.module('app').controller('yearFashionController',
     scope.colorFrequencyBySeasonExpanded = false;
     scope.toggleColorFrequencyBySeasonExpandedMode = function () {
       scope.colorFrequencyBySeasonExpanded = !scope.colorFrequencyBySeasonExpanded;
-    };
-
-    scope.colorFrequencyByCityExpanded = false;
-    scope.toggleColorFrequencyByCityExpandedMode = function () {
-      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-
-    scope.designerImagesExpanded = false;
-    scope.toggleDesignerImagesExpandedMode = function () {
-      scope.designerImagesExpanded = !scope.designerImagesExpanded;
-    };
-  }]);
-
-angular.module('app').controller('seasonFashionController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.colorFrequencyByRegionExpanded = false;
-    scope.toggleColorFrequencyByRegionExpandedMode = function () {
-      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
     };
 
     scope.colorFrequencyByCityExpanded = false;
@@ -224,6 +204,355 @@ angular.module('app').controller('designerFashionController',
     };
   }]);
 
+angular.module('app').controller('contentFashionController', [
+  '$scope', 'appConfig', 'dashboardRepository', 'charts', '$q', '$interpolate', 'repo.meta', 'common', '$http',
+  function (scope, appConfig, dashboardRepository, charts, $q, $interpolate, meta, common, $http) {
+    var vm = this;
+
+    vm.meta = {};
+    vm.filter = {};
+    vm.grayList = {};
+
+    scope.getModel = function(index) {
+      return vm.models[index];
+    }
+
+    scope.getTitle = function(index) {
+      return vm.titles[index];
+    }
+
+    scope.getDescription = function(index) {
+      return vm.descriptions[index];
+    }
+
+    scope.graphIndex = 0;
+    scope.showGraph = false;
+    scope.showGraphDialog = function(index) {
+      scope.graphIndex = index;
+      scope.showGraph = true;
+    }
+
+    scope.isShowGraphDialog = function() {
+      return scope.showGraph;
+    }
+
+    scope.closeGraphDialog = function() {
+      scope.showGraph = false;
+    }
+
+    var cache = {
+      designers: [],
+      categories: [],
+      regions: {},
+      cities: []
+    };
+
+    var loading = {
+      ready: false,
+      designersReady: $q.defer(),
+      metaLoaded: $q.defer(),
+      metaReady: $q.defer()
+    };
+
+    function getObject(id, prop) {
+      var obj = {
+        id: "all",
+        title: "all"
+      };
+
+      if (id == "") {
+        return obj;
+      }
+
+      for (var i = 0; i < scope.controlsData[prop].length; i++) {
+        var data = scope.controlsData[prop][i];
+        if (data.id == id) {
+          obj = data;
+          break;
+        }
+      }
+      return obj;
+    }
+
+    vm.prepareRequestParams = function () {
+      var params = {
+        city: getObject(scope.menus.city, 'cities').title,
+        year: scope.menus.year == "" ? "all" : scope.menus.year,
+        season: getObject(scope.menus.season, 'seasons').title,
+        category: getObject(scope.menus.category, 'categories').title,
+        region: scope.menus.region == "" ? "all" : scope.menus.region,
+        designer: getObject(scope.menus.designer, 'designers').title
+      };
+
+      return params;
+    };
+
+    vm.prepareColorsParams = function () {
+      var param = {};
+      if (scope.menus.city != "") {
+        param.city_id = scope.menus.city;
+      }
+      if (scope.menus.season != "") {
+        param.season_id = scope.menus.season;
+      }
+      if (scope.menus.category != "") {
+        param.category_id = scope.menus.category;
+      }
+      if (scope.menus.designer != "") {
+        param.designer_id = scope.menus.designer;
+      }
+
+      if (scope.menus.year == "") {
+        param.year_id = "all";
+      } else {
+        param.year_id = scope.menus.year;
+      }
+
+      return param;
+    };
+
+    vm.prepareColors = function () {
+      if (scope.menus.season != "") {
+        return {all: getObject(scope.menus.season, 'seasons'), category: 'season'};
+      }
+      if (scope.menus.city != "") {
+        return {all: getObject(scope.menus.city, 'cities'), category: 'city'};
+      }
+      if (scope.menus.category != "") {
+        return {all: getObject(scope.menus.category, 'categories'), category: 'category'};
+      }
+      if (scope.menus.designer != "") {
+        return {all: getObject(scope.menus.designer, 'desingers'), category: 'designer'};
+      }
+      return {all: {id: 2018}, category: 'year'};
+    };
+
+    scope.tab = 1;
+    scope.setTab = function (tabId) {
+      scope.tab = tabId;
+    };
+
+    scope.isSet = function (tabId) {
+        return scope.tab === tabId;
+    };
+
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorFrequencyByRegionExpanded = false;
+    scope.toggleColorFrequencyByRegionExpandedMode = function () {
+      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
+    };
+
+    scope.colorFrequencyByCityExpanded = false;
+    scope.toggleColorFrequencyByCityExpandedMode = function () {
+      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+
+    scope.designerImagesExpanded = false;
+    scope.toggleDesignerImagesExpandedMode = function () {
+      scope.designerImagesExpanded = !scope.designerImagesExpanded;
+    };
+
+    vm.charts = [];
+    scope.$watch('menus', function(data) {
+      vm.charts = [{
+        qNumber: 'CO2a',
+        id: 'colorsUniqueWithLevels',
+        group: 'colorsUniqueWithLevels',
+        title: 'Color Mosaic View With Popularity',
+        chartTitle: 'Color Mosaic View With Popularity {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+        api: function () {
+          return charts.colorsUniqueGroups(vm.prepareRequestParams());
+        },
+        filters: {
+          category: true,
+          season: true,
+          year: true,
+          region: true,
+          city: true
+        },
+        titleGroups: [
+          ['category', 'season', 'year'],
+          ['region']
+        ]
+      }, {
+        qNumber: 'CO3a',
+        id: 'trends',
+        group: 'trends',
+        title: 'Five Year Color Comparison',
+        chartTitle: 'Five Year Color Comparison {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+        api: function () {
+          var yearsRange = _.range(data.year - 4, data.year + 1);
+          var customParams = vm.prepareRequestParams();
+
+          if (data.year == 'all') {
+            yearsRange = _.range(vm.meta.years[1].title - 4, vm.meta.years[1].title + 1);
+          } else if (yearsRange[0] < vm.meta.years[vm.meta.years.length - 1].title) {
+            yearsRange = _.range(vm.meta.years[vm.meta.years.length - 1].title, vm.meta.years[vm.meta.years.length - 1].title + 5);
+          }
+
+          return $q.all(_.map(yearsRange, function (year) {
+            customParams.year = year;
+            return charts.colorGroupsByCityPeriod(customParams);
+          })).then(function (results) {
+            return _.map(results, function (result, i) {
+              return {
+                title: yearsRange[i],
+                data: result
+              };
+            });
+          });
+        },
+        filters: {
+          category: true,
+          season: true,
+          year: true,
+          region: true,
+          city: true
+        },
+        titleGroups: [
+          ['category', 'season', 'year'],
+          ['region']
+        ]
+      }, {
+        qNumber: 'CA1a',
+        id: 'colorsByCategoryPeriod',
+        group: 'colorsByCategoryPeriod',
+        title: 'Color Popularity By Category',
+        chartTitle: 'Color Popularity By Category {{vm.parseTitle(0)}} {{vm.parseTitle(1)}}',
+        api: function () {
+          return charts.colorGroupsByCityPeriod(vm.prepareRequestParams());
+        },
+        filters: {
+          category: true,
+          season: true,
+          year: true,
+          region: true,
+          city: true
+        },
+        titleGroups: [
+          ['category', 'season', 'year'],
+          ['region']
+        ]
+      }];
+    });
+
+    vm.models = [];
+    vm.titles = [];
+    vm.descriptions = [];
+
+    // Behaviour
+    meta.objects().then(function (result) {
+      var years = [];
+      for (var i = result.years.to; i >= result.years.from; i--) {
+        years.push({id: i, title: i});
+      }
+
+      vm.meta.years = years;
+      vm.meta.colorGroups = result.colorGroups;
+      vm.meta.categories = result.categories;
+      vm.meta.seasons = result.seasons;
+      vm.meta.regions = common.generic.regions;
+      vm.meta.cities = result.cities;
+
+      _.each(vm.meta, function (item, key) {
+        var newTitle = 'All ' + key;
+        if (key !== 'colorGroups') {
+          item.unshift({id: 'all', title: newTitle.toUpperCase(), region: 'all', serverName: 'all', all: true})
+        }
+      });
+
+      angular.copy(vm.meta.cities, cache.cities);
+
+      vm.charts.forEach(function(currentChart, i) {
+        vm.models[i] = null;
+        vm.titles[i] = '';
+        vm.descriptions[i] = '';
+
+        currentChart.api().then(function(result) {
+          vm.models[i] = result;
+          if (vm.charts[i].apiAfter) {
+            vm.charts[i].apiAfter(vm.models[i], result);
+          }
+          vm.titles[i] = prepareTitle(vm.charts[i].chartTitle);
+          prepareDescription(i);
+        });
+      });
+  
+    });
+
+    function prepareTitle(title) {
+      var exp = $interpolate(title);
+      return exp(scope);
+    }
+
+    function prepareDescription(i) {
+      vm.descriptions[i] = vm.descriptions[i] || (scope.menus.year + ' | COLORS-' + vm.charts[i].qNumber + ' | CITIES-' +
+      scope.menus.city + ' | REGIONS-' + scope.menus.region + ' | DESIGNER-' + scope.menus.designer +
+        ' | SEASONS-' + scope.menus.season);
+
+      var regionId = null;
+      switch (scope.menus.region) {
+        case 'europe':
+          regionId = 2;
+          break;
+        case 'north_america':
+          regionId = 3;
+          break;
+        case 'latin_america':
+          regionId = 4;
+          break;
+        case 'asia_pacific':
+          regionId = 1;
+          break;
+      }
+
+      var yearFrom = null;
+      var yearTo = scope.menus.year === 'all' ? vm.meta.years[1].title : scope.menus.year;
+      if (vm.charts[i].qNumber === 'CO3a' || vm.charts[i].qNumber === 'SE2a' || vm.charts[i].qNumber === 'SE2b') {
+        yearFrom = yearTo - 4;
+      } else if (vm.charts[i].qNumber === 'CA3a' || vm.charts[i].qNumber === 'CA3b') {
+        yearFrom = yearTo - 2;
+      } else if (vm.charts[i].qNumber === 'DE2a' || vm.charts[i].qNumber === 'DE2b') {
+        yearFrom = yearTo - 1;
+      }
+
+      $http({
+        url: (appConfig.webServiceUrl + 'stats'),
+        method: 'GET',
+        params: {
+          fashionSeason: scope.menus.season === 'all' ? null : scope.menus.season,
+          fashionDesigner: scope.menus.designer === 'all' ? null : scope.menus.designer,
+          fashionRegion: regionId || null,
+          fashionCity: scope.menus.city === 'all' ? null : scope.menus.city,
+          fashionCategory: scope.menus.category === 'all' ? null : scope.menus.category,
+          fashionYear: yearFrom || scope.menus.year === 'all' ? null : scope.menus.year,
+          yearFrom: yearFrom || null,
+          yearTo: yearFrom ? yearTo : null
+        }
+      }).then(function (res) {
+        // vm.grayList = res.data.data;
+        vm.descriptions[i] = 'YEARS-' + res.data.counts.years + ' | COLORS-' + res.data.counts.colors +
+          ' | CITIES-' + res.data.counts.cities + ' | REGIONS-' + res.data.counts.regions +
+          ' | DESIGNER-' + res.data.counts.designers + ' | SEASONS-' + res.data.counts.seasons;
+      });
+    }
+  }
+]);
+
 angular.module('app').controller('colorFashionController',
   ['$scope', function (scope) {
     // Behaviour
@@ -235,6 +564,45 @@ angular.module('app').controller('colorFashionController',
     scope.colorFrequencyExpanded = false;
     scope.toggleColorFrequencyExpandedMode = function () {
       scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorFrequencyBySeasonExpanded = false;
+    scope.toggleColorFrequencyBySeasonExpandedMode = function () {
+      scope.colorFrequencyBySeasonExpanded = !scope.colorFrequencyBySeasonExpanded;
+    };
+
+    scope.colorFrequencyByCityExpanded = false;
+    scope.toggleColorFrequencyByCityExpandedMode = function () {
+      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
+    };
+
+    scope.designerImagesExpanded = false;
+    scope.toggleDesignerImagesExpandedMode = function () {
+      scope.designerImagesExpanded = !scope.designerImagesExpanded;
+    };
+  }]);
+
+angular.module('app').controller('categoryFashionController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.colorFrequencyByRegionExpanded = false;
+    scope.toggleColorFrequencyByRegionExpandedMode = function () {
+      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
     };
 
     scope.colorFrequencyBySeasonExpanded = false;
@@ -292,70 +660,27 @@ angular.module('app').controller('cityFashionController',
     };
   }]);
 
-angular.module('app').controller('categoryFashionController',
+angular.module('app').controller('yearLegalController',
   ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
 
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
+  }]);
 
-    scope.colorFrequencyByRegionExpanded = false;
-    scope.toggleColorFrequencyByRegionExpandedMode = function () {
-      scope.colorFrequencyByRegionExpanded = !scope.colorFrequencyByRegionExpanded;
-    };
+angular.module('app').controller('productLegalController',
+  ['$scope', function (scope) {
 
-    scope.colorFrequencyBySeasonExpanded = false;
-    scope.toggleColorFrequencyBySeasonExpandedMode = function () {
-      scope.colorFrequencyBySeasonExpanded = !scope.colorFrequencyBySeasonExpanded;
-    };
+  }]);
 
-    scope.colorFrequencyByCityExpanded = false;
-    scope.toggleColorFrequencyByCityExpandedMode = function () {
-      scope.colorFrequencyByCityExpanded = !scope.colorFrequencyByCityExpanded;
-    };
+angular.module('app').controller('ownerLegalController',
+  ['$scope', function (scope) {
 
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
+  }]);
 
-    scope.designerImagesExpanded = false;
-    scope.toggleDesignerImagesExpandedMode = function () {
-      scope.designerImagesExpanded = !scope.designerImagesExpanded;
-    };
+angular.module('app').controller('colorLegalController',
+  ['$scope', function (scope) {
+
   }]);
 
 angular.module('app').controller('industryBrandingController',
-  ['$scope', function (scope) {
-    // Behaviour
-    scope.topColorsExpanded = false;
-    scope.toggleTopColorsExpandedMode = function () {
-      scope.topColorsExpanded = !scope.topColorsExpanded;
-    };
-
-    scope.colorFrequencyExpanded = false;
-    scope.toggleColorFrequencyExpandedMode = function () {
-      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
-    };
-
-    scope.mapExpanded = false;
-    scope.toggleMapExpandedMode = function () {
-      scope.mapExpanded = !scope.mapExpanded;
-    };
-
-    scope.colorPaletteExpanded = false;
-    scope.toggleColorPaletteExpandedMode = function () {
-      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
-    };
-  }]);
-
-angular.module('app').controller('countryBrandingController',
   ['$scope', function (scope) {
     // Behaviour
     scope.topColorsExpanded = false;
@@ -395,6 +720,30 @@ angular.module('app').controller('colorBrandingController',
     scope.mapExpanded = false;
     scope.toggleMapExpandedMode = function () {
       scope.mapExpanded = !scope.mapExpanded;
+    };
+  }]);
+
+angular.module('app').controller('countryBrandingController',
+  ['$scope', function (scope) {
+    // Behaviour
+    scope.topColorsExpanded = false;
+    scope.toggleTopColorsExpandedMode = function () {
+      scope.topColorsExpanded = !scope.topColorsExpanded;
+    };
+
+    scope.colorFrequencyExpanded = false;
+    scope.toggleColorFrequencyExpandedMode = function () {
+      scope.colorFrequencyExpanded = !scope.colorFrequencyExpanded;
+    };
+
+    scope.mapExpanded = false;
+    scope.toggleMapExpandedMode = function () {
+      scope.mapExpanded = !scope.mapExpanded;
+    };
+
+    scope.colorPaletteExpanded = false;
+    scope.toggleColorPaletteExpandedMode = function () {
+      scope.colorPaletteExpanded = !scope.colorPaletteExpanded;
     };
   }]);
 
@@ -936,358 +1285,6 @@ angular.module('app').controller('brandAutoController',
         return service;
       }]);
 }());
-
-angular.module('app').controller('legalController',
-  [
-    '$scope',
-    'legalDashboardRepository',
-    'dashboardOverlayService',
-    'searchMenuRepository',
-    '$state',
-    'anchorSmoothScroll',
-    '$location',
-    function (scope,
-              legalDashboardRepository,
-              dashboardOverlayService,
-              searchMenuRepository,
-              $state, anchorSmoothScroll, $location) {
-
-      // scope.owner = '';
-      // scope.year = '';
-      // scope.color = '';
-      // scope.product = '';
-
-      scope.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      scope.menus = {
-        owner: '',
-        year: '',
-        color: '',
-        product: ''
-      };
-
-      scope.disabledControls = {
-        owner: false,
-        year: false,
-        color: false,
-        product: false
-      };
-
-      scope.mainParam = null;
-      scope.mainParamId = null;
-
-      scope.showDashboard = false;
-      scope.title = null;
-      scope.subtitle = null;
-      scope.copyrightsCountData = null;
-      scope.copyrightsListData = null;
-      scope.copyrightsListPage = 1;
-      scope.copyrightsListTotalPages = 1;
-
-      scope.isLoadingControls = true;
-
-      // Pages info
-      scope.ownerPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-      scope.yearPageInfo = [
-        {width: 1, type: 'countTo', tooltip: '#owners', data: {subtitle: 'Owners', count: 0, menuTab: 'owner'}},
-        {width: 1, type: 'countTo', tooltip: '#products', data: {subtitle: 'Products', count: 0, menuTab: 'product'}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-      scope.colorPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-      scope.productPageInfo = [
-        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
-        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
-        {
-          width: 1,
-          type: 'countTo',
-          tooltip: '#international_copyrights',
-          data: {subtitle: 'Int\'l Copyright', count: 0}
-        }];
-
-      scope.compareData = [];
-      scope.colorsCountData = [];
-      scope.colorsCountData = [];
-      scope.shadesData = [];
-      scope.topFamiliesData = [];
-      scope.topBrandsData = [];
-      scope.topColorsData = [];
-      scope.colorFrequencyData = [];
-      scope.topFinishesData = [];
-      scope.carColorsData = [];
-      scope.colorPaletteData = [];
-
-      if (!scope.mainParam) {
-        $state.go('legal');
-      }
-
-      scope.cropText = function (text) {
-        var sliced = text.trim().slice(0, 37);
-        sliced = sliced.trim();
-        if (sliced.length < text.length) {
-          sliced += '...';
-        }
-        return sliced;
-      };
-
-      searchMenuRepository.getControlsDataLegal().then(function (data) {
-        scope.controlsData = data;
-        scope.isLoadingControls = false;
-      });
-      scope.setColorAsMain = function (color) {
-        scope.iconUrl = null;
-        scope.secondaryParams = {};
-        scope.mainParam = null;
-        scope.tempColor = color;
-        scope.menus = {
-          owner: '',
-          year: '',
-          color: '',
-          product: ''
-        };
-        scope.menus.color = color.id;
-        if (!scope.controlsData.colors.find(function (item) {
-            return item.id === scope.tempColor.id
-          })) {
-          scope.controlsData.colors.unshift(scope.tempColor);
-        }
-        scope.tempColor = null;
-        scope.handleChangeControl('color');
-        scope.loadGraphics();
-      };
-
-      scope.switchPage = function (value) {
-        if (value !== scope.copyrightsListPage) {
-          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, value)
-            .then(function (data) {
-              scope.copyrightsListData = data;
-            });
-        }
-        scope.copyrightsListPage = value;
-      };
-
-      scope.loadGraphics = function () {
-        if (scope.mainParam) {
-          scope.showDashboard = true;
-          dashboardOverlayService.loadingStart(4000);
-
-          legalDashboardRepository[scope.mainParam].getPageData(scope.mainParamId).then(function (data) {
-            scope.title = data.title;
-            scope.iconUrl = data.logo_url;
-
-            scope.copyrightsListTotalPages = Math.ceil((data.us_copyrights + data.int_copyrights) / 25);
-
-            if (scope.mainParam === 'owner') {
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.us_copyrights;
-              scope.pageInfo[2].data.count = data.int_copyrights;
-            } else if (scope.mainParam === 'year') {
-              scope.pageInfo[0].data.count = data.owners_count;
-              scope.pageInfo[1].data.count = data.products_count;
-              scope.pageInfo[2].data.count = data.us_copyrights;
-              scope.pageInfo[3].data.count = data.int_copyrights;
-            } else if (scope.mainParam === 'color') {
-              scope.colorHex = data.color.hex;
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.us_copyrights;
-              scope.pageInfo[2].data.count = data.int_copyrights;
-            } else if (scope.mainParam === 'product') {
-              scope.pageInfo[0].data.text = data.description;
-              scope.pageInfo[1].data.count = data.us_copyrights;
-              scope.pageInfo[2].data.count = data.int_copyrights;
-            }
-          });
-
-          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, scope.copyrightsListPage)
-            .then(function (data) {
-              scope.copyrightsListData = data;
-            });
-
-          if (scope.mainParam !== 'color') {
-            legalDashboardRepository[scope.mainParam].getCopyrightsCount(scope.mainParamId)
-              .then(function (data) {
-                scope.copyrightsCountData = data;
-              });
-          }
-
-          if (scope.mainParam !== 'owner') {
-            legalDashboardRepository[scope.mainParam].getTopOwners(scope.mainParamId)
-              .then(function (data) {
-                scope.topOwnersData = data;
-              });
-          }
-
-          if (scope.mainParam === 'color') {
-            legalDashboardRepository[scope.mainParam].getTopProducts(scope.mainParamId)
-              .then(function (data) {
-                scope.topProductsData = data;
-              });
-
-            legalDashboardRepository[scope.mainParam].getTopProductsCopyrights(scope.mainParamId)
-              .then(function (data) {
-                scope.topProductsCopyrightsData = data;
-              });
-
-            legalDashboardRepository[scope.mainParam].getCopyrightsOverTime(scope.mainParamId, 20)
-              .then(function (data) {
-                scope.copyrightsOverTimeData = data;
-              });
-          }
-
-          if (scope.mainParam === 'year') {
-            legalDashboardRepository[scope.mainParam].getCopyrightsActivity(scope.mainParamId)
-              .then(function (data) {
-                scope.copyrightsActivityData = data;
-              });
-          }
-        }
-      };
-
-      scope.handleChangeControl = function (control) {
-        scope.copyrightsListPage = 1;
-
-        if (!scope.mainParam) {
-          scope.mainParam = control;
-          scope.mainParamId = scope.menus[control];
-          $state.go(control + 'Legal');
-        }
-
-        if (scope.mainParam && scope.menus[scope.mainParam] === '') {
-          scope.mainParam = null;
-          scope.menus = {
-            brand: '',
-            year: '',
-            model: '',
-            color: ''
-          };
-        }
-
-        switch (scope.mainParam) {
-          case 'owner':
-            scope.pageInfo = scope.ownerPageInfo;
-            scope.mainParamId = scope.menus.owner;
-            scope.showSeason = false;
-
-            scope.disabledControls = {
-              owner: false,
-              year: true,
-              color: true,
-              product: true
-            };
-            break;
-
-          case 'year':
-            scope.pageInfo = scope.yearPageInfo;
-            scope.mainParamId = scope.menus.year;
-            scope.disabledControls = {
-              owner: true,
-              year: false,
-              color: true,
-              product: true
-            };
-            break;
-
-          case 'color':
-            scope.pageInfo = scope.colorPageInfo;
-            scope.mainParamId = scope.menus.color;
-            scope.disabledControls = {
-              owner: true,
-              year: true,
-              color: false,
-              product: true
-            };
-            break;
-
-          case 'product':
-            scope.pageInfo = scope.productPageInfo;
-            scope.mainParamId = scope.menus.product;
-            scope.disabledControls = {
-              owner: true,
-              year: true,
-              color: true,
-              product: false
-            };
-            break;
-
-          default:
-            $state.go('legal');
-            scope.disabledControls = {
-              owner: false,
-              year: false,
-              color: false,
-              product: false
-            };
-
-            // scope.owner = '';
-            // scope.year = '';
-            // scope.color = '';
-            // scope.product = '';
-
-            scope.menus = {
-              owner: '',
-              year: '',
-              color: '',
-              product: ''
-            };
-
-            scope.mainParam = null;
-            scope.iconUrl = null;
-            scope.showDashboard = false;
-            scope.copyrightsListPage = 1;
-
-            scope.compareData = [];
-            scope.colorsCountData = [];
-            scope.colorsCountData = [];
-            scope.shadesData = [];
-            scope.topFamiliesData = [];
-            scope.topBrandsData = [];
-            scope.topColorsData = [];
-            scope.colorFrequencyData = [];
-            scope.topFinishesData = [];
-            scope.carColorsData = [];
-            scope.colorPaletteData = [];
-            break;
-        }
-      };
-
-      // scope.$watch('copyrightsListPage', function (newValue, oldValue) {
-      //   if (newValue) {
-      //     legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.owner, newValue, function (data) {
-      //       scope.copyrightsListData = data;
-      //     });
-      //   }
-      // });
-
-      scope.$watch(function () {
-        return dashboardOverlayService.showOverlay;
-      }, function (newValue) {
-        scope.showDashboardOverlay = newValue;
-      });
-    }]);
 
 angular.module('app').controller('fashionController',
   [
@@ -1867,6 +1864,358 @@ angular
   .component('fashionComponent', {
     templateUrl: 'app/components/dashboards/fashion/fashion.tmpl.html'
   });
+
+angular.module('app').controller('legalController',
+  [
+    '$scope',
+    'legalDashboardRepository',
+    'dashboardOverlayService',
+    'searchMenuRepository',
+    '$state',
+    'anchorSmoothScroll',
+    '$location',
+    function (scope,
+              legalDashboardRepository,
+              dashboardOverlayService,
+              searchMenuRepository,
+              $state, anchorSmoothScroll, $location) {
+
+      // scope.owner = '';
+      // scope.year = '';
+      // scope.color = '';
+      // scope.product = '';
+
+      scope.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+
+      scope.menus = {
+        owner: '',
+        year: '',
+        color: '',
+        product: ''
+      };
+
+      scope.disabledControls = {
+        owner: false,
+        year: false,
+        color: false,
+        product: false
+      };
+
+      scope.mainParam = null;
+      scope.mainParamId = null;
+
+      scope.showDashboard = false;
+      scope.title = null;
+      scope.subtitle = null;
+      scope.copyrightsCountData = null;
+      scope.copyrightsListData = null;
+      scope.copyrightsListPage = 1;
+      scope.copyrightsListTotalPages = 1;
+
+      scope.isLoadingControls = true;
+
+      // Pages info
+      scope.ownerPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+      scope.yearPageInfo = [
+        {width: 1, type: 'countTo', tooltip: '#owners', data: {subtitle: 'Owners', count: 0, menuTab: 'owner'}},
+        {width: 1, type: 'countTo', tooltip: '#products', data: {subtitle: 'Products', count: 0, menuTab: 'product'}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+      scope.colorPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+      scope.productPageInfo = [
+        {width: 2, type: 'desc', tooltip: '#description', data: {text: null}},
+        {width: 1, type: 'countTo', tooltip: '#us_copyrights', data: {subtitle: 'US Copyright', count: 0}},
+        {
+          width: 1,
+          type: 'countTo',
+          tooltip: '#international_copyrights',
+          data: {subtitle: 'Int\'l Copyright', count: 0}
+        }];
+
+      scope.compareData = [];
+      scope.colorsCountData = [];
+      scope.colorsCountData = [];
+      scope.shadesData = [];
+      scope.topFamiliesData = [];
+      scope.topBrandsData = [];
+      scope.topColorsData = [];
+      scope.colorFrequencyData = [];
+      scope.topFinishesData = [];
+      scope.carColorsData = [];
+      scope.colorPaletteData = [];
+
+      if (!scope.mainParam) {
+        $state.go('legal');
+      }
+
+      scope.cropText = function (text) {
+        var sliced = text.trim().slice(0, 37);
+        sliced = sliced.trim();
+        if (sliced.length < text.length) {
+          sliced += '...';
+        }
+        return sliced;
+      };
+
+      searchMenuRepository.getControlsDataLegal().then(function (data) {
+        scope.controlsData = data;
+        scope.isLoadingControls = false;
+      });
+      scope.setColorAsMain = function (color) {
+        scope.iconUrl = null;
+        scope.secondaryParams = {};
+        scope.mainParam = null;
+        scope.tempColor = color;
+        scope.menus = {
+          owner: '',
+          year: '',
+          color: '',
+          product: ''
+        };
+        scope.menus.color = color.id;
+        if (!scope.controlsData.colors.find(function (item) {
+            return item.id === scope.tempColor.id
+          })) {
+          scope.controlsData.colors.unshift(scope.tempColor);
+        }
+        scope.tempColor = null;
+        scope.handleChangeControl('color');
+        scope.loadGraphics();
+      };
+
+      scope.switchPage = function (value) {
+        if (value !== scope.copyrightsListPage) {
+          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, value)
+            .then(function (data) {
+              scope.copyrightsListData = data;
+            });
+        }
+        scope.copyrightsListPage = value;
+      };
+
+      scope.loadGraphics = function () {
+        if (scope.mainParam) {
+          scope.showDashboard = true;
+          dashboardOverlayService.loadingStart(4000);
+
+          legalDashboardRepository[scope.mainParam].getPageData(scope.mainParamId).then(function (data) {
+            scope.title = data.title;
+            scope.iconUrl = data.logo_url;
+
+            scope.copyrightsListTotalPages = Math.ceil((data.us_copyrights + data.int_copyrights) / 25);
+
+            if (scope.mainParam === 'owner') {
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.us_copyrights;
+              scope.pageInfo[2].data.count = data.int_copyrights;
+            } else if (scope.mainParam === 'year') {
+              scope.pageInfo[0].data.count = data.owners_count;
+              scope.pageInfo[1].data.count = data.products_count;
+              scope.pageInfo[2].data.count = data.us_copyrights;
+              scope.pageInfo[3].data.count = data.int_copyrights;
+            } else if (scope.mainParam === 'color') {
+              scope.colorHex = data.color.hex;
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.us_copyrights;
+              scope.pageInfo[2].data.count = data.int_copyrights;
+            } else if (scope.mainParam === 'product') {
+              scope.pageInfo[0].data.text = data.description;
+              scope.pageInfo[1].data.count = data.us_copyrights;
+              scope.pageInfo[2].data.count = data.int_copyrights;
+            }
+          });
+
+          legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.mainParamId, scope.copyrightsListPage)
+            .then(function (data) {
+              scope.copyrightsListData = data;
+            });
+
+          if (scope.mainParam !== 'color') {
+            legalDashboardRepository[scope.mainParam].getCopyrightsCount(scope.mainParamId)
+              .then(function (data) {
+                scope.copyrightsCountData = data;
+              });
+          }
+
+          if (scope.mainParam !== 'owner') {
+            legalDashboardRepository[scope.mainParam].getTopOwners(scope.mainParamId)
+              .then(function (data) {
+                scope.topOwnersData = data;
+              });
+          }
+
+          if (scope.mainParam === 'color') {
+            legalDashboardRepository[scope.mainParam].getTopProducts(scope.mainParamId)
+              .then(function (data) {
+                scope.topProductsData = data;
+              });
+
+            legalDashboardRepository[scope.mainParam].getTopProductsCopyrights(scope.mainParamId)
+              .then(function (data) {
+                scope.topProductsCopyrightsData = data;
+              });
+
+            legalDashboardRepository[scope.mainParam].getCopyrightsOverTime(scope.mainParamId, 20)
+              .then(function (data) {
+                scope.copyrightsOverTimeData = data;
+              });
+          }
+
+          if (scope.mainParam === 'year') {
+            legalDashboardRepository[scope.mainParam].getCopyrightsActivity(scope.mainParamId)
+              .then(function (data) {
+                scope.copyrightsActivityData = data;
+              });
+          }
+        }
+      };
+
+      scope.handleChangeControl = function (control) {
+        scope.copyrightsListPage = 1;
+
+        if (!scope.mainParam) {
+          scope.mainParam = control;
+          scope.mainParamId = scope.menus[control];
+          $state.go(control + 'Legal');
+        }
+
+        if (scope.mainParam && scope.menus[scope.mainParam] === '') {
+          scope.mainParam = null;
+          scope.menus = {
+            brand: '',
+            year: '',
+            model: '',
+            color: ''
+          };
+        }
+
+        switch (scope.mainParam) {
+          case 'owner':
+            scope.pageInfo = scope.ownerPageInfo;
+            scope.mainParamId = scope.menus.owner;
+            scope.showSeason = false;
+
+            scope.disabledControls = {
+              owner: false,
+              year: true,
+              color: true,
+              product: true
+            };
+            break;
+
+          case 'year':
+            scope.pageInfo = scope.yearPageInfo;
+            scope.mainParamId = scope.menus.year;
+            scope.disabledControls = {
+              owner: true,
+              year: false,
+              color: true,
+              product: true
+            };
+            break;
+
+          case 'color':
+            scope.pageInfo = scope.colorPageInfo;
+            scope.mainParamId = scope.menus.color;
+            scope.disabledControls = {
+              owner: true,
+              year: true,
+              color: false,
+              product: true
+            };
+            break;
+
+          case 'product':
+            scope.pageInfo = scope.productPageInfo;
+            scope.mainParamId = scope.menus.product;
+            scope.disabledControls = {
+              owner: true,
+              year: true,
+              color: true,
+              product: false
+            };
+            break;
+
+          default:
+            $state.go('legal');
+            scope.disabledControls = {
+              owner: false,
+              year: false,
+              color: false,
+              product: false
+            };
+
+            // scope.owner = '';
+            // scope.year = '';
+            // scope.color = '';
+            // scope.product = '';
+
+            scope.menus = {
+              owner: '',
+              year: '',
+              color: '',
+              product: ''
+            };
+
+            scope.mainParam = null;
+            scope.iconUrl = null;
+            scope.showDashboard = false;
+            scope.copyrightsListPage = 1;
+
+            scope.compareData = [];
+            scope.colorsCountData = [];
+            scope.colorsCountData = [];
+            scope.shadesData = [];
+            scope.topFamiliesData = [];
+            scope.topBrandsData = [];
+            scope.topColorsData = [];
+            scope.colorFrequencyData = [];
+            scope.topFinishesData = [];
+            scope.carColorsData = [];
+            scope.colorPaletteData = [];
+            break;
+        }
+      };
+
+      // scope.$watch('copyrightsListPage', function (newValue, oldValue) {
+      //   if (newValue) {
+      //     legalDashboardRepository[scope.mainParam].getCopyrightsList(scope.owner, newValue, function (data) {
+      //       scope.copyrightsListData = data;
+      //     });
+      //   }
+      // });
+
+      scope.$watch(function () {
+        return dashboardOverlayService.showOverlay;
+      }, function (newValue) {
+        scope.showDashboardOverlay = newValue;
+      });
+    }]);
 
 angular.module('app').controller('brandingController',
   [
@@ -2600,27 +2949,342 @@ angular.module('app').controller('autoController',
       });
     }]);
 
-angular.module('app').directive('hueTrialExpiredMessage', function () {
-  function link(scope, element, attrs) {
-    scope.tryMoreClick = function () {
-      scope.hideMessage();
-    };
+(function () {
+  'use strict';
+  var serviceId = 'common';
+  angular.module('app').service(serviceId, ['$q', function ($q) {
+    return {
+      $q: $q,
 
-    scope.signUpClick = function () {
-      window.location = "http://www.hue-data.com";
-    };
-  }
-
-  return {
-    restrict: 'E',
-    template: '<div class="trial-expired-message"><div class="message-box"><p>Trial time has expired</p><div class="button-container"><button ng-click="tryMoreClick()" ng-if="!siteLocked">Try for one more hour</button><button ng-click="signUpClick()">Sign Up</button></div></div></div>',
-    link: link,
-    scope: {
-      hideMessage: '&',
-      siteLocked: '='
+      generic: {
+        regions: [
+          {
+            id: 'europe',
+            name: 'europe',
+            title: 'Europe',
+            serverName: 'europe',
+            cities: [
+              {name: 'london'}, {name: 'paris'}, {name: 'milan'}
+            ]
+          },
+          {
+            id: 'north_america',
+            name: 'namerica',
+            title: 'North America',
+            serverName: 'north_america',
+            cities: [{name: 'ny', serverName: 'new york'}]
+          },
+          {
+            id: 'latin_america',
+            name: 'samerica',
+            title: 'South America',
+            serverName: 'latin_america',
+            cities: [{name: 'mex', serverName: 'mexico'},
+              {name: 'rio', serverName: 'rio de janeiro'},
+              {name: 'sao', serverName: 'sao paulo'}
+            ]
+          },
+          {
+            id: 'asia_pacific',
+            name: 'asia',
+            title: 'Asia and Pacific',
+            serverName: 'asia_pacific',
+            cities: [{name: 'tokyo'}, {name: 'seoul'}]
+          }
+        ]
+      }
     }
-  };
-});
+  }
+  ]);
+}());
+
+(function () {
+  'use strict';
+  var serviceId = 'charts';
+  angular
+    .module('app')
+    .service(serviceId,
+      [
+        '$q', 'repo.hue',
+        function ($q, hue) {
+
+          var regions = ['europe', 'asia', 'namerica', 'samerica'];
+
+          function colorGroupsByCityPeriod(req) {
+            return hue.colorGroupsByCityPeriod(req)
+              .then(function (result) {
+                _.each(result, function (d) {
+                  var value = d.value;
+                  // d.value = d.percentage * 100; // overriding
+                  d.valueTitle = Math.round(d.percentage * 100) + '%';
+                  d.valueTitle2 = value;
+                  d.color = d.name;
+                });
+                result = _.sortBy(result, 'group');
+                return result;
+              });
+          }
+
+          function citiesByColorPeriod(req) {
+            return hue.citiesByColorPeriod(req)
+              .then(function (result) {
+                _.each(result, function (d) {
+                  var value = d.value;
+                  // d.value = d.percentage * 100;
+                  d.valueTitle = d.percentage === null ? 'N/A' : Math.round(d.percentage * 100) + '%';
+                  d.valueTitle2 = d.percentage === null ? '' : value;
+                  d.color = '#' + req.color;
+                });
+                result = _.sortBy(result, 'group');
+                return result;
+              });
+          }
+
+          function colorsPerRegions(req) {
+            return $q.all(_.map(regions, function (r) {
+                return hue.colorsByRegionCityPeriod({
+                  year: req.year,
+                  season: req.season,
+                  category: req.category,
+                  region: r
+                }).then(function (response) {
+                  return {
+                    name: r,
+                    title: r,
+                    data: response
+                  };
+                });
+              })
+            )/*.then(function(responses) {
+             return responses;
+             })*/;
+          }
+
+          function colorsByPeriodYearsRange(req, yearsRange) {
+            return $q.all(_.map(yearsRange, function (y) {
+              req.year = y;
+              return $q.all([
+                hue.colorsByRegionPeriod(req),
+                hue.colorsUniqueByRegionPeriod(req)
+              ]).then(function (responses) {
+                return {
+                  year: y,
+                  season: req.season,
+                  colors: responses[0],
+                  colorsUnique: responses[1]
+                };
+              });
+
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorsUniqueGroupsPerSeason(year, city, category) {
+            // var seasons = ['spring', 'spring', 'fall', 'fall'];
+            var seasons = ['winter', 'spring', 'summer', 'fall'];
+            return $q.all(_.map(seasons, function (s) {
+              var req = {year: year, season: s, city: city, category: category};
+              if (s === 'winter') {
+                req.season = 'spring';
+              } else if (s === 'summer') {
+                req.season = 'fall';
+              }
+              return $q.all([
+                hue.colorGroupsByCityPeriod(req),
+                hue.colorsUniqueByRegionPeriod(req)])
+                .then(function (responses) {
+                  return {
+                    year: year,
+                    name: s,
+                    groups: responses[0],
+                    unique: responses[1]
+                  };
+                });
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorGroupsByCategories(categories, region, year, season) {
+            return $q.all(_.map(categories, function (c) {
+              return hue.colorGroupsByCategories({category: c, region: region, year: year, season: season})
+                .then(function (response) {
+                  return {
+                    name: c,
+                    title: c,
+                    data: response
+                  };
+                });
+
+            })).then(function (responses) {
+              return responses;
+            });
+          }
+
+          function colorsWithGroupsByRegionPeriod(req, region) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByRegionCitiesPeriod(req)
+            ]).then(function (results) {
+              var cities = results[1];
+              var data = results[0];
+
+              var result = {
+                region: {
+                  name: region,
+                  cities: {
+                    title: 'Top 4 colors',
+                    settings: {},
+                    data: cities
+                  }
+                },
+                charts: {
+                  settings: {},
+                  data: data
+                }
+              };
+
+              _.each(result.region.cities.data, function (c) {
+                // c.name = 'ny';
+                _.each(c.data, function (d) {
+                  d.value = d.percentage;
+                });
+              });
+
+              result.region.cities.settings = {
+                bars: {
+                  radius: 62,
+                  radiusInner: 46
+                }
+              };
+
+              return result;
+            });
+          }
+
+          function colorsWithGroups(req, year) {
+            req.year = year;
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByRegionCityPeriod(req)
+            ]).then(function (results) {
+              var groups = results[0];
+              var colors = results[1];
+              return {
+                groups: groups,
+                colors: colors
+              };
+            });
+          }
+
+          function colorsUniqueGroupsCommon(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByCityPeriod(req),
+              hue.colorsUniqueByRegionPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var common = results[1];
+              var unique = results[2];
+
+              return {
+                groups: data,
+                common: common,
+                unique: unique
+              };
+            });
+          }
+
+          function designersWithTopColors(req) {
+            var params = {region: req.region, year: req.year, season: req.season};
+            return hue.designersWithTopColors(params)
+              .then(function (results) {
+                return results;
+              });
+          }
+
+          function colorsGroupsCommon(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsByCityPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var common = results[1];
+
+              return {
+                groups: data,
+                common: common
+              };
+            });
+          }
+
+          function colorsUniqueGroups(req) {
+            return $q.all([
+              hue.colorGroupsByCityPeriod(req),
+              hue.colorsUniqueByRegionPeriod(req)
+            ]).then(function (results) {
+              var data = results[0];
+              var unique = results[1];
+              return {
+                groups: data,
+                unique: unique
+              };
+            });
+          }
+
+          return {
+            colorGroupsByCityPeriod: colorGroupsByCityPeriod,
+            colorsWithGroupsByRegionPeriod: colorsWithGroupsByRegionPeriod,
+            colorsWithGroups: colorsWithGroups,
+            citiesByColorPeriod: citiesByColorPeriod,
+            colorsUniqueGroupsPerSeason: colorsUniqueGroupsPerSeason,
+
+            colorsByPeriodYearsRange: colorsByPeriodYearsRange,
+            colorGroupsByCategories: colorGroupsByCategories,
+            colorsUniqueGroupsCommon: colorsUniqueGroupsCommon,
+            colorsGroupsCommon: colorsGroupsCommon,
+            designersWithTopColors: designersWithTopColors,
+            colorsUniqueGroups: colorsUniqueGroups,
+            colorsPerRegions: colorsPerRegions
+          }
+        }
+      ]);
+}());
+
+(function () {
+  'use strict';
+  var serviceId = 'chartsHelper';
+  angular.module('app').service(serviceId, ['$q', 'repo.hue',
+    function ($q, hue) {
+      function initContainer(element, childPath) {
+        element = $(element);
+
+        var container = !!childPath ? $(element).find(childPath) : element;
+        var containerItself = !!childPath;
+
+        var innerContainer;
+        if (containerItself) {
+          innerContainer = container;
+        } else {
+          innerContainer = container.find('>*:first-child');
+        }
+
+        if (innerContainer.length === 0) {
+          innerContainer = $('<div></div>');
+          innerContainer.appendTo(container);
+        } else {
+          innerContainer.html('');
+        }
+        return innerContainer;
+      }
+
+      return {
+        initContainer: initContainer
+      }
+    }
+  ]);
+}());
 
 angular.module('app').directive('hueSiteHeader',
   ['$location', '$interval', 'authService', 'trialService',
@@ -3581,6 +4245,28 @@ angular.module('app').directive('hueDeactivateAccountDialog', ['userDataReposito
   };
 }]);
 
+angular.module('app').directive('hueTrialExpiredMessage', function () {
+  function link(scope, element, attrs) {
+    scope.tryMoreClick = function () {
+      scope.hideMessage();
+    };
+
+    scope.signUpClick = function () {
+      window.location = "http://www.hue-data.com";
+    };
+  }
+
+  return {
+    restrict: 'E',
+    template: '<div class="trial-expired-message"><div class="message-box"><p>Trial time has expired</p><div class="button-container"><button ng-click="tryMoreClick()" ng-if="!siteLocked">Try for one more hour</button><button ng-click="signUpClick()">Sign Up</button></div></div></div>',
+    link: link,
+    scope: {
+      hideMessage: '&',
+      siteLocked: '='
+    }
+  };
+});
+
 angular.module('app').directive('hueFooter', function () {
   function link(scope, element, attrs) {
     scope.browserIsNotChrome = window.chrome == null || window.chrome == undefined || window.navigator.vendor != "Google Inc." || (window.navigator.userAgent.indexOf("OPR") > -1);
@@ -3702,115 +4388,6 @@ angular.module('app').directive('hueDbTopProductsCopyrightsView', function ($tim
   };
 });
 
-angular.module('app').directive('hueDonutChart',
-  ['$timeout', '$location',
-    function (timeout, location) {
-      function link(scope, element, attrs) {
-        var config = scope.config;
-
-        var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-        var diameter = scope.config.diameter;
-        var outerRadius = diameter / 2;
-        var innerSectionRadius = outerRadius - donutWidth;
-        var innerStrokeRadius = outerRadius - 2;
-        var animationDuration = 400;
-        var animationStep = 1 / (animationDuration / 20);
-        var strokePercentage = 100 - scope.percentage;
-
-        var draw = SVG(element[0]).size(diameter, diameter);
-
-        var getSectionPathData = function (angle1, angle2, innerRadius) {
-          var sinStart = Math.sin(angle1);
-          var cosStart = Math.cos(angle1);
-          var sinEnd = Math.sin(angle2);
-          var cosEnd = Math.cos(angle2);
-
-          var xO1 = outerRadius + (sinStart * outerRadius); //outer
-          var yO1 = outerRadius - (cosStart * outerRadius);
-          var xO2 = outerRadius + (sinEnd * outerRadius);
-          var yO2 = outerRadius - (cosEnd * outerRadius);
-
-          var xI1 = outerRadius + (sinStart * innerRadius); //inner
-          var yI1 = outerRadius - (cosStart * innerRadius);
-          var xI2 = outerRadius + (sinEnd * innerRadius);
-          var yI2 = outerRadius - (cosEnd * innerRadius);
-
-          var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-          return new SVG.PathArray([
-            ['M', xO1, yO1],
-            ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-            ['L', xI2, yI2],
-            ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-            ['Z']
-          ]).toString();
-        };
-
-        // Initialization
-        draw.path('').attr('fill', scope.color); //section
-        draw.path('').attr('fill', scope.color); //stroke
-
-        // Opening animation
-        var easeOutFunction = BezierEasing.css['ease-out'];
-        var animationProgress = 0;
-        var drawChildren = draw.children();
-        var processAnimation = function () {
-          animationProgress += animationStep;
-          if (animationProgress > 1) {
-            animationProgress = 1;
-          }
-          var coeff = easeOutFunction(animationProgress) * 0.999; // multiply by 0.999 to prevent arcs from closing and disappearing
-
-          var angleStart = 0;
-          var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
-          drawChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
-
-          angleStart = angleEnd;
-          angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
-          drawChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
-
-          if (animationProgress != 1) {
-            timeout(processAnimation, 20);
-          }
-        };
-
-        processAnimation();
-
-        scope.$watch('color', function (newValue, oldValue) {
-          if (newValue) {
-            draw.first().attr('fill', newValue); //section
-            draw.last().attr('fill', newValue); //stroke
-          }
-        });
-      }
-
-      return {
-        restrict: 'A',
-        link: link,
-        scope: {
-          config: '=hueDonutChart',
-          percentage: '=',
-          color: '='
-        }
-      };
-    }]);
-
-angular.module('app').directive('hueDbTopItemsDonuts', function () {
-  function link(scope, element, attrs) {
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopItemsDonuts/dbTopItemsDonutsView.html',
-    link: link,
-    scope: {
-      data: '=',
-      donutColor: '=',
-      itemClick: '&'
-    }
-  };
-});
-
 angular.module('app').directive('hueTopIndustriesChart', ['$timeout', '$location', function (timeout, location) {
 	function link(scope, element, attrs) {
 		var config = scope.config;
@@ -3919,6 +4496,115 @@ angular.module('app').directive('hueDbTopIndustries', ['$location', function (lo
     }
   };
 }]);
+
+angular.module('app').directive('hueDonutChart',
+  ['$timeout', '$location',
+    function (timeout, location) {
+      function link(scope, element, attrs) {
+        var config = scope.config;
+
+        var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+        var diameter = scope.config.diameter;
+        var outerRadius = diameter / 2;
+        var innerSectionRadius = outerRadius - donutWidth;
+        var innerStrokeRadius = outerRadius - 2;
+        var animationDuration = 400;
+        var animationStep = 1 / (animationDuration / 20);
+        var strokePercentage = 100 - scope.percentage;
+
+        var draw = SVG(element[0]).size(diameter, diameter);
+
+        var getSectionPathData = function (angle1, angle2, innerRadius) {
+          var sinStart = Math.sin(angle1);
+          var cosStart = Math.cos(angle1);
+          var sinEnd = Math.sin(angle2);
+          var cosEnd = Math.cos(angle2);
+
+          var xO1 = outerRadius + (sinStart * outerRadius); //outer
+          var yO1 = outerRadius - (cosStart * outerRadius);
+          var xO2 = outerRadius + (sinEnd * outerRadius);
+          var yO2 = outerRadius - (cosEnd * outerRadius);
+
+          var xI1 = outerRadius + (sinStart * innerRadius); //inner
+          var yI1 = outerRadius - (cosStart * innerRadius);
+          var xI2 = outerRadius + (sinEnd * innerRadius);
+          var yI2 = outerRadius - (cosEnd * innerRadius);
+
+          var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+          return new SVG.PathArray([
+            ['M', xO1, yO1],
+            ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+            ['L', xI2, yI2],
+            ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+            ['Z']
+          ]).toString();
+        };
+
+        // Initialization
+        draw.path('').attr('fill', scope.color); //section
+        draw.path('').attr('fill', scope.color); //stroke
+
+        // Opening animation
+        var easeOutFunction = BezierEasing.css['ease-out'];
+        var animationProgress = 0;
+        var drawChildren = draw.children();
+        var processAnimation = function () {
+          animationProgress += animationStep;
+          if (animationProgress > 1) {
+            animationProgress = 1;
+          }
+          var coeff = easeOutFunction(animationProgress) * 0.999; // multiply by 0.999 to prevent arcs from closing and disappearing
+
+          var angleStart = 0;
+          var angleEnd = angleStart + (scope.percentage * coeff * Math.PI / 50);
+          drawChildren[0].plot(getSectionPathData(angleStart, angleEnd, innerSectionRadius));
+
+          angleStart = angleEnd;
+          angleEnd = angleStart + (strokePercentage * coeff * Math.PI / 50);
+          drawChildren[1].plot(getSectionPathData(angleStart, angleEnd, innerStrokeRadius));
+
+          if (animationProgress != 1) {
+            timeout(processAnimation, 20);
+          }
+        };
+
+        processAnimation();
+
+        scope.$watch('color', function (newValue, oldValue) {
+          if (newValue) {
+            draw.first().attr('fill', newValue); //section
+            draw.last().attr('fill', newValue); //stroke
+          }
+        });
+      }
+
+      return {
+        restrict: 'A',
+        link: link,
+        scope: {
+          config: '=hueDonutChart',
+          percentage: '=',
+          color: '='
+        }
+      };
+    }]);
+
+angular.module('app').directive('hueDbTopItemsDonuts', function () {
+  function link(scope, element, attrs) {
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopItemsDonuts/dbTopItemsDonutsView.html',
+    link: link,
+    scope: {
+      data: '=',
+      donutColor: '=',
+      itemClick: '&'
+    }
+  };
+});
 
 angular.module('app').directive('hueTopFinishesChart',
   ['$timeout', '$location', function (timeout, location) {
@@ -4091,50 +4777,6 @@ angular.module('app').directive('hueDbTopColorsByYear', ['$timeout', function (t
   };
 }]);
 
-angular.module('app').directive('hueDbTopColorsExpanded', function () {
-  function link(scope, element, attrs) {
-
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopColors/dbTopColorsExpandedView.html',
-    link: link,
-    scope: {
-      data: '=',
-      toggleView: '&'
-    }
-  };
-});
-
-angular.module('app').directive('hueDbTopColors', function () {
-  function link(scope, element, attrs) {
-    scope.selectedColor = null;
-    scope.toggleColor = function (index) {
-      scope.selectedColor = scope.selectedColor == index ? null : index;
-    };
-    scope.isColorSelected = function (index) {
-      if (index != null)
-        return scope.selectedColor == index;
-      return scope.selectedColor != null;
-    };
-    scope.getBarHeight = function (index) {
-      if (scope.selectedColor == null)
-        return scope.data[index].percentage + '%';
-      return scope.selectedColor == index ? '100%' : '0%';
-    };
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbTopColors/dbTopColorsView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
 angular.module('app').directive('hueDbSingleLineChart', function ($timeout, $interval) {
   function link(scope, element, attrs) {
     var defaultLineColor = '#96FF0D';
@@ -4275,6 +4917,50 @@ angular.module('app').directive('hueDbSingleLineChart', function ($timeout, $int
     scope: {
       data: '=',
       lineColor: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbTopColorsExpanded', function () {
+  function link(scope, element, attrs) {
+
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopColors/dbTopColorsExpandedView.html',
+    link: link,
+    scope: {
+      data: '=',
+      toggleView: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbTopColors', function () {
+  function link(scope, element, attrs) {
+    scope.selectedColor = null;
+    scope.toggleColor = function (index) {
+      scope.selectedColor = scope.selectedColor == index ? null : index;
+    };
+    scope.isColorSelected = function (index) {
+      if (index != null)
+        return scope.selectedColor == index;
+      return scope.selectedColor != null;
+    };
+    scope.getBarHeight = function (index) {
+      if (scope.selectedColor == null)
+        return scope.data[index].percentage + '%';
+      return scope.selectedColor == index ? '100%' : '0%';
+    };
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbTopColors/dbTopColorsView.html',
+    link: link,
+    scope: {
+      data: '='
     }
   };
 });
@@ -4779,86 +5465,6 @@ angular.module('app').directive('hueDbLogoDetails', ['$http', 'appConfig', 'auth
   };
 }]);
 
-angular.module('app').directive('hueDbImageGallery', ['$location', function (location) {
-  function link(scope, element, attrs) {
-    scope.page = 1;
-    scope.maxElementsPerGroup = 0;
-    scope.data = [];
-    scope.dataExpanded = [];
-    scope.groupNames = [];
-
-    var calculateMaxElementsPerGroup = function () {
-      return Math.floor(element.children().first().width() / 170) * 2;
-    };
-    var updateData = function () {
-      scope.data = _.map(scope.originalData, function (item, index) {
-        if (!scope.dataExpanded[index])
-          return item[1].slice(0, scope.maxElementsPerGroup);
-        else
-          return item[1];
-      });
-    };
-
-    scope.showGroupNames = function () {
-      return scope.colorDashboard != true;
-    };
-
-    scope.isShowMoreVisible = function (groupIndex) {
-      return !scope.dataExpanded[groupIndex] && scope.originalData[groupIndex][1].length > scope.maxElementsPerGroup;
-    };
-    scope.isShowLessVisible = function (groupIndex) {
-      return scope.dataExpanded[groupIndex];
-    };
-
-    scope.showMoreClick = function (groupIndex) {
-      scope.dataExpanded[groupIndex] = true;
-      updateData();
-    };
-
-    scope.showLessClick = function (groupIndex) {
-      scope.dataExpanded[groupIndex] = false;
-      updateData();
-    };
-
-    scope.$watch('originalData', function (newValue, oldValue) {
-      if (newValue && (scope.colorDashboard != true || (scope.colorDashboard && newValue.length))) { //IF not color dashboard OR is color dashboard and not empty array
-        scope.groupNames = _.map(scope.originalData, function (item, key) {
-          return item[0];
-        });
-
-        scope.maxElementsPerGroup = calculateMaxElementsPerGroup();
-        updateData();
-        scope.dataExpanded = [];
-      } else {
-        scope.data = [];
-        scope.dataExpanded = [];
-      }
-    });
-
-    var lazyDigest = _.debounce(function () {
-      scope.$digest();
-    }, 300);
-    $(window).resize(function () {
-      var maxElems = calculateMaxElementsPerGroup();
-      if (scope.maxElementsPerGroup != maxElems) {
-        scope.maxElementsPerGroup = maxElems;
-        updateData();
-        lazyDigest();
-      }
-    });
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbImageGallery/dbImageGalleryView.html',
-    link: link,
-    scope: {
-      originalData: '=data',
-      colorDashboard: '='
-    }
-  };
-}]);
-
 angular.module('app').directive('hueDbHeader', ['$compile', '$timeout', 'searchMenuService', function (compile, timeout, searchMenuService) {
   function link(scope, element, attrs) {
     scope.headerHeight = null; //only for description expanding
@@ -5021,140 +5627,201 @@ angular.module('app').directive('hueDbHeaderDescription', ['$timeout', function 
   };
 }]);
 
-angular.module('app').directive('hueDbFlagColors', function () {
+angular.module('app').directive('hueDbImageGallery', ['$location', function (location) {
   function link(scope, element, attrs) {
-    scope.itemWidth = '0%';
-    scope.flagIndex = 0;
+    scope.page = 1;
+    scope.maxElementsPerGroup = 0;
+    scope.data = [];
+    scope.dataExpanded = [];
+    scope.groupNames = [];
 
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue) {
-        scope.itemWidth = 100 / (newValue.length - 1) + '%';
-        scope.flagIndex = newValue.length - 1;
+    var calculateMaxElementsPerGroup = function () {
+      return Math.floor(element.children().first().width() / 170) * 2;
+    };
+    var updateData = function () {
+      scope.data = _.map(scope.originalData, function (item, index) {
+        if (!scope.dataExpanded[index])
+          return item[1].slice(0, scope.maxElementsPerGroup);
+        else
+          return item[1];
+      });
+    };
+
+    scope.showGroupNames = function () {
+      return scope.colorDashboard != true;
+    };
+
+    scope.isShowMoreVisible = function (groupIndex) {
+      return !scope.dataExpanded[groupIndex] && scope.originalData[groupIndex][1].length > scope.maxElementsPerGroup;
+    };
+    scope.isShowLessVisible = function (groupIndex) {
+      return scope.dataExpanded[groupIndex];
+    };
+
+    scope.showMoreClick = function (groupIndex) {
+      scope.dataExpanded[groupIndex] = true;
+      updateData();
+    };
+
+    scope.showLessClick = function (groupIndex) {
+      scope.dataExpanded[groupIndex] = false;
+      updateData();
+    };
+
+    scope.$watch('originalData', function (newValue, oldValue) {
+      if (newValue && (scope.colorDashboard != true || (scope.colorDashboard && newValue.length))) { //IF not color dashboard OR is color dashboard and not empty array
+        scope.groupNames = _.map(scope.originalData, function (item, key) {
+          return item[0];
+        });
+
+        scope.maxElementsPerGroup = calculateMaxElementsPerGroup();
+        updateData();
+        scope.dataExpanded = [];
+      } else {
+        scope.data = [];
+        scope.dataExpanded = [];
+      }
+    });
+
+    var lazyDigest = _.debounce(function () {
+      scope.$digest();
+    }, 300);
+    $(window).resize(function () {
+      var maxElems = calculateMaxElementsPerGroup();
+      if (scope.maxElementsPerGroup != maxElems) {
+        scope.maxElementsPerGroup = maxElems;
+        updateData();
+        lazyDigest();
       }
     });
   }
 
   return {
     restrict: 'E',
-    templateUrl: 'app/directives/dbFlagColors/dbFlagColorsView.html',
+    templateUrl: 'app/directives/dbImageGallery/dbImageGalleryView.html',
     link: link,
     scope: {
-      data: '='
+      originalData: '=data',
+      colorDashboard: '='
     }
   };
-});
+}]);
 
-angular.module('app').directive('hueDbDistributionByCategory', function () {
-  function link(scope, element, attrs) {
-    scope.chartColor = 'assets/img/noise_texture.png';
-    scope.chartStrokeColor = '#000';
-  }
+angular.module('app').directive('hueDbDesignerImages', [
+	'$timeout', 'dashboardRepository', function (timeout, dashboardRepository) {
+		function link(scope, element, attrs) {
+			scope.data = [];
+			scope.collectionData = [];
+			scope.showCollection = false;
+			scope.showImageDetails = false;
+			scope.collectionLoading = false;
+			scope.imageDetailsData = null;
+			window.scr = scope
 
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbDistributionByCategory/dbDistributionByCategoryView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
+			scope.openFullCollection = function (index) {
+				// if (scope.collectionLoading)
+				//   return;
+				scope.collectionData = [];
+				dashboardRepository.designer.getDesignerImages(scope.data[index].id, scope.menus)
+					.then(function (data) {
+						scope.collectionLoading = false;
+						scope.collectionData = data;
+						timeout(function () {
+							scope.showCollection = true;
+						}, 300);
+					});
+				scope.collectionLoading = true;
+			};
 
-angular.module('app').directive('hueDbDesignerImages',
-  ['$timeout', 'dashboardRepository', function (timeout, dashboardRepository) {
-    function link(scope, element, attrs) {
-      scope.data = [];
-      scope.collectionData = [];
-      scope.showCollection = false;
-      scope.showImageDetails = false;
-      scope.collectionLoading = false;
-      scope.imageDetailsData = null;
-      window.scr = scope
+			scope.closeFullCollection = function () {
+				scope.showCollection = false;
+				adjustPreviewData();
+			};
 
-      scope.openFullCollection = function (index) {
-        // if (scope.collectionLoading)
-        //   return;
-        scope.collectionData = [];
-        dashboardRepository.designer.getDesignerImages(scope.data[index].id, scope.menus)
-          .then(function (data) {
-            scope.collectionLoading = false;
-            scope.collectionData = data;
-            timeout(function () {
-              scope.showCollection = true;
-            }, 300);
-          });
-        scope.collectionLoading = true;
-      };
+			scope.toggleImageDetails = function () {
+				scope.showImageDetails = scope.showImageDetails ? false : true;
+			};
 
-      scope.closeFullCollection = function () {
-        scope.showCollection = false;
-        adjustPreviewData();
-      };
+			scope.imageClickHandler = function (index) {
+				// scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
+				let data = {
+					index: index,
+					data: []
+				};
+				if (scope.singleDesigner) {
+					data.data = scope.data;
+				} else {
+					data.data = scope.collectionData;
+				}
+				scope.imageDetailsData = data;
+				scope.toggleImageDetails();
+			};
 
-      scope.toggleImageDetails = function () {
-        scope.showImageDetails = scope.showImageDetails ? false : true;
-      };
+			var adjustPreviewData = function () {
+				var elemCount = 12;
+				var windowWidth = $(window).width();
+				if (windowWidth <= 900) {
+					elemCount = 8;
+				}
+				if (windowWidth <= 360) {
+					elemCount = 2;
+				}
+				scope.data = scope.originalData.slice(0, elemCount);
+			};
 
-      scope.imageClickHandler = function (index) {
-        scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
-        scope.toggleImageDetails();
-      };
+			$(window).resize(function (event) {
+				if (!scope.isExpanded) {
+					adjustPreviewData();
+					scope.$digest();
+				}
+			});
 
-      var imagesContainer = $('.db-designer-images', element);
-      var adjustPreviewData = function () {
-        var elemCount = Math.floor(imagesContainer.width() / 190);
-        scope.data = scope.originalData.slice(0, elemCount);
-      };
+			scope.$watch('originalData', function (newValue, oldValue) {
+				adjustPreviewData();
+			});
 
-      $(window).resize(function (event) {
-        if (!scope.isExpanded) {
-          adjustPreviewData();
-          scope.$digest();
-        }
-      });
+			scope.$watch('isExpanded', function (newValue, oldValue) {
+				scope.showCollection = false;
 
-      scope.$watch('originalData', function (newValue, oldValue) {
-        adjustPreviewData();
-      });
+				if (newValue)
+					scope.data = scope.originalData;
+				else
+					adjustPreviewData();
+			});
+		}
 
-      scope.$watch('isExpanded', function (newValue, oldValue) {
-        scope.showCollection = false;
-
-        if (newValue)
-          scope.data = scope.originalData;
-        else
-          adjustPreviewData();
-      });
-    }
-
-    return {
-      restrict: 'E',
-      templateUrl: 'app/directives/dbDesignerImages/dbDesignerImagesView.html',
-      link: link,
-      scope: {
-        originalData: '=data',
-        isExpanded: '=',
-        singleDesigner: '=',
-        yearId: '=',
-        seasonId: '=',
-        categoryId: '=',
-        cityId: '=',
-        regionId: '=',
-        colorId: '=',
-        menus: '='
-      }
-    };
-  }]);
+		return {
+			restrict: 'E',
+			templateUrl: 'app/directives/dbDesignerImages/dbDesignerImagesView.html',
+			link: link,
+			scope: {
+				originalData: '=data',
+				isExpanded: '=',
+				singleDesigner: '=',
+				yearId: '=',
+				seasonId: '=',
+				categoryId: '=',
+				cityId: '=',
+				regionId: '=',
+				colorId: '=',
+				menus: '='
+			}
+		};
+	}
+]);
 
 angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService) {
   function link(scope, element, attrs) {
-    scope.designer = null;
+    scope.allData = scope.data;
+    scope.data = scope.allData.data[scope.allData.index];
+
+    scope.designer = "";
     scope.season = null;
     scope.year = null;
-    scope.category = null;
-    scope.city = null;
-    scope.region = null;
-    scope.source = null;
+    scope.category = "";
+    scope.city = "";
+    scope.region = "";
+    scope.source = "";
     scope.colorActual = null;
     scope.colorNcs = null;
     scope.colorNcsTitle = null;
@@ -5173,6 +5840,41 @@ angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout,
       scope.onClose();
     };
 
+    scope.shareFacebook = function (url) {
+      window.open('https://www.facebook.com/sharer/sharer.php?u=' + url);
+    }
+
+    scope.shareTwitter = function (url) {
+      window.open('https://twitter.com/home?status=' + url);
+    }
+
+    scope.sharePinterest = function (url) {
+      window.open('https://pinterest.com/pin/create/button/?url=' + url);
+    }
+
+    scope.shareGooglePlus = function (url) {
+      window.open('https://plus.google.com/share?url=' + url);
+    }
+
+    scope.LeftButtonHandler = function () {
+      let index = scope.allData.index;
+      if (index > 0) {
+        index--;
+      }
+      scope.allData.index = index;
+      scope.data = scope.allData.data[index];
+    };
+
+    scope.RightButtonHandler = function () {
+      try {
+        let index = scope.allData.index;
+        if (index < scope.allData.data.length - 1) {
+          index++;
+        }
+        scope.allData.index = index;
+        scope.data = scope.allData.data[index];
+      } catch (e) {}
+    }
     scope.isFooterMode = function (index) {
       return scope.footerMode == index;
     };
@@ -5244,6 +5946,45 @@ angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout,
     scope: {
       data: '=',
       onClose: '&'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbFlagColors', function () {
+  function link(scope, element, attrs) {
+    scope.itemWidth = '0%';
+    scope.flagIndex = 0;
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue) {
+        scope.itemWidth = 100 / (newValue.length - 1) + '%';
+        scope.flagIndex = newValue.length - 1;
+      }
+    });
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbFlagColors/dbFlagColorsView.html',
+    link: link,
+    scope: {
+      data: '='
+    }
+  };
+});
+
+angular.module('app').directive('hueDbDistributionByCategory', function () {
+  function link(scope, element, attrs) {
+    scope.chartColor = 'assets/img/noise_texture.png';
+    scope.chartStrokeColor = '#000';
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbDistributionByCategory/dbDistributionByCategoryView.html',
+    link: link,
+    scope: {
+      data: '='
     }
   };
 });
@@ -6731,20 +7472,6 @@ angular.module('app').directive('hueDbColorComparison', function () {
   };
 });
 
-angular.module('app').directive('hueDbCategoriesWithHighestActivity', function ($timeout) {
-  function link(scope, element, attrs) {
-  }
-
-  return {
-    restrict: 'E',
-    templateUrl: 'app/directives/dbCategoriesWithHighestActivity/dbCategoriesWithHighestActivityView.html',
-    link: link,
-    scope: {
-      data: '='
-    }
-  };
-});
-
 angular.module('app').directive('hueDbCarousel', function ($timeout, $interval) {
   function link(scope, element, attrs) {
     var animationDelay = 200;
@@ -6943,6 +7670,20 @@ angular.module('app').directive('hueDbCarousel', function ($timeout, $interval) 
     scope: {
       visibleElements: '@',
       elementSpacing: '@'
+    }
+  };
+});
+
+angular.module('app').directive('hueDbCategoriesWithHighestActivity', function ($timeout) {
+  function link(scope, element, attrs) {
+  }
+
+  return {
+    restrict: 'E',
+    templateUrl: 'app/directives/dbCategoriesWithHighestActivity/dbCategoriesWithHighestActivityView.html',
+    link: link,
+    scope: {
+      data: '='
     }
   };
 });
@@ -8767,343 +9508,6 @@ angular.module('app').directive('hueColorFrequencyPieChart', ['$timeout', functi
   };
 }]);
 
-(function () {
-  'use strict';
-  var serviceId = 'common';
-  angular.module('app').service(serviceId, ['$q', function ($q) {
-    return {
-      $q: $q,
-
-      generic: {
-        regions: [
-          {
-            id: 'europe',
-            name: 'europe',
-            title: 'Europe',
-            serverName: 'europe',
-            cities: [
-              {name: 'london'}, {name: 'paris'}, {name: 'milan'}
-            ]
-          },
-          {
-            id: 'north_america',
-            name: 'namerica',
-            title: 'North America',
-            serverName: 'north_america',
-            cities: [{name: 'ny', serverName: 'new york'}]
-          },
-          {
-            id: 'latin_america',
-            name: 'samerica',
-            title: 'South America',
-            serverName: 'latin_america',
-            cities: [{name: 'mex', serverName: 'mexico'},
-              {name: 'rio', serverName: 'rio de janeiro'},
-              {name: 'sao', serverName: 'sao paulo'}
-            ]
-          },
-          {
-            id: 'asia_pacific',
-            name: 'asia',
-            title: 'Asia and Pacific',
-            serverName: 'asia_pacific',
-            cities: [{name: 'tokyo'}, {name: 'seoul'}]
-          }
-        ]
-      }
-    }
-  }
-  ]);
-}());
-
-(function () {
-  'use strict';
-  var serviceId = 'charts';
-  angular
-    .module('app')
-    .service(serviceId,
-      [
-        '$q', 'repo.hue',
-        function ($q, hue) {
-
-          var regions = ['europe', 'asia', 'namerica', 'samerica'];
-
-          function colorGroupsByCityPeriod(req) {
-            return hue.colorGroupsByCityPeriod(req)
-              .then(function (result) {
-                _.each(result, function (d) {
-                  var value = d.value;
-                  // d.value = d.percentage * 100; // overriding
-                  d.valueTitle = Math.round(d.percentage * 100) + '%';
-                  d.valueTitle2 = value;
-                  d.color = d.name;
-                });
-                result = _.sortBy(result, 'group');
-                return result;
-              });
-          }
-
-          function citiesByColorPeriod(req) {
-            return hue.citiesByColorPeriod(req)
-              .then(function (result) {
-                _.each(result, function (d) {
-                  var value = d.value;
-                  // d.value = d.percentage * 100;
-                  d.valueTitle = d.percentage === null ? 'N/A' : Math.round(d.percentage * 100) + '%';
-                  d.valueTitle2 = d.percentage === null ? '' : value;
-                  d.color = '#' + req.color;
-                });
-                result = _.sortBy(result, 'group');
-                return result;
-              });
-          }
-
-          function colorsPerRegions(req) {
-            return $q.all(_.map(regions, function (r) {
-                return hue.colorsByRegionCityPeriod({
-                  year: req.year,
-                  season: req.season,
-                  category: req.category,
-                  region: r
-                }).then(function (response) {
-                  return {
-                    name: r,
-                    title: r,
-                    data: response
-                  };
-                });
-              })
-            )/*.then(function(responses) {
-             return responses;
-             })*/;
-          }
-
-          function colorsByPeriodYearsRange(req, yearsRange) {
-            return $q.all(_.map(yearsRange, function (y) {
-              req.year = y;
-              return $q.all([
-                hue.colorsByRegionPeriod(req),
-                hue.colorsUniqueByRegionPeriod(req)
-              ]).then(function (responses) {
-                return {
-                  year: y,
-                  season: req.season,
-                  colors: responses[0],
-                  colorsUnique: responses[1]
-                };
-              });
-
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorsUniqueGroupsPerSeason(year, city, category) {
-            // var seasons = ['spring', 'spring', 'fall', 'fall'];
-            var seasons = ['winter', 'spring', 'summer', 'fall'];
-            return $q.all(_.map(seasons, function (s) {
-              var req = {year: year, season: s, city: city, category: category};
-              if (s === 'winter') {
-                req.season = 'spring';
-              } else if (s === 'summer') {
-                req.season = 'fall';
-              }
-              return $q.all([
-                hue.colorGroupsByCityPeriod(req),
-                hue.colorsUniqueByRegionPeriod(req)])
-                .then(function (responses) {
-                  return {
-                    year: year,
-                    name: s,
-                    groups: responses[0],
-                    unique: responses[1]
-                  };
-                });
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorGroupsByCategories(categories, region, year, season) {
-            return $q.all(_.map(categories, function (c) {
-              return hue.colorGroupsByCategories({category: c, region: region, year: year, season: season})
-                .then(function (response) {
-                  return {
-                    name: c,
-                    title: c,
-                    data: response
-                  };
-                });
-
-            })).then(function (responses) {
-              return responses;
-            });
-          }
-
-          function colorsWithGroupsByRegionPeriod(req, region) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByRegionCitiesPeriod(req)
-            ]).then(function (results) {
-              var cities = results[1];
-              var data = results[0];
-
-              var result = {
-                region: {
-                  name: region,
-                  cities: {
-                    title: 'Top 4 colors',
-                    settings: {},
-                    data: cities
-                  }
-                },
-                charts: {
-                  settings: {},
-                  data: data
-                }
-              };
-
-              _.each(result.region.cities.data, function (c) {
-                // c.name = 'ny';
-                _.each(c.data, function (d) {
-                  d.value = d.percentage;
-                });
-              });
-
-              result.region.cities.settings = {
-                bars: {
-                  radius: 62,
-                  radiusInner: 46
-                }
-              };
-
-              return result;
-            });
-          }
-
-          function colorsWithGroups(req, year) {
-            req.year = year;
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByRegionCityPeriod(req)
-            ]).then(function (results) {
-              var groups = results[0];
-              var colors = results[1];
-              return {
-                groups: groups,
-                colors: colors
-              };
-            });
-          }
-
-          function colorsUniqueGroupsCommon(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByCityPeriod(req),
-              hue.colorsUniqueByRegionPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var common = results[1];
-              var unique = results[2];
-
-              return {
-                groups: data,
-                common: common,
-                unique: unique
-              };
-            });
-          }
-
-          function designersWithTopColors(req) {
-            var params = {region: req.region, year: req.year, season: req.season};
-            return hue.designersWithTopColors(params)
-              .then(function (results) {
-                return results;
-              });
-          }
-
-          function colorsGroupsCommon(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsByCityPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var common = results[1];
-
-              return {
-                groups: data,
-                common: common
-              };
-            });
-          }
-
-          function colorsUniqueGroups(req) {
-            return $q.all([
-              hue.colorGroupsByCityPeriod(req),
-              hue.colorsUniqueByRegionPeriod(req)
-            ]).then(function (results) {
-              var data = results[0];
-              var unique = results[1];
-              return {
-                groups: data,
-                unique: unique
-              };
-            });
-          }
-
-          return {
-            colorGroupsByCityPeriod: colorGroupsByCityPeriod,
-            colorsWithGroupsByRegionPeriod: colorsWithGroupsByRegionPeriod,
-            colorsWithGroups: colorsWithGroups,
-            citiesByColorPeriod: citiesByColorPeriod,
-            colorsUniqueGroupsPerSeason: colorsUniqueGroupsPerSeason,
-
-            colorsByPeriodYearsRange: colorsByPeriodYearsRange,
-            colorGroupsByCategories: colorGroupsByCategories,
-            colorsUniqueGroupsCommon: colorsUniqueGroupsCommon,
-            colorsGroupsCommon: colorsGroupsCommon,
-            designersWithTopColors: designersWithTopColors,
-            colorsUniqueGroups: colorsUniqueGroups,
-            colorsPerRegions: colorsPerRegions
-          }
-        }
-      ]);
-}());
-
-(function () {
-  'use strict';
-  var serviceId = 'chartsHelper';
-  angular.module('app').service(serviceId, ['$q', 'repo.hue',
-    function ($q, hue) {
-      function initContainer(element, childPath) {
-        element = $(element);
-
-        var container = !!childPath ? $(element).find(childPath) : element;
-        var containerItself = !!childPath;
-
-        var innerContainer;
-        if (containerItself) {
-          innerContainer = container;
-        } else {
-          innerContainer = container.find('>*:first-child');
-        }
-
-        if (innerContainer.length === 0) {
-          innerContainer = $('<div></div>');
-          innerContainer.appendTo(container);
-        } else {
-          innerContainer.html('');
-        }
-        return innerContainer;
-      }
-
-      return {
-        initContainer: initContainer
-      }
-    }
-  ]);
-}());
-
 angular
   .module('app')
   .component('verticalCoverageComponent', {
@@ -9136,22 +9540,6 @@ angular
           return localStorageService.get('currentUser').id === undefined;
       };
 
-    }
-  });
-
-angular
-  .module('app')
-  .component('unsubscribeComponent', {
-    templateUrl: 'app/components/unsubscribe/unsubscribe.tmpl.html',
-    controller: function ($http, appConfig, $stateParams) {
-      var self = this;
-      self.success = true;
-      $http.get(appConfig.dashboardServiceUrl + 'unsubscribe.json', {params: {token: $stateParams.token}})
-        .then(function (res) {
-          if (res.data && res.data.success) {
-            self.success = res.data.success;
-          }
-        });
     }
   });
 
@@ -9200,6 +9588,22 @@ angular
 
 angular
   .module('app')
+  .component('unsubscribeComponent', {
+    templateUrl: 'app/components/unsubscribe/unsubscribe.tmpl.html',
+    controller: function ($http, appConfig, $stateParams) {
+      var self = this;
+      self.success = true;
+      $http.get(appConfig.dashboardServiceUrl + 'unsubscribe.json', {params: {token: $stateParams.token}})
+        .then(function (res) {
+          if (res.data && res.data.success) {
+            self.success = res.data.success;
+          }
+        });
+    }
+  });
+
+angular
+  .module('app')
   .component('termsComponent', {
     templateUrl: 'app/components/terms/terms.tmpl.html',
     controller: function ($http, appConfig) {
@@ -9216,62 +9620,6 @@ angular
       };
     }
   });
-
-angular
-.module('app')
-.component('teachingMaterialsDetailsComponent', {
-  templateUrl: 'app/components/teaching-materials-details/teaching-materials-details.tmpl.html',
-  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
-    var vm = this;
-
-    vm.init = function () {
-      $http.get(appConfig.dashboardServiceUrl + 'teaching_materials/' + $stateParams.id + '.json')
-      .then(function (res) {
-        vm.pageData = res.data.data.data;
-        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
-        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
-        vm.pageData.excerpts = res.data.data.excerpts;
-        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
-        vm.pageData.analitics = angular.copy(res.data.data.analytics);
-      });
-    };
-    vm.more = function () {
-      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
-    };
-
-    vm.gotoElement = function (eID) {
-      $location.hash('prefooter');
-      anchorSmoothScroll.scrollTo(eID);
-      $location.hash('');
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser')? true : false
-    };
-
-    vm.downloadExcerpt = function () {
-      $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
-      localStorageService.set('link', vm.pageData.excerpts[0].url);
-    };
-
-    vm.aggProduct = function () {
-      // localStorageService.remove('products');
-      var id = vm.pageData.id;
-      var products = localStorageService.get('products');
-      if (!products) {
-        products = {};
-      }
-      if (!products.teaching_materials) {
-        products.teaching_materials = {};
-      }
-      products.teaching_materials[id] = 1;
-      localStorageService.set('products', products);
-      $state.go('cart-page', {wayBack: 'teachingMaterials'});
-    };
-    vm.getUser = function () {
-      return localStorageService.get('currentUser').id === undefined;
-    };
-  }
-});
 
 angular
   .module('app')
@@ -9352,6 +9700,62 @@ angular
       };
     }
   });
+
+angular
+.module('app')
+.component('teachingMaterialsDetailsComponent', {
+  templateUrl: 'app/components/teaching-materials-details/teaching-materials-details.tmpl.html',
+  controller: function ($http, appConfig, $stateParams, $location, anchorSmoothScroll, localStorageService, $state) {
+    var vm = this;
+
+    vm.init = function () {
+      $http.get(appConfig.dashboardServiceUrl + 'teaching_materials/' + $stateParams.id + '.json')
+      .then(function (res) {
+        vm.pageData = res.data.data.data;
+        vm.pageData.date = moment(vm.pageData.published_year+'-'+vm.pageData.published_month+'-'+vm.pageData.published_day).format('dddd, MMMM D, YYYY');
+        vm.pageData.image_url =  res.data.data.images && res.data.data.images[0] && res.data.data.images[0].image_url;
+        vm.pageData.excerpts = res.data.data.excerpts;
+        vm.pageData.analitic =  _.chunk(angular.copy(res.data.data.analytics).slice(0, 3), 3);
+        vm.pageData.analitics = angular.copy(res.data.data.analytics);
+      });
+    };
+    vm.more = function () {
+      vm.pageData.analitic = _.chunk(angular.copy(vm.pageData.analitics), 3);
+    };
+
+    vm.gotoElement = function (eID) {
+      $location.hash('prefooter');
+      anchorSmoothScroll.scrollTo(eID);
+      $location.hash('');
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser')? true : false
+    };
+
+    vm.downloadExcerpt = function () {
+      $state.go('download-excerpt', {type: 'teachingMaterials', id: vm.pageData.id});
+      localStorageService.set('link', vm.pageData.excerpts[0].url);
+    };
+
+    vm.aggProduct = function () {
+      // localStorageService.remove('products');
+      var id = vm.pageData.id;
+      var products = localStorageService.get('products');
+      if (!products) {
+        products = {};
+      }
+      if (!products.teaching_materials) {
+        products.teaching_materials = {};
+      }
+      products.teaching_materials[id] = 1;
+      localStorageService.set('products', products);
+      $state.go('cart-page', {wayBack: 'teachingMaterials'});
+    };
+    vm.getUser = function () {
+      return localStorageService.get('currentUser').id === undefined;
+    };
+  }
+});
 
 angular
   .module('app')
@@ -9600,39 +10004,6 @@ angular
 
 angular
   .module('app')
-  .component('recoverComponent', {
-    templateUrl: 'app/components/recover/recover.tmpl.html',
-    controller: function ($state, $http, appConfig) {
-      var self = this;
-      this.successRequest = false;
-      this.email = '';
-      this.error = false;
-
-      this.onSendLoginClick = function () {
-        if (self.successRequest) {
-          $state.go('login');
-        }
-
-        if (!self.email) {
-          self.error = 'The Email field is required';
-        } else {
-          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
-            .then(function (res) {
-              if (res.data) {
-                if (res.data.success) {
-                  self.successRequest = true;
-                } else {
-                  self.error = 'We did not find email you provided in our base';
-                }
-              }
-            });
-        }
-      };
-    }
-  });
-
-angular
-  .module('app')
   .component('publicationScheduleComponent', {
     templateUrl: 'app/components/publication-schedule/publication-schedule.tmpl.html',
     controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
@@ -9683,6 +10054,58 @@ angular
       };
       vm.getUser = function () {
         return localStorageService.get('currentUser').id === undefined;
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('recoverComponent', {
+    templateUrl: 'app/components/recover/recover.tmpl.html',
+    controller: function ($state, $http, appConfig) {
+      var self = this;
+      this.successRequest = false;
+      this.email = '';
+      this.error = false;
+
+      this.onSendLoginClick = function () {
+        if (self.successRequest) {
+          $state.go('login');
+        }
+
+        if (!self.email) {
+          self.error = 'The Email field is required';
+        } else {
+          $http.get(appConfig.dashboardServiceUrl + '/recover.json', {params: {email: self.email}})
+            .then(function (res) {
+              if (res.data) {
+                if (res.data.success) {
+                  self.successRequest = true;
+                } else {
+                  self.error = 'We did not find email you provided in our base';
+                }
+              }
+            });
+        }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('privacyComponent', {
+    templateUrl: 'app/components/privacy-policy/privacy-policy.tmpl.html',
+    controller: function ($http, appConfig) {
+      var vm = this;
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
+          .then(function (res) {
+            if (res && res.data) {
+              vm.pageData = res.data.find(function (item) {
+                return item.name === 'Privacy Policy';
+              })
+            }
+          });
       };
     }
   });
@@ -9817,25 +10240,6 @@ angular
           }
         }
         vm.editFlag = true;
-      };
-    }
-  });
-
-angular
-  .module('app')
-  .component('privacyComponent', {
-    templateUrl: 'app/components/privacy-policy/privacy-policy.tmpl.html',
-    controller: function ($http, appConfig) {
-      var vm = this;
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'bottoms.json')
-          .then(function (res) {
-            if (res && res.data) {
-              vm.pageData = res.data.find(function (item) {
-                return item.name === 'Privacy Policy';
-              })
-            }
-          });
       };
     }
   });
@@ -10664,62 +11068,6 @@ angular
 
 angular
   .module('app')
-  .component('goodReadsComponent', {
-    templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
-    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
-      var vm = this;
-      vm.all = [];
-      vm.items = [];
-      vm.flag = true;
-      var count = 1;
-      var numberOfElements = 6;
-
-      vm.init = function () {
-        $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
-          .then(function (res) {
-            if (res && res.data && res.data.data) {
-              vm.pageData = res.data.data.map(function (item) {
-                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
-                return item.data;
-              });
-            }
-            vm.sortItems();
-          });
-      };
-
-      vm.sortItems = function () {
-        vm.pageData.forEach(function (elem, index) {
-          if (index > numberOfElements * count - 1) {
-            elem.style = 'display: none';
-            vm.flag = false;
-          }else{
-            elem.style = '';
-            vm.flag = true;
-          }
-          vm.items.push(elem);
-        });
-      };
-
-      vm.more = function () {
-        vm.items = [];
-        count++;
-        vm.sortItems();
-      };
-
-      vm.gotoElement = function (eID) {
-        $location.hash('prefooter');
-        anchorSmoothScroll.scrollTo(eID);
-        $location.hash('');
-      };
-
-      vm.getUser = function () {
-        return localStorageService.get('currentUser').id === undefined;
-      };
-    }
-  });
-
-angular
-  .module('app')
   .component('downloadExcerptPageComponent', {
     templateUrl: 'app/components/download-excerpt-page/download-excerpt-page.tmpl.html',
     controller: function ($state, $http, appConfig, categoryValues, dataValidate, $stateParams, $window, $scope, localStorageService) {
@@ -10797,18 +11145,56 @@ angular
 
 angular
   .module('app')
-  .component('detailedComponent', {
-    templateUrl: 'app/components/detailed-page/detailed.tmpl.html',
-    controller: function ($location, anchorSmoothScroll, localStorageService) {
+  .component('goodReadsComponent', {
+    templateUrl: 'app/components/good-reads/good-reads.tmpl.html',
+    controller: function ($http, appConfig, $location, anchorSmoothScroll, localStorageService) {
       var vm = this;
+      vm.all = [];
+      vm.items = [];
+      vm.flag = true;
+      var count = 1;
+      var numberOfElements = 6;
+
+      vm.init = function () {
+        $http.get(appConfig.dashboardServiceUrl + 'good_reads.json')
+          .then(function (res) {
+            if (res && res.data && res.data.data) {
+              vm.pageData = res.data.data.map(function (item) {
+                item.data.image_url = item.images && item.images[0] && item.images[0].image_url;
+                return item.data;
+              });
+            }
+            vm.sortItems();
+          });
+      };
+
+      vm.sortItems = function () {
+        vm.pageData.forEach(function (elem, index) {
+          if (index > numberOfElements * count - 1) {
+            elem.style = 'display: none';
+            vm.flag = false;
+          }else{
+            elem.style = '';
+            vm.flag = true;
+          }
+          vm.items.push(elem);
+        });
+      };
+
+      vm.more = function () {
+        vm.items = [];
+        count++;
+        vm.sortItems();
+      };
 
       vm.gotoElement = function (eID) {
         $location.hash('prefooter');
         anchorSmoothScroll.scrollTo(eID);
         $location.hash('');
       };
+
       vm.getUser = function () {
-          return localStorageService.get('currentUser').id === undefined;
+        return localStorageService.get('currentUser').id === undefined;
       };
     }
   });
@@ -10865,6 +11251,24 @@ angular
             }
           });
         }
+      };
+    }
+  });
+
+angular
+  .module('app')
+  .component('detailedComponent', {
+    templateUrl: 'app/components/detailed-page/detailed.tmpl.html',
+    controller: function ($location, anchorSmoothScroll, localStorageService) {
+      var vm = this;
+
+      vm.gotoElement = function (eID) {
+        $location.hash('prefooter');
+        anchorSmoothScroll.scrollTo(eID);
+        $location.hash('');
+      };
+      vm.getUser = function () {
+          return localStorageService.get('currentUser').id === undefined;
       };
     }
   });
@@ -13497,797 +13901,6 @@ angular
     }
   })
 
-// angular.module('app').directive('uiColorpicker', function () {
-//     return {
-//         restrict: 'E',
-//         require: 'ngModel',
-//         scope: false,
-//         replace: true,
-//         template: "<span><input class='input-small' /></span>",
-//         link: function (scope, element, attrs, ngModel) {
-//             var input = element.find('input');
-//             // var buttonColorpicker = element.find('.sp-replacer .sp-light');
-//             // var buttonColorpicker = element[0].childNodes[1];
-//             // buttonColorpicker.addClass('sp-active');
-//             // console.log('div', div);
-//
-//             // scope.clickPicker = function () {
-//             //     console.log('$scope--picker-derictive', scope);
-//             // };
-//
-//             console.log('scope', scope);
-//             console.log('buttonColorpicker=1', element);
-//             console.log('buttonColorpicker', element.find('.sp-replacer'));
-//             var options = angular.extend({
-//                 color: ngModel.$viewValue,
-//                 change: function (color) {
-//                     scope.$apply(function () {
-//                         ngModel.$setViewValue(color.toHexString());
-//                     });
-//                 }
-//             }, scope.$eval(attrs.options));
-//
-//             ngModel.$render = function () {
-//                 input.spectrum('set', ngModel.$viewValue || '');
-//             };
-//
-//             input.spectrum(options);
-//         }
-//     };
-// });
-//
-// app.controller('MyCtrl', function($scope) {
-//     $scope.targetColor = '#ebebeb';
-// });
-
-// angular.bootstrap(document, ['app']);
-
-angular.module('app').directive('hueTooltipster', ['$timeout', function (timeout) {
-  function link(scope, element, attrs) {
-    angular.element(element).ready(function () {
-      angular.element(element).tooltipster(scope.hueTooltipster);
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      hueTooltipster: '='
-    }
-  };
-}]);
-
-angular.module('app').directive('hueSvg', function () {
-  return {
-    restrict: 'E',
-    scope: {
-      id: '@',
-      source: '@',
-      class: '@',
-      onLoad: '&'
-    },
-    link: function (scope, element, attrs) {
-      angular.element.get(attrs.source, function (data) {
-        var svg = $('svg', data).removeAttr('xmlns xmlns:i xmlns:a xmlns:x xmlns:xlink xmlns:graph xml:space');
-
-        if (attrs.id)
-          svg.attr('id', attrs.id);
-        else
-          svg.removeAttr('id');
-
-        if (attrs.class)
-          svg.attr('class', attrs.class);
-
-        element.replaceWith(svg.prop('outerHTML'));
-
-        if (scope.onLoad)
-          scope.onLoad();
-      }, 'xml');
-    }
-  };
-});
-
-angular.module('app').directive('hueReadMore', function () {
-  function link(scope, element, attrs) {
-    scope.$watch('text', function (newValue, oldValue) {
-      var elem = $('span:first-child', element);
-      elem.readmore('destroy');
-      elem.text($.trim(newValue));
-      elem.readmore({
-        speed: 200,
-        moreLink: '<a href="#">More</a>',
-        lessLink: '<a href="#">Less</a>',
-        collapsedHeight: parseInt(scope.collapsedHeight),
-        heightMargin: 0
-      });
-    });
-  }
-
-  return {
-    restrict: 'A',
-    transclude: true,
-    template: '<span></span>',
-    link: link,
-    scope: {
-      text: '=hueReadMore',
-      collapsedHeight: '@'
-    }
-  };
-});
-
-angular.module('app').filter('truncate', function () {
-  return function (text, length, end) {
-    if (isNaN(length)) {
-      length = 10;
-    }
-
-    if (end === undefined) {
-      end = '...';
-    }
-
-    if (text.length <= length || text.length - end.length <= length) {
-      return text;
-    } else {
-      return String(text).substring(0, length - end.length) + end;
-    }
-  };
-}).directive('readMore', function ($filter) {
-  return {
-    restrict: 'A',
-    scope: {
-      text: '=readMore',
-      labelExpand: '@readMoreLabelExpand',
-      labelCollapse: '@readMoreLabelCollapse',
-      limit: '@readMoreLimit'
-    },
-    transclude: true,
-    template: '<span ng-transclude ng-bind-html="text"></span><a href="javascript:;" ng-click="toggleReadMore()" ng-bind="label"></a>',
-    link: function (scope /*, element, attrs */) {
-
-      var originalText = scope.text;
-
-      scope.label = scope.labelExpand;
-
-      scope.$watch('expanded', function (expandedNew) {
-        if (expandedNew) {
-          scope.text = originalText;
-          scope.label = scope.labelCollapse;
-        } else {
-          scope.text = $filter('truncate')(originalText, scope.limit, '...');
-          scope.label = scope.labelExpand;
-        }
-      });
-
-      scope.toggleReadMore = function () {
-        scope.expanded = !scope.expanded;
-      };
-    }
-  };
-});
-angular.module('app').directive('huePieChart', ['$timeout', '$location', function (timeout, location) {
-  function link(scope, element, attrs) {
-    var buildChart = function (data) { //array of { c: HEX color, p: percentage, t: title }
-      $(element).empty();
-
-      var config = scope.config;
-
-      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
-      var diameter = scope.config.diameter;
-      var outerRadius = diameter / 2;
-      var innerRadius = outerRadius - donutWidth;
-      var animationDuration = 400;
-      var animationStep = 1 / (animationDuration / 20);
-      var defaultAngleMargin = 0.008;
-
-      var draw = SVG(element[0]).size(diameter, diameter);
-      var groupMain = draw.group();
-      var groupExpanded = draw.group();
-      var expandedColorPath = groupExpanded.path('');
-
-      var getSectionPathData = function (angle1, angle2, angleMargin) {
-        var sinStart = angleMargin ? Math.sin(angle1 + angleMargin) : Math.sin(angle1);
-        var cosStart = angleMargin ? Math.cos(angle1 + angleMargin) : Math.cos(angle1);
-        var sinEnd = angleMargin ? Math.sin(angle2 - angleMargin) : Math.sin(angle2);
-        var cosEnd = angleMargin ? Math.cos(angle2 - angleMargin) : Math.cos(angle2);
-
-        var xO1 = outerRadius + (sinStart * outerRadius); //outer
-        var yO1 = outerRadius - (cosStart * outerRadius);
-        var xO2 = outerRadius + (sinEnd * outerRadius);
-        var yO2 = outerRadius - (cosEnd * outerRadius);
-
-        var xI1 = outerRadius + (sinStart * innerRadius); //inner
-        var yI1 = outerRadius - (cosStart * innerRadius);
-        var xI2 = outerRadius + (sinEnd * innerRadius);
-        var yI2 = outerRadius - (cosEnd * innerRadius);
-
-        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
-
-        return new SVG.PathArray([
-          ['M', xO1, yO1],
-          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
-          ['L', xI2, yI2],
-          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
-          ['Z']
-        ]).toString();
-      };
-
-      //Toggle color animation
-      var expandedColor = null;
-      var toggleExpandedColor = function (index, show, callback) {
-        var eaProgress = show ? 0 : 1;
-        var eaProgressLimit = show ? 1 : 0;
-        var eaAngleStart = _.reduce(data.slice(0, index), function (memo, value) {
-            return memo + value.p;
-          }, 0) * Math.PI / 50;
-        var eaAngleDelta = (100 - data[index].p) * Math.PI / 50;
-        var eaStep = show ? animationStep : -animationStep;
-        var eaSectionAngleWidth = data[index].p * Math.PI / 50 - 0.001;
-        var eAnimation = function () {
-          eaProgress += eaStep;
-
-          if (eaProgress > 1)
-            eaProgress = 1;
-          else if (eaProgress < 0)
-            eaProgress = 0;
-
-          expandedColorPath.plot(getSectionPathData(eaAngleStart, eaAngleStart + (eaAngleDelta * eaProgress) + eaSectionAngleWidth));
-
-          if (eaProgress == 0)
-            groupExpanded.hide();
-
-          if (eaProgress != eaProgressLimit)
-            timeout(eAnimation, 20);
-          else if (callback)
-            callback();
-        }
-
-        expandedColorPath.attr('fill', data[index].c);
-        if (show)
-          groupExpanded.show();
-        eAnimation();
-      };
-
-      //Initialization
-      var clickColorHandler = function (event) {
-        if (scope.colorClickHandler())
-          scope.colorClickHandler()(groupMain.index(event.currentTarget.instance));
-      };
-      var clickExpandedColorHandler = function (event) {
-        if (scope.collapseClickHandler())
-          scope.collapseClickHandler()();
-      };
-
-      var attrNs = location.absUrl();
-      var itemCount = data.length;
-      for (var i = 0; i < itemCount; i++) {
-        var p = groupMain.path('');
-        p.attr('fill', data[i].c);
-        p.click(clickColorHandler);
-      }
-
-      expandedColorPath.click(clickExpandedColorHandler);
-
-      //Opening animation
-      var easeOutFunction = BezierEasing.css['ease-out'];
-      var animationProgress = 0;
-      var processAnimation = function () {
-        animationProgress += animationStep;
-        if (animationProgress > 1)
-          animationProgress = 1;
-
-        var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
-        var groupMainChildren = groupMain.children();
-        var angleStart = 0;
-        for (var i = 0; i < itemCount; i++) {
-          var angleEnd = angleStart + (data[i].p * coeff * Math.PI / 50);
-          groupMainChildren[i].plot(getSectionPathData(angleStart, angleEnd, defaultAngleMargin));
-          angleStart = angleEnd;
-        }
-
-        if (animationProgress != 1)
-          timeout(processAnimation, 20);
-        else if (scope.animationCompleteHandler())
-          scope.animationCompleteHandler()();
-      };
-
-      groupExpanded.hide();
-      if (!element[0].isVisible()) //don't play animation on invisible charts
-        animationProgress = 1;
-      processAnimation();
-
-      scope.$watch('selectedIndex', function (newValue, oldValue) {
-        if (newValue != null) {
-          if (oldValue == null)
-            toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
-          else {
-            toggleExpandedColor(oldValue, false, function () {
-              toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
-            });
-          }
-        }
-        else if (oldValue != null)
-          toggleExpandedColor(oldValue, false, scope.animationCompleteHandler());
-      });
-    };
-
-    scope.$watch('data', function (newValue, oldValue) {
-      if (newValue && newValue.length > 0)
-        buildChart(newValue);
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=huePieChart',
-      data: '=',
-      selectedIndex: '=',
-      colorClickHandler: '&onColorClick',
-      collapseClickHandler: '&onCollapseClick',
-      animationCompleteHandler: '&onAnimationComplete'
-    }
-  };
-}]);
-
-angular.module('app').directive('onRepeatLastElement', function () {
-  function link(scope, element, attrs) {
-    if (scope.$last)
-      scope.$parent[attrs.onRepeatLastElement]();
-  }
-
-  return {
-    restrict: 'A',
-    link: link
-    // scope: {
-    // 	onRepeatLastElement: '&'
-    // }
-  };
-});
-
-// angular.module('app').directive('hueMcustomscrollbar', function () {
-// 	function link(scope, element, attrs) {
-// 		$(element).mCustomScrollbar();
-// 	}
-//
-// 	return {
-// 		restrict: 'A',
-// 		link: link
-// 	};
-// });
-
-/**
- *  Angular directive to truncate multi-line text to visible height
- *
- *  @param bind (angular bound value to append) REQUIRED
- *  @param ellipsisAppend (string) string to append at end of truncated text after ellipsis, can be HTML OPTIONAL
- *  @param ellipsisAppendClick (function) function to call if ellipsisAppend is clicked (ellipsisAppend must be clicked) OPTIONAL
- *  @param ellipsisSymbol (string) string to use as ellipsis, replaces default '...' OPTIONAL
- *  @param ellipsisSeparator (string) separator to split string, replaces default ' ' OPTIONAL
- *
- *  @example <p data-ellipsis data-ng-bind="boundData"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-symbol="---"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more"></p>
- *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more" data-ellipsis-append-click="displayFull()"></p>
- *
- */
-angular.module('app')
-
-  .directive('ellipsis', ['$timeout', '$window', '$sce', function ($timeout, $window, $sce) {
-
-    var AsyncDigest = function (delay) {
-      var timeout = null;
-      var queue = [];
-
-      this.remove = function (fn) {
-        if (queue.indexOf(fn) !== -1) {
-          queue.splice(queue.indexOf(fn), 1);
-          if (queue.length === 0) {
-            $timeout.cancel(timeout);
-            timeout = null;
-          }
-        }
-      };
-      this.add = function (fn) {
-        if (queue.indexOf(fn) === -1) {
-          queue.push(fn);
-        }
-        if (!timeout) {
-          timeout = $timeout(function () {
-            var copy = queue.slice();
-            timeout = null;
-            // reset scheduled array first in case one of the functions throws an error
-            queue.length = 0;
-            copy.forEach(function (fn) {
-              fn();
-            });
-          }, delay);
-        }
-      };
-    };
-
-    var asyncDigestImmediate = new AsyncDigest(0);
-    var asyncDigestDebounced = new AsyncDigest(75);
-
-    return {
-      restrict: 'A',
-      scope: {
-        ngShow: '=',
-        ngBind: '=',
-        ngBindHtml: '=',
-        ellipsisAppend: '@',
-        ellipsisAppendClick: '&',
-        ellipsisSymbol: '@',
-        ellipsisSeparator: '@',
-        useParent: "@",
-        ellipsisSeparatorReg: '=',
-        ellipsisFallbackFontSize: '@'
-      },
-      compile: function (elem, attr, linker) {
-
-        return function (scope, element, attributes) {
-          /* Window Resize Variables */
-          attributes.lastWindowResizeTime = 0;
-          attributes.lastWindowResizeWidth = 0;
-          attributes.lastWindowResizeHeight = 0;
-          attributes.lastWindowTimeoutEvent = null;
-          /* State Variables */
-          attributes.isTruncated = false;
-
-          function _isDefined(value) {
-            return typeof(value) !== 'undefined';
-          }
-
-          function getParentHeight(element) {
-            var heightOfChildren = 0;
-            angular.forEach(element.parent().children(), function (child) {
-              if (child != element[0]) {
-                heightOfChildren += child.clientHeight;
-              }
-            });
-            return element.parent()[0].clientHeight - heightOfChildren;
-          }
-
-          function buildEllipsis() {
-            var binding = scope.ngBind || scope.ngBindHtml;
-            var isTrustedHTML = false;
-            if ($sce.isEnabled() && angular.isObject(binding) && $sce.getTrustedHtml(binding)) {
-              isTrustedHTML = true;
-              binding = $sce.getTrustedHtml(binding);
-            }
-            if (binding) {
-              var isHtml = (!(!!scope.ngBind) && !!(scope.ngBindHtml));
-              var i = 0,
-                ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
-                ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
-                ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
-                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
-                bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
-
-              attributes.isTruncated = false;
-              if (isHtml) {
-                element.html(binding);
-              } else {
-                element.text(binding);
-              }
-
-              if (_isDefined(attributes.ellipsisFallbackFontSize) && isOverflowed(element)) {
-                element.css('font-size', attributes.ellipsisFallbackFontSize);
-              }
-
-              // If text has overflow
-              if (isOverflowed(element, scope.useParent)) {
-                var bindArrayStartingLength = bindArray.length,
-                  initialMaxHeight = scope.useParent ? getParentHeight(element) : element[0].clientHeight;
-
-                if (isHtml) {
-                  element.html(binding + appendString);
-                } else {
-                  element.text(binding).html(element.html() + appendString);
-                }
-                //Set data-overflow on element for targeting
-                element.attr('data-overflowed', 'true');
-
-                // Set complete text and remove one word at a time, until there is no overflow
-                for (; i < bindArrayStartingLength; i++) {
-                  var current = bindArray.pop();
-
-                  //if the last string still overflowed, then truncate the last string
-                  if (bindArray.length === 0) {
-                    bindArray[0] = current.substring(0, Math.min(current.length, 5));
-                  }
-
-                  if (isHtml) {
-                    element.html(bindArray.join(ellipsisSeparator) + appendString);
-                  } else {
-                    element.text(bindArray.join(ellipsisSeparator)).html(element.html() + appendString);
-                  }
-
-                  if ((scope.useParent ? element.parent()[0] : element[0]).scrollHeight < initialMaxHeight || isOverflowed(element, scope.useParent) === false) {
-                    attributes.isTruncated = true;
-                    break;
-                  }
-                }
-                // else if (scope.onceOverFlowed) {
-                //   console.log()
-                // }
-
-                // If append string was passed and append click function included
-
-
-                if (!isTrustedHTML && $sce.isEnabled()) {
-                  $sce.trustAsHtml(binding);
-                }
-              } else if (scope.onceOverFlowed) {
-                element.attr('data-overflowed', 'false');
-                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
-
-                if (isHtml) {
-                  element.html(binding + tempAppend);
-                } else {
-                  element.text(binding).html(element.html() + tempAppend);
-                }
-
-              } else {
-                element.attr('data-overflowed', 'false');
-
-              }
-
-              if (ellipsisSymbol != appendString && typeof(scope.ellipsisAppendClick) !== 'undefined' && scope.ellipsisAppendClick !== '') {
-                element.find('span.angular-ellipsis-append').bind("click", function (e) {
-                  var text = element.find('span.angular-ellipsis-append a').text()
-                  if (text === 'Read more') {
-                    scope.onceOverFlowed = true;
-                    angular.element(element).css('max-height', '1000px')
-
-                  } else {
-                    angular.element(element).css({'max-height': ''})
-
-                  }
-
-
-                  buildEllipsis()
-                  scope.$apply(function () {
-                    scope.ellipsisAppendClick.call(scope, {
-                      event: e
-                    });
-                  });
-                });
-              }
-            }
-          }
-
-          /**
-           *  Test if element has overflow of text beyond height or max-height
-           *
-           *  @param element (DOM object)
-           *
-           *  @return bool
-           *
-           */
-          function isOverflowed(thisElement, useParent) {
-            thisElement = useParent ? thisElement.parent() : thisElement;
-            return thisElement[0].scrollHeight > thisElement[0].clientHeight;
-          }
-
-          function onceOverFlowed() {
-            if (isOverflowed(element, scope.useParent)) {
-              return true;
-            }
-          }
-
-          /**
-           *  Watchers
-           */
-
-          /**
-           *  Execute ellipsis truncate on ngShow update
-           */
-          scope.$watch('ngShow', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBind update
-           */
-          scope.$watch('ngBind', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBindHtml update
-           */
-          scope.$watch('ngBindHtml', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  Execute ellipsis truncate on ngBind update
-           */
-          scope.$watch('ellipsisAppend', function () {
-            buildEllipsis();
-          });
-
-          /**
-           *  Execute ellipsis truncate when element becomes visible
-           */
-          scope.$watch(function () {
-            return element[0].offsetWidth != 0 && element[0].offsetHeight != 0
-          }, function () {
-            asyncDigestDebounced.add(buildEllipsis);
-          });
-
-          function checkWindowForRebuild() {
-            if (attributes.lastWindowResizeWidth != window.innerWidth || attributes.lastWindowResizeHeight != window.innerHeight) {
-              buildEllipsis();
-            }
-
-            attributes.lastWindowResizeWidth = window.innerWidth;
-            attributes.lastWindowResizeHeight = window.innerHeight;
-          }
-
-          var unbindRefreshEllipsis = scope.$on('dibari:refresh-ellipsis', function () {
-            asyncDigestImmediate.add(buildEllipsis);
-          });
-
-          /**
-           *  When window width or height changes - re-init truncation
-           */
-
-          function onResize() {
-            asyncDigestDebounced.add(checkWindowForRebuild);
-          }
-
-          var $win = angular.element($window);
-          $win.bind('resize', onResize);
-
-          /**
-           * Clean up after ourselves
-           */
-          scope.$on('$destroy', function () {
-            $win.unbind('resize', onResize);
-            asyncDigestImmediate.remove(buildEllipsis);
-            asyncDigestDebounced.remove(checkWindowForRebuild);
-            if (unbindRefreshEllipsis) {
-              unbindRefreshEllipsis();
-              unbindRefreshEllipsis = null;
-            }
-          });
-        };
-      }
-    };
-  }]);
-
-angular.module('app').directive('hueDbInfoTooltip', ['searchMenuRepository', function (searchMenuRepository) {
-  function link(scope, element, attrs) {
-    var e = angular.element(element);
-
-    searchMenuRepository.getMain(function (data) {
-      e.ready(function () {
-        e.attr('title', data.tooltips[attrs.hueDbInfoTooltip]);
-        e.tooltipster({
-          animation: 'fade',
-          theme: 'tooltipster-module-info',
-          trigger: 'hover',
-          minWidth: 300,
-          maxWidth: 300,
-          position: 'bottom'
-        });
-      });
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link
-  };
-}]);
-
-angular.module('app').directive('hueDbInfoIcon', ['searchMenuRepository', '$state', function (searchMenuRepository, $state) {
-  function link(scope, element, attrs) {
-    var icon = angular.element('img', element);
-    var repositoryAction = 'getMain';
-    if ($state.current) {
-      if ($state.current.parent === 'branding') {
-        repositoryAction = 'getControlsDataBranding';
-      } else if ($state.current.parent === 'auto') {
-        repositoryAction = 'getControlsDataAuto';
-      } else if ($state.current.parent === 'legal') {
-        repositoryAction = 'getControlsDataLegal';
-      } else if ($state.current.parent === 'fashion') {
-        repositoryAction = 'getControlsData';
-      }
-    }
-
-    searchMenuRepository[repositoryAction]().then(function (data) {
-      if (!data.tooltips) {
-        return;
-      }
-
-      icon.attr('title', data.tooltips[scope.textKey]);
-      icon.tooltipster({
-        animation: 'fade',
-        theme: 'tooltipster-module-info',
-        trigger: 'hover',
-        minWidth: 300,
-        maxWidth: 300,
-        position: 'bottom'
-      });
-    });
-  }
-
-  return {
-    restrict: 'E',
-    template: '<img src="assets/img/icons/info.svg" class="icon-info" />',
-    link: link,
-    scope: {
-      textKey: '@'
-    }
-  };
-}]);
-
-// angular.module('app').directive('hueDashboardScroll', function () {
-// 	function link(scope, element, attrs) {
-// 		$(element).mCustomScrollbar({
-// 			theme: 'minimal-dark',
-// 			scrollInertia: 0,
-// 			mouseWheel: {
-// 				scrollAmount: 70
-// 			}
-// 		});
-// 	}
-//
-// 	return {
-// 		restrict: 'A',
-// 		link: link
-// 	};
-// });
-
-angular.module('app').directive('hueCarousel', function () {
-  function link(scope, element, attrs) {
-    scope.$watch('initialized', function (newValue, oldValue) {
-      if (newValue) {
-        if (scope.config) {
-          if (scope.config.responsive && !scope.config.onCreate) {
-            scope.config.onCreate = function () {
-              angular.element(element).trigger('updateSizes');
-              if (scope.onCreate) {
-                scope.onCreate(this);
-              }
-            };
-          }
-          angular.element(element).carouFredSel(scope.config);
-
-          if (scope.config.buttonNextId) {
-            angular.element('#' + scope.config.buttonNextId).click(function () {
-              angular.element(element).trigger('next');
-            });
-          }
-          if (scope.config.buttonPrevId) {
-            angular.element('#' + scope.config.buttonPrevId).click(function () {
-              angular.element(element).trigger('prev');
-            });
-          }
-        } else {
-          angular.element(element).carouFredSel();
-        }
-      }
-      angular.element(element).trigger('updateSizes');
-    });
-  }
-
-  return {
-    restrict: 'A',
-    link: link,
-    scope: {
-      config: '=hueCarousel',
-      initialized: '=',
-      onCreate: '='
-    }
-  };
-});
-
 angular.module('app').service('userDataRepository',
   ['$http', 'appConfig', 'authService', function (http, appConfig, authService) {
 	var getUserUrl = function (userId, service) {
@@ -14972,18 +14585,62 @@ angular.module('app').service('dashboardRepository',
         }
       }
 
-      return http.get(appConfig.webServiceUrl + name + '/' + module + '/' + id, {params: validatedParams})
+      return http.get(appConfig.webServiceUrl + name + '/' + module + '/' + id, { params: validatedParams })
         .then(function (data) {
           return data && data.data ? data.data : data;
         });
     };
 
     var callAutoDashboardService = function (name, module, id, params) {
-      return http.get(appConfig.autoServiceUrl + name + '/' + module + '/' + id, {params: params})
+      return http.get(appConfig.autoServiceUrl + name + '/' + module + '/' + id, { params: params })
         .then(function (data) {
           return data && data.data ? data.data : data;
         });
     };
+    // this.test = {
+    //   dashboardName: 'test',
+    //   getPageData: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'page_data', seasonId, callback, params);
+    //   },
+
+    //   getTopColors: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'top_colors', seasonId, callback, params);
+    //   },
+
+    //   getColorFrequency: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq', seasonId, callback, params);
+    //   },
+
+    //   getDistributionByCategory: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'distribution_category', seasonId, callback, params);
+    //   },
+
+    //   getColorFrequencyByCity: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq_city', seasonId, callback, params);
+    //   },
+
+    //   getColorFrequencyByRegion: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq_region', seasonId, callback, params);
+    //   },
+
+    //   getTopColorsByYear: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'top_colors_year', seasonId, callback, params);
+    //   },
+
+    //   getDesignerImages: function (seasonId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'designer_images', seasonId, callback, params);
+    //   },
+
+    //   getColorPalette: function (seasonId, params, bucket, callback) {
+    //     var newParams = Object.assign({}, params);
+    //     newParams.bucket = bucket;
+    //     return callDashboardService(this.dashboardName, 'palette', seasonId, callback, newParams);
+    //   },
+
+    //   getColorFrequencyBySeason: function (colorId, params, callback) {
+    //     return callDashboardService(this.dashboardName, 'color_freq_season', colorId, callback, params);
+    //   }
+    // };
 
     this.season = {
       dashboardName: 'season',
@@ -15023,6 +14680,10 @@ angular.module('app').service('dashboardRepository',
         var newParams = Object.assign({}, params);
         newParams.bucket = bucket;
         return callDashboardService(this.dashboardName, 'palette', seasonId, callback, newParams);
+      },
+
+      getColorFrequencyBySeason: function (colorId, params, callback) {
+        return callDashboardService(this.dashboardName, 'color_freq_season', colorId, callback, params);
       }
     };
 
@@ -16833,6 +16494,797 @@ angular.module('app').service('analyticsService', ['$location', '$analytics', 'a
       analytics.eventTrack('open', {category: 'DB_EV', label: type});
   };
 }]);
+
+// angular.module('app').directive('uiColorpicker', function () {
+//     return {
+//         restrict: 'E',
+//         require: 'ngModel',
+//         scope: false,
+//         replace: true,
+//         template: "<span><input class='input-small' /></span>",
+//         link: function (scope, element, attrs, ngModel) {
+//             var input = element.find('input');
+//             // var buttonColorpicker = element.find('.sp-replacer .sp-light');
+//             // var buttonColorpicker = element[0].childNodes[1];
+//             // buttonColorpicker.addClass('sp-active');
+//             // console.log('div', div);
+//
+//             // scope.clickPicker = function () {
+//             //     console.log('$scope--picker-derictive', scope);
+//             // };
+//
+//             console.log('scope', scope);
+//             console.log('buttonColorpicker=1', element);
+//             console.log('buttonColorpicker', element.find('.sp-replacer'));
+//             var options = angular.extend({
+//                 color: ngModel.$viewValue,
+//                 change: function (color) {
+//                     scope.$apply(function () {
+//                         ngModel.$setViewValue(color.toHexString());
+//                     });
+//                 }
+//             }, scope.$eval(attrs.options));
+//
+//             ngModel.$render = function () {
+//                 input.spectrum('set', ngModel.$viewValue || '');
+//             };
+//
+//             input.spectrum(options);
+//         }
+//     };
+// });
+//
+// app.controller('MyCtrl', function($scope) {
+//     $scope.targetColor = '#ebebeb';
+// });
+
+// angular.bootstrap(document, ['app']);
+
+angular.module('app').directive('hueTooltipster', ['$timeout', function (timeout) {
+  function link(scope, element, attrs) {
+    angular.element(element).ready(function () {
+      angular.element(element).tooltipster(scope.hueTooltipster);
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      hueTooltipster: '='
+    }
+  };
+}]);
+
+angular.module('app').directive('hueSvg', function () {
+  return {
+    restrict: 'E',
+    scope: {
+      id: '@',
+      source: '@',
+      class: '@',
+      onLoad: '&'
+    },
+    link: function (scope, element, attrs) {
+      angular.element.get(attrs.source, function (data) {
+        var svg = $('svg', data).removeAttr('xmlns xmlns:i xmlns:a xmlns:x xmlns:xlink xmlns:graph xml:space');
+
+        if (attrs.id)
+          svg.attr('id', attrs.id);
+        else
+          svg.removeAttr('id');
+
+        if (attrs.class)
+          svg.attr('class', attrs.class);
+
+        element.replaceWith(svg.prop('outerHTML'));
+
+        if (scope.onLoad)
+          scope.onLoad();
+      }, 'xml');
+    }
+  };
+});
+
+angular.module('app').directive('hueReadMore', function () {
+  function link(scope, element, attrs) {
+    scope.$watch('text', function (newValue, oldValue) {
+      var elem = $('span:first-child', element);
+      elem.readmore('destroy');
+      elem.text($.trim(newValue));
+      elem.readmore({
+        speed: 200,
+        moreLink: '<a href="#">More</a>',
+        lessLink: '<a href="#">Less</a>',
+        collapsedHeight: parseInt(scope.collapsedHeight),
+        heightMargin: 0
+      });
+    });
+  }
+
+  return {
+    restrict: 'A',
+    transclude: true,
+    template: '<span></span>',
+    link: link,
+    scope: {
+      text: '=hueReadMore',
+      collapsedHeight: '@'
+    }
+  };
+});
+
+angular.module('app').filter('truncate', function () {
+  return function (text, length, end) {
+    if (isNaN(length)) {
+      length = 10;
+    }
+
+    if (end === undefined) {
+      end = '...';
+    }
+
+    if (text.length <= length || text.length - end.length <= length) {
+      return text;
+    } else {
+      return String(text).substring(0, length - end.length) + end;
+    }
+  };
+}).directive('readMore', function ($filter) {
+  return {
+    restrict: 'A',
+    scope: {
+      text: '=readMore',
+      labelExpand: '@readMoreLabelExpand',
+      labelCollapse: '@readMoreLabelCollapse',
+      limit: '@readMoreLimit'
+    },
+    transclude: true,
+    template: '<span ng-transclude ng-bind-html="text"></span><a href="javascript:;" ng-click="toggleReadMore()" ng-bind="label"></a>',
+    link: function (scope /*, element, attrs */) {
+
+      var originalText = scope.text;
+
+      scope.label = scope.labelExpand;
+
+      scope.$watch('expanded', function (expandedNew) {
+        if (expandedNew) {
+          scope.text = originalText;
+          scope.label = scope.labelCollapse;
+        } else {
+          scope.text = $filter('truncate')(originalText, scope.limit, '...');
+          scope.label = scope.labelExpand;
+        }
+      });
+
+      scope.toggleReadMore = function () {
+        scope.expanded = !scope.expanded;
+      };
+    }
+  };
+});
+angular.module('app').directive('huePieChart', ['$timeout', '$location', function (timeout, location) {
+  function link(scope, element, attrs) {
+    var buildChart = function (data) { //array of { c: HEX color, p: percentage, t: title }
+      $(element).empty();
+
+      var config = scope.config;
+
+      var donutWidth = scope.config.donutWidth ? scope.config.donutWidth : 20;
+      var diameter = scope.config.diameter;
+      var outerRadius = diameter / 2;
+      var innerRadius = outerRadius - donutWidth;
+      var animationDuration = 400;
+      var animationStep = 1 / (animationDuration / 20);
+      var defaultAngleMargin = 0.008;
+
+      var draw = SVG(element[0]).size(diameter, diameter);
+      var groupMain = draw.group();
+      var groupExpanded = draw.group();
+      var expandedColorPath = groupExpanded.path('');
+
+      var getSectionPathData = function (angle1, angle2, angleMargin) {
+        var sinStart = angleMargin ? Math.sin(angle1 + angleMargin) : Math.sin(angle1);
+        var cosStart = angleMargin ? Math.cos(angle1 + angleMargin) : Math.cos(angle1);
+        var sinEnd = angleMargin ? Math.sin(angle2 - angleMargin) : Math.sin(angle2);
+        var cosEnd = angleMargin ? Math.cos(angle2 - angleMargin) : Math.cos(angle2);
+
+        var xO1 = outerRadius + (sinStart * outerRadius); //outer
+        var yO1 = outerRadius - (cosStart * outerRadius);
+        var xO2 = outerRadius + (sinEnd * outerRadius);
+        var yO2 = outerRadius - (cosEnd * outerRadius);
+
+        var xI1 = outerRadius + (sinStart * innerRadius); //inner
+        var yI1 = outerRadius - (cosStart * innerRadius);
+        var xI2 = outerRadius + (sinEnd * innerRadius);
+        var yI2 = outerRadius - (cosEnd * innerRadius);
+
+        var big = (angle2 - angle1 > Math.PI) ? 1 : 0;
+
+        return new SVG.PathArray([
+          ['M', xO1, yO1],
+          ['A', outerRadius, outerRadius, 0, big, 1, xO2, yO2],
+          ['L', xI2, yI2],
+          ['A', innerRadius, innerRadius, 0, big, 0, xI1, yI1],
+          ['Z']
+        ]).toString();
+      };
+
+      //Toggle color animation
+      var expandedColor = null;
+      var toggleExpandedColor = function (index, show, callback) {
+        var eaProgress = show ? 0 : 1;
+        var eaProgressLimit = show ? 1 : 0;
+        var eaAngleStart = _.reduce(data.slice(0, index), function (memo, value) {
+            return memo + value.p;
+          }, 0) * Math.PI / 50;
+        var eaAngleDelta = (100 - data[index].p) * Math.PI / 50;
+        var eaStep = show ? animationStep : -animationStep;
+        var eaSectionAngleWidth = data[index].p * Math.PI / 50 - 0.001;
+        var eAnimation = function () {
+          eaProgress += eaStep;
+
+          if (eaProgress > 1)
+            eaProgress = 1;
+          else if (eaProgress < 0)
+            eaProgress = 0;
+
+          expandedColorPath.plot(getSectionPathData(eaAngleStart, eaAngleStart + (eaAngleDelta * eaProgress) + eaSectionAngleWidth));
+
+          if (eaProgress == 0)
+            groupExpanded.hide();
+
+          if (eaProgress != eaProgressLimit)
+            timeout(eAnimation, 20);
+          else if (callback)
+            callback();
+        }
+
+        expandedColorPath.attr('fill', data[index].c);
+        if (show)
+          groupExpanded.show();
+        eAnimation();
+      };
+
+      //Initialization
+      var clickColorHandler = function (event) {
+        if (scope.colorClickHandler())
+          scope.colorClickHandler()(groupMain.index(event.currentTarget.instance));
+      };
+      var clickExpandedColorHandler = function (event) {
+        if (scope.collapseClickHandler())
+          scope.collapseClickHandler()();
+      };
+
+      var attrNs = location.absUrl();
+      var itemCount = data.length;
+      for (var i = 0; i < itemCount; i++) {
+        var p = groupMain.path('');
+        p.attr('fill', data[i].c);
+        p.click(clickColorHandler);
+      }
+
+      expandedColorPath.click(clickExpandedColorHandler);
+
+      //Opening animation
+      var easeOutFunction = BezierEasing.css['ease-out'];
+      var animationProgress = 0;
+      var processAnimation = function () {
+        animationProgress += animationStep;
+        if (animationProgress > 1)
+          animationProgress = 1;
+
+        var coeff = easeOutFunction(animationProgress) * 0.999; //multiply by 0.999 to prevent arcs from closing and disappearing
+        var groupMainChildren = groupMain.children();
+        var angleStart = 0;
+        for (var i = 0; i < itemCount; i++) {
+          var angleEnd = angleStart + (data[i].p * coeff * Math.PI / 50);
+          groupMainChildren[i].plot(getSectionPathData(angleStart, angleEnd, defaultAngleMargin));
+          angleStart = angleEnd;
+        }
+
+        if (animationProgress != 1)
+          timeout(processAnimation, 20);
+        else if (scope.animationCompleteHandler())
+          scope.animationCompleteHandler()();
+      };
+
+      groupExpanded.hide();
+      if (!element[0].isVisible()) //don't play animation on invisible charts
+        animationProgress = 1;
+      processAnimation();
+
+      scope.$watch('selectedIndex', function (newValue, oldValue) {
+        if (newValue != null) {
+          if (oldValue == null)
+            toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
+          else {
+            toggleExpandedColor(oldValue, false, function () {
+              toggleExpandedColor(newValue, true, scope.animationCompleteHandler());
+            });
+          }
+        }
+        else if (oldValue != null)
+          toggleExpandedColor(oldValue, false, scope.animationCompleteHandler());
+      });
+    };
+
+    scope.$watch('data', function (newValue, oldValue) {
+      if (newValue && newValue.length > 0)
+        buildChart(newValue);
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=huePieChart',
+      data: '=',
+      selectedIndex: '=',
+      colorClickHandler: '&onColorClick',
+      collapseClickHandler: '&onCollapseClick',
+      animationCompleteHandler: '&onAnimationComplete'
+    }
+  };
+}]);
+
+angular.module('app').directive('onRepeatLastElement', function () {
+  function link(scope, element, attrs) {
+    if (scope.$last)
+      scope.$parent[attrs.onRepeatLastElement]();
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+    // scope: {
+    // 	onRepeatLastElement: '&'
+    // }
+  };
+});
+
+// angular.module('app').directive('hueMcustomscrollbar', function () {
+// 	function link(scope, element, attrs) {
+// 		$(element).mCustomScrollbar();
+// 	}
+//
+// 	return {
+// 		restrict: 'A',
+// 		link: link
+// 	};
+// });
+
+/**
+ *  Angular directive to truncate multi-line text to visible height
+ *
+ *  @param bind (angular bound value to append) REQUIRED
+ *  @param ellipsisAppend (string) string to append at end of truncated text after ellipsis, can be HTML OPTIONAL
+ *  @param ellipsisAppendClick (function) function to call if ellipsisAppend is clicked (ellipsisAppend must be clicked) OPTIONAL
+ *  @param ellipsisSymbol (string) string to use as ellipsis, replaces default '...' OPTIONAL
+ *  @param ellipsisSeparator (string) separator to split string, replaces default ' ' OPTIONAL
+ *
+ *  @example <p data-ellipsis data-ng-bind="boundData"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-symbol="---"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more"></p>
+ *  @example <p data-ellipsis data-ng-bind="boundData" data-ellipsis-append="read more" data-ellipsis-append-click="displayFull()"></p>
+ *
+ */
+angular.module('app')
+
+  .directive('ellipsis', ['$timeout', '$window', '$sce', function ($timeout, $window, $sce) {
+
+    var AsyncDigest = function (delay) {
+      var timeout = null;
+      var queue = [];
+
+      this.remove = function (fn) {
+        if (queue.indexOf(fn) !== -1) {
+          queue.splice(queue.indexOf(fn), 1);
+          if (queue.length === 0) {
+            $timeout.cancel(timeout);
+            timeout = null;
+          }
+        }
+      };
+      this.add = function (fn) {
+        if (queue.indexOf(fn) === -1) {
+          queue.push(fn);
+        }
+        if (!timeout) {
+          timeout = $timeout(function () {
+            var copy = queue.slice();
+            timeout = null;
+            // reset scheduled array first in case one of the functions throws an error
+            queue.length = 0;
+            copy.forEach(function (fn) {
+              fn();
+            });
+          }, delay);
+        }
+      };
+    };
+
+    var asyncDigestImmediate = new AsyncDigest(0);
+    var asyncDigestDebounced = new AsyncDigest(75);
+
+    return {
+      restrict: 'A',
+      scope: {
+        ngShow: '=',
+        ngBind: '=',
+        ngBindHtml: '=',
+        ellipsisAppend: '@',
+        ellipsisAppendClick: '&',
+        ellipsisSymbol: '@',
+        ellipsisSeparator: '@',
+        useParent: "@",
+        ellipsisSeparatorReg: '=',
+        ellipsisFallbackFontSize: '@'
+      },
+      compile: function (elem, attr, linker) {
+
+        return function (scope, element, attributes) {
+          /* Window Resize Variables */
+          attributes.lastWindowResizeTime = 0;
+          attributes.lastWindowResizeWidth = 0;
+          attributes.lastWindowResizeHeight = 0;
+          attributes.lastWindowTimeoutEvent = null;
+          /* State Variables */
+          attributes.isTruncated = false;
+
+          function _isDefined(value) {
+            return typeof(value) !== 'undefined';
+          }
+
+          function getParentHeight(element) {
+            var heightOfChildren = 0;
+            angular.forEach(element.parent().children(), function (child) {
+              if (child != element[0]) {
+                heightOfChildren += child.clientHeight;
+              }
+            });
+            return element.parent()[0].clientHeight - heightOfChildren;
+          }
+
+          function buildEllipsis() {
+            var binding = scope.ngBind || scope.ngBindHtml;
+            var isTrustedHTML = false;
+            if ($sce.isEnabled() && angular.isObject(binding) && $sce.getTrustedHtml(binding)) {
+              isTrustedHTML = true;
+              binding = $sce.getTrustedHtml(binding);
+            }
+            if (binding) {
+              var isHtml = (!(!!scope.ngBind) && !!(scope.ngBindHtml));
+              var i = 0,
+                ellipsisSymbol = (typeof(attributes.ellipsisSymbol) !== 'undefined') ? attributes.ellipsisSymbol : '&hellip;',
+                ellipsisSeparator = (typeof(scope.ellipsisSeparator) !== 'undefined') ? attributes.ellipsisSeparator : ' ',
+                ellipsisSeparatorReg = (typeof(scope.ellipsisSeparatorReg) !== 'undefined') ? scope.ellipsisSeparatorReg : false,
+                appendString = (typeof(scope.ellipsisAppend) !== 'undefined' && scope.ellipsisAppend !== '') ? ellipsisSymbol + "<span class='angular-ellipsis-append pointer'>" + scope.ellipsisAppend + '</span>' : ellipsisSymbol,
+                bindArray = ellipsisSeparatorReg ? binding.match(ellipsisSeparatorReg) : binding.split(ellipsisSeparator);
+
+              attributes.isTruncated = false;
+              if (isHtml) {
+                element.html(binding);
+              } else {
+                element.text(binding);
+              }
+
+              if (_isDefined(attributes.ellipsisFallbackFontSize) && isOverflowed(element)) {
+                element.css('font-size', attributes.ellipsisFallbackFontSize);
+              }
+
+              // If text has overflow
+              if (isOverflowed(element, scope.useParent)) {
+                var bindArrayStartingLength = bindArray.length,
+                  initialMaxHeight = scope.useParent ? getParentHeight(element) : element[0].clientHeight;
+
+                if (isHtml) {
+                  element.html(binding + appendString);
+                } else {
+                  element.text(binding).html(element.html() + appendString);
+                }
+                //Set data-overflow on element for targeting
+                element.attr('data-overflowed', 'true');
+
+                // Set complete text and remove one word at a time, until there is no overflow
+                for (; i < bindArrayStartingLength; i++) {
+                  var current = bindArray.pop();
+
+                  //if the last string still overflowed, then truncate the last string
+                  if (bindArray.length === 0) {
+                    bindArray[0] = current.substring(0, Math.min(current.length, 5));
+                  }
+
+                  if (isHtml) {
+                    element.html(bindArray.join(ellipsisSeparator) + appendString);
+                  } else {
+                    element.text(bindArray.join(ellipsisSeparator)).html(element.html() + appendString);
+                  }
+
+                  if ((scope.useParent ? element.parent()[0] : element[0]).scrollHeight < initialMaxHeight || isOverflowed(element, scope.useParent) === false) {
+                    attributes.isTruncated = true;
+                    break;
+                  }
+                }
+                // else if (scope.onceOverFlowed) {
+                //   console.log()
+                // }
+
+                // If append string was passed and append click function included
+
+
+                if (!isTrustedHTML && $sce.isEnabled()) {
+                  $sce.trustAsHtml(binding);
+                }
+              } else if (scope.onceOverFlowed) {
+                element.attr('data-overflowed', 'false');
+                var tempAppend = "<span class='angular-ellipsis-append pointer'><a>Less</a></span>"
+
+                if (isHtml) {
+                  element.html(binding + tempAppend);
+                } else {
+                  element.text(binding).html(element.html() + tempAppend);
+                }
+
+              } else {
+                element.attr('data-overflowed', 'false');
+
+              }
+
+              if (ellipsisSymbol != appendString && typeof(scope.ellipsisAppendClick) !== 'undefined' && scope.ellipsisAppendClick !== '') {
+                element.find('span.angular-ellipsis-append').bind("click", function (e) {
+                  var text = element.find('span.angular-ellipsis-append a').text()
+                  if (text === 'Read more') {
+                    scope.onceOverFlowed = true;
+                    angular.element(element).css('max-height', '1000px')
+
+                  } else {
+                    angular.element(element).css({'max-height': ''})
+
+                  }
+
+
+                  buildEllipsis()
+                  scope.$apply(function () {
+                    scope.ellipsisAppendClick.call(scope, {
+                      event: e
+                    });
+                  });
+                });
+              }
+            }
+          }
+
+          /**
+           *  Test if element has overflow of text beyond height or max-height
+           *
+           *  @param element (DOM object)
+           *
+           *  @return bool
+           *
+           */
+          function isOverflowed(thisElement, useParent) {
+            thisElement = useParent ? thisElement.parent() : thisElement;
+            return thisElement[0].scrollHeight > thisElement[0].clientHeight;
+          }
+
+          function onceOverFlowed() {
+            if (isOverflowed(element, scope.useParent)) {
+              return true;
+            }
+          }
+
+          /**
+           *  Watchers
+           */
+
+          /**
+           *  Execute ellipsis truncate on ngShow update
+           */
+          scope.$watch('ngShow', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBind update
+           */
+          scope.$watch('ngBind', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBindHtml update
+           */
+          scope.$watch('ngBindHtml', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  Execute ellipsis truncate on ngBind update
+           */
+          scope.$watch('ellipsisAppend', function () {
+            buildEllipsis();
+          });
+
+          /**
+           *  Execute ellipsis truncate when element becomes visible
+           */
+          scope.$watch(function () {
+            return element[0].offsetWidth != 0 && element[0].offsetHeight != 0
+          }, function () {
+            asyncDigestDebounced.add(buildEllipsis);
+          });
+
+          function checkWindowForRebuild() {
+            if (attributes.lastWindowResizeWidth != window.innerWidth || attributes.lastWindowResizeHeight != window.innerHeight) {
+              buildEllipsis();
+            }
+
+            attributes.lastWindowResizeWidth = window.innerWidth;
+            attributes.lastWindowResizeHeight = window.innerHeight;
+          }
+
+          var unbindRefreshEllipsis = scope.$on('dibari:refresh-ellipsis', function () {
+            asyncDigestImmediate.add(buildEllipsis);
+          });
+
+          /**
+           *  When window width or height changes - re-init truncation
+           */
+
+          function onResize() {
+            asyncDigestDebounced.add(checkWindowForRebuild);
+          }
+
+          var $win = angular.element($window);
+          $win.bind('resize', onResize);
+
+          /**
+           * Clean up after ourselves
+           */
+          scope.$on('$destroy', function () {
+            $win.unbind('resize', onResize);
+            asyncDigestImmediate.remove(buildEllipsis);
+            asyncDigestDebounced.remove(checkWindowForRebuild);
+            if (unbindRefreshEllipsis) {
+              unbindRefreshEllipsis();
+              unbindRefreshEllipsis = null;
+            }
+          });
+        };
+      }
+    };
+  }]);
+
+angular.module('app').directive('hueDbInfoTooltip', ['searchMenuRepository', function (searchMenuRepository) {
+  function link(scope, element, attrs) {
+    var e = angular.element(element);
+
+    searchMenuRepository.getMain(function (data) {
+      e.ready(function () {
+        e.attr('title', data.tooltips[attrs.hueDbInfoTooltip]);
+        e.tooltipster({
+          animation: 'fade',
+          theme: 'tooltipster-module-info',
+          trigger: 'hover',
+          minWidth: 300,
+          maxWidth: 300,
+          position: 'bottom'
+        });
+      });
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link
+  };
+}]);
+
+angular.module('app').directive('hueDbInfoIcon', ['searchMenuRepository', '$state', function (searchMenuRepository, $state) {
+  function link(scope, element, attrs) {
+    var icon = angular.element('img', element);
+    var repositoryAction = 'getMain';
+    if ($state.current) {
+      if ($state.current.parent === 'branding') {
+        repositoryAction = 'getControlsDataBranding';
+      } else if ($state.current.parent === 'auto') {
+        repositoryAction = 'getControlsDataAuto';
+      } else if ($state.current.parent === 'legal') {
+        repositoryAction = 'getControlsDataLegal';
+      } else if ($state.current.parent === 'fashion') {
+        repositoryAction = 'getControlsData';
+      }
+    }
+
+    searchMenuRepository[repositoryAction]().then(function (data) {
+      if (!data.tooltips) {
+        return;
+      }
+
+      icon.attr('title', data.tooltips[scope.textKey]);
+      icon.tooltipster({
+        animation: 'fade',
+        theme: 'tooltipster-module-info',
+        trigger: 'hover',
+        minWidth: 300,
+        maxWidth: 300,
+        position: 'bottom'
+      });
+    });
+  }
+
+  return {
+    restrict: 'E',
+    template: '<img src="assets/img/icons/info.svg" class="icon-info" />',
+    link: link,
+    scope: {
+      textKey: '@'
+    }
+  };
+}]);
+
+// angular.module('app').directive('hueDashboardScroll', function () {
+// 	function link(scope, element, attrs) {
+// 		$(element).mCustomScrollbar({
+// 			theme: 'minimal-dark',
+// 			scrollInertia: 0,
+// 			mouseWheel: {
+// 				scrollAmount: 70
+// 			}
+// 		});
+// 	}
+//
+// 	return {
+// 		restrict: 'A',
+// 		link: link
+// 	};
+// });
+
+angular.module('app').directive('hueCarousel', function () {
+  function link(scope, element, attrs) {
+    scope.$watch('initialized', function (newValue, oldValue) {
+      if (newValue) {
+        if (scope.config) {
+          if (scope.config.responsive && !scope.config.onCreate) {
+            scope.config.onCreate = function () {
+              angular.element(element).trigger('updateSizes');
+              if (scope.onCreate) {
+                scope.onCreate(this);
+              }
+            };
+          }
+          angular.element(element).carouFredSel(scope.config);
+
+          if (scope.config.buttonNextId) {
+            angular.element('#' + scope.config.buttonNextId).click(function () {
+              angular.element(element).trigger('next');
+            });
+          }
+          if (scope.config.buttonPrevId) {
+            angular.element('#' + scope.config.buttonPrevId).click(function () {
+              angular.element(element).trigger('prev');
+            });
+          }
+        } else {
+          angular.element(element).carouFredSel();
+        }
+      }
+      angular.element(element).trigger('updateSizes');
+    });
+  }
+
+  return {
+    restrict: 'A',
+    link: link,
+    scope: {
+      config: '=hueCarousel',
+      initialized: '=',
+      onCreate: '='
+    }
+  };
+});
 
 /**
  * Author: Jason Farrell
@@ -53024,8 +53476,8 @@ angular.module('app').run(['$templateCache', function($templateCache) {$template
 $templateCache.put('app/header.html','<!--<div ng-class="{\'hide\': $ctrl.hideHeader()}" class="container-fluid" id="top-menu">-->\r\n\r\n  <!--<ul>-->\r\n    <!--<li><a class="lighter-grey-color" ui-sref="cart-page">My Cart</a></li>-->\r\n    <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->\r\n    <!--<li>-->\r\n      <!--<a class="pointer" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>-->\r\n      <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->\r\n    <!--</li>-->\r\n\r\n    <!--<li class="left-header">The World\'s Color Intelligence Platform</li>-->\r\n  <!--</ul>-->\r\n<!--</div>-->\r\n\r\n<nav ng-class="{\'hide\': $ctrl.hideHeader()}" class="navbar navbar-inverse">\r\n  <div class="container-fluid">\r\n\r\n    <!--data-toggle="collapse" data-target="#myNavbar"-->\r\n\r\n    <div class="collapse navbar-collapse flexible-menu" data-toggle="collapse" id="myNavbar">\r\n      <div class="navbar-header">\r\n          <a href="/">\r\n          <img class="pointer" ng-click="$ctrl.goToLanding()" src="../assets/images/logo.png" id="logo" alt="logo">\r\n          </a>\r\n        <button type="button" ng-click="$ctrl.open()" class="navbar-toggle collapsed" aria-expanded="false">\r\n          <span class="icon-bar"></span>\r\n          <span class="icon-bar"></span>\r\n          <span class="icon-bar"></span>\r\n        </button>\r\n      </div>\r\n      <ul class="nav navbar-nav">\r\n\r\n        <li class="dropdown" ng-mouseleave="$ctrl.selectedTab=false" ng-mouseover="$ctrl.selectedTab=true" ui-sref-active="active" ng-class="$ctrl.getActiveMainNav(mainNav.name) && !$ctrl.selectedTab || $ctrl.selectedSubTab[mainNav.name] ? \'active\' : \'\'" ng-repeat="mainNav in $ctrl.navigations">\r\n\r\n          <a ng-if="!mainNav.state" class="dropdown-toggle">\r\n            {{mainNav.name}}\r\n          </a>\r\n          <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref="{{mainNav.state}}\r\n             " class="dropdown-toggle" data-toggle="dropdown">\r\n            {{mainNav.name}}\r\n          </a>\r\n          <ul class="dropdown-menu" ng-if="mainNav.subNavs && mainNav.subNavs.length > 0" ng-mouseleave="$ctrl.selectedSubTab[mainNav.name]=false" ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">\r\n            <li ng-click="$ctrl.toggleMenu(subNav.name)" ng-repeat="subNav in mainNav.subNavs">\r\n              <a ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref="{{subNav.state}}">{{subNav.name}}</a>\r\n            </li>\r\n          </ul>\r\n        </li>\r\n      </ul>\r\n\r\n\r\n\r\n\r\n      <ul class="nav navbar-nav main-nav navbar-right login" ng-class="{true: \'menu-client-logged\', false: \'menu-client\'}[$ctrl.userIsLoggedIn()]">\r\n        <!--<ul ng-show="$ctrl.userIsLoggedIn()" class="menu-client-logged">-->\r\n        <!--</ul>-->\r\n        <!--<li ng-show="$ctrl.userIsLoggedIn()"><a class="pointer lighter-grey-color" ng-click="$ctrl.goProfile()">My profile</a></li>-->\r\n          <li ng-show="$ctrl.user.is_admin">\r\n              <a class="menu-client_item_test" ng-href="https://gentle-bastion-76293.herokuapp.com/abouts" style="padding-right: 50px!important;">\r\n                  ADMIN</a>\r\n          </li>\r\n          <li class="dropdown" ng-show="$ctrl.userIsLoggedIn()" ng-mouseleave="$ctrl.selectedTab=false" ng-mouseover="$ctrl.selectedTab=true" ui-sref-active="active" ng-class="$ctrl.getActiveMainNav(mainNav.name) && !$ctrl.selectedTab || $ctrl.selectedSubTab[mainNav.name] ? \'active\' : \'\'" ng-repeat="mainNav in $ctrl.navigation_profile">\r\n\r\n              <a ng-if="!mainNav.state" class="dropdown-toggle menu-client_item_test full-name-menu-link" style="font-size: 16px;">\r\n                  {{mainNav.name}} {{$ctrl.user.first_name}}\r\n              </a>\r\n              <a ng-click="$ctrl.toggleMenu()" ng-if="mainNav.state" ui-sref="{{mainNav.state}}\r\n                 " class="dropdown-toggle menu-client_item_test" data-toggle="dropdown">\r\n                  {{mainNav.name}}\r\n              </a>\r\n              <ul class="dropdown-menu" ng-if="mainNav.subNavs && mainNav.subNavs.length > 0" ng-mouseleave="$ctrl.selectedSubTab[mainNav.name]=false" ng-mouseover="$ctrl.selectedSubTab[mainNav.name]=true">\r\n                  <li ng-click="$ctrl.toggleMenu(subNav.name)" ng-repeat="subNav in mainNav.subNavs">\r\n                      <a class="menu-client_item_test" ng-show="!subNav.onlyAdmin || $ctrl.user.is_admin" ui-sref="{{subNav.state}}">{{subNav.name}}</a>\r\n                  </li>\r\n              </ul>\r\n          </li>\r\n          <li>\r\n              <a class="pointer" style="padding: 4px 0 0 47px!important;" ng-show="!$ctrl.userIsLoggedIn()" ui-sref="membership({scrollTo: true})">BECOME A MEMBER</a>\r\n              <!--<a class="lighter-grey-color" ng-show="$ctrl.userIsLoggedIn()">HI {{$ctrl.user.full_name}}</a>-->\r\n          </li>\r\n          <li>\r\n              <a ng-show="!$ctrl.userIsLoggedIn()" ng-click="$ctrl.toggleMenu()" ui-sref="login" style="padding: 0 0 0px 47px!important;">\r\n                  Member Login\r\n                  <img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 6px;margin-top: -5px;width: 27px;">\r\n              </a>\r\n              <a class="menu-client_item_test" ng-show="$ctrl.userIsLoggedIn()" ng-click="$ctrl.logOut(); $ctrl.toggleMenu()" style="min-width: 60px;font-size: 16px;">\r\n                  Logout\r\n                  <!--<img src="../assets/images/login-icon.png" id="login" alt="login" style="padding-left: 2px; margin-top:-4px;">-->\r\n              </a>\r\n          </li>\r\n          <li ng-show="$ctrl.userIsLoggedIn()">\r\n              <a class="lighter-grey-color" ui-sref="cart-page" style="padding-top: 6px!important;height: 40px;padding-right: 12px!important;">\r\n                  <!--<i style="display: inline-block" class="fa fa-shopping-cart fa-2x cart-img-header" aria-hidden="true"></i>-->\r\n                  <img src="../assets/images/cart_TH.png" alt="cart" style="margin-top: 2px;width: 24px;">\r\n              </a>\r\n          </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</nav>\r\n');
 $templateCache.put('app/main.html','');
 $templateCache.put('app/components/about-page/about-page.tmpl.html','<update-title title="About Us"></update-title>\r\n<update-meta name="description" content="Inform, inspire and validate color design decisions"></update-meta>\r\n<update-meta name="keywords" content="Color, Color Data, Color Insights, Color Trends, Color Forecasting, Color Analysis"></update-meta>\r\n\r\n<div class="container-fluid header text-center" ng-init="$ctrl.init()">\r\n  <div class="text-header">\r\n    <h1>The World\u2019s Color Intelligence Platform</h1>\r\n    <img id="show-video-popup" ng-click="$ctrl.showVideoPopup()" class="play-btn" src="../assets/images/play-icon.png" alt="play">\r\n    <div class="button">\r\n      <button ng-click="$ctrl.gotoElement(\'prefooter\')" class="btn">STAY CONNECTED</button>\r\n    </div>\r\n    <div class="popup full-screen video" id="video-popup">\r\n      <header>\r\n        <button ng-click="$ctrl.hideVideoPopup()" type="button" class="btn close-btn">X</button>\r\n      </header>\r\n      <main>\r\n        <iframe src="https://www.youtube.com/embed/A-dZ5GIBnbo" id="companyVimeoVideo" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>\r\n      </main>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<div class="clear"></div>\r\n\r\n<section>\r\n  <div class="container-fluid text-center">\r\n    <h3>{{$ctrl.pageData.title}}</h3>\r\n    <div class="line"></div>\r\n  </div>\r\n\r\n  <div class="container-fluid bg-3">\r\n    <div class="row about-us-min-h">\r\n      <div class="col-lg-6 col-md-6">\r\n        <img ng-src="{{$ctrl.pageData.image_url}}" class="img-responsive shadow img50" alt="Image">\r\n      </div>\r\n      <div class="del-padding" ng-bind-html="$ctrl.pageData.editor"></div>\r\n    </div>\r\n\r\n\r\n    <div class="row text-center equal">\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/search.png" alt="Image" style="padding-top:30px">\r\n          <h5>SEARCH</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Search for any color data point you need!</p>\r\n          <ol class="list-huegroup">\r\n            <li>Find what are the new colors showing on the world\u2019s runways;</li>\r\n            <li>View furniture colors of leading interior designers;</li>\r\n            <li>Check the colors of logos for the world\u2019s 100,000 global companies</li>\r\n          </ol>\r\n          <p class="text-align-left padding-left-3"> \u2026 and so much more!</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/discover.png" alt="Image" style="padding-top:30px">\r\n          <h5>DISCOVER</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Discover the value of real time color analytics.</p>\r\n          <ol class="list-huegroup">\r\n            <li>What are the RTW color trends this season?  </li>\r\n            <li>What colors do celebrities wearing this month?</li>\r\n            <li>Which colors are most twitted about this week?</li>\r\n          </ol>\r\n          <p class="text-align-left">Discover how color is used across products, industries geographies, and over time!</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/analyze.png" alt="Image" style="padding-top:30px">\r\n          <h5>ANALYZE</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Analyze the frequency , uniqueness, relevance & timeliness of color.</p>\r\n          <ol class="list-huegroup">\r\n            <li>Track global and local color trends</li>\r\n            <li>Analyze the color portfolio of specific designers over time</li>\r\n            <li>Identify specific color-emotion associations</li>\r\n          </ol>\r\n          <p class="text-align-left padding-left-3"> \u2026 in short, focus on analytics that best support your color decision needs.</p>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 about-item">\r\n\r\n        <div class="offer shadow"><img src="../assets/images/Leverage.png" alt="Image" style="padding-top:30px">\r\n          <h5>LEVERAGE</h5>\r\n          <div class="short-line"></div>\r\n          <p class="text-bold text-align-left">Let the confidence in analytics and insights amplify  your decisions.</p>\r\n          <ol class="list-huegroup">\r\n            <li>Substantiated creative choices</li>\r\n            <li>Minimize color risks</li>\r\n            <li>Rationalize color decisions to gain support</li>\r\n          </ol>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>');
-$templateCache.put('app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html','<update-title title="Checkout"></update-title>\n<update-meta name="description" content="HUEDATA checkout page"></update-meta>\n<update-meta name="keywords" content="Checkout, Checkout page, HUEDATA checkout"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n        <!--<div class="line"></div>-->\n      </div>\n    </div>\n  </div>\n</section>\n<div class="purchase-body-min-h">\n  <section class="subtitle purchase-head-min-h" ng-show="$ctrl.loginFlag !== undefined">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12">\n          <div class="method-1">\n            <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECKOUT METHOD</h4>\n            <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 2" class="method-2">\n            <h4 style="color: {{$ctrl.methodStyle[1]}}"><span>2. </span>BILLING INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(2)" ng-show="$ctrl.methodNumber !== 2" class="edit-btn">EDIT</button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 3" class="method-3">\n            <h4 style="color: {{$ctrl.methodStyle[2]}}"><span>3. </span>PAYMENT INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3 && !!$ctrl.purchase.amount" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 4" class="method-4">\n            <h4 style="color: {{$ctrl.methodStyle[3]}}"><span>4. </span>ORDER REVIEW</h4>\n            <button ng-click="$ctrl.goToMethod(4)" ng-show="$ctrl.methodNumber !== 4" class="edit-btn">EDIT</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 1 && !$ctrl.loginFlag" class="check-out-method">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 login">\n          <h4>HUEDATA MEMBERS</h4>\n          <form>\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\n            <div class="err">\n              <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>\n            </div>\n            <div class="reset-password">\n              <a ng-click="$ctrl.passwordRecover()" class="reset-your-password pointer">RESET YOUR PASSWORD</a>\n            </div>\n            <div class="button login-btn">\n              <button ng-click="$ctrl.login()" class="btn">LOGIN</button>\n            </div>\n          </form>\n        </div>\n        <div class="col-lg-4 col-md-6 guest">\n          <h4>CHECKOUT AS GUEST</h4>\n          <div class="login-btn">\n            <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 2" class="billing-information">\n    <div class="container-fluid text-left">\n      <div class="row">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 col-sm-6 billing-1">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'">\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.middle_name.value" ng-value="$ctrl.data.middle_name.value" type="text" id="middle_name" name="middle_name" ng-class="\'ng-dirty\' && membership.middle_name.$invalid ?  \'error\' :\'\'">\n            <label for="middle_name">MIDDLE NAME/INITIAL</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'">\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail" name="email" ng-class="\'ng-dirty\' && membership.Email.$invalid ?  \'error\' :\'\'">\n            <label for="billingEmail">EMAIL(WORK-RELATED) <span class="red-text">*</span></label>\n          </div>\n        </div>\n        <div class="col-lg-4 col-md-6 col-sm-6 billing-2">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.address.value" ng-value="$ctrl.data.address.value" type="text" id="address" name="address" ng-class="\'ng-dirty\' && membership.address.$invalid ?  \'error\' :\'\'">\n            <label for="address">ADDRESS <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.second_address.value" ng-value="$ctrl.data.second_address.value" type="text" id="second_address" name="second_address" ng-class="\'ng-dirty\' && membership.second_address.$invalid ?  \'error\' :\'\'">\n            <label for="second_address">SECOND ADDRESS</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.city.value" ng-value="$ctrl.data.city.value" type="text" id="city" name="city" ng-class="\'ng-dirty\' && membership.city.$invalid ?  \'error\' :\'\'">\n            <label for="city">CITY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.state.value" theme="selectize">\n              <ui-select-match placeholder="STATE/PROVINCE *">\n              <span style="{{($ctrl.data.state.value && $select.selected != $ctrl.states[0])? \'color: black\' : \'\'}}" ng-bind-html="$select.selected || $ctrl.data.state.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="state in getStates($select.search) | filter:$select.search">\n                <span ng-bind-html="state"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.zip.value" ng-value="$ctrl.data.zip.value" type="text" id="zip" name="zip" ng-class="\'ng-dirty\' && membership.zip.$invalid ?  \'error\' :\'\'">\n            <label for="zip">ZIP <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize">\n              <ui-select-match placeholder="PLEASE SELECT COUNTRY *">\n              <span style="{{($ctrl.data.country.value && $select.selected.title != $ctrl.country[0].title)? \'color: black\' : \'\'}}" ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="country in ($ctrl.country | sortFilter:$select.search)">\n                <span ng-bind-html="country.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.telephone.value" ng-value="$ctrl.data.telephone.value" type="text" id="telephone" name="telephone" ng-class="\'ng-dirty\' && membership.telephone.$invalid ?  \'error\' :\'\'">\n            <label for="telephone">TELEPHONE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="button login-btn">\n            <button ng-click="$ctrl.uploadBillingInfo()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 3" class="payment-information">\n    <div class="cart-checkout">\n      <div class="panel panel-default bootstrap-basic">\n        <div class="panel-heading">\n          <h3 class="panel-title">CREDIT CARD</h3>\n          <div id="paypal-button" class="paypal-btn" style="z-index: 1"></div>\n        </div>\n        <form class="panel-body">\n          <div class="row">\n            <div class="form-group col-sm-12">\n              <!--<label class="control-label">Card Number</label>-->\n              <!--  Hosted Fields div container -->\n              <div class="form-control" id="card-number"></div>\n              <span class="helper-text"></span>\n            </div>\n            <div class="form-group col-sm-12">\n              <div class="row payment-item-row">\n                <label class="control-label col-xs-12 payment-item">EXPIRATION DATE <span class="red-text">*</span></label>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-month"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-year"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <div class="form-control" id="cvv"></div>\n                </div>\n              </div>\n            </div>\n          </div>\n          <div ng-show="$ctrl.payError" class="error-message afade text-left">\n            {{$ctrl.payError}}\n          </div>\n          <button ng-disabled="$ctrl.payDataFlag" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE\n          </button>\n          <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>\n        </form>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 4" class="products-cart order-review">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12 products-table">\n          <table>\n            <tr class="product-row" ng-repeat="item in $ctrl.products">\n              <td class="product-img">\n                <img ng-src="{{item.image_url}}">\n              </td>\n              <td class="product-name">\n                <h4>{{item.header}}</h4>\n                <div ng-show="$ctrl.methodNumber === 4" class="justify margin-zero-p">\n                  <p ng-show="$ctrl.methodNumber === 4" class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n                </div>\n              </td>\n              <td class="product-count">\n                <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->\n                <h4 style="display: inline-block">{{item.count}}</h4>\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-minus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-plus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n              </td>\n              <td class="product-prise">\n                <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n              </td>\n              <td class="price-for-all">\n                <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n              </td>\n            </tr>\n          </table>\n          <div class="err-massage">\n            <h4 ng-show="$ctrl.errFlag">We are unable to process your payment at this time. Please provide an alternate\n              method to payment.</h4>\n          </div>\n        </div>\n        <div class="col-sm-4 col-xs-4">\n        </div>\n        <div class="col-sm-offset-4 col-lg-3 col-sm-4 col-xs-8 text-right">\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4>TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n          <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n            <button ng-disabled="$ctrl.placeOrderFlag" ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">\n              PLACE ORDER\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
 $templateCache.put('app/components/cart-page/cart-page.tmpl.html','<update-title title="My Cart"></update-title>\n<update-meta name="description" content="HUEDATA cart page"></update-meta>\n<update-meta name="keywords" content="Cart, HUEDATA cart, cart page"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n      </div>\n    </div>\n  </div>\n</section>\n<section class="products-cart products-table-min-h">\n  <div class="container-fluid text-center title">\n    <div class="row equal">\n      <div ng-show="!$ctrl.products.length" class="col-lg-12 col-md-12 col-xs-12 empty-cart">\n        <h3>Your cart is empty</h3>\n        <div class="go-to-reports pointer">\n          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">Back{{$ctrl.wayBackName}}</button>\n        </div>\n      </div>\n      <div ng-show="$ctrl.products.length" class="col-lg-12 col-md-12 products-table width-100">\n        <table>\n          <tr class="product-row" ng-repeat="item in $ctrl.products">\n            <td class="product-img">\n              <div class="img-box">\n                <div class="category {{item.hue}} text-center"><p>{{item.hue}}</p></div>\n                <img ng-src="{{item.image_url}}">\n              </div>\n            </td>\n            <td class="product-name">\n              <h4>{{item.header}}</h4>\n              <div class="justify margin-zero-p">\n                <p class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n              </div>\n            </td>\n            <td class="product-count">\n              <h4 style="display: inline-block">{{item.count}}</h4>\n              <div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">\n                <i class="fa fa-minus fa-1x pointer" aria-hidden="true"></i>\n              </div>\n            </td>\n            <td class="product-prise">\n              <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n            </td>\n            <td class="price-for-all">\n              <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n            </td>\n            <!--<td class="basket-icon">-->\n            <!--<i ng-click="$ctrl.removeProduct(item.id, item.type, $index)" class="fa fa-trash-o fa-3x pointer" aria-hidden="true"></i>-->\n            <!--</td>-->\n          </tr>\n        </table>\n      </div>\n      <div class="col-sm-4 col-xs-4 go-back">\n        <div ng-show="$ctrl.products.length" ng-click="$ctrl.goWayBack()" class="go-to-reports pointer">\n          <button ng-click="$ctrl.goWayBack()" class="btn white-btn">BACK</button>\n        </div>\n      </div>\n      <div style="text-align: right" class="col-sm-offset-4 col-sm-4 col-xs-8">\n        <div>\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text">\n                  <h4>SUBTOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + $ctrl.all}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4 class="pointer">TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n        </div>\n        <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n          <button style="margin-top: 0" class="btn">CHECKOUT</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>');
+$templateCache.put('app/components/cart-checkout-methods/cart-checkout-methods.tmpl.html','<update-title title="Checkout"></update-title>\n<update-meta name="description" content="HUEDATA checkout page"></update-meta>\n<update-meta name="keywords" content="Checkout, Checkout page, HUEDATA checkout"></update-meta>\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n        <!--<div class="line"></div>-->\n      </div>\n    </div>\n  </div>\n</section>\n<div class="purchase-body-min-h">\n  <section class="subtitle purchase-head-min-h" ng-show="$ctrl.loginFlag !== undefined">\n    <div class="container-fluid">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12">\n          <div class="method-1">\n            <h4 style="color: {{$ctrl.methodStyle[0]}}"><span>1. </span>CHECKOUT METHOD</h4>\n            <button ng-click="$ctrl.goToMethod(1)" ng-show="$ctrl.methodNumber !== 1 && !$ctrl.loginFlag" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 2" class="method-2">\n            <h4 style="color: {{$ctrl.methodStyle[1]}}"><span>2. </span>BILLING INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(2)" ng-show="$ctrl.methodNumber !== 2" class="edit-btn">EDIT</button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 3" class="method-3">\n            <h4 style="color: {{$ctrl.methodStyle[2]}}"><span>3. </span>PAYMENT INFORMATION</h4>\n            <button ng-click="$ctrl.goToMethod(3)" ng-show="$ctrl.methodNumber !== 3 && !!$ctrl.purchase.amount" class="edit-btn">EDIT\n            </button>\n          </div>\n          <div ng-show="$ctrl.maxMethod >= 4" class="method-4">\n            <h4 style="color: {{$ctrl.methodStyle[3]}}"><span>4. </span>ORDER REVIEW</h4>\n            <button ng-click="$ctrl.goToMethod(4)" ng-show="$ctrl.methodNumber !== 4" class="edit-btn">EDIT</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 1 && !$ctrl.loginFlag" class="check-out-method">\n    <div class="container-fluid text-left">\n      <div class="row equal">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 login">\n          <h4>HUEDATA MEMBERS</h4>\n          <form>\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.email" placeholder="EMAIL ADDRESS" name="email" id="email" type="text">\n            <input ng-focus="$ctrl.error = false" style="{{$ctrl.error ? \'border-color:red;\' : \'\'}}" ng-model="$ctrl.password" placeholder="PASSWORD" name="password" id="password" type="password">\n            <div class="err">\n              <h4 ng-show="$ctrl.error">INVALID LOGIN OR PASSWORD</h4>\n            </div>\n            <div class="reset-password">\n              <a ng-click="$ctrl.passwordRecover()" class="reset-your-password pointer">RESET YOUR PASSWORD</a>\n            </div>\n            <div class="button login-btn">\n              <button ng-click="$ctrl.login()" class="btn">LOGIN</button>\n            </div>\n          </form>\n        </div>\n        <div class="col-lg-4 col-md-6 guest">\n          <h4>CHECKOUT AS GUEST</h4>\n          <div class="login-btn">\n            <button ng-click="$ctrl.continue()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 2" class="billing-information">\n    <div class="container-fluid text-left">\n      <div class="row">\n        <div class="col-lg-offset-2 col-lg-4 col-md-6 col-sm-6 billing-1">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.first_name.value" ng-value="$ctrl.data.first_name.value" type="text" id="first_name" name="first_name" ng-class="\'ng-dirty\' && membership.first_name.$invalid ?  \'error\' :\'\'">\n            <label for="first_name">FIRST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.middle_name.value" ng-value="$ctrl.data.middle_name.value" type="text" id="middle_name" name="middle_name" ng-class="\'ng-dirty\' && membership.middle_name.$invalid ?  \'error\' :\'\'">\n            <label for="middle_name">MIDDLE NAME/INITIAL</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.last_name.value" ng-value="$ctrl.data.last_name.value" type="text" id="last_name" name="last_name" ng-class="\'ng-dirty\' && membership.last_name.$invalid ?  \'error\' :\'\'">\n            <label for="last_name">LAST NAME <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.email.value" ng-value="$ctrl.data.email.value" type="text" id="billingEmail" name="email" ng-class="\'ng-dirty\' && membership.Email.$invalid ?  \'error\' :\'\'">\n            <label for="billingEmail">EMAIL(WORK-RELATED) <span class="red-text">*</span></label>\n          </div>\n        </div>\n        <div class="col-lg-4 col-md-6 col-sm-6 billing-2">\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.address.value" ng-value="$ctrl.data.address.value" type="text" id="address" name="address" ng-class="\'ng-dirty\' && membership.address.$invalid ?  \'error\' :\'\'">\n            <label for="address">ADDRESS <span class="red-text">*</span></label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.second_address.value" ng-value="$ctrl.data.second_address.value" type="text" id="second_address" name="second_address" ng-class="\'ng-dirty\' && membership.second_address.$invalid ?  \'error\' :\'\'">\n            <label for="second_address">SECOND ADDRESS</label>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.city.value" ng-value="$ctrl.data.city.value" type="text" id="city" name="city" ng-class="\'ng-dirty\' && membership.city.$invalid ?  \'error\' :\'\'">\n            <label for="city">CITY <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.state.value" theme="selectize">\n              <ui-select-match placeholder="STATE/PROVINCE *">\n              <span style="{{($ctrl.data.state.value && $select.selected != $ctrl.states[0])? \'color: black\' : \'\'}}" ng-bind-html="$select.selected || $ctrl.data.state.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="state in getStates($select.search) | filter:$select.search">\n                <span ng-bind-html="state"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.zip.value" ng-value="$ctrl.data.zip.value" type="text" id="zip" name="zip" ng-class="\'ng-dirty\' && membership.zip.$invalid ?  \'error\' :\'\'">\n            <label for="zip">ZIP <span class="red-text">*</span></label>\n          </div>\n\n          <div class="select-style select-mrg search-selector">\n            <ui-select ng-model="$ctrl.data.country.value" theme="selectize">\n              <ui-select-match placeholder="PLEASE SELECT COUNTRY *">\n              <span style="{{($ctrl.data.country.value && $select.selected.title != $ctrl.country[0].title)? \'color: black\' : \'\'}}" ng-bind-html="$select.selected.title || $ctrl.data.country.value"></span>\n              </ui-select-match>\n              <ui-select-choices repeat="country in ($ctrl.country | sortFilter:$select.search)">\n                <span ng-bind-html="country.title"></span>\n              </ui-select-choices>\n            </ui-select>\n          </div>\n\n          <div class="membr-block">\n            <input ng-model="$ctrl.data.telephone.value" ng-value="$ctrl.data.telephone.value" type="text" id="telephone" name="telephone" ng-class="\'ng-dirty\' && membership.telephone.$invalid ?  \'error\' :\'\'">\n            <label for="telephone">TELEPHONE <span class="red-text">*</span></label>\n          </div>\n\n          <div class="button login-btn">\n            <button ng-click="$ctrl.uploadBillingInfo()" class="btn">CONTINUE</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 3" class="payment-information">\n    <div class="cart-checkout">\n      <div class="panel panel-default bootstrap-basic">\n        <div class="panel-heading">\n          <h3 class="panel-title">CREDIT CARD</h3>\n          <div id="paypal-button" class="paypal-btn" style="z-index: 1"></div>\n        </div>\n        <form class="panel-body">\n          <div class="row">\n            <div class="form-group col-sm-12">\n              <!--<label class="control-label">Card Number</label>-->\n              <!--  Hosted Fields div container -->\n              <div class="form-control" id="card-number"></div>\n              <span class="helper-text"></span>\n            </div>\n            <div class="form-group col-sm-12">\n              <div class="row payment-item-row">\n                <label class="control-label col-xs-12 payment-item">EXPIRATION DATE <span class="red-text">*</span></label>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-month"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <!--  Hosted Fields div container -->\n                  <div class="form-control" id="expiration-year"></div>\n                </div>\n                <div class="col-xs-4 payment-item">\n                  <div class="form-control" id="cvv"></div>\n                </div>\n              </div>\n            </div>\n          </div>\n          <div ng-show="$ctrl.payError" class="error-message afade text-left">\n            {{$ctrl.payError}}\n          </div>\n          <button ng-disabled="$ctrl.payDataFlag" value="submit" id="submit" class="btn btn-success btn-lg center-block">CONTINUE\n          </button>\n          <button ng-click="$ctrl.stepBack()" class="btn white-btn">GO BACK</button>\n        </form>\n      </div>\n    </div>\n  </section>\n  <section ng-show="$ctrl.methodNumber === 4" class="products-cart order-review">\n    <div class="container-fluid text-center title">\n      <div class="row">\n        <div class="col-lg-offset-1 col-lg-10 col-md-12 products-table">\n          <table>\n            <tr class="product-row" ng-repeat="item in $ctrl.products">\n              <td class="product-img">\n                <img ng-src="{{item.image_url}}">\n              </td>\n              <td class="product-name">\n                <h4>{{item.header}}</h4>\n                <div ng-show="$ctrl.methodNumber === 4" class="justify margin-zero-p">\n                  <p ng-show="$ctrl.methodNumber === 4" class="four_line_height" style="display: block" data-ng-bind-html="item.description" data-ellipsis data-ellipsis-symbol="... " data-ellipsis-append="<a>Read more</a>" data-ellipsis-append-click="$ctrl.toggleTextHeight"></p>\n                </div>\n              </td>\n              <td class="product-count">\n                <!--<input type="text" pattern="[0-9]" onchange="editCount(item.id, this)" value="{{item.count}}">-->\n                <h4 style="display: inline-block">{{item.count}}</h4>\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, -1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-minus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n                <!--<div ng-click="$ctrl.editCount(item.id, $index, item.type, 1)" class="icon pointer" style="display: inline-block">-->\n                <!--<i class="fa fa-plus fa-1x pointer"-->\n                <!--aria-hidden="true"></i>-->\n                <!--</div>-->\n              </td>\n              <td class="product-prise">\n                <h4>{{(item.price === 0) ? \'Free\' : \'&#36;\' + item.price}}</h4>\n              </td>\n              <td class="price-for-all">\n                <h4>{{(item.price === 0 && item.count > 0) ? \'Free\' : \'&#36;\' + (item.price * item.count)}}</h4>\n              </td>\n            </tr>\n          </table>\n          <div class="err-massage">\n            <h4 ng-show="$ctrl.errFlag">We are unable to process your payment at this time. Please provide an alternate\n              method to payment.</h4>\n          </div>\n        </div>\n        <div class="col-sm-4 col-xs-4">\n        </div>\n        <div class="col-sm-offset-4 col-lg-3 col-sm-4 col-xs-8 text-right">\n          <table class="table-prise">\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-text tax">\n                  <h4>TAX*</h4>\n                  <span><strong>SALES TAX - HUE-DATA.COM</strong><br>\n                    <strong>Effect of the Internet Tax Freedom Act</strong><br>\n                        Companies selling over the Internet are subject to the\n                    same sales tax collection requirements as any other retailers.\n                    Remote sellers (including Internet retailers and catalog companies) are generally\n                    required to collect taxes where they have a physical selling presence.\n                    If they do not have any such presence, they are not required to collect sales taxes.</span>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="subtotal subtotal-prise">\n                  <h4><span>{{\'&#36;\' + $ctrl.tax}}</span></h4>\n                </div>\n              </td>\n            </tr>\n            <tr>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-text">\n                  <h4>TOTAL:</h4>\n                </div>\n              </td>\n              <td>\n                <div ng-show="$ctrl.products.length" class="total total-prise">\n                  <h4><span>{{($ctrl.all === 0) ? \'Free\' : \'&#36;\' + ($ctrl.all + $ctrl.tax)}}</span></h4>\n                </div>\n              </td>\n            </tr>\n          </table>\n          <div class="checkout-button" ng-show="$ctrl.products.length" ng-click="$ctrl.goCheckout()">\n            <button ng-disabled="$ctrl.placeOrderFlag" ng-click="$ctrl.goToThank()" style="margin-top: 0" class="btn">\n              PLACE ORDER\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  </section>\n</div>');
 $templateCache.put('app/components/cart-thank/cart-thank.tmpl.html','<update-title title="Thank You for Your Purchase"></update-title>\n<update-meta name="description" content="Thanks page after purchase"></update-meta>\n<update-meta name="keywords" content="Thank you page, download"></update-meta>\n\n\n<section ng-init="$ctrl.init()">\n  <div class="container-fluid text-center title">\n    <div class="row">\n      <div class="col-lg-4 col-md-12 col-lg-offset-4 cart-page-header">\n        <i style="display: inline-block" class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i>\n        &emsp;<h3 style="display: inline-block">MY CART</h3>\n      </div>\n    </div>\n  </div>\n</section>\n<section class="cart-thank-page">\n  <div class="cart-thank">\n    <h4 class="thank-title"><strong>THANK YOU FOR YOUR PURCHASE</strong></h4>\n    <h4 class="order-id">YOUR ORDER ID: <span>{{$ctrl.orderId || \'UNKNOWN\'}}</span></h4>\n    <div class="thank-text">\n      <span>YOU WILL RECEIVE AN ORDER CONFORMATION EMAIL WITH DETAILS OF YOUR PURCHASE</span>\n    </div>\n    <div class="thank-text">\n      <span>CLICK HERE TO DOWNLOAD</span>\n    </div>\n  </div>\n</section>\n<section class="download-page">\n  <div class="container-fluid text-center">\n    <div class="row download-row">\n      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 download-item" ng-repeat="item in $ctrl.products">\n        <div>\n        <img class="download-img" ng-src="{{item.image}}">\n        </div>\n        <div ng-show="item.file">\n        <a href="{{item.file}}" download><button class="btn">DOWNLOAD</button></a>\n        </div>\n      </div>\n\n    </div>\n  </div>\n</section>');
 $templateCache.put('app/components/color-emotion/color-emotion.tmpl.html','<update-title title="Color Indices"></update-title>\r\n<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>\r\n<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,\r\ncolor and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,\r\nColor Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n      <div class="col-lg-6 col-md-12 col-sm-12 buttons-group">\r\n        <div class="button membership">\r\n          <button ng-if="$ctrl.getUser()" class="btn join-btn" ng-click="$ctrl.gotoElement(\'prefooter\')">JOIN</button>\r\n\r\n        </div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <img src="../assets/images/indices1.png" class="img-responsive shadow" alt="Image">\r\n      </div>\r\n\r\n      <div class="col-lg-6 col-md-6">\r\n        <p>Color is strongly linked to emotional and non-emotional attributes. Research indicates that some of these\r\n          associations are universal while others are product and cultural sensitive.\r\n          Designing for a global customer base we need to account for the color connotations we evoke and ensure\r\n          alignment between the color choice, preferences of the target audience and various contextual (cultural,\r\n          genderspecific\r\n          and product related) aspects.<br><br>\r\n          HUEDATA Color Emotion Index (CEI) parses through thousands of research articles comprising the body of\r\n          research conducted on color, to mine and surface these associations and carefully map them agains colors\r\n          within\r\n          the context of demographics, psychographics a product-related attributes when relevant. The CEI is further\r\n          enriched by our active social listening on Twitter that monitor the popular voice on color and contrast it\r\n          with\r\n          research findings for further calibration and validation.<br><br>\r\n          This Members-Only product allows you to benchmark and further modify your color choices against desired\r\n          attributes to ensure your color massage is indeed on massage! </p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>Performance Analysis</h5>\r\n        <p>Search for the meaning of colors using the two available color\r\n          - attribute associations classifications:<br><br></p>\r\n        <div class="left">\r\n          <div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">\r\n            <span>EMOTIONAL ATTRIBUTES INDEX</span>\r\n          </div>\r\n\r\n          <div class="color-ind-bar"><img src="../assets/images/non-emontional.png" alt="Image">\r\n            <span>NON-EMOTIONAL ATTRIBUTES INDEX</span>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>CEI Interactive Color Upload</h5>\r\n        <p>Stress-test the colors you\u2019re considering agains the CEI to validate the\r\n          colors evoke the attributes you\u2019re looking for within the relevant\r\n          product and demographic context. Simply upload your colors and we\u2019ll\r\n          analyze them for you.</p>\r\n        <img src="../assets/images/indices2.png" class="img-responsive" alt="Image">\r\n      </div>\r\n\r\n      <div class="col-lg-4 col-md-4 col-sm-12 indices-block">\r\n        <h5>COLOR NAMING INDEX</h5>\r\n        <p>With nearly 10 million color names in our system, HUEDATA\r\n          can help you name your color right. Explore our color naming\r\n          visualizations to identify best ways to communicate your color\r\n          selection.<br><br></p>\r\n        <img src="../assets/images/indices3.png" class="img-responsive text-center" alt="Image">\r\n      </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n');
 $templateCache.put('app/components/color-index/color-index.tmpl.html','<update-title title="The Color Naming Index"></update-title>\r\n<!--<update-meta name="description" content="color index, color decision tools, color analysis tools"></update-meta>-->\r\n<!--<update-meta name="keywords" content="Color Emotion Connections index, color emotions, color emotion theory,-->\r\n<!--color and emotion research, color emotion associations, Color Celebrity index, Color Naming index, Color Names Index,-->\r\n<!--Color Preference Index, Global Colors index, Color in Soccer index, Color Twits Index, color dictionary, Color social media"></update-meta>-->\r\n\r\n<h4 class="text-left membership-product">HUEDATA MEMBERSHIP PRODUCT</h4>\r\n\r\n<section id="color-emotion-header">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6">\r\n        <h3 class="color-ind">Color Indices - AVAILABLE FALL 2018</h3>\r\n      </div>\r\n    </div>\r\n    <div class="row">\r\n\r\n      <div class="col-lg-12 col-md-12 col-sm-12 buttons-group title-color-index-block">\r\n        <div class="title-color-index">The Color Naming Index</div>\r\n        <div class="button membership">\r\n          <button class="btn white-btn" ui-sref="productInquiry">PRODUCT INQUIRY</button>\r\n        </div>\r\n        <div class="line"></div>\r\n      </div>\r\n\r\n\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<section id="education-top">\r\n  <div class="container-fluid">\r\n    <div class="row">\r\n      <div class="col-lg-6 col-md-6">\r\n        <div class="color-naming-block-desc">\r\n          <h5 class="title-link-color-picker h-data ng-binding">I AM THINKING OF THIS COLOR AND WANT TO LEARN NOW ITS CALLED </h5>\r\n          <img id="color-naming-block-desc_img_2" src="../assets/images/picker.svg" alt="">\r\n          <div class="button">\r\n            <a class="btn join-btn color-index-btn" ui-sref="colorPicker">LET\'S START</a>\r\n          </div>\r\n        </div>\r\n      </div>\r\n\r\n\r\n     <div class="col-lg-6 col-md-6">\r\n      <div class="color-naming-block-desc">\r\n        <h5 class="title-link-color-picker h-data ng-binding">I WANT TO LEARN WHAT COLOR IS ASSOCIATED WITH THIS COLOR NAME </h5>\r\n        <img id="color-naming-block-desc_img_1" src="../assets/images/pen.svg" alt="">\r\n        <div class="button">\r\n          <a class="btn join-btn color-index-btn" ui-sref="colorIndexSearch">LET\'S START</a>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    </div>\r\n  </div>\r\n</section>\r\n\r\n<!--<section id="education">-->\r\n  <!--<div class="container-fluid">-->\r\n    <!--<div class="row">-->\r\n      <!--<div class="col-lg-4 col-md-4  col-sm-12 indices-block">-->\r\n        <!--<h5>Performance Analysis</h5>-->\r\n        <!--<p>Search for the meaning of colors using the two available color-->\r\n          <!-- - attribute associations classifications:<br><br></p>-->\r\n        <!--<div class="left">-->\r\n          <!--<div class="color-ind-bar"><img src="../assets/images/emontional.png" alt="Image">-->\r\n            <!--<span>EMOTIONAL ATTRIBUTES INDEX</span>-->\r\n          <!--</div>-->\r\n\r\n          <!--<div class="color-ind-bar"><img src="../assets/images/non-emontional.png"-->\r\n                                <!--alt="Image">-->\r\n            <!--<span>NON-EMOTIONAL ATTRIBUTES INDEX</span>-->\r\n          <!--</div>-->\r\n        <!--</div>-->\r\n      <!--</div>-->\r\n\r\n      <!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->\r\n        <!--<h5>CEI Interactive Color Upload</h5>-->\r\n        <!--<p>Stress-test the colors you\u2019re considering agains the CEI to validate the-->\r\n          <!--colors evoke the attributes you\u2019re looking for within the relevant-->\r\n          <!--product and demographic context. Simply upload your colors and we\u2019ll-->\r\n          <!--analyze them for you.</p>-->\r\n        <!--<img src="../assets/images/indices2.png" class="img-responsive " alt="Image">-->\r\n      <!--</div>-->\r\n\r\n      <!--<div class="col-lg-4 col-md-4 col-sm-12 indices-block">-->\r\n        <!--<h5>COLOR NAMING INDEX</h5>-->\r\n        <!--<p>With nearly 10 million color names in our system, HUEDATA-->\r\n          <!--can help you name your color right. Explore our color naming-->\r\n          <!--visualizations to identify best ways to communicate your color-->\r\n          <!--selection.<br><br></p>-->\r\n        <!--<img src="../assets/images/indices3.png" class="img-responsive  text-center" alt="Image">-->\r\n      <!--</div>-->\r\n    <!--</div>-->\r\n  <!--</div>-->\r\n<!--</section>-->\r\n');
@@ -53114,8 +53566,8 @@ $templateCache.put('app/directives/dbColorPicker/dbColorPickerView.html','<div i
 $templateCache.put('app/directives/dbColorsByFamily/dbColorsByFamilyView.html','<div class="db-colors-by-family">\r\n\t<div class="button-all" ng-click="showAllLines()" ng-style="{height: colorBarItemHeight}">All</div>\r\n\t<ul class="color-bar"><li ng-click="toggleLine($index)" ng-attr-title="::item.title" ng-class="{hidden: !visibleColors[$index]}" ng-style="{\'background-color\': item.color, height: colorBarItemHeight}" ng-repeat="item in chartData"></li></ul>\r\n\t<div class="graph"></div>\r\n</div>');
 $templateCache.put('app/directives/dbCopyrightList/dbCopyrightListExpandedView.html','<div class="db-expanded-view db-copyright-list-expanded">\r\n  <div class="button-close" ng-click="hideView()"></div>\r\n  <div class="view-title">Full color copyright details for {{pageTitle}}</div>\r\n\r\n  <div class="cols">\r\n    <div>\r\n      <ul>\r\n        <li>\r\n          <label>Color code</label>\r\n          <div>\r\n            <span>{{details.color.color.ncs}}</span>\r\n            <span ng-click="colorClick(details.color.id)" class="color" ng-style="{\'background-color\': details.color.color.hex}"></span>\r\n          </div>\r\n        </li>\r\n        <li><label>Serial #</label><span>{{details.serial_number}}</span></li>\r\n        <li><label>Entery #</label><span>{{details.registration_number}}</span></li>\r\n        <li><label>Transaction date</label><span>{{details.transaction_date}}</span></li>\r\n        <li><label>Three letter status code</label><span>{{details.status_code}}</span></li>\r\n        <li><label>Identification of trademark</label><span>{{details.owner}}</span></li>\r\n        <li><label>Filing date</label><span>{{details.filed_at}}</span></li>\r\n        <li><label>Registration date of TM</label><span>{{details.registered_at}}</span></li>\r\n        <li><label>US classification code</label><span>{{details.us_code}}</span></li>\r\n        <li><label>Int\'s classification code</label><span>{{details.int_code}}</span></li>\r\n        <li ng-if="otherColorsPages.length > 1">\r\n          <label></label>\r\n          <div class="pager">\r\n            <label ng-click="selectPage($index)" ng-class="{\'active\':isPageActive($index)}" ng-repeat="p in otherColorsPages">{{$index + 1}}</label>\r\n          </div>\r\n        </li>\r\n      </ul>\r\n      <div ng-if="otherColorCopyrights.length">\r\n        <div class="view-title">Other color copyrights for {{pageTitle}}</div>\r\n        <ul>\r\n          <li>\r\n            <label></label>\r\n            <div class="colors-copyrights">\r\n              <label ng-click="selectOtherColor(c)" ng-repeat="c in otherColorCopyrights" ng-style="{ \'background-color\' : c.color.hex }"></label>\r\n            </div>\r\n          </li>\r\n        </ul>\r\n      </div>\r\n    </div>\r\n    <div>\r\n      <ul>\r\n        <li>\r\n          <label>Drawing</label>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
 $templateCache.put('app/directives/dbCopyrightList/dbCopyrightListView.html','<div class="db-copyright-list">\r\n\t<table>\r\n\t\t<thead>\r\n\t\t\t<tr>\r\n\t\t\t\t<th>Color</th>\r\n\t\t\t\t<th>Serial number</th>\r\n\t\t\t\t<th>Color name</th>\r\n\t\t\t\t<th>Product name</th>\r\n\t\t\t\t<th>US/Int\'l</th>\r\n\t\t\t\t<th>Date granted</th>\r\n\t\t\t\t<th>Status</th>\r\n\t\t\t\t<th></th>\r\n\t\t\t</tr>\r\n\t\t</thead>\r\n\t\t<tbody>\r\n\t\t\t<tr ng-repeat="item in data">\r\n\t\t\t\t<td><div ng-click="colorClick(item)" ng-style="::{\'background-color\': item.color.color.hex}"></div></td>\r\n\t\t\t\t<td ng-bind="::item.serial_number"></td>\r\n\t\t\t\t<td ng-bind="::item.color.title"></td>\r\n\t\t\t\t<td ng-bind="::item.product"></td>\r\n\t\t\t\t<td>{{::item.us_code}}/{{::item.int_code}}</td>\r\n\t\t\t\t<td ng-bind="::item.issued_at"></td>\r\n\t\t\t\t<td>{{::item.us_status}}/{{::item.int_status}}</td>\r\n\t\t\t\t<td><a ng-click="selectItem(item)">see details</a></td>\r\n\t\t\t</tr>\r\n\t\t</tbody>\r\n\t</table>\r\n</div>\r\n<hue-db-copyright-list-expanded data="data" item-data="selectedItem" hide-view="hideExpandedView()" page-title="pageTitle" ng-if="isExpandedViewVisible()"></hue-db-copyright-list-expanded>');
-$templateCache.put('app/directives/dbDesignerImages/dbDesignerImageDetailsView.html','<div class="db-designer-images-details">\r\n  <div class="image-details-dialog">\r\n    <div class="image-container">\r\n      <a ng-href="{{data.image_src}}" title="Open full size image"><img ng-src="{{data.image_src}}"></a>\r\n    </div>\r\n    <div class="image-details">\r\n      <div class="button-close" ng-click="closeClickHandler()"></div>\r\n      <div class="designer-name" ng-bind="designer"></div>\r\n      <div>{{season + \' \' + year}}</div>\r\n      <div ng-bind="category"></div>\r\n      <div>{{(city ? city + \', \' : \'\') + region}}</div>\r\n      <div class="image-source">Image Source: {{source}}</div>\r\n\r\n      <div class="dominant-color">\r\n        <div class="details-title">Dominant color</div>\r\n        <div class="details-color">\r\n          <div class="color-bar" ng-style="{\'background-color\': colorActual}"></div>\r\n          <div class="color-title">Actual</div>\r\n        </div>\r\n        <div class="details-color">\r\n          <div class="color-bar" ng-style="{\'background-color\': colorNcs}"></div>\r\n          <div class="color-title">NCS {{colorNcsTitle}}</div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n    <div class="dialog-footer">\r\n      <div class="footer-container" ng-show="isFooterMode(0)">\r\n        <button ng-click="exportImageCard()">Save</button>\r\n      </div>\r\n      <div class="footer-container" ng-show="isFooterMode(1)">\r\n        <input type="text" ng-model="imageName">\r\n        <button ng-click="saveImage()">OK</button>\r\n      </div>\r\n      <div class="footer-container" ng-show="isFooterMode(2)">\r\n        <span>Image saved</span>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
-$templateCache.put('app/directives/dbDesignerImages/dbDesignerImagesView.html','<div class="db-designer-images" id="{{\'dbdi-\'+$id}}">\r\n  <div ng-if="!showCollection && !singleDesigner">\r\n    <div class="image-container" ng-repeat="item in data track by $index">\r\n      <div class="image-overlay disable-text-selection" ng-click="openFullCollection($index)">\r\n        <div class="overlay-text">View Full Collection</div>\r\n      </div>\r\n      <img ng-src="{{item.image_src}}">\r\n      <div class="image-title">{{item.title}}</div>\r\n    </div>\r\n  </div>\r\n  <div ng-if="showCollection || singleDesigner">\r\n    <div class="image-container" ng-repeat="item in (singleDesigner ? data : collectionData)" ng-click="imageClickHandler($index)">\r\n      <img ng-src="{{item.image_src}}">\r\n      <div class="image-title">{{item.title}}</div>\r\n    </div>\r\n  </div>\r\n  <div class="button-close" ng-show="showCollection" ng-click="closeFullCollection()"></div>\r\n</div>\r\n\r\n<hue-db-designer-image-details ng-if="showImageDetails" on-close="toggleImageDetails()" data="imageDetailsData">\r\n\r\n</hue-db-designer-image-details>\r\n');
+$templateCache.put('app/directives/dbDesignerImages/dbDesignerImageDetailsView.html','<div class="db-designer-images-details">\r\n\t<div class="image-details-dialog">\r\n\r\n\t\t<i class="glyphicon glyphicon-chevron-left" ng-click="LeftButtonHandler()"></i>\r\n\t\t<i class="glyphicon glyphicon-chevron-right" ng-click="RightButtonHandler()"></i>\r\n\r\n\t\t<div class="row">\r\n\t\t\t<div class="col cols-6">\r\n\t\t\t\t<div class="image-container">\r\n\t\t\t\t\t<a ng-href="{{data.image_src}}" title="Open full size image">\r\n\t\t\t\t\t\t<img ng-src="{{data.image_src}}">\r\n\t\t\t\t\t</a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class="col cols-6">\r\n\t\t\t\t<div class="image-details-header">\r\n\t\t\t\t\t<div class="button-close" ng-click="closeClickHandler()"></div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class="image-details">\r\n\t\t\t\t\t<div class="designer-name" ng-bind="designer"></div>\r\n\t\t\t\t\t<div>{{season + \' \' + year}}</div>\r\n\t\t\t\t\t<div ng-bind="category"></div>\r\n\t\t\t\t\t<div>{{(city ? city + \', \' : \'\') + region}}</div>\r\n\t\t\r\n\t\t\t\t\t<button type="button" class="btn btn-outline-secondary">\r\n\t\t\t\t\t\t<i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;\r\n\t\t\t\t\t\tADD TO MOODBOARD\r\n\t\t\t\t\t</button>\r\n\t\t\r\n\t\t\t\t\t<div class="social-icon-groups">\r\n\t\t\t\t\t\t<span class="fs-4 font-weight-medium">SHARE</span>\r\n\t\t\t\t\t\t<i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>\r\n\t\t\t\t\t\t<i class="fab fa-twitter" ng-click="shareTwitter(data.image_src)"></i>\r\n\t\t\t\t\t\t<i class="fa fa-pinterest" ng-click="sharePinterest(data.image_src)"></i>\r\n\t\t\t\t\t\t<i class="fab fa-google-plus-g" ng-click="shareGooglePlus(data.image_src)"></i>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class="dialog-footer"></div>\r\n\t\t</div>\r\n\t</div>\r\n</div>');
+$templateCache.put('app/directives/dbDesignerImages/dbDesignerImagesView.html','<div class="db-designer-images" id="{{\'dbdi-\'+$id}}">\r\n\t<div ng-if="!showCollection && !singleDesigner">\r\n\t\t<div class="row">\r\n\t\t\t<div class="col cols-2 col-sm col-md-1" ng-repeat="item in data track by $index">\r\n\t\t\t\t<div class="image-container">\r\n\t\t\t\t\t<div class="image-overlay disable-text-selection" ng-click="openFullCollection($index)">\r\n\t\t\t\t\t\t<div class="overlay-text">View Full Collection</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<img ng-src="{{item.image_src}}">\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class="image-title">{{item.title}}</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div ng-if="showCollection || singleDesigner">\r\n\t\t<div class="row">\r\n\t\t\t<div class="col cols-2 col-sm col-md-1" ng-repeat="item in (singleDesigner ? data : collectionData)" ng-click="imageClickHandler($index)">\r\n\t\t\t\t<div class="image-container">\r\n\t\t\t\t\t<img ng-src="{{item.image_src}}">\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class="image-title">{{item.title}}</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class="button-close" ng-show="showCollection" ng-click="closeFullCollection()"></div>\r\n</div>\r\n\r\n<hue-db-designer-image-details ng-if="showImageDetails" on-close="toggleImageDetails()" data="imageDetailsData">\r\n</hue-db-designer-image-details>');
 $templateCache.put('app/directives/dbDistributionByCategory/dbDistributionByCategoryView.html','<div class="db-distribution-by-category">\r\n  <div class="category-item" ng-repeat="item in data">\r\n    <div class="top-container">\r\n      <div class="category-chart" hue-color-frequency-by-category-chart="{diameter: 160, strokeWidth: 1}" percentage="item.percentage" color="chartColor" stroke-color="chartStrokeColor"></div>\r\n      <div class="category-icon">\r\n        <hue-svg source="assets/img/icons/categories/{{item.id}}.svg"></hue-svg>\r\n      </div>\r\n      <div class="category-caption"><span class="category-percentage" ng-bind="item.percentage.toFixed()"></span><span class="category-percentage-unit">%</span><br>{{item.title}}\r\n      </div>\r\n    </div>\r\n    <div class="designers-label-container">\r\n      <span class="designers-count" ng-bind="item.designerCount"></span>\r\n      <span class="designers-label">Designers</span>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
 $templateCache.put('app/directives/dbFlagColors/dbFlagColorsView.html','<div class="db-flag-colors">\r\n\t<div class="colors-contaier">\r\n\t\t<div class="color-item" ng-style="{width: itemWidth }" ng-repeat="item in data | limitTo:flagIndex">\r\n\t\t\t<div class="item-bar" ng-style="{\'background-color\': \'rgb(\' + item.color.rgb + \')\'}"></div>\r\n\t\t\t<div class="item-percentage">\r\n\t\t\t\t<div class="percentage-value">{{item.percentage}}<span class="unit">%</span></div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class="flag-container">\r\n\t\t<div class="flag">\r\n\t\t\t<div class="flag-bar-container">\r\n\t\t\t\t<div class="flag-bar" ng-style="{width: itemWidth, \'background-color\': \'rgb(\' + item.color.rgb + \')\'}" ng-repeat="item in data | limitTo:flagIndex"></div>\r\n\t\t\t</div>\r\n\t\t\t<div class="item-percentage">\r\n\t\t\t\t<div class="percentage-value">{{data[flagIndex].percentage}}<span class="unit">%</span></div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n</div>');
 $templateCache.put('app/directives/dbHeader/dbHeaderView.html','<div class="dashboard-row dashboard-header" ng-class="{\'with-icon\': icon}" ng-style="{height: getHeaderHeight()}">\r\n  <div class="header-icon" ng-click="iconClick()" ng-class="{\'cell-clickable\': isIconClickable()}" ng-if="icon">\r\n    <div class="cell-subcontainer" ng-if="icon">\r\n      <div class="cell-content" ng-switch="iconType">\r\n        <div class="color-sample" ng-style="{\'background-color\': icon}" ng-switch-when="color"></div>\r\n        <hue-svg source="{{icon}}" ng-switch-when="svg"></hue-svg>\r\n        <img ng-src="{{icon}}" ng-switch-when="img">\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class="header-title">\r\n    <div class="cell-subcontainer">\r\n      <div class="cell-content">\r\n        <span class="cell-title" ng-bind="title"></span><br><span class="cell-subtitle" ng-bind="subtitle"></span>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class="header-page-info"></div>\r\n</div>\r\n');
@@ -53149,19 +53601,20 @@ $templateCache.put('app/components/dashboards/auto/model/model.tmpl.html','<div 
 $templateCache.put('app/components/dashboards/auto/year/year.tmpl.html','<div ng-controller="yearAutoController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Distribution By Finish For {{title}}\r\n          <hue-db-info-icon text-key="top_finishes"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-finishes data="topFinishesData" chart-color="topIndustriesColor"></hue-db-top-finishes>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row dashboard-brand-row-second">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Color Families By Brand For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopFamiliesExpandedMode()">\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-families-by-brand data="topFamiliesData"></hue-db-color-families-by-brand>\r\n        <hue-db-color-families-by-brand-expanded data="topFamiliesData" toggle-view="toggleTopFamiliesExpandedMode()" ng-if="topFamiliesExpanded"></hue-db-color-families-by-brand-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-color-frequency">\r\n          <div class="module-title">\r\n            Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n        <div class="cell-color-palette">\r\n          <div class="module-title">Color Palette For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n            <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n            <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n            </hue-db-color-palette-bucket-selector>\r\n          </div>\r\n          <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors By Region For {{title}}</div>\r\n        <hue-db-color-comparison data="compareData"></hue-db-color-comparison>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Image Gallery For {{title}} By Color</div>\r\n        <hue-db-image-gallery data="carColorsData"></hue-db-image-gallery>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
 $templateCache.put('app/components/dashboards/branding/attribute/attribute.tmpl.html','<div ng-controller="attributeBrandingController">\r\n\r\n  <div class="dashboard-container dashboard-branding-attribute" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-attribute">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Attribute Top 4 Colors <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-top-industries">\r\n          <div class="module-title">Top 3 Industry For {{title}}\r\n            <hue-db-info-icon text-key="top_industries"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-industries data="topIndustriesData" chart-color="topIndustriesColor"></hue-db-top-industries>\r\n        </div>\r\n        <div class="cell-popular-combinations">\r\n          <div class="module-title">\r\n            Color Combination Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n            <hue-db-color-frequency-color-picker data="colorFrequencyData" active-color="activeColorFrequencyColor" ng-show="isColorFrequencyColorPickerVisible()"></hue-db-color-frequency-color-picker>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" active-color="activeColorFrequencyColor"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color-Attribute Association Globally <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()"></div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Color-Attribute Association Globally" ng-if="mapExpanded"></hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row color-palette-row">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Number Of Colors In Logos\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-count data="colorCountData"></hue-db-color-count>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Attribute Color Palette <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Brand Colors\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/branding/brand/brand.tmpl.html','<div ng-controller="brandBrandingController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-icon="iconUrl" icon-type="img" icon-click="toggleLogoDetails()" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Brand Logo Colors\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For Brand\'s Industry\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n        </hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Brand Logo Colors &amp; Associated Attributes\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()">\r\n        </div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Brand Logo Colors &amp; Associated Attributes" ng-if="mapExpanded">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Brand Colors\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n\r\n    <hue-db-logo-details ng-if="showLogoDetails" on-close="toggleLogoDetails()" logo-id="logoId"></hue-db-logo-details>\r\n  </div>\r\n\r\n</div>\r\n\r\n');
-$templateCache.put('app/components/dashboards/branding/color/color.tmpl.html','<div ng-controller="colorBrandingController">\r\n\r\n  <div class="dashboard-container dashboard-branding-color" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-icon="colorHex" icon-type="color" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-color">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Shades\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded">\r\n\r\n        </hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-top-industries">\r\n          <div class="module-title">Top 3 Industries For {{title}}\r\n            <hue-db-info-icon text-key="top_industries"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-industries data="topIndustriesData" chart-color="colorHex"></hue-db-top-industries>\r\n        </div>\r\n        <div class="cell-popular-combinations">\r\n          <div class="module-title">Color Combination Frequency For {{title}}\r\n            <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" searched-color="colorHex"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n          </hue-db-color-frequency-expanded>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Attributes Associated With {{title}} Globally\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()">\r\n        </div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Attributes Associated With {{title}} Globally" ng-if="mapExpanded">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Logos For {{title}}\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData" color-dashboard="true"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/branding/country/country.tmpl.html','<div ng-controller="countryBrandingController">\r\n  <div class="dashboard-container dashboard-branding-country" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-icon="iconUrl" icon-type="img" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-country">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="cell-top-colors">\r\n          <div class="module-title">Country Top 4 Colors\r\n            <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n            <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n          <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n        </div>\r\n        <div class="cell-flag-colors">\r\n          <div class="module-title">Country Logos Using Flag Colors\r\n            <hue-db-info-icon text-key="flag_colors"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-flag-colors data="flagColorsData" flag-url="flagUrl"></hue-db-flag-colors>\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-top-industries">\r\n          <div class="module-title">Top 3 Industries For {{title}}\r\n            <hue-db-info-icon text-key="top_industries"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-industries data="topIndustriesData" chart-color="topIndustriesColor"></hue-db-top-industries>\r\n        </div>\r\n        <div class="cell-popular-combinations">\r\n          <div class="module-title">Color Family Frequency For {{title}}\r\n            <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Country Top 4 Colors &amp; Associated Attributes\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()"></div>\r\n        <hue-db-map data="mapsData" hide-map="true"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Country Top 4 Colors &amp; Associated Attributes" ng-if="mapExpanded" hide-map="true">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row color-palette-row">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Number Of Colors In Logos\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-count data="colorCountData"></hue-db-color-count>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Country Color Palette\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Country Logos By Color\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/branding/industry/industry.tmpl.html','<div ng-controller="industryBrandingController">\r\n\r\n  <div class="dashboard-container dashboard-branding-industry" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-icon="iconUrl" icon-type="svg" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Indusry Top 4 Colors\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded">\r\n\r\n        </hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n        </hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Industry Top 4 Colors &amp; Attributes Associated Globally <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()"></div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Industry Top 4 Colors &amp; Attributes Associated Globally" ng-if="mapExpanded">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row color-palette-row">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Number Of Colors In Logos\r\n          <hue-db-info-icon text-key="color_count"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-count data="colorCountData"></hue-db-color-count>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Industry Color Palette\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette data="colorPaletteData" set-color="setColorAsMain" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Industry Logos by Color\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/fashion/category/category.tmpl.html','<div ng-controller="categoryFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="iconUrl" icon-type="svg" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Family Frequency For {{title}} By Region <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>\r\n        <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded"></hue-db-color-frequency-by-region-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By Season <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData"></hue-db-color-frequency-by-season>\r\n        <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData" toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded"></hue-db-color-frequency-by-season-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By City <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByCityExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_city"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-city data="colorFrequencyByCityData"></hue-db-color-frequency-by-city>\r\n        <hue-db-color-frequency-by-city-expanded data="colorFrequencyByCityData" toggle-view="toggleColorFrequencyByCityExpandedMode()" ng-if="colorFrequencyByCityExpanded"></hue-db-color-frequency-by-city-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 4 Colors For {{title}} Across Years\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Palette Collection For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Designer Images For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" menus="menus" category-id="categoryId" year-id="year" season-id="seasonId" city-id="cityId" is-expanded="designerImagesExpanded"></hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/fashion/city/city.tmpl.html','<div ng-controller="cityFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="iconUrl" icon-type="svg" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Family Frequency For {{title}} By Region <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>\r\n        <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded"></hue-db-color-frequency-by-region-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Distribution By Category For {{title}}\r\n          <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-distribution-by-category data="distributionByCategoryData"></hue-db-distribution-by-category>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By Season <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData"></hue-db-color-frequency-by-season>\r\n        <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData" toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded"></hue-db-color-frequency-by-season-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 4 Colors Across Years\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Palette Collection For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Designer Images For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" menus="menus" year-id="year" season-id="seasonId" category-id="categoryId" city-id="cityId" is-expanded="designerImagesExpanded"></hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
+$templateCache.put('app/components/dashboards/branding/color/color.tmpl.html','<div ng-controller="colorBrandingController">\r\n\r\n  <div class="dashboard-container dashboard-branding-color" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-icon="colorHex" icon-type="color" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-color">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Shades\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded">\r\n\r\n        </hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="cell-top-industries">\r\n          <div class="module-title">Top 3 Industries For {{title}}\r\n            <hue-db-info-icon text-key="top_industries"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-top-industries data="topIndustriesData" chart-color="colorHex"></hue-db-top-industries>\r\n        </div>\r\n        <div class="cell-popular-combinations">\r\n          <div class="module-title">Color Combination Frequency For {{title}}\r\n            <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n            <hue-db-info-icon text-key="color_freq"></hue-db-info-icon>\r\n          </div>\r\n          <hue-db-color-frequency data="colorFrequencyData" searched-color="colorHex"></hue-db-color-frequency>\r\n          <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n          </hue-db-color-frequency-expanded>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Attributes Associated With {{title}} Globally\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleMapExpandedMode()">\r\n        </div>\r\n        <hue-db-map data="mapsData"></hue-db-map>\r\n        <hue-db-map-expanded data="mapsData" toggle-view="toggleMapExpandedMode()" ev-title="Attributes Associated With {{title}} Globally" ng-if="mapExpanded">\r\n        </hue-db-map-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Logos For {{title}}\r\n          <hue-db-info-icon text-key="logo_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-logos data="logosData" color-dashboard="true"></hue-db-logos>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n');
+$templateCache.put('app/components/dashboards/fashion/content/content.tmpl.html','<div ng-controller="contentFashionController">\r\n\t<div class="dashboard-container" ng-if="showDashboard">\r\n\t\t<label>PTW FALL/WINTER 2019</label>\r\n\r\n\t\t<ul class="nav nav-tabs">\r\n\t\t\t<li ng-class="{active:isSet(1)}">\r\n\t\t\t\t<a data-toggle="tab" href ng-click="setTab(1)">SEE SHOWS</a>\r\n\t\t\t</li>\r\n\t\t\t<li ng-class="{active:isSet(2)}">\r\n\t\t\t\t<a data-toggle="tab" href ng-click="setTab(2)"> SEE COLOR DATA</a>\r\n\t\t\t</li>\r\n\t\t\t<li ng-class="{active:isSet(3)}">\r\n\t\t\t\t<a data-toggle="tab" href ng-click="setTab(3)">SEE MOODBOARDS</a>\r\n\t\t\t</li>\r\n\t\t</ul>\r\n\r\n\t\t<div class="tab-content border">\r\n\t\t\t<!-- SEE SHOWS -->\r\n\t\t\t<div class="tab-pane fade in active" ng-show="isSet(1)">\r\n\t\t\t\t<hue-db-designer-images data="designerImagesData" menus="menus" season-id="menus.season" year-id="menus.year" category-id="menus.category" city-id="menus.city" is-expanded="designerImagesExpanded">\r\n\t\t\t\t</hue-db-designer-images>\r\n\t\t\t</div>\r\n\r\n\t\t\t<!-- SEE COLOR DATA -->\r\n\t\t\t<div class="tab-pane fade in active" ng-show="isSet(2)">\r\n\t\t\t\t<div class="dashboard-container" ng-if="showDashboard">\r\n\t\t\t\t\t<hue-db-header header-title="title" header-subtitle="subtitle" header-icon="colorHex" icon-type="color" page-info="pageInfo">\r\n\t\t\t\t\t</hue-db-header>\r\n\r\n\t\t\t\t\t<div class="dashboard-row row-220">\r\n\t\t\t\t\t\t<div class="dashboard-cell cell-left">\r\n\t\t\t\t\t\t\t<div class="module-title">Top 4 Colors For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n\t\t\t\t\t\t\t\t<hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n\t\t\t\t\t\t\t<hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t<div class="dashboard-cell cell-right">\r\n\t\t\t\t\t\t\t<div class="module-title">Frequency By Category For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n\t\t\t\t\t\t\t\t<hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<hue-db-color-frequency-by-category data="colorFrequencyByCategoryData">\r\n\t\t\t\t\t\t\t</hue-db-color-frequency-by-category>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class="dashboard-row">\r\n\t\t\t\t\t\t<div class="dashboard-cell">\r\n\t\t\t\t\t\t\t<div class="module-title">Frequency By Region For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n\t\t\t\t\t\t\t\t<hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<hue-db-color-frequency-by-region data="colorFrequencyByRegionData">\r\n\t\t\t\t\t\t\t</hue-db-color-frequency-by-region>\r\n\t\t\t\t\t\t\t<hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded">\r\n\t\t\t\t\t\t\t</hue-db-color-frequency-by-region-expanded>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t<div class="dashboard-row graph">\r\n\t\t\t\t\t\t<div class="dashboard-cell">\r\n\t\t\t\t\t\t\t<div class="module-title">Color Family Frequency For FALL By Region</div>\r\n\t\t\t\t\t\t\t<div class="row padding-20">\r\n\t\t\t\t\t\t\t\t<div class="col cols-4 col-lg-3 col-md-2 col-sm clickable" ng-click="showGraphDialog(0)">\r\n\t\t\t\t\t\t\t\t\t<h4 ng-bind-html="getTitle(0)"></h4>\r\n\t\t\t\t\t\t\t\t\t<span ng-bind-html="getDescription(0)"></span>\r\n\r\n\t\t\t\t\t\t\t\t\t<hue-chart-colors-unique-with-levels hue-chart data="getModel(0)">\r\n\t\t\t\t\t\t\t\t\t</hue-chart-colors-unique-with-levels>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class="col cols-4 col-lg-3 col-md-2 col-sm clickable" ng-click="showGraphDialog(1)">\r\n\t\t\t\t\t\t\t\t\t<h4 ng-bind-html="getTitle(1)"></h4>\r\n\t\t\t\t\t\t\t\t\t<span ng-bind-html="getDescription(1)"></span>\r\n\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t<hue-chart-trends hue-chart data="getModel(1)">\r\n\t\t\t\t\t\t\t\t\t</hue-chart-trends>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class="col cols-4 col-lg-3 col-md-2 col-sm clickable" ng-click="showGraphDialog(2)">\r\n\t\t\t\t\t\t\t\t\t<h4 ng-bind-html="getTitle(2)"></h4>\r\n\t\t\t\t\t\t\t\t\t<span ng-bind-html="getDescription(2)"></span>\r\n\r\n\t\t\t\t\t\t\t\t\t<hue-chart-nails hue-chart data="getModel(2)">\r\n\t\t\t\t\t\t\t\t\t</hue-chart-nails>\r\n\t\t\t\t\t\t\t\t</div>\r\n\r\n\t\t\t\t\t\t\t\t<div class="clear"></div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\r\n\t\t\t<!-- SEE MOODBOARDS -->\r\n\t\t\t<div class="tab-pane fade in active" ng-show="isSet(3)">\r\n\t\t\t\t<h3>MOODBOARDS</h3>\r\n\t\t\t</div>\r\n\r\n\t\t</div>\r\n\r\n\t</div>\r\n\r\n\t<!-- Dialog -->\r\n\t<div class="content-details graph" ng-if="isShowGraphDialog()">\r\n\t\t<div class="content-details-dialog">\r\n\t\t\t<div class="content-details-dialog-body">\r\n\t\t\t\t<div class="col cols-9">\r\n\t\t\t\t\t<div class="content-details-dialog-header text-center">\r\n\t\t\t\t\t\t<h4>{{getTitle(graphIndex)}}</h4>\r\n\t\t\t\t\t\t<p>{{getDescription(graphIndex)}}</p>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class="sub-body">\r\n\t\t\t\t\t\t<hue-chart-colors-unique-with-levels hue-chart data="getModel(0)" ng-if="graphIndex == 0">\r\n\t\t\t\t\t\t</hue-chart-colors-unique-with-levels>\r\n\r\n\t\t\t\t\t\t<hue-chart-trends hue-chart data="getModel(1)" ng-if="graphIndex == 1">\r\n\t\t\t\t\t\t</hue-chart-trends>\r\n\r\n\t\t\t\t\t\t<hue-chart-nails hue-chart data="getModel(2)" ng-if="graphIndex == 2">\r\n\t\t\t\t\t\t</hue-chart-nails>\r\n\r\n\t\t\t\t\t\t<div class="clear"></div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class="col cols-3 border-left">\r\n\t\t\t\t\t<div class="content-details-dialog-header">\r\n\t\t\t\t\t\t<div class="button-close" ng-click="closeGraphDialog()"></div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class="sub-body">\r\n\t\t\t\t\t\t<button type="button" class="btn btn-outline-secondary btn-no-back">\r\n\t\t\t\t\t\t\t<i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;\r\n\t\t\t\t\t\t\tADD TO MOODBOARD\r\n\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t<div class="social-icon-groups">\r\n\t\t\t\t\t\t\t<span class="fs-4 font-weight-medium">SHARE</span>\r\n\t\t\t\t\t\t\t<i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>\r\n\t\t\t\t\t\t\t<i class="fab fa-twitter" ng-click="shareTwitter(data.image_src)"></i>\r\n\t\t\t\t\t\t\t<i class="fa fa-pinterest" ng-click="sharePinterest(data.image_src)"></i>\r\n\t\t\t\t\t\t\t<i class="fab fa-google-plus-g" ng-click="shareGooglePlus(data.image_src)"></i>\r\n\t\t\t\t\t\t</div>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t\t<div class="clear"></div>\r\n\t\t\t</div>\r\n\t\t\t<div class="content-details-dialog-footer">\r\n\t\t\t\t<div class="dialog-footer"></div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\r\n</div>');
 $templateCache.put('app/components/dashboards/fashion/color/color.tmpl.html','<div ng-controller="colorFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="colorHex" icon-type="color" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Frequency By Category For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-category data="colorFrequencyByCategoryData"></hue-db-color-frequency-by-category>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Frequency By Region For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>\r\n        <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded"></hue-db-color-frequency-by-region-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 {{title}} Shades By Season <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData"></hue-db-color-frequency-by-season>\r\n        <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData" toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded"></hue-db-color-frequency-by-season-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 {{title}} Shades By City <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByCityExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_city"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-city data="colorFrequencyByCityData"></hue-db-color-frequency-by-city>\r\n        <hue-db-color-frequency-by-city-expanded data="colorFrequencyByCityData" toggle-view="toggleColorFrequencyByCityExpandedMode()" ng-if="colorFrequencyByCityExpanded"></hue-db-color-frequency-by-city-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 4 {{title}} Shades By Year\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Palette Collection For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded">\r\n        </hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Designer Images For {{title}} Shades <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" menus="menus" color-id="colorId" year-id="year" season-id="seasonId" category-id="categoryId" city-id="cityId" is-expanded="designerImagesExpanded"></hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/fashion/designer/designer.tmpl.html','<div ng-controller="designerFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Family Frequency For {{title}} By Region <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>\r\n        <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded"></hue-db-color-frequency-by-region-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Distribution By Category For {{title}}\r\n          <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-distribution-by-category data="distributionByCategoryData"></hue-db-distribution-by-category>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By Season <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData"></hue-db-color-frequency-by-season>\r\n        <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData" toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded"></hue-db-color-frequency-by-season-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 4 Colors For {{title}} Across Years\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Palette Collection For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Images For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" year-id="year" season-id="seasonId" category-id="categoryId" city-id="cityId" single-designer="true" is-expanded="designerImagesExpanded"></hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
 $templateCache.put('app/components/dashboards/fashion/region/region.tmpl.html','<div ng-controller="regionFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="iconUrl" icon-type="svg" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Distribution By Category For {{title}}\r\n          <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-distribution-by-category data="distributionByCategoryData"></hue-db-distribution-by-category>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By Season <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData"></hue-db-color-frequency-by-season>\r\n        <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData" toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded"></hue-db-color-frequency-by-season-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By City <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByCityExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_city"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-city data="colorFrequencyByCityData"></hue-db-color-frequency-by-city>\r\n        <hue-db-color-frequency-by-city-expanded data="colorFrequencyByCityData" toggle-view="toggleColorFrequencyByCityExpandedMode()" ng-if="colorFrequencyByCityExpanded"></hue-db-color-frequency-by-city-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 4 Colors For {{title}} Across Years\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Palette Collection For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded">\r\n        </hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Designer Images For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" menus="menus" region-id="regionId" year-id="year" season-id="seasonId" category-id="categoryId" is-expanded="designerImagesExpanded"></hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
 $templateCache.put('app/components/dashboards/fashion/season/season.tmpl.html','<div ng-controller="seasonFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" header-icon="iconUrl" icon-type="svg" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded">\r\n        </hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq"></hue-db-info-icon>\r\n        </div>\r\n\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded">\r\n        </hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Family Frequency For {{title}} By Region\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>\r\n        <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded">\r\n        </hue-db-color-frequency-by-region-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Distribution By Category For {{title}}\r\n          <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-distribution-by-category data="distributionByCategoryData"></hue-db-distribution-by-category>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By City\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByCityExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_city"></hue-db-info-icon>\r\n        </div>\r\n\r\n        <hue-db-color-frequency-by-city data="colorFrequencyByCityData">\r\n        </hue-db-color-frequency-by-city>\r\n\r\n        <hue-db-color-frequency-by-city-expanded data="colorFrequencyByCityData" toggle-view="toggleColorFrequencyByCityExpandedMode()" ng-if="colorFrequencyByCityExpanded">\r\n        </hue-db-color-frequency-by-city-expanded>\r\n\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By Year\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n\r\n        <hue-db-top-colors-by-year data="topColorsByYearData">\r\n        </hue-db-top-colors-by-year>\r\n\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Palette For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded">\r\n        </hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Designer Images For {{title}}\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" menus="menus" season-id="menus.season" year-id="menus.year" category-id="menus.category" city-id="menus.city" is-expanded="designerImagesExpanded">\r\n        </hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
 $templateCache.put('app/components/dashboards/fashion/year/year.tmpl.html','<div ng-controller="yearFashionController">\r\n\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" header-subtitle="subtitle" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row row-220">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="module-title">Top 4 Colors For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleTopColorsExpandedMode()">\r\n          <hue-db-info-icon text-key="top_4_colors"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors data="topColorsData"></hue-db-top-colors>\r\n        <hue-db-top-colors-expanded data="topColorsData" toggle-view="toggleTopColorsExpandedMode()" ng-if="topColorsExpanded"></hue-db-top-colors-expanded>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Color Family Frequency For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>\r\n        <hue-db-color-frequency-expanded data="colorFrequencyData" toggle-view="toggleColorFrequencyExpandedMode()" ng-if="colorFrequencyExpanded"></hue-db-color-frequency-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Family Frequency For {{title}} By Region <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByRegionExpandedMode()">\r\n          <hue-db-info-icon text-key="color_family_freq_by_region"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-region data="colorFrequencyByRegionData"></hue-db-color-frequency-by-region>\r\n        <hue-db-color-frequency-by-region-expanded data="colorFrequencyByRegionData" toggle-view="toggleColorFrequencyByRegionExpandedMode()" ng-if="colorFrequencyByRegionExpanded"></hue-db-color-frequency-by-region-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Distribution By Category For {{title}}\r\n          <hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-distribution-by-category data="distributionByCategoryData"></hue-db-distribution-by-category>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By Season\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyBySeasonExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_season"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-season data="colorFrequencyBySeasonData">\r\n        </hue-db-color-frequency-by-season>\r\n\r\n        <hue-db-color-frequency-by-season-expanded data="colorFrequencyBySeasonData" toggle-view="toggleColorFrequencyBySeasonExpandedMode()" ng-if="colorFrequencyBySeasonExpanded">\r\n        </hue-db-color-frequency-by-season-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Colors For {{title}} By City\r\n          <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorFrequencyByCityExpandedMode()">\r\n          <hue-db-info-icon text-key="top_10_colors_by_city"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-color-frequency-by-city data="colorFrequencyByCityData"></hue-db-color-frequency-by-city>\r\n        <hue-db-color-frequency-by-city-expanded data="colorFrequencyByCityData" toggle-view="toggleColorFrequencyByCityExpandedMode()" ng-if="colorFrequencyByCityExpanded">\r\n        </hue-db-color-frequency-by-city-expanded>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 4 Colors Across Years\r\n          <hue-db-info-icon text-key="top_4_colors_by_year"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-top-colors-by-year data="topColorsByYearData"></hue-db-top-colors-by-year>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Palette Collection For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleColorPaletteExpandedMode()">\r\n          <hue-db-info-icon text-key="palette_collection"></hue-db-info-icon>\r\n          <hue-db-color-palette-bucket-selector selected-value="colorPaletteBucket" on-change="changeColorPaletteBucket">\r\n          </hue-db-color-palette-bucket-selector>\r\n        </div>\r\n        <hue-db-color-palette set-color="setColorAsMain" data="colorPaletteData" is-expanded="colorPaletteExpanded"></hue-db-color-palette>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Designer Images For {{title}} <img src="assets/img/icons/expand.svg" class="icon-expand" ng-click="toggleDesignerImagesExpandedMode()">\r\n          <hue-db-info-icon text-key="image_gallery"></hue-db-info-icon>\r\n        </div>\r\n        <hue-db-designer-images data="designerImagesData" year-id="year" season-id="seasonId" category-id="categoryId" city-id="cityId" is-expanded="designerImagesExpanded"></hue-db-designer-images>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n\r\n</div>\r\n');
 $templateCache.put('app/components/dashboards/legal/color/color.tmpl.html','<div ng-controller="colorLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo" header-icon="colorHex" icon-type="color">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row dashboard-color-row-first">\r\n      <div class="dashboard-cell cell-left">\r\n        <div class="dashboard-cell top-products-with-copyrights">\r\n          <div class="module-title">Top 3 Products Categories With Copyrights For {{title}}</div>\r\n          <hue-db-top-items-donuts donut-color="colorHex" data="topProductsData"></hue-db-top-items-donuts>\r\n        </div>\r\n        <div class="dashboard-cell copyrights-over-time">\r\n          <div class="module-title">Copyrights For {{title}} Over Time\r\n            <hue-db-copyrights-over-time-range-selectorz selected-value="copyrightsOverTimeRange"></hue-db-copyrights-over-time-range-selectorz>\r\n          </div>\r\n          <hue-db-copyrights-over-time data="copyrightsOverTimeData" year-range="copyrightsOverTimeRange"></hue-db-copyrights-over-time>\r\n        </div>\r\n      </div>\r\n      <div class="dashboard-cell cell-right">\r\n        <div class="module-title">Copyright Count For Top 10 Products For {{title}}</div>\r\n        <hue-db-top-products-copyrights-view data="topProductsCopyrightsData" chart-color="colorHex"></hue-db-top-products-copyrights-view>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Copyright Owners For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" line-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
-$templateCache.put('app/components/dashboards/legal/owner/owner.tmpl.html','<div ng-controller="ownerLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo" header-icon="iconUrl" icon-type="img"></hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/legal/product/product.tmpl.html','<div ng-controller="productLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo">\r\n    </hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Owners Of Color Copyrights For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" chart-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');
+$templateCache.put('app/components/dashboards/legal/owner/owner.tmpl.html','<div ng-controller="ownerLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo" header-icon="iconUrl" icon-type="img"></hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n');
 $templateCache.put('app/components/dashboards/legal/year/year.tmpl.html','<div ng-controller="yearLegalController">\r\n  <div class="dashboard-container" ng-if="showDashboard">\r\n    <hue-db-header header-title="title" page-info="pageInfo"></hue-db-header>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Color Copyrights Count For {{title}} By Color Family</div>\r\n        <hue-db-color-copyrights-by-color-family data="copyrightsCountData"></hue-db-color-copyrights-by-color-family>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 3 Products Categories With Highest Copyrights Activity For {{title}}</div>\r\n        <hue-db-categories-with-highest-activity data="copyrightsActivityData"></hue-db-categories-with-highest-activity>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Top 10 Owners Of Color Copyrights For {{title}}</div>\r\n        <hue-db-single-line-chart data="topOwnersData" chart-color="colorHex"></hue-db-single-line-chart>\r\n      </div>\r\n    </div>\r\n\r\n    <div class="dashboard-row">\r\n      <div class="dashboard-cell">\r\n        <div class="module-title">Copyright List By Color For {{title}}</div>\r\n        <hue-db-copyright-list data="copyrightsListData" set-color="setColorAsMain" page-title="title"></hue-db-copyright-list>\r\n        <hue-db-copyright-list-pagination change-page="switchPage" current-page="copyrightsListPage" total-pages="copyrightsListTotalPages"></hue-db-copyright-list-pagination>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n');}]);
 angular
   .module('app')
@@ -53440,53 +53893,53 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       protected: true
     });
 
-  $stateProvider
+    $stateProvider
     .state('seasonFashion', {
       parent: 'fashion',
       url: '/season',
-      templateUrl: 'app/components/dashboards/fashion/season/season.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('colorFashion', {
       parent: 'fashion',
       url: '/color',
-      templateUrl: 'app/components/dashboards/fashion/color/color.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('yearFashion', {
       parent: 'fashion',
       url: '/year',
-      templateUrl: 'app/components/dashboards/fashion/year/year.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('designerFashion', {
       parent: 'fashion',
       url: '/designer',
-      templateUrl: 'app/components/dashboards/fashion/designer/designer.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('regionFashion', {
       parent: 'fashion',
       url: '/region',
-      templateUrl: 'app/components/dashboards/fashion/region/region.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('cityFashion', {
       parent: 'fashion',
       url: '/city',
-      templateUrl: 'app/components/dashboards/fashion/city/city.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('categoryFashion', {
       parent: 'fashion',
       url: '/category',
-      templateUrl: 'app/components/dashboards/fashion/category/category.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   // Auto Dashboard
@@ -53684,4 +54137,4 @@ function routesConfig($stateProvider, $urlRouterProvider) {
 }
 
 
-//# sourceMappingURL=../maps/scripts/app-f92f1fcd68.js.map
+//# sourceMappingURL=../maps/scripts/app-98cdd3ac35.js.map

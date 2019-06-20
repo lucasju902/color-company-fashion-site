@@ -275,53 +275,53 @@ function routesConfig($stateProvider, $urlRouterProvider) {
       protected: true
     });
 
-  $stateProvider
+    $stateProvider
     .state('seasonFashion', {
       parent: 'fashion',
       url: '/season',
-      templateUrl: 'app/components/dashboards/fashion/season/season.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('colorFashion', {
       parent: 'fashion',
       url: '/color',
-      templateUrl: 'app/components/dashboards/fashion/color/color.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('yearFashion', {
       parent: 'fashion',
       url: '/year',
-      templateUrl: 'app/components/dashboards/fashion/year/year.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('designerFashion', {
       parent: 'fashion',
       url: '/designer',
-      templateUrl: 'app/components/dashboards/fashion/designer/designer.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('regionFashion', {
       parent: 'fashion',
       url: '/region',
-      templateUrl: 'app/components/dashboards/fashion/region/region.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('cityFashion', {
       parent: 'fashion',
       url: '/city',
-      templateUrl: 'app/components/dashboards/fashion/city/city.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   $stateProvider
     .state('categoryFashion', {
       parent: 'fashion',
       url: '/category',
-      templateUrl: 'app/components/dashboards/fashion/category/category.tmpl.html'
+      templateUrl: 'app/components/dashboards/fashion/content/content.tmpl.html'
     });
 
   // Auto Dashboard
