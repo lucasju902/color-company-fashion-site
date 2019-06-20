@@ -28,7 +28,7 @@
 				<ul>
 					<li ng-class="{ disabled: page_num == 0 }"><a href="javascript:void(0)" ng-click="setPage(page_num - 1)"><i class="glyphicon glyphicon-arrow-left"></i>BACK</a></li>
 					<li ng-if="page_num > 1 && page_num == page_count - 1">
-						<a href="javascript:void(0)" ng-click="setPage(page_num - 1)">{{page_num - 1}}</a>
+						<a href="javascript:void(0)" ng-click="setPage(page_num - 2)">{{page_num - 1}}</a>
 					</li>
 					<li ng-if="page_num > 0">
 						<a href="javascript:void(0)" ng-click="setPage(page_num - 1)">{{page_num}}</a>
