@@ -58,7 +58,8 @@
     "test:auto": "gulp test:auto",
     "bower": "bower",
     "start": "node index.js",
-    "heroku-postbuild": "gulp"
+    "heroku-postbuild": "echo Skip build on Heroku",
+    "postinstall": "bower install"
   },
   "eslintConfig": {
     "globals": {
