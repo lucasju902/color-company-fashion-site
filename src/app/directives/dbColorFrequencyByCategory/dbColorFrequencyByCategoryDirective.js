@@ -1,6 +1,5 @@
 angular.module('app').directive('hueDbColorFrequencyByCategory', function () {
   function link(scope, element, attrs) {
-
   }
 
   return {

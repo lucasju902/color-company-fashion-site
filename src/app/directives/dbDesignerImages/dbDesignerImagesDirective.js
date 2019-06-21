@@ -11,6 +11,9 @@ angular.module('app').directive('hueDbDesignerImages', [
 			scope.page_num = 0;
 			scope.page_limit = 18;
 			scope.page_count = 1;
+			scope.page_num1 = 0;
+			scope.page_limit1 = 12;
+			scope.page_count1 = 1;
 			scope.collectionDataList = [];
 
 			scope.getNumber = function(num) {
@@ -20,6 +23,13 @@ angular.module('app').directive('hueDbDesignerImages', [
 			scope.setPage = function(num) {
 				if (num >= 0 && num < scope.page_count) {
 					scope.page_num = num;
+					adjustPreviewData();
+				}
+			}
+
+			scope.setPage1 = function(num) {
+				if (num >= 0 && num < scope.page_count1) {
+					scope.page_num1 = num;
 					adjustPreviewData();
 				}
 			}
@@ -56,6 +66,8 @@ angular.module('app').directive('hueDbDesignerImages', [
 					index: index,
 					data: []
 				};
+				// calc by page num
+				data.index = scope.page_num * scope.page_limit + index;
 				if (scope.singleDesigner) {
 					data.data = scope.data;
 				} else {
@@ -77,7 +89,15 @@ angular.module('app').directive('hueDbDesignerImages', [
 					elemCount = 2;
 					scope.page_limit = 3;
 				}
-				scope.data = scope.originalData.slice(0, elemCount);
+				scope.page_limit1 = elemCount;
+				scope.page_count1 = Math.ceil(scope.originalData.length / scope.page_limit1);
+				var from = scope.page_num1 * scope.page_limit1;
+				var to = (scope.page_num1 + 1) * scope.page_limit1;
+				if (scope.originalData.length < to) {
+					to = scope.originalData.length;
+				}
+				// scope.data = scope.originalData.slice(0, elemCount);
+				scope.data = scope.originalData.slice(from, to);
 
 				// collection data list
 				if (scope.singleDesigner) {
