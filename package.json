@@ -58,7 +58,7 @@
     "test:auto": "gulp test:auto",
     "bower": "bower",
     "start": "node index.js",
-    "postinstall": "bower cache clean && bower install"
+    "postinstall": "./node_modules/bower/bin/bower install"
   },
   "eslintConfig": {
     "globals": {
