@@ -58,8 +58,7 @@
     "test:auto": "gulp test:auto",
     "bower": "bower",
     "start": "node index.js",
-    "heroku-postbuild": "echo Skip build on Heroku",
-    "postinstall": "bower install"
+    "postinstall": "bower cache clean && bower install"
   },
   "eslintConfig": {
     "globals": {
@@ -79,7 +78,7 @@
     }
   },
   "engines": {
-    "node": "6.11.1"
+    "node": "v8.10.0"
   },
   "dependencies": {
     "angular": "^1.7.2",
