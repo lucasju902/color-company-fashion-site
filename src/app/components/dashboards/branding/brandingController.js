@@ -333,12 +333,34 @@ angular.module('app').controller('brandingController', [
 			}
 		};
 		
-		scope.handleChangeControl = function (control, id) {
+		scope.handleChangeControl = function (control, choice) {
 			if (!scope.mainParam) {
 				scope.mainParam = control;
 				scope.mainParamId = scope.menus[control];
 				$state.go(control + 'Branding');
 			}
+
+			id = choice.id;
+
+			scope.menus[control] = choice.title;
+
+			searchMenuRepository.getControlsDataBranding({
+				company_title: scope.menus.brand,
+				attribute_title: scope.menus.attribute,
+				industry_title: scope.menus.industry
+			}).then(function(data){
+				scope.controlsData = data;
+
+				for (item in scope.controlsData.attributes) {
+					scope.controlsData.attributes[item].index = item;
+				}
+
+				for (item in scope.controlsData.companies) {
+					scope.controlsData.companies[item].index = item;
+				}
+
+				scope.isLoadingControls = false;
+			})
 
 			switch (scope.mainParam) {
 				case 'brand':

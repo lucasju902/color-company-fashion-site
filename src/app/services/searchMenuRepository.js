@@ -114,9 +114,9 @@ angular.module('app').service('searchMenuRepository',
 
     this.getControlsDataBranding = function (params) {
       return $q(function (resolve, reject) {
-        if (self.cachedMainBranding !== null) {
-          return resolve(self.cachedMainBranding);
-        }
+        // if (self.cachedMainBranding !== null) {
+        //   return resolve(self.cachedMainBranding);
+        // }
 
         $http.get(appConfig.brandingServiceUrl + 'main.json', {params: params})
           .then(function (data) {
