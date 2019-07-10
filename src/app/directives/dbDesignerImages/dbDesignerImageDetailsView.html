@@ -14,7 +14,7 @@
 			</div>
 			<div class="col cols-6">
 				<div class="image-details-header">
-					<div class="button-close" ng-click="closeClickHandler()"></div>
+					<div class="button-close"><i class="fa fa-close" ng-click="closeClickHandler()" style="font-size: 15px"></i></div>
 				</div>
 				<div class="image-details">
 					<div class="designer-name" ng-bind="designer"></div>
@@ -22,11 +22,10 @@
 					<div ng-bind="category"></div>
 					<div>{{(city ? city + ', ' : '') + region}}</div>
 		
-					<button type="button" class="btn btn-outline-secondary">
+					<button type="button" class="btn btn-outline-secondary" ng-click="newmoodboard(data)">
 						<i class="glyphicon glyphicon-plus"></i> &nbsp;&nbsp;&nbsp;
 						ADD TO MOODBOARD
 					</button>
-		
 					<div class="social-icon-groups">
 						<span class="fs-4 font-weight-medium">SHARE</span>
 						<i class="fa fa-facebook" ng-click="shareFacebook(data.image_src)"></i>

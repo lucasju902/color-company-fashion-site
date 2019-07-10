@@ -1,32 +1,33 @@
 body {
-  min-height: 100vh;
-  position: relative;
-  //padding-top: 135px;
-  padding-top: 124px;
-  padding-bottom: 80px;
+	min-height: 100vh;
+	position: relative;
+	//padding-top: 135px;
+	padding-top: 124px;
+	padding-bottom: 80px;
 }
 
 footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }
 
-app-header {
-  display: block;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  z-index: 30;
 
-  .navbar-collapse.in {
-    overflow-y: visible;
-  }
+app-header {
+	display: block;
+	position: fixed;
+	width: 100%;
+	top: 0;
+	z-index: 30;
+
+	.navbar-collapse.in {
+		overflow-y: visible;
+	}
 }
 
 [ui-view=main] {
-  padding-top: 100px;
+  	padding-top: 100px;
 }
 
 ui-view {
@@ -638,63 +639,6 @@ ui-view {
 .navbar-right .dropdown-menu {
   left: 0;
 }
-.login-page {
-  .login-container {
-    position: relative;
-    max-width: 450px;
-    margin: auto;
-    padding-top: 20px;
-  }
-
-  a {
-    text-decoration: none
-  }
-  .google-auth-button {
-    padding: 15px;
-    background-color: gray;
-    margin-bottom: 15px;
-    color: white;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .google-auth-button:hover {
-    background-color: #909090;
-  }
-
-  input {
-    width: 100% !important;
-    margin: 15px 0;
-  }
-
-  .remember-checkbox {
-    p {
-      margin-bottom: 22px;
-      float: none;
-      text-align: left;
-    }
-  }
-
-  .login-btn {
-    text-align: left;
-    padding: 0;
-    margin-bottom: 22px;
-  }
-
-  .additional-links {
-    font-size: 11px;
-    a {
-      color: #bb0076;
-    }
-
-    p {
-      margin-bottom: 0;
-      font-size: 11px;
-    }
-  }
-
-}
 
 .buttons-group {
   margin-top: 0;
@@ -724,14 +668,6 @@ ui-view {
   }
 }
 
-//.white .btn {
-//  border: solid 1px #bb0076;
-//}
-//
-//.white .btn:hover {
-//  border: solid 1px #bb0076;
-//  min-width: 134px;
-//}
 .selectPerPage {
   position: absolute;
   display: block;
@@ -809,34 +745,7 @@ ui-view {
 .optionPerPage {
   padding: 15px;
 }
-//#mainselection select {
-//  border: 2px solid green;
-//  color: #000000;
-//  background: transparent;
-//  font-size: 20px;
-//  font-weight: bold;
-//  //padding: 2px 20px;
-//  //margin: 10px 10px;
-//  //*margin: 10px 10px;
-//  width: 50px;
-//  height: 50px;
-//  *height: 50px;
-//  *width: 50px;
-//  *background: rgba(76, 76, 76, 0.96);
-//  -webkit-appearance: none;
-//}
-//
-//#mainselection {
-//  width: 50px;
-//  height: 40px;
-//  display: inline-block;
-//  margin: 0;
-//  padding: 5px;
-//  font-weight: 100;
-//  font-size: 14px;
-//  border: 2px solid red;
-//  border-radius: 0;
-//}
+
 input.search {
   height: 33px !important;
   background-position: right 10px top 7px;
@@ -5916,10 +5825,239 @@ input#search-bar{
 .slider-opacity-color {
   margin-top: 6px!important;
 }
-.navbar-inverse .navbar-collapse {
-  //margin-top: 15px;
-  //margin-bottom: 20px;
+
+.reg_sex{
+  margin-left: -15px;
 }
-//.landing-color-picker-title:last-child {
-//   width: 165px;
-// }
+
+.reg_ms{
+  margin-left: 30px !important;
+}
+
+.login-page .log_input {
+  width: 100%;
+  margin: 15px 0;
+}
+
+.log_button{
+    width: 100%;
+  }
+.facebook{
+  background-color:  rgb(66,103,178) !important;
+  border-color: rgb(66,103,178) !important;
+  width: 100%;
+}
+
+.reg_button{
+  width: 100%;
+}
+
+.login_title{
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.email_address{
+  float: left;
+}
+
+.email_password{
+  float: left;
+}
+
+.read_conditions{
+  opacity: 0.2;
+  margin-left: 30px;
+}
+
+.reg_input{
+  margin-top: 54px !important;
+  width: 100%;
+  background-color: rgb(243,209,230) !important;
+  border-color: rgb(191,17,127) !important;
+  color: rgb(191,17,127) !important;
+}
+
+.mt-radio-list{
+  margin-bottom: 20px;
+  margin-top: 0px;
+}
+
+.reg_pass{
+  margin-top: -10px !important;
+  width: 100%;
+}
+
+.login-page .remember-checkbox p {
+  margin-bottom: 22px;
+  float: none;
+  text-align: left;
+}
+
+.login-page .login-btn {
+  text-align: left;
+  padding: 0;
+  margin-bottom: 22px;
+}
+
+.login-page {
+	margin-left: auto;
+	margin-right: auto;
+	width: 1200px;
+	font-size: 14px;
+
+	.error {
+		border-color: red;
+	}
+
+	.fa-warning {
+		color: red;
+		font-size: 20px;
+		margin-right: 10px;
+	}
+
+	.fa-close {
+		float: right;
+		margin-right: 20px;
+		margin-top: 5px;
+	}
+
+	.error_warning {
+		margin-top: 5px;
+	}
+
+	.login-container, .register-container {
+		padding: 0 20px;
+	}
+
+	h4 {
+		text-align: center;
+	}
+
+	.form-group {
+    .google-recaptcha {
+      text-align: center;
+      div {
+        width: 100% !important;
+      }
+    }
+
+		input, label {
+			font-size: 12px;
+		}
+
+		.form-control {
+			width: 100%;
+		}
+
+		div.input-required, div.check-required {
+			position: relative;
+
+			.error-input {
+				border: 1px solid #bb0076;
+				color: #bb0076;
+			}
+
+			.error-input::placeholder {
+				color: #bb0076;
+			}
+
+			i.error_warning {
+				position: absolute;
+				top: 10px;
+				right: -40px;
+				color: #bb0076;
+			}
+		}
+
+		span.error-condition {
+			color: #c8c8c8;
+			border-bottom: 1px solid #c8c8c8;
+		}
+
+		div.check-required {
+			label {
+				position: relative;
+			}
+
+			i.error_warning {
+				position: absolute;
+				top: 0;
+				right: -40px;
+				margin: 0;
+			}
+
+			label.error-text {
+				color: #bb0076;
+			}
+		}
+
+		.radio-control {
+			float: left;
+			margin-right: 20px;
+			label {
+				padding: 0 10px;
+			}
+		}
+
+		.radio-control:last-child {
+			float: initial;
+		}
+		span.required {
+			color: #bb0076;
+		}
+
+		.btn {
+			border: none;
+			width: 100%;
+		}
+	}
+
+	.form-error {
+		p.error-text {
+			width: 100%;
+			margin-right: 0;
+			padding: 10px;
+			border: 1px solid #bb0076;
+			background: #f3d1e6;
+			color: #bb0076;
+
+			i {
+				color: #bb0076;
+			}
+		}
+	}
+	.btn-secondary {
+		background: #4267b2;
+	}
+
+	.forgot-password {
+		a {
+			text-decoration: none;
+			border-bottom: 1px solid;
+			color: #000;
+		}
+	}
+	// .checkbox {
+	// 	position: relative;
+	// 	.form-control {
+	// 		position: relative;
+	// 		float: left;
+	// 		margin: 0;
+	// 		left: 0;
+	// 	}
+	// 	input[type="checkbox"] {
+	// 		width: auto;
+	// 	}
+	// }
+
+	@media (max-width: 1200px) {
+		width: 800px;
+	}
+
+	@media (max-width: 900px) {
+    width: 100%;
+    padding: 0 50px
+	}
+}

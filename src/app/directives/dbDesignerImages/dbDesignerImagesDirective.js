@@ -60,6 +60,10 @@ angular.module('app').directive('hueDbDesignerImages', [
 				scope.showImageDetails = scope.showImageDetails ? false : true;
 			};
 
+			scope.$on('mood_state_changed',function(){
+				scope.toggleImageDetails();
+			})
+
 			scope.imageClickHandler = function (index) {
 				// scope.imageDetailsData = scope.singleDesigner ? scope.data[index] : scope.collectionData[index];
 				let data = {

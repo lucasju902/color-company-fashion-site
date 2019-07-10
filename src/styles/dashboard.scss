@@ -42,7 +42,7 @@
 }
 
 .dashboard-row {
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #ebebeb;
 
 	&:last-child {
 		border-bottom: none;
@@ -60,7 +60,7 @@
 
 		&.cell-left {
 			width: 32%;
-			border-right: 1px solid #ccc;
+			border-right: 1px solid #ebebeb;
 			float: left;
 		}
 
@@ -107,10 +107,9 @@
 	.module-title {
 		display: block;
 		font-family: "Gotham SSm A","Gotham SSm B";
-		font-size: 12px;
+		font-size: 14px;
 		font-style: normal;
 		font-weight: 700;
-		letter-spacing: 2px;
 		padding: 18px 0;
 		text-transform: uppercase;
 	}
@@ -121,13 +120,13 @@
 	//top: 50px;
 	//left: 0;
 	width: 100%;
-	height: $dashboard-header-height;
+	height: $dashboard-header-height - 20px;
 	z-index: 0;
 	background-color: #fff;
 	text-align: center;
 	text-transform: uppercase;
-	border-bottom: 1px solid #ccc !important;
-	border-top: 1px solid #ccc !important;
+	border-bottom: 1px solid #ebebeb !important;
+	border-top: 1px solid #ebebeb !important;
 	transition: all 200ms ease-out;
 	-webkit-transition: all 200ms ease-out;
 	-moz-transition: all 200ms ease-out;
@@ -162,15 +161,14 @@
 		vertical-align: middle;
 
 		.cell-title {
-			font-family: Oswald;
+			font-family: "Gotham SSm A";
 			font-size: 26px;
 			line-height: 1.4;
 		}
 
 		.cell-subtitle {
-			font-family: "Gotham XNarrow SSm A";
+			font-family: "Gotham SSm A";
 			font-size: 14px;
-			font-weight: bold;
 			line-height: 1.4;
 		}
 	}
@@ -214,21 +212,23 @@
 		top: 0;
 		bottom: 0;
 		left: 0;
-		right: 68%;
-		border-right: 1px solid #ccc;
+		// right: 68%;
+		// border-right: 1px solid #ccc;
+		width: 20%;
 	}
 
 	.header-page-info {
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: 32%;
+		// left: 32%;
 		right: 0;
+		width: 80%;
 
 		.info-cell {
 			height: 100%;
 			display: inline-block;
-			border-right: 1px solid #ccc;
+			// border-right: 1px solid #ccc;
 			position: relative;
 
 			&.cell-1 {

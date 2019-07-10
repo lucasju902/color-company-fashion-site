@@ -1,7 +1,10 @@
 .db-color-frequency {
   width: 100%;
-  margin-top: 40px;
-
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
+  
   &.with-searched-color .bar-group .bar-container {
     height: 45px;
   }
@@ -76,7 +79,7 @@
     }
 
     .bar-title {
-      font-family: "Gotham Cond SSm A", "Gotham Cond SSm B";
+      font-family: "Gotham SSm A", "Gotham Cond SSm A", "Gotham Cond SSm B";
       font-size: 13px;
       font-style: normal;
       font-weight: 600;
@@ -103,7 +106,7 @@
 
     .bar-subtitle {
       padding-top: 2px;
-      font-family: 'Gotham Cond SSm A', 'Gotham Cond SSm B';
+      font-family: 'Gotham SSm A', 'Gotham Cond SSm A', 'Gotham Cond SSm B';
       font-style: normal;
       width: 75px;
       font-size: 15px;

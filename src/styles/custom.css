@@ -464,14 +464,15 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, 
 /* checked mark aspect */
 [type="checkbox"]:not(:checked) + label:after,
 [type="checkbox"]:checked + label:after {
-  content: '\2022';
+  content: '\f00c';
   position: absolute;
-  top: -4px;
-  left: 5px;
-  font-size: 25px;
+  top: 0px;
+  left: 2px;
+  font-size: 20px;
   line-height: 1.2;
   color: #bb0076;
   transition: all .2s;
+  font-family: "FontAwesome";
 }
 
 /* checked mark aspect changes */

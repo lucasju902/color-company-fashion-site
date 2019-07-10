@@ -118,7 +118,7 @@ angular.module('app').service('searchMenuRepository',
           return resolve(self.cachedMainBranding);
         }
 
-        $http.get(appConfig.brandingServiceUrl + 'main', {params: params})
+        $http.get(appConfig.brandingServiceUrl + 'main.json', {params: params})
           .then(function (data) {
             self.cachedMainBranding = data.data;
             angular.forEach(data.data, function (item, key) {

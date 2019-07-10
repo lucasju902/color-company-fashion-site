@@ -1,5 +1,6 @@
-angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService) {
-  function link(scope, element, attrs) {
+angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService,$rootScope) {
+  function link(scope, element, attrs,rootScope) {
+    rootScope = {mood_state : 0};
     scope.allData = scope.data;
     scope.data = scope.allData.data[scope.allData.index];
 
@@ -43,7 +44,10 @@ angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout,
     scope.shareGooglePlus = function (url) {
       window.open('https://plus.google.com/share?url=' + url);
     }
-
+    scope.newmoodboard = function(data){
+      scope.$emit('mood_state_changed',data);
+      scope.$broadcast('mood_state_changed',data);
+    }
     scope.LeftButtonHandler = function () {
       let index = scope.allData.index;
       if (index > 0) {

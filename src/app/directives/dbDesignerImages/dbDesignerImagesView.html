@@ -33,7 +33,7 @@
 					<!-- <li ng-class="{active: $index == page_num1}" ng-repeat="i in getNumber(page_count1) track by $index">
 						<a href="javascript:void(0)" ng-click="setPage1($index)">{{$index + 1}}</a>
 					</li> -->
-					<li ng-class="{ disabled: page_num1 == page_count1 - 1 }"><a href="javascript:void(0)" ng-click="setPage1(page_num1 + 1)">NEXT<i class="glyphicon glyphicon-arrow-right"></i></a></li>
+					<li ng-class="{ disabled: page_num1 >= page_count1 - 1 }"><a href="javascript:void(0)" ng-click="setPage1(page_num1 + 1)">NEXT<i class="glyphicon glyphicon-arrow-right"></i></a></li>
 				</ul>
 			</div>
 		</div>
@@ -71,7 +71,7 @@
 					<!-- <li ng-class="{active: $index == page_num}" ng-repeat="i in getNumber(page_count) track by $index">
 						<a href="javascript:void(0)" ng-click="setPage($index)">{{$index + 1}}</a>
 					</li> -->
-					<li ng-class="{ disabled: page_num == page_count - 1 }"><a href="javascript:void(0)" ng-click="setPage(page_num + 1)">NEXT<i class="glyphicon glyphicon-arrow-right"></i></a></li>
+					<li ng-class="{ disabled: page_num >= page_count - 1 }"><a href="javascript:void(0)" ng-click="setPage(page_num + 1)">NEXT<i class="glyphicon glyphicon-arrow-right"></i></a></li>
 				</ul>
 			</div>
 		</div>

@@ -1,16 +1,17 @@
 <div ng-controller="contentFashionController">
 	<div class="dashboard-container" ng-if="showDashboard">
-		<label>PTW FALL/WINTER 2019</label>
+		<label class="title" ng-show="!isSet(3)">{{header_title}}</label>
+		<label class="title" ng-show="isSet(3)">&nbsp;</label>
 
 		<ul class="nav nav-tabs">
 			<li ng-class="{active:isSet(1)}">
-				<a data-toggle="tab" href ng-click="setTab(1)">SEE SHOWS</a>
+				<a data-toggle="tab" href ng-click="setTab(1)">SHOWS</a>
 			</li>
 			<li ng-class="{active:isSet(2)}">
-				<a data-toggle="tab" href ng-click="setTab(2)"> SEE COLOR DATA</a>
+				<a data-toggle="tab" href ng-click="setTab(2)">COLOR DATA</a>
 			</li>
 			<li ng-class="{active:isSet(3)}">
-				<a data-toggle="tab" href ng-click="setTab(3)">SEE MOODBOARDS</a>
+				<a data-toggle="tab" href ng-click="setTab(3)">MOODBOARDS</a>
 			</li>
 		</ul>
 
@@ -42,14 +43,9 @@
 								ng-if="topColorsExpanded"></hue-db-top-colors-expanded>
 						</div>
 						<div class="dashboard-cell cell-right">
-							<div class="module-title">Frequency By Category For {{title}} Shades <img
-									src="assets/img/icons/expand.svg" class="icon-expand"
-									ng-click="toggleColorFrequencyExpandedMode()" />
-								<hue-db-info-icon text-key="distribution_by_category"></hue-db-info-icon>
-							</div>
-							<hue-db-color-frequency-by-category data="colorFrequencyByCategoryData">
-							</hue-db-color-frequency-by-category>
+							<hue-db-color-frequency data="colorFrequencyData"></hue-db-color-frequency>
 						</div>
+						<div class="clear"></div>
 					</div>
 
 					<div class="dashboard-row">
@@ -104,12 +100,195 @@
 
 			<!-- SEE MOODBOARDS -->
 			<div class="tab-pane fade in active" ng-show="isSet(3)">
-				<div class="moodboards-container">
-					<div class="row">
-						<div class="col cols-3 col-md-1 col-sm">
+				<div class="moodboards-container" ng-show="isState(1)">
+					<div class="row" id="board_container">
+						<div class="col board-items col-md-1 col-sm board_image" ng-repeat="item in images">
+							<div class="board" ng-click="selected_moodboards(item)" attr_id="{{item.id}}">
+								<div class="board-image">
+									<img src="{{item.url}}">
+								</div>
+								<h2>{{item.title}}</h2>
+								<div class="date-label">
+									<div class="label">
+										DATE CREATED:
+										<br>
+										DATE LAST SAVED:
+									</div>
+									<div class="label">
+										{{item.date_created}}
+										<br>
+										{{item.date_last_saved}}
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col board-items col-md-1 col-sm">
 							<div class="board">
-								<i class="fas fa-plus-circle"></i>
+								<div class="board-image" ng-click="addmoodboard()">
+									<img src="assets/images/add-moodboard.png">
+								</div>
+								<h2></h2>
+								<div class="date-label">
+									<div class="label">
+										<br>
+									</div>
+									<div class="label">
+										<br>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- <div class="col board-items col-md-1 col-sm">
+							<div class="board bordered">
+								<i class="fas fa-plus-circle" ng-click="addmoodboard()"></i>
 								<span>ADD A NEW<br>MOODBOARD</span>
+							</div>
+						</div> -->
+					</div>
+				</div>
+				<div class="moodboards-container" ng-show="isState(2)">
+					<div class="row">
+						<div class="col cols-3 col-lg-2 col-md-1 col-sm">
+							<img src="{{selected_image.url}}" style="width:100%;">
+						</div>
+						<div class="col cols-9 col-lg-4 col-md-3 col-sm">
+							<h3 style="margin-top: 0;"> CREATE A NEW MOODBOARD TO ADD THIS IMAGE TO:</h3>
+							<div class="row" style="margin-top:30px;">
+								<p class="cols-12" style="color:black;font-size:13px;padding-left:15px;margin-bottom:0px;">BOARD NAME</p>
+							</div>
+							<div class="row">
+								<div class="cols-12" style="padding-left:15px;">
+									<input class="form-control" name="board_name" ng-model="board_name" placeholder="MY VIEW">
+								</div>
+							</div>
+							<div class="row">
+								<div class="cols-12" style="padding-left:15px; ">
+									<button class="btn white-btn" ng-click="setState(1)" style="margin-bottom: 0px;">CANCEL</button>
+									<button class="btn dashboard-controls-btn" ng-click="createmoodboard_selectimage(board_name)" style="min-width: 134px;">CREATE</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="moodboards-container" ng-show="isState(3)">
+					<div class="row">
+						<div class="col cols-4 col-lg-2 col-md-1 col-sm"></div>
+						<div class="col cols-8 col-lg-4 col-md-3 col-sm" style="padding-left: 55px;">
+							<h4 class="align-left" style="margin-bottom: 0;">SELECT THE MOODBOARD TO ADD THIS IMAGE TO:</h4>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col cols-4 col-lg-2 col-md-1 col-sm">
+							<img src="{{selected_image.image_src}}" style="width:100%;">
+						</div>
+						<div class="col cols-8 col-lg-4 col-md-3 col-sm" style="padding-top: 0; padding-left: 50px;">
+							<div class="row">
+								<div ng-repeat="item in images" class="col cols-4 col-lg-2 col-md-2 col-sm">
+									<div class="board" style="overflow: hidden; display: block;" ng-click="select_index($index)">
+										<div class="board-image" ng-class="$index == selected_index ? 'board-active' : ''" style="position: relative;">
+											<img src="{{item.isEmpty ? 'assets/images/empty1.png' : item.url}}">
+											<img src="assets/images/icon_add.png" ng-click="add_image(item)" style="width: auto; position: absolute; z-index: 50;cursor:pointer;top: 0;bottom: 0;left: 0;right: 0; margin: auto">
+										</div>
+										<h2>{{item.title}}</h2>
+										<div class="date-label">
+											<div class="label">
+												DATE CREATED:
+												<br>
+												DATE LAST SAVED:
+											</div>
+											<div class="label">
+												{{item.date_created}}
+												<br>
+												{{item.date_last_saved}}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="moodboards-container" ng-show="isState(4)">
+					<div class="row">
+						<div class="col cols-4 col-lg-2 col-md-1 col-sm">
+							<img src="{{selected_image.image_src}}" style="width:100%;">
+						</div>
+						<div class="col cols-8 col-lg-4 col-md-3 col-sm">
+							<div class="row"  style="text-align: center; padding-top: 80px; display: block;">
+								<div class="cols-12" style="font-size:40px;">
+									<img src="assets/images/icon_info.png"/>
+								</div>
+								<h2 style="font-size: 20px;font-weight: bold;">GREAT!</h2>
+								<p>THE IMAGE YOU SELECTED HAS BEEN ADDED TO</p>
+								<h2 style="font-size: 20px; text-align: center; font-weight: bold;">{{selected_moodboard.title}}</h2>
+								<div class="cols-12">
+									<button class="btn dashboard-controls-btn" ng-click="rename_board()">Rename Board</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="moodboards-container" ng-show="isState(5)" style="padding: 50px 0;">
+					<div class="row">
+						<div class="col cols-3 col-md-1 col-sm" ng-click="setState(1)" style="cursor: pointer;">
+							<img src="assets/images/arrow-right.png">
+							<span style="font-size: 12px;">BACK TO <strong>MY MOODBOARD</strong></span>
+						</div>
+						<div class="col cols-6 col-md-2 col-sm">
+							<h4 style="margin-top: 0;">CREATE A NEW MOODBOARD</h4>
+							<div class="row" style="margin-top:50px;">
+								<div class="cols-12" style="font-size:40px;">
+									<input placeholder="BOARD NAME" class="form-control" name="board_name" ng-model="board_name" attr="{{board_name}}"/>
+								</div>
+								<div class="cols-12" style="margin-top:5px;">
+									<button class="btn dashboard-controls-btn pull-right" style="min-width: 134px;" ng-click="createmoodboard(board_name)">SAVE</button>
+								</div>
+							</div>
+						</div>
+						<div class="col cols-3 col-md-1 col-sm"></div>
+					</div>
+				</div>
+				<div class="moodboards-container" ng-show="isState(6)" id="share_container">
+					<div class="row moodboard-title">
+						<div class="col cols-6">
+							<h3>{{selected_moodboard.title}}</h3>
+						</div>
+						<div class="col cols-6">
+							<div class="icon-group">
+								<i class="fa fa-share" ng-click="share()"></i>
+								<i class="fa fa-edit" ng-click="rename_board()"></i>
+								<i class="fa fa-file-pdf-o"  ng-click="printpdf()"></i>
+								<i class="fa fa-print" ng-click="print()"></i>
+								<i class="fas fa-trash-alt"  ng-click="trash_alt()"></i>
+							</div>
+						</div>
+					</div>
+					<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+					<script>
+						
+					</script>
+					<div class="row" id="moodboard_item" url="{{url}}" attr_moodboard="{{selected_moodboard.id}}" ng-init="jquery_init()">
+						<div class="col board-items col-md-1 col-sm" ng-repeat="item in selected_moodboard.imagedata" attr_id="{{item.id}}">
+							<div class="board">
+								<div class="board-image">
+									<img src="{{item.url}}" style="width:100%;">
+								</div>
+								<div class="board-info">
+									<i class="fa fa-close" ng-click="remove_image(item)"></i>
+									<h2>{{selected_moodboard.title}}</h2>
+									<div class="date-label">
+										<div class="label">
+											DATE CREATED:
+											<br>
+											DATE LAST SAVED:
+										</div>
+										<div class="label">
+											{{item.date_created}}
+											<br>
+											{{item.date_last_saved}}
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -168,4 +347,125 @@
 		</div>
 	</div>
 
+	<div class="content-details graph" ng-if="rename">
+		<div class="content-details-dialog" style="width:400px;">
+			<div class="content-details-dialog-body">
+				<div class="content-details-dialog-header">
+					<div class="col cols-11">
+						<h4>EDIT <i class="fa fa-edit"></i></h4>
+					</div>
+					<div class="col cols-1">
+						<i class="fa fa-close icon-close" ng-click="toggleDialog()"></i>
+					</div>
+				</div>
+				<div class="content-details-dialog-body" style="margin-top: 10px;margin-bottom: 30px">
+					<div class="cols-12">
+						<label>NEW NAME</label>
+					</div>
+					<div class="cols-12">
+						<input class="form-control" name="name" placeholder="NAME" ng-model="moodboards_name" attr_name="{{moodboards_name}}">
+					</div>
+					<div class="cols-12">
+						<button class="btn dashboard-controls-btn" style="width: 100%;" ng-click="save_moodboardname(moodboards_name)">SAVE</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content-details graph" ng-if="share_dialog">
+		<div class="content-details-dialog" style="width:400px;">
+			<div class="content-details-dialog-body">
+				<div class="content-details-dialog-header">
+					<div class="col cols-9">
+						<h4>SHARE <i class="fa fa-share"></i></h4>
+					</div>
+					<div class="col cols-3">
+						<i class="fa fa-close icon-close" ng-click="close_share()"></i>
+					</div>
+				</div>
+				<div class="content-details-dialog-body" style="margin-top: 15px">
+					<div class="cols-12">
+						<input class="form-control" name="name" placeholder="EMAIL TO" ng-model="email">
+					</div>
+					<div class="cols-12">
+						<button class="btn dashboard-controls-btn" style="width: 100%;" ng-click="send_email(email)">SEND</button>
+					</div>
+					<br>
+					<div class="social-icon-groups">
+						<div class="col cols-12">
+							<span class="fs-4 font-weight-medium" style="font-size: 20px;margin-left: 75px">SHARE</span>
+							<i class="fa fa-facebook" style="font-size: 18px;margin-left: 20px"  ng-click="shareFacebook(selected_moodboard.imagedata[text-key].url)"></i>
+							<i class="fab fa-twitter" style="font-size: 20px;margin-left: 7px" ng-click="shareTwitter(selected_moodboard.imagedata[0].url)"></i>
+							<i class="fa fa-pinterest" style="font-size: 20px;margin-left: 7px" ng-click="sharePinterest(selected_moodboard.imagedata[0].url)"></i>
+							<i class="fab fa-google-plus-g" style="font-size: 20px;margin-right: 60px" ng-click="shareGooglePlus(selected_moodboard.imagedata[0].url)"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content-details graph" ng-if="trash_dialog">
+		<div class="content-details-dialog" style="width:480px;">
+			<div class="content-details-dialog-body">
+				<div class="content-details-dialog-header">
+					<div class="col cols-9">
+						<h4>DELETE <i class="fas fa-trash-alt"></i></h4>
+					</div>
+					<div class="col cols-3">
+						<i class="fa fa-close icon-close" ng-click="close_trash()"></i>
+					</div>
+				</div>
+				<div class="content-details-dialog-body">
+					<div class="cols-12">
+						<label class="cols-12">ARE YOU SURE YOU WANT TO DELETE THE BOARD?</label>
+					</div>
+					<div class="cols-12" style="margin-top: 30px;">
+						<div class="col cols-6">
+							<button class="btn " ng-click="close_trash()" style="width: 100%;background-color: white"><span style="color: black;font-size: 13px">CANCEL</span></button>
+						</div>
+						<div class="col cols-6">
+							<button class="btn dashboard-controls-btn" style="width: 100%;" ng-click="deletemoodboard()"><span style="color: white;font-size: 13px">OK</span></button>								
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="content-details graph" ng-if="!subscribed" id="subscribe_dialog">
+		<div class="content-details-dialog">
+			<div class="content-details-dialog-body">
+				<div class="content-details-dialog-header">
+					<i class="fa fa-close icon-close" ng-click="closeSubscribe()"></i>
+				</div>
+				<div class="content-details-dialog-body">
+					<form>
+						<div class="form-group">
+							<h4 class="text-center">SUBSCRIBE TO THE HUEDATA FEED</h4>
+						</div>
+						<div class="form-group">
+							<label class="text-center">ENTER YOUR EMAIL</label>
+						</div>
+						<div class="form-group">
+							<input type="email" id="email">
+						</div>
+						<div class="form-group">
+							<button class="btn btn-primary" ng-click="subscribe()">SUBMIT</button>
+						</div>
+						<div class="clear"></div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+
+<style type="text/css">
+	i, button{
+		cursor: pointer !important;
+	}
+</style>

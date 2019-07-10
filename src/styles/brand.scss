@@ -35,3 +35,30 @@
 		}
 	}
 }
+
+.search-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+
+	.sub-container {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		width: 100%;
+		padding: 20px 0;
+
+		.color-bar {
+			width: 30px;
+			height: 100px;
+			float: left;
+			cursor: pointer;
+		}
+
+		h4 {
+			margin: 0;
+			text-align: center;
+		}
+	}
+}
