@@ -150,8 +150,7 @@ angular.module('app').controller('brandingController', [
 		if (!scope.mainParam) {
 			$state.go('branding');
 		}
-
-
+		
 		searchMenuRepository.getControlsDataBranding().then(function (data) {
 			scope.controlsData = data;
 

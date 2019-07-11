@@ -17,7 +17,7 @@ angular.module('app').service('searchMenuRepository',
           callback(data);
         });
 
-        return $http.get(appConfig.webServiceUrl + 'main', {params: {token: authService.token}})
+        return $http.get(appConfig.webServiceUrl + 'main.json', {params: {token: authService.token}})
           .then(function (data) {
             cachedMain = data.data;
             cachedMainDeffered.resolve(data.data);
@@ -41,9 +41,9 @@ angular.module('app').service('searchMenuRepository',
         }
       }
 
-      // $http.get(appConfig.webServiceUrl + 'main', {params: params})
+      // $http.get(appConfig.webServiceUrl + 'main.json', {params: params})
       //   .then(arguments[arguments.length - 1]);
-      return $http.get(appConfig.webServiceUrl + 'main', {params: params}).then(function (data) {
+      return $http.get(appConfig.webServiceUrl + 'main.json', {params: params}).then(function (data) {
         return data.data;
       });
     };
@@ -54,7 +54,7 @@ angular.module('app').service('searchMenuRepository',
           return resolve(self.cachedMainFashion);
         }
 
-        $http.get(appConfig.webServiceUrl + 'main', {params: params})
+        $http.get(appConfig.webServiceUrl + 'main.json', {params: params})
           .then(function (data) {
             self.cachedMainFashion = data.data;
             angular.forEach(data.data, function (item, key) {
@@ -74,7 +74,7 @@ angular.module('app').service('searchMenuRepository',
           return resolve(self.cachedMainAuto);
         }
 
-        $http.get(appConfig.autoServiceUrl + 'main', {params: params})
+        $http.get(appConfig.autoServiceUrl + 'main.json', {params: params})
           .then(function (data) {
             self.cachedMainAuto = data.data;
             angular.forEach(data.data, function (item, key) {
@@ -96,7 +96,7 @@ angular.module('app').service('searchMenuRepository',
           return resolve(self.cachedMainLegal);
         }
 
-        $http.get(appConfig.legalServiceUrl + 'main', {params: params})
+        $http.get(appConfig.legalServiceUrl + 'main.json', {params: params})
           .then(function (data) {
             self.cachedMainLegal = data.data;
             angular.forEach(data.data, function (item, key) {
