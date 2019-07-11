@@ -206,60 +206,36 @@ angular.module('app').controller('contentFashionController', [
 		}
 
 		scope.printpdf = function() {
-			var specialElementHandlers = {
-				"img": function(element, renderer) {
-					return renderer.addImage(element.src, 'jpg/png');
-				}
-			};
-			var doc = new jsPDF('p', 'pt', 'a4');
-			var content = document.getElementById('share_container');
-			$(content).find('img').each(function(){
-				var img = new Image;
-				img.onload = function(){
-					var canvas = document.createElement('canvas');
-					var context = canvas.getContext('2d');
-					canvas.width = img.width;
-					canvas.height = img.height;
-					context.drawImage(img,0,0);
-					img.element.attr('src',canvas.toDataURL());
-				}
-				$(this).attr('crossOrigin','Anonymous');
-				img.element = $(this);
-				img.src = $(this).attr('src');
-			});
-			doc.fromHTML(content, 15, 15, {
-				'width': 170, 'elementHandlers': specialElementHandlers
-			}, function() {
-				doc.save('sample.pdf');
-			});
+			// var specialElementHandlers = {
+			// 	"img": function(element, renderer) {
+			// 		return renderer.addImage(element.src, 'jpg/png');
+			// 	}
+			// };
+			// var doc = new jsPDF('p', 'pt', 'a4');
+			// var content = document.getElementById('share_container');
+			// $(content).find('img').each(function(){
+			// 	var img = new Image;
+			// 	img.onload = function(){
+			// 		var canvas = document.createElement('canvas');
+			// 		var context = canvas.getContext('2d');
+			// 		canvas.width = img.width;
+			// 		canvas.height = img.height;
+			// 		context.drawImage(img,0,0);
+			// 		img.element.attr('src',canvas.toDataURL());
+			// 	}
+			// 	$(this).attr('crossOrigin','Anonymous');
+			// 	img.element = $(this);
+			// 	img.src = $(this).attr('src');
+			// });
+			// doc.fromHTML(content, 15, 15, {
+			// 	'width': 170, 'elementHandlers': specialElementHandlers
+			// }, function() {
+			// 	doc.save('sample.pdf');
+			// });
 		}
 
 		scope.print = function() {
-			window.open(appConfig.dashboardServiceUrl + 'api/moodboard/' + scope.selected_moodboard.id + '/print.json');
-
-			// var html = jQuery('#moodboard_item')[0].outerHTML;
-			// var enable = false;
-
-			// jQuery('#moodboard_item').parents().each(function() {
-			// 	var content_html = jQuery(this).html();
-			// 	var outer_html = this.outerHTML;
-			// 	var data_html =outer_html.split(content_html);
-
-			// 	if (!enable) {
-			// 		html = data_html[0] + html + data_html[1];
-			// 	}
-
-			// 	if(this.tagName == 'BODY') {
-			// 		enable = false;
-			// 	}
-			// });
-
-			// var head = jQuery('head').html();
-			// html += head;
-			// var w = window.open('','Print',"height=1200,width=1000");
-			// w.document.open();
-			// w.document.write('<html><head></head><body onload="window.print();window.close();">' + html + '</body></html>');
-			// w.document.close();
+			window.open(appConfig.dashboardServiceUrl + 'api/moodboards/' + scope.selected_moodboard.id + '/print?token=' + authService.token);
 		}
 		
 		scope.deletemoodboard = function() {
@@ -286,7 +262,7 @@ angular.module('app').controller('contentFashionController', [
 				}).then(function(res) {
 					if (scope.selected_image) {
 						$http({
-							url: (appConfig.dashboardServiceUrl + 'api/moodboards/' + res.data.id + '/items.json'),
+							url: appConfig.dashboardServiceUrl + 'api/moodboards/' + res.data.id + '/items.json',
 							method: "POST",
 							headers: { Authorizing: authService.token, "Content-Type": "application/json" },
 							data: { item_id: scope.selected_image.id }
@@ -536,16 +512,15 @@ angular.module('app').controller('contentFashionController', [
 		scope.send_email = function(email) {
 			if (email) {
 				$http({
-					url: appConfig.dashboardServiceUrl + 'api/moodboard/' + scope.selected_moodboard.id + '/email.json',
-					method: 'PUT',
+					url: appConfig.dashboardServiceUrl + 'api/moodboards/' + scope.selected_moodboard.id + '/email.json',
+					method: 'POST',
 					headers: {
 						Authorizing: authService.token,
 						"Content-Type": 'application/json'
 					},
-					data: { email_to: email },
-					success: function() {
-						scope.share_dialog = false;
-					}
+					data: { email_to: email }
+				}).then(function() {
+					scope.share_dialog = false;
 				});
 			}
 		}
