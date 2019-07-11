@@ -235,105 +235,82 @@ angular.module('app').controller('brandingController', [
 						scope.pageInfo[0].data.text = data.description;
 						scope.pageInfo[1].data.count = data.color_count;
 						scope.pageInfo[2].data.count = data.company_count;
-					} else if (scope.mainParam === 'country') {
-						scope.iconUrl = data.flag_url;
-						scope.pageInfo[0].data.title = data.capital;
-						scope.pageInfo[0].data.subtitle = 'Population ' + data.population;
-						scope.pageInfo[1].data.count = data.industries_count;
-						scope.pageInfo[2].data.count = data.brands_count;
-						scope.pageInfo[3].data.count = data.colors_count;
 					}
 				});
 
-				brandingDashboardRepository[scope.mainParam].getTopColors(scope.mainParamId)
-					.then(function (data) {
-						scope.topColorsData = data;
-					});
+				brandingDashboardRepository[scope.mainParam].getTopColors(scope.mainParamId).then(function(data) {
+					scope.topColorsData = data;
+				});
 
 				if (scope.mainParam !== 'attribute') {
-					brandingDashboardRepository[scope.mainParam].getColorFrequency(scope.mainParamId)
-						.then(function (data) {
-							scope.colorFrequencyData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getColorFrequency(scope.mainParamId).then(function(data) {
+						scope.colorFrequencyData = data;
+					});
 				}
 
-				brandingDashboardRepository[scope.mainParam].getMaps(scope.mainParamId)
-					.then(function (data) {
-						scope.mapsData = data;
-					});
+				brandingDashboardRepository[scope.mainParam].getMaps(scope.mainParamId).then(function(data) {
+					scope.mapsData = data;
+				});
 
 				if (scope.mainParam === 'industry') {
-					brandingDashboardRepository[scope.mainParam].getColorCount(scope.mainParamId)
-						.then(function (data) {
-							scope.colorCountData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getColorCount(scope.mainParamId).then(function(data) {
+						scope.colorCountData = data;
+					});
 
-					brandingDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket)
-						.then(function (data) {
-							scope.colorPaletteData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket).then(function(data) {
+						scope.colorPaletteData = data;
+					});
 				}
 
 				if (scope.mainParam === 'attribute') {
-					brandingDashboardRepository[scope.mainParam].getColorCount(scope.mainParamId)
-						.then(function (data) {
-							scope.colorCountData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getColorCount(scope.mainParamId).then(function(data) {
+						scope.colorCountData = data;
+					});
 
-					brandingDashboardRepository[scope.mainParam].getTopIndustries(scope.mainParamId)
-						.then(function (data) {
-							scope.topIndustriesData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getTopIndustries(scope.mainParamId).then(function(data) {
+						scope.topIndustriesData = data;
+					});
 
-					brandingDashboardRepository[scope.mainParam].getColorCombinations(scope.mainParamId)
-						.then(function (data) {
-							scope.colorFrequencyData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getColorCombinations(scope.mainParamId).then(function(data) {
+						scope.colorFrequencyData = data;
+					});
 
-					brandingDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket)
-						.then(function (data) {
-							scope.colorPaletteData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket).then(function(data) {
+						scope.colorPaletteData = data;
+					});
 				}
 
 				if (scope.mainParam === 'color') {
-					brandingDashboardRepository[scope.mainParam].getTopIndustries(scope.mainParamId)
-						.then(function (data) {
-							scope.topIndustriesData = data;
-						});
+					brandingDashboardRepository[scope.mainParam].getTopIndustries(scope.mainParamId).then(function(data) {
+						scope.topIndustriesData = data;
+					});
 				}
 
 				if (scope.mainParam === 'country') {
-					brandingDashboardRepository.country.getFlag(scope.mainParamId)
-						.then(function (data) {
-							scope.flagColorsData = data;
-						});
-
-					brandingDashboardRepository[scope.mainParam].getColorCount(scope.mainParamId)
-						.then(function (data) {
-							scope.colorCountData = data;
-						});
-
-					brandingDashboardRepository[scope.mainParam].getTopIndustries(scope.mainParamId)
-						.then(function (data) {
-							scope.topIndustriesData = data;
-						});
-
-					brandingDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket)
-						.then(function (data) {
-							scope.colorPaletteData = data;
-						});
-				}
-
-				brandingDashboardRepository[scope.mainParam].getLogos(scope.mainParamId)
-					.then(function (data) {
-						scope.logosData = data;
+					brandingDashboardRepository.country.getFlag(scope.mainParamId).then(function(data) {
+						scope.flagColorsData = data;
 					});
 
+					brandingDashboardRepository[scope.mainParam].getColorCount(scope.mainParamId).then(function(data) {
+						scope.colorCountData = data;
+					});
+
+					brandingDashboardRepository[scope.mainParam].getTopIndustries(scope.mainParamId).then(function(data) {
+						scope.topIndustriesData = data;
+					});
+
+					brandingDashboardRepository[scope.mainParam].getColorPalette(scope.mainParamId, scope.colorPaletteBucket).then(function(data) {
+						scope.colorPaletteData = data;
+					});
+				}
+
+				brandingDashboardRepository[scope.mainParam].getLogos(scope.mainParamId).then(function(data) {
+					scope.logosData = data;
+				});
 			}
 		};
 		
-		scope.handleChangeControl = function (control, choice) {
+		scope.handleChangeControl = function(control, choice) {
 			if (!scope.mainParam) {
 				scope.mainParam = control;
 				scope.mainParamId = scope.menus[control];
@@ -348,25 +325,21 @@ angular.module('app').controller('brandingController', [
 				company_title: scope.menus.brand,
 				attribute_title: scope.menus.attribute,
 				industry_title: scope.menus.industry
-			}).then(function(data){
+			}).then(function(data) {
 				scope.controlsData = data;
-
 				for (item in scope.controlsData.attributes) {
 					scope.controlsData.attributes[item].index = item;
 				}
-
 				for (item in scope.controlsData.companies) {
 					scope.controlsData.companies[item].index = item;
 				}
-
 				scope.isLoadingControls = false;
-			})
+			});
 
 			switch (scope.mainParam) {
 				case 'brand':
 					scope.pageInfo = scope.brandPageInfo;
 					scope.mainParamId = id;
-
 					scope.disabledControls = {
 						brand: false,
 						industry: true,
@@ -375,7 +348,6 @@ angular.module('app').controller('brandingController', [
 						country: true
 					};
 					break;
-
 				case 'industry':
 					scope.pageInfo = scope.industryPageInfo;
 					scope.mainParamId = id;
@@ -387,7 +359,6 @@ angular.module('app').controller('brandingController', [
 						country: true
 					};
 					break;
-
 				case 'color':
 					scope.pageInfo = scope.colorPageInfo;
 					scope.mainParamId = id;
@@ -399,7 +370,6 @@ angular.module('app').controller('brandingController', [
 						country: true
 					};
 					break;
-
 				case 'attribute':
 					scope.pageInfo = scope.attributePageInfo;
 					scope.mainParamId = id;
@@ -411,19 +381,6 @@ angular.module('app').controller('brandingController', [
 						country: true
 					};
 					break;
-
-				case 'country':
-					scope.pageInfo = scope.countryPageInfo;
-					scope.mainParamId = id;
-					scope.disabledControls = {
-						brand: true,
-						industry: true,
-						color: true,
-						attribute: true,
-						country: false
-					};
-					break;
-
 				default:
 					$state.go('branding');
 					scope.disabledControls = {
@@ -433,12 +390,6 @@ angular.module('app').controller('brandingController', [
 						attribute: false,
 						country: false
 					};
-
-					// scope.brand = '';
-					// scope.industry = '';
-					// scope.color = '';
-					// scope.attribute = '';
-					// scope.country = '';
 
 					scope.mainParam = null;
 					scope.iconUrl = null;
@@ -457,13 +408,12 @@ angular.module('app').controller('brandingController', [
 					scope.colorPaletteData = [];
 					break;
 			}
-
 			scope.loadGraphics();
 		};
 
-		scope.$watch(function () {
+		scope.$watch(function() {
 			return dashboardOverlayService.showOverlay;
-		}, function (newValue) {
+		}, function(newValue) {
 			scope.showDashboardOverlay = newValue;
 		});
 	}
