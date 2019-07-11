@@ -24,7 +24,7 @@ angular.module('app').controller('contentFashionController', [
 		// check if subscribed
 		function checkSubscribed() {
 			if (authService.token) {
-				authService.token = true;
+				scope.subscribed = true;
 			} else {
 				$http({	
 					url: appConfig.dashboardServiceUrl + 'api/subscribed.json',
