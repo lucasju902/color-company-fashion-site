@@ -304,7 +304,7 @@ angular.module('app').controller('contentFashionController', [
 					} else {
 						prepare_moodboard();
 						scope.selected_moodboard = scope.images[0];
-						scope.state = 6;
+						scope.state = 1;
 					}
 				});
 			} else {}
