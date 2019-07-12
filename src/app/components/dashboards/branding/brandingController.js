@@ -24,6 +24,7 @@ angular.module('app').controller('brandingController', [
 			$location.hash('');
 		};
 
+		scope.tab = 1;
 		scope.menus = {
 			color: '',
 			brand: '',
@@ -162,7 +163,7 @@ angular.module('app').controller('brandingController', [
 				scope.controlsData.companies[item].index = item;
 			}
 
-			scope.isLoadingControls = false;
+			scope.isLoadingControls = true;
 		});
 
 		scope.changeColorPaletteBucket = function (value) {
@@ -415,5 +416,23 @@ angular.module('app').controller('brandingController', [
 		}, function(newValue) {
 			scope.showDashboardOverlay = newValue;
 		});
+
+		//branding_content
+		scope.setTab = function(tabId) {
+			scope.tab = tabId;
+			scope.select_images = false;
+			scope.selected_moodboard = false;
+			scope.state = 1;
+			//prepare_moodboard();
+
+		};
+
+		scope.isSet = function(tabId) {
+			return scope.tab === tabId;
+		};
+
+		scope.setback = function(){
+			scope.isLoadingControls = true;
+		}
 	}
 ]);

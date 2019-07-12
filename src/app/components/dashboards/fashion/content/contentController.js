@@ -206,32 +206,6 @@ angular.module('app').controller('contentFashionController', [
 		}
 
 		scope.printpdf = function() {
-			// var specialElementHandlers = {
-			// 	"img": function(element, renderer) {
-			// 		return renderer.addImage(element.src, 'jpg/png');
-			// 	}
-			// };
-			// var doc = new jsPDF('p', 'pt', 'a4');
-			// var content = document.getElementById('share_container');
-			// $(content).find('img').each(function(){
-			// 	var img = new Image;
-			// 	img.onload = function(){
-			// 		var canvas = document.createElement('canvas');
-			// 		var context = canvas.getContext('2d');
-			// 		canvas.width = img.width;
-			// 		canvas.height = img.height;
-			// 		context.drawImage(img,0,0);
-			// 		img.element.attr('src',canvas.toDataURL());
-			// 	}
-			// 	$(this).attr('crossOrigin','Anonymous');
-			// 	img.element = $(this);
-			// 	img.src = $(this).attr('src');
-			// });
-			// doc.fromHTML(content, 15, 15, {
-			// 	'width': 170, 'elementHandlers': specialElementHandlers
-			// }, function() {
-			// 	doc.save('sample.pdf');
-			// });
 		}
 
 		scope.print = function() {
