@@ -314,27 +314,21 @@ angular.module('app').controller('brandingController', [
 			if (!scope.mainParam) {
 				scope.mainParam = control;
 				scope.mainParamId = scope.menus[control];
-				$state.go(control + 'Branding');
 			}
 
 			id = choice.id;
 
 			scope.menus[control] = choice.title;
 
-			searchMenuRepository.getControlsDataBranding({
-				company_title: scope.menus.brand,
-				attribute_title: scope.menus.attribute,
-				industry_title: scope.menus.industry
-			}).then(function(data) {
-				scope.controlsData = data;
-				for (item in scope.controlsData.attributes) {
-					scope.controlsData.attributes[item].index = item;
-				}
-				for (item in scope.controlsData.companies) {
-					scope.controlsData.companies[item].index = item;
-				}
+			scope.isLoadingControls = false;
+			searchMenuRepository.getControlsDataBrandingBind(control, choice.id, { page: 1, per_page: 15 }).then(function(data) {
+				scope.logo = data.logo_colors;
 				scope.isLoadingControls = false;
-			});
+				if (control == "company") {
+					control = "brand";
+				}
+				$state.go(control + "Branding");
+			});	
 
 			switch (scope.mainParam) {
 				case 'brand':
@@ -382,7 +376,7 @@ angular.module('app').controller('brandingController', [
 					};
 					break;
 				default:
-					$state.go('branding');
+					//$state.go('branding');
 					scope.disabledControls = {
 						brand: false,
 						industry: false,
@@ -408,6 +402,8 @@ angular.module('app').controller('brandingController', [
 					scope.colorPaletteData = [];
 					break;
 			}
+
+			//$state.go(control + 'Branding');
 			scope.loadGraphics();
 		};
 

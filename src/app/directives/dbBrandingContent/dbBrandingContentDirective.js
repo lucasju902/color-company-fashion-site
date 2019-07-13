@@ -8,14 +8,7 @@ angular.module('app').directive('brandingcontent', [
 			window.scr = scope
 			scope.collectionDataList = [];
 
-			for(item in scope.companies)
-			{
-				scope.companies[item].logo_url = "http://huestorage.s3.amazonaws.com" + scope.companies[item].logo_url;
-			}
-
-
 			scope.toggleImageDetails = function () {
-				console.log(scope.showImageDetails);
 				scope.showImageDetails = scope.showImageDetails ? false : true;
 			};
 

@@ -1,4 +1,4 @@
-angular.module('app').directive('brandingdetail', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService,$rootScope) {
+angular.module('app').directive('brandingcontentdetail', function ($timeout, searchMenuRepository, userDataRepository, mainMenuService, authService, $rootScope) {
   function link(scope, element, attrs,rootScope) {
     scope.allData = scope.data;
     //scope.data = scope.allData.data[scope.allData.index];

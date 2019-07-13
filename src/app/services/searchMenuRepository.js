@@ -114,10 +114,7 @@ angular.module('app').service('searchMenuRepository',
 
     this.getControlsDataBranding = function (params) {
       return $q(function (resolve, reject) {
-        // if (self.cachedMainBranding !== null) {
-        //   return resolve(self.cachedMainBranding);
-        // }
-
+        
         $http.get(appConfig.brandingServiceUrl + 'main.json', {params: params})
           .then(function (data) {
             self.cachedMainBranding = data.data;
@@ -129,6 +126,16 @@ angular.module('app').service('searchMenuRepository',
                 item.unshift({title: 'BRANDS (All)', id: ''})
               }
             });
+            return resolve(data.data);
+          });
+      });
+    };
+
+    this.getControlsDataBrandingBind = function (control,id,params) {
+      return $q(function (resolve, reject) {
+        
+        $http.get(appConfig.brandingServiceUrl + control + '/logo_colors_search/' + id + '.json', {params: params})
+          .then(function (data) {
             return resolve(data.data);
           });
       });

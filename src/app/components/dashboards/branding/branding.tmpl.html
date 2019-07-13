@@ -48,7 +48,7 @@ logo color palette, logo color trends 2018"></update-meta>
 			</div>
 		</div>
 
-		<!-- <div class="dashboard-content" ui-view></div> -->
+		
 	</div>
 	<div ng-if="!isLoadingControls">
 		<div class="row">
@@ -75,10 +75,13 @@ logo color palette, logo color trends 2018"></update-meta>
 				<div class="tab-content border">
 					<!-- COMPANY LOGOS -->
 					<div class="tab-pane fade in active" ng-show="isSet(1)">
-						<brandingcontent data="designerImagesData" menus="menus" season-id="menus.season"
-							year-id="menus.year" category-id="menus.category" city-id="menus.city"
-							is-expanded="designerImagesExpanded" companies="controlsData.companies">
+						<brandingcontent companies="controlsData.companies">
 						</brandingcontent>
+					</div>
+					<!-- COLOR DATA -->
+					<div class="tab-pane fade in active" ng-show="isSet(2)">
+						<brandingcolordata>
+						</brandingcolordata>
 					</div>
 				</div>
 
@@ -87,5 +90,5 @@ logo color palette, logo color trends 2018"></update-meta>
 	</div>
 </section>
 
-<brandingcontentdetails ng-if="showImageDetails" on-close="toggleImageDetails()" data="imageDetailsData">
-</brandingcontentdetails>
+<!-- <brandingcontentdetails ng-if="showImageDetails" on-close="toggleImageDetails()" data="imageDetailsData">
+</brandingcontentdetails> -->
