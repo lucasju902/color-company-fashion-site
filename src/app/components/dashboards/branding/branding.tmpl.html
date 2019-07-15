@@ -23,7 +23,7 @@ logo color palette, logo color trends 2018"></update-meta>
 
 		<div class="search-container">
 			<div class="sub-container">
-				<div class="color-bar" style="background:{{item.hex}}" minlength="1" ng-click="handleChangeControl('color',item.id)" selecttype="type.color" ng-repeat="item in controlsData.colors"></div>
+				<div class="color-bar" style="background:{{item.hex}}" minlength="1" ng-click="handleChangeControl('color', item)" selecttype="type.color" ng-repeat="item in controlsData.colors"></div>
 				<div class="clear"></div>
 			</div>
 
@@ -47,9 +47,8 @@ logo color palette, logo color trends 2018"></update-meta>
 				<autocomplete enteredtext="menus.attribute" selected="selected" placeholder="attribute_place_holder" selecthandle="handleChangeControl" selecttype="type.attribute"></autocomplete>
 			</div>
 		</div>
-
-		
 	</div>
+
 	<div ng-if="!isLoadingControls">
 		<div class="row">
 			<label style="float: left; font-size: 20px;margin-left: 18px">{{header_title}}</label>
