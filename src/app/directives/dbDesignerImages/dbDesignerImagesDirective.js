@@ -78,7 +78,7 @@ angular.module('app').directive('hueDbDesignerImages', [
 					data.data = scope.collectionData;
 				}
 				scope.imageDetailsData = data;
-				scope.openFullCollection();
+				scope.toggleImageDetails();
 			};
 
 			var adjustPreviewData = function () {

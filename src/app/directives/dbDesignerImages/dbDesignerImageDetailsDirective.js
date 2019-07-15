@@ -44,10 +44,12 @@ angular.module('app').directive('hueDbDesignerImageDetails', function ($timeout,
     scope.shareGooglePlus = function (url) {
       window.open('https://plus.google.com/share?url=' + url);
     }
+
     scope.newmoodboard = function(data){
       scope.$emit('mood_state_changed',data);
       scope.$broadcast('mood_state_changed',data);
     }
+    
     scope.LeftButtonHandler = function () {
       let index = scope.allData.index;
       if (index > 0) {

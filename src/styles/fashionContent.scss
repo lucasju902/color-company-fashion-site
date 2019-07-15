@@ -142,6 +142,16 @@ section {
 
 .graph {
     text-align: center;
+    .button-close {
+        width: 20px;
+        height: 20px;
+        background: url(../../../assets/img/icons/close-big.svg) no-repeat center;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+    }
+    
     .clickable {
         height: 320px;
         padding: 10px 25px;
@@ -172,7 +182,7 @@ section {
     text-align: center;
   
     .content-details-dialog {
-        width: 480px;
+        // width: 480px;
         position: absolute;
         top: 50px;
         left: 0;
@@ -228,16 +238,6 @@ section {
     padding: 0 20px;
 }
 
-.button-close {
-    width: 20px;
-    height: 20px;
-    // background: url(../../../assets/img/icons/close-big.svg) no-repeat center;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    cursor: pointer;
-}
-
 .icon-close {
     float: right;
     font-size: 20px;
@@ -275,22 +275,24 @@ section {
     padding: 20px 0;
 }
 
-.chart {
-    position: relative;
-    width: 200%;
-    min-width: 400px;
-    margin: auto;
-    font-size: 10px;
-    height: 500px;
-    transform: scale(0.5);
-    transform-origin: top left;
-
-    div {
-        position: absolute;
-        width: 100%;
+.dashboard-container, .graph {
+    .chart {
+        position: relative;
+        width: 200%;
         min-width: 400px;
+        margin: auto;
+        font-size: 10px;
         height: 500px;
-        min-height: 100px;
+        transform: scale(0.5);
+        transform-origin: top left;
+
+        div {
+            position: absolute;
+            width: 100%;
+            min-width: 400px;
+            height: 500px;
+            min-height: 100px;
+        }
     }
 }
 
@@ -418,22 +420,24 @@ section {
     }
 }
 @media (max-width: 1300px) and (min-width: 1200px) {
-    .chart {
-        width: 100%;
-    }
+    .dashboard-container, .graph {
+        .chart {
+            width: 100%;
+        }
 
-    .chart.c-chart-by-city-period-colors > div {
-        width: 100%;
-    }
+        .chart.c-chart-by-city-period-colors > div {
+            width: 100%;
+        }
 
-    .chart.c-listed-lines {
-        width: 100%;
-    }
+        .chart.c-listed-lines {
+            width: 100%;
+        }
 
-    .chart.c-bubbled-lines > div,
-    .chart.c-colors-of-year > div,
-    .chart.c-nails-lines > div {
-        width: 100%;
+        .chart.c-bubbled-lines > div,
+        .chart.c-colors-of-year > div,
+        .chart.c-nails-lines > div {
+            width: 100%;
+        }
     }
 }
 
