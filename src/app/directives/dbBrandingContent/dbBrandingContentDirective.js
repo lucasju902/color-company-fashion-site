@@ -12,14 +12,12 @@ angular.module('app').directive('brandingcontent', [
 				scope.showImageDetails = scope.showImageDetails ? false : true;
 			};
 
-			scope.imageClickHandler = function (index) {
-
+			scope.imageClickHandler = function(index) {
 				var imagedata = scope.companies[index];
-				let data = {
+				var data = {
 					index: index,
 					data: []
 				};
-
 				imagedata.image_src = "http://huestorage.s3.amazonaws.com/" + imagedata.logo_url;
 				// calc by page num
 				data.index = scope.page_num * scope.page_limit + index;

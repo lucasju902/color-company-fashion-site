@@ -32,15 +32,6 @@ angular.module('app').controller('brandingController', [
 			attribute: ''
 		};
 
-		var choices = categoryValues('industry');
-		 
-		for (item in choices) {
-		 	choices[item].index = item;
-		}
-
-
-		scope.industry_items = choices;
-
 		scope.text = '';
 		scope.minlength = 1;
 		scope.selected = {};
@@ -51,8 +42,7 @@ angular.module('app').controller('brandingController', [
 			brand: false,
 			industry: false,
 			color: false,
-			attribute: false,
-			country: false
+			attribute: false
 		};
 
 		scope.type = {
@@ -101,10 +91,10 @@ angular.module('app').controller('brandingController', [
 			tooltip: '#description',
 			data: { text: null }
 		}, {
-				width: 1,
-				type: 'title',
-				classes: 'cell-clickable',
-				data: { title: null, subtitle: null }
+			width: 1,
+			type: 'title',
+			classes: 'cell-clickable',
+			data: { title: null, subtitle: null }
 		}];
 
 		scope.industryPageInfo = [{
@@ -154,15 +144,12 @@ angular.module('app').controller('brandingController', [
 		
 		searchMenuRepository.getControlsDataBranding().then(function (data) {
 			scope.controlsData = data;
-
 			for (item in scope.controlsData.attributes) {
 				scope.controlsData.attributes[item].index = item;
 			}
-
 			for (item in scope.controlsData.companies) {
 				scope.controlsData.companies[item].index = item;
 			}
-
 			scope.isLoadingControls = true;
 		});
 
@@ -189,8 +176,7 @@ angular.module('app').controller('brandingController', [
 				brand: '',
 				industry: '',
 				color: '',
-				attribute: '',
-				country: ''
+				attribute: ''
 			};
 			scope.menus.color = color.id;
 			if (!scope.controlsData.colors.find(function (item) {
@@ -310,6 +296,8 @@ angular.module('app').controller('brandingController', [
 			}
 		};
 		
+		scope.header_title = '';
+		scope.logo_title = '';
 		scope.handleChangeControl = function(control, choice) {
 			if (!scope.mainParam) {
 				scope.mainParam = control;
@@ -327,20 +315,20 @@ angular.module('app').controller('brandingController', [
 				if (control == "company") {
 					control = "brand";
 				}
-				$state.go(control + "Branding");
-			});	
+				// $state.go(control + "Branding");
+			});
 
 			switch (scope.mainParam) {
-				case 'brand':
+				case 'company':
 					scope.pageInfo = scope.brandPageInfo;
 					scope.mainParamId = id;
 					scope.disabledControls = {
 						brand: false,
 						industry: true,
 						color: true,
-						attribute: true,
-						country: true
+						attribute: true
 					};
+					scope.header_title = 'BRAND: ' + choice.title;
 					break;
 				case 'industry':
 					scope.pageInfo = scope.industryPageInfo;
@@ -349,9 +337,9 @@ angular.module('app').controller('brandingController', [
 						brand: true,
 						industry: false,
 						color: true,
-						attribute: true,
-						country: true
+						attribute: true
 					};
+					scope.header_title = 'INDUSTRY: ' + choice.title;
 					break;
 				case 'color':
 					scope.pageInfo = scope.colorPageInfo;
@@ -360,9 +348,9 @@ angular.module('app').controller('brandingController', [
 						brand: true,
 						industry: true,
 						color: false,
-						attribute: true,
-						country: true
+						attribute: true
 					};
+					scope.header_title = 'COLOR';
 					break;
 				case 'attribute':
 					scope.pageInfo = scope.attributePageInfo;
@@ -371,9 +359,9 @@ angular.module('app').controller('brandingController', [
 						brand: true,
 						industry: true,
 						color: true,
-						attribute: false,
-						country: true
+						attribute: false
 					};
+					scope.header_title = 'ATTRIBUTE: ' + choice.title;
 					break;
 				default:
 					//$state.go('branding');
@@ -381,8 +369,7 @@ angular.module('app').controller('brandingController', [
 						brand: false,
 						industry: false,
 						color: false,
-						attribute: false,
-						country: false
+						attribute: false
 					};
 
 					scope.mainParam = null;
@@ -402,7 +389,6 @@ angular.module('app').controller('brandingController', [
 					scope.colorPaletteData = [];
 					break;
 			}
-
 			//$state.go(control + 'Branding');
 			scope.loadGraphics();
 		};
