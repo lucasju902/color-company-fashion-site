@@ -3,10 +3,10 @@
 		<div class="row">
 			<div class="col colss-8 col-sm colss-2 col-md-1" ng-repeat="item in companies">
 				<div class="image-container" ng-click="imageClickHandler($index)">
-					<img src="{{'http://huestorage.s3.amazonaws.com/' + item.logo_url}}" />
+					<img src="{{item.url}}" />
 				</div>
 				<div class="image-title">
-					{{item.title}}
+					{{item.company_title}}
 				</div>
 			</div>
 		</div>

@@ -7,7 +7,7 @@ angular.module('app').directive('brandingcontentdetail', function ($timeout, sea
     scope.data = [];
     scope.color = [];
     scope.realdata = [];
-    searchMenuRepository.getControlsDataBrandingChart(scope.chartdetail).then(function(data) {
+    searchMenuRepository.getControlsDataBrandingChart(scope.chartdetail).then(function(data) {     
       scope.labels = [];
       scope.realdata = data;
       scope.data = [];
