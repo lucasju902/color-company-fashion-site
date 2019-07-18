@@ -5,7 +5,9 @@
 				<div class="image-container" ng-click="imageClickHandler($index)">
 					<img src="{{'http://huestorage.s3.amazonaws.com/' + item.logo_url}}" />
 				</div>
-				<div class="image-title"></div>
+				<div class="image-title">
+					{{item.title}}
+				</div>
 			</div>
 		</div>
 		<div class="row">
@@ -34,5 +36,5 @@
 	</div>
 </div>
 
-<brandingcontentdetail ng-if="showImageDetails" on-close="toggleImageDetails()" titledetail="title" chartdetail="chart" data="imageDetailsData" closefunction="toggleImageDetails">
+<brandingcontentdetail ng-if="showImageDetails" on-close="toggleImageDetails()" titledetail="title" chartdetail="chart" logodata="imageDetailsData" closefunction="toggleImageDetails">
 </brandingcontentdetail>
