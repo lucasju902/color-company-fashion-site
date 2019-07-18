@@ -33,7 +33,9 @@ angular.module('app').directive('brandingcontent', [
 			link: link,
 			scope: {
 				originalData: '=data',
-				companies:"="
+				companies:"=",
+				chart:"=",
+				title:"="
 			}
 		};
 	}

@@ -141,6 +141,16 @@ angular.module('app').service('searchMenuRepository',
       });
     };
 
+    this.getControlsDataBrandingChart = function (detailcontrol,params) {
+      return $q(function (resolve, reject) {
+        
+        $http.get(appConfig.brandingServiceUrl + detailcontrol + '/top_colors/' + id + '.json', {params: params})
+          .then(function (data) {
+            return resolve(data.data);
+          });
+      });
+    };
+
     this.getMain = function () {
       var lastArgIndex = arguments.length - 1;
 

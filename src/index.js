@@ -10,7 +10,8 @@ var app = angular.module('app', [
   'LocalStorageModule',
   'ngFileUpload',
   'updateMeta',
-  'vcRecaptcha'
+  'vcRecaptcha',
+  "chart.js"
 ]);
 
 var config = {

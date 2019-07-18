@@ -299,6 +299,7 @@ angular.module('app').controller('brandingController', [
 		scope.header_title = '';
 		scope.logo_title = '';
 		scope.handleChangeControl = function(control, choice) {
+			scope.control = control;
 			if (!scope.mainParam) {
 				scope.mainParam = control;
 				scope.mainParamId = scope.menus[control];
@@ -317,7 +318,7 @@ angular.module('app').controller('brandingController', [
 				}
 				// $state.go(control + "Branding");
 			});
-
+			scope.title1 = choice.title;
 			switch (scope.mainParam) {
 				case 'company':
 					scope.pageInfo = scope.brandPageInfo;

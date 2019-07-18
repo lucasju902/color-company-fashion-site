@@ -3,6 +3,23 @@ angular.module('app').directive('brandingcontentdetail', function ($timeout, sea
     scope.allData = scope.data;
     //scope.data = scope.allData.data[scope.allData.index];
 
+    scope.labels = [];
+    scope.data = [];
+    scope.color = [];
+    scope.realdata = [];
+    searchMenuRepository.getControlsDataBrandingChart(scope.chartdetail).then(function(data) {
+      scope.labels = [];
+      scope.realdata = data;
+      scope.data = [];
+      scope.color = [];
+      scope.rgb = [];
+      for (item in data) {
+        scope.labels.push(data[item].title);
+        scope.data.push(data[item].percentage);
+        scope.color.push(data[item].color.hex);
+        scope.rgb.push(data[item].color.rgb);
+      }
+    });
     //social_link_start
     scope.closeClickHandler = function () {
       scope.closefunction();
@@ -52,7 +69,9 @@ angular.module('app').directive('brandingcontentdetail', function ($timeout, sea
     scope: {
       data: '=',
       onClose: '&',
-      closefunction:"="
+      closefunction:"=",
+      chartdetail:"=",
+      titledetail:"="
     }
   };
 });
