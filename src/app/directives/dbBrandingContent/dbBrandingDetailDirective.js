@@ -67,7 +67,7 @@ angular.module('app').directive('brandingcontentdetail', function ($timeout, sea
     templateUrl: 'app/directives/dbBrandingContent/dbBrandingContentDetailsView.html',
     link: link,
     scope: {
-      data: '=',
+      logodata: '=',
       onClose: '&',
       closefunction:"=",
       chartdetail:"=",
