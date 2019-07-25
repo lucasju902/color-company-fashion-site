@@ -7,6 +7,7 @@ angular.module('app').directive('brandingcontentdetail', function ($timeout, sea
     scope.data = [];
     scope.color = [];
     scope.realdata = [];
+    scope.option = { cutoutPercentage: 80 };
     searchMenuRepository.getControlsDataBrandingChart(scope.chartdetail).then(function(data) {     
       scope.labels = [];
       scope.realdata = data;
